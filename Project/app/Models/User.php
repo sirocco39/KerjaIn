@@ -20,6 +20,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'provider_name',
+        'provider_id',
+        'provider_token',
+        'provider_refresh_token',
+        'avatar',
+        'email_verified_at', // Good to have if you set it
+        'ktp_image_path', // Add this
+        'selfie_with_ktp_image_path', // Add this
     ];
 
     /**
