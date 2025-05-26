@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('worker_id')->constrained('users');
             $table->boolean('is_open');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
