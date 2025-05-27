@@ -22,6 +22,7 @@ class User extends Model
         'job_done',
         'is_blocked',
         'saldokerjain',
+        'bank_acc_num',
     ];
 
     protected $attributes = [
@@ -42,6 +43,7 @@ class User extends Model
         'is_worker' => 'boolean',
         'is_blocked' => 'boolean',
         'saldokerjain' => 'decimal:2',
+        
     ];
 
     // Relationships (optional, but useful)

@@ -32,8 +32,8 @@ class Request extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'work_date' => 'date',
-        'start_time' => 'time',
-        'end_time' => 'time',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
     ];
 
     public function requester() : BelongsTo

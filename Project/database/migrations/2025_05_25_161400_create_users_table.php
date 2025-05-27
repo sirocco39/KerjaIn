@@ -19,6 +19,7 @@ public function up()
             $table->boolean('is_worker')->default(false);
             $table->float('rating')->default(0);
             $table->integer('job_done')->default(0);
+            $table->char('bank_acc_num', 10)->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->boolean('is_blocked')->default(false);
