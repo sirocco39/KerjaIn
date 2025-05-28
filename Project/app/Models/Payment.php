@@ -28,4 +28,8 @@ class Payment extends Model
     {
         return $this->belongsTo(Request::class, 'request_id');
     }
+    public function offer() : BelongsTo
+    {
+        return $this->belongsTo(Offer::class, 'offer_id');
+    }
 }

@@ -17,7 +17,21 @@ class OfferFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'amount' => $this->faker->randomFloat(2, 10000, 500000),
+            'status' => fake()->randomElement(['pending', 'accepted', 'rejected', 'withdrawn']),
         ];
+    }
+
+
+    public function openOffer(){
+        return $this->state([
+            'status' => 'open',
+        ]);
+    }
+
+    public function closedOffer(){
+        return $this->state([
+            'status' => 'closed',
+        ]);
     }
 }

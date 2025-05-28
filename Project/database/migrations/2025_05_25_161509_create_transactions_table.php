@@ -13,8 +13,7 @@ return new class extends Migration
             $table->foreignId('request_id')->constrained('requests');
             $table->foreignId('worker_id')->constrained('users');
             $table->foreignId('requester_id')->constrained('users');
-            $table->timestamp('accepted_at');
-            $table->enum('status', ['accepted', 'in progress', 'submitted', 'completed']);
+            $table->enum('status', ['accepted', 'in progress', 'submitted', 'completed', 'cancelled']);
             $table->timestamps();
             $table->softDeletes();
         });

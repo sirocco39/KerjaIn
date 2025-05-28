@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('price', 10, 2);
             $table->string('location', 512);
-            $table->enum('status', ['pending', 'in progress', 'completed', 'cancelled', 'expired']);
+            $table->enum('status', ['open', 'closed']);
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->timestamps();
