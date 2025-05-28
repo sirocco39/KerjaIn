@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\ChatMessage;
+use App\Models\ChatRoom;
+use App\Models\Payment;
+use App\Models\Report;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,11 +17,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            UserSeeder::class,
+            VerificationRequestSeeder::class,
+            RequestSeeder::class,
+            ChatRoomSeeder::class,
+            ChatMessageSeeder::class,
+            OfferSeeder::class,
+            PaymentSeeder::class,
+            TransactionSeeder::class,
+            CompletionProofSeeder::class,
+            ReviewSeeder::class,
+            ReportSeeder::class,
         ]);
     }
 }

@@ -16,8 +16,9 @@ return new class extends Migration
             $table->foreignId('chat_room_id')->constrained('chat_rooms');
             $table->foreignId('request_id')->constrained('requests');
             $table->foreignId('worker_id')->constrained('users');
+            $table->foreignId('requester_id')->constrained('users');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'accepted', 'rejected', 'withdrawn']);
+            $table->enum('status', ['open', 'closed']);
             $table->timestamps();
             $table->softDeletes();
         });

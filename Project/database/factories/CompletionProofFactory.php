@@ -17,7 +17,9 @@ class CompletionProofFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'photo_url' => $this->faker->imageUrl(),
+            'note' => $this->faker->sentence(),
+            'submitted_at' => now(),
         ];
     }
 }

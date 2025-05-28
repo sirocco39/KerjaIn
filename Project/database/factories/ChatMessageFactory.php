@@ -17,7 +17,10 @@ class ChatMessageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'message' => $this->faker->sentence(),
+            'sent_at' => now(),
+            'delivered_at' => now(),
+            'read_at' => now(),
         ];
     }
 }
