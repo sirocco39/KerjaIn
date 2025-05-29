@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('photo_url');
             $table->string('id_card_url');
             $table->string('selfie_with_id_card_url');
+            $table->string('account_name');
+            $table->string('account_number', 10);
             $table->softDeletes();
         });
     }
