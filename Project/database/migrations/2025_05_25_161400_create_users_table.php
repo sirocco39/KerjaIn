@@ -14,7 +14,7 @@ public function up()
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->char('phone_number', 12);
+            $table->char('phone_number', 12)->nullable();
             $table->enum('role', ['user', 'admin']);
             $table->decimal('saldokerjain', 12, 2)->default(0);
             $table->boolean('is_worker')->default(false);
