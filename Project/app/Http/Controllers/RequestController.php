@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Request as ModelsRequest;
 use Illuminate\Http\Request;
 
-//command for factories.
-//App\Models\User::factory(10)->create();
-
 class RequestController extends Controller
 {
     function add(Request $request){
@@ -34,7 +31,7 @@ class RequestController extends Controller
     // Check if start is after end
         if ($startDatetime > $endDatetime) {
             return back()->withErrors([
-                'workStartTimeLabel' => 'Start time must not be after end time.'
+                'datetime' => 'Start time must not be after end time.'
             ])->withInput();
         }
 
@@ -43,7 +40,6 @@ class RequestController extends Controller
         $modelrequest->description = $request->workDetailLabel;
         $modelrequest->price = $request->workPriceLabel;
         $modelrequest->location = $request->workAddressLabel;
-        $modelrequest->work_date = $request->workDateLabel;
         $modelrequest->start_time = $startDatetime;
         $modelrequest->end_time = $endDatetime;
 

@@ -26,7 +26,7 @@ class Request extends Model
         'end_time',
     ];
     protected $attributes = [
-        'status' => 'pending',
+        'status' => 'open',
     ];
     protected $casts = [
         'price' => 'decimal:2',

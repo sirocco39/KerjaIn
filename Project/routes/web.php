@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -9,3 +10,5 @@ Route::get('/', function () {
 Route::get('/postwork', function () {
     return view('postwork');
 });
+
+Route::post('/postwork', [RequestController::class, 'add']);
