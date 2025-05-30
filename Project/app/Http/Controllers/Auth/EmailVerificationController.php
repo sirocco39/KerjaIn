@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\UserVerification;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,29 +14,52 @@ class EmailVerificationController extends Controller
     public function verify(Request $request)
     {
         $request->validate([
-            'email' => ['required','email','exists:users'],
-            'otp'   => ['required','digits:6'],
+            'email' => ['required', 'email'],
+            'otp' => ['required', 'digits:6'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $pending = session('pending_registration');
 
-        $record = UserVerification::where('user_id', $user->id)->latest()->first();
-
-        if (!$record
-            || Carbon::now()->greaterThan($record->expires_at)
-            || !Hash::check($request->otp, $record->code)) {
+        if (!$pending) {
             throw ValidationException::withMessages([
-                'otp' => 'Kode salah atau sudah kadaluarsa.',
+                'otp' => 'No pending registration found. Please register again.',
             ]);
         }
 
-        $user->email_verified_at = now();
-        $user->save();
-        $record->delete();
+        if ($pending['email'] !== $request->email) {
+            throw ValidationException::withMessages([
+                'email' => 'Email does not match registration data.',
+            ]);
+        }
 
+        if (now()->greaterThan($pending['expires_at'])) {
+            session()->forget('pending_registration');
+            throw ValidationException::withMessages([
+                'otp' => 'OTP expired. Please register again.',
+            ]);
+        }
+
+        if (!Hash::check($request->otp, $pending['otp'])) {
+            throw ValidationException::withMessages([
+                'otp' => 'Invalid OTP.',
+            ]);
+        }
+
+        // Create the user now
+        $user = User::create([
+            'first_name' => $pending['first_name'],
+            'last_name' => $pending['last_name'],
+            'email' => $pending['email'],
+            'password' => $pending['password'], // already hashed
+        ]);
+
+        // Clear session
+        session()->forget('pending_registration');
+
+        // Log in user and redirect
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard'));
     }
 }

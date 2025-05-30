@@ -1,13 +1,13 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('We sent a 6-digit OTP code to :email. Enter it below to verify and login.', ['email' => session('email')]) }}
+        {{ __('Kami telah mengirim 6-digit kode ke :email. Masukkan untuk memverifikasi.', ['email' => session('email')]) }}
     </div>
 
     <form method="POST" action="{{ route('login.otp') }}">
         @csrf
 
         <div>
-            <x-input-label for="otp" :value="__('OTP Code')" />
+            <x-input-label for="otp" :value="__('Kode OTP')" />
             <x-text-input id="otp" class="block mt-1 w-full"
                           type="text" name="otp" maxlength="6" required autofocus />
             <x-input-error :messages="$errors->get('otp')" class="mt-2" />
@@ -17,7 +17,7 @@
 
         <div class="mt-4">
             <x-primary-button class="w-full justify-center">
-                {{ __('Verify OTP') }}
+                {{ __('Verifikasi OTP') }}
             </x-primary-button>
         </div>
     </form>

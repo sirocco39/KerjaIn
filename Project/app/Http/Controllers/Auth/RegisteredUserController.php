@@ -3,15 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use App\Models\UserVerification;
+use App\Notifications\VerifyEmailOtp;
 
 class RegisteredUserController extends Controller
 {
@@ -25,8 +21,6 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request)
     {
@@ -37,24 +31,32 @@ class RegisteredUserController extends Controller
             'password'   => ['required','confirmed',Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'password'   => Hash::make($request->password),
-        ]);
-
+        // Generate OTP
         $otp = random_int(100000, 999999);
-        UserVerification::create([
-            'user_id'    => $user->id,
-            'code'       => Hash::make($otp),
-            'expires_at' => now()->addMinutes(10),
+
+        // Store user registration data + hashed OTP + expiration in session
+        session([
+            'pending_registration' => [
+                'first_name' => $request->first_name,
+                'last_name'  => $request->last_name,
+                'email'      => $request->email,
+                'password'   => Hash::make($request->password),
+                'otp'        => Hash::make($otp),
+                'expires_at' => now()->addMinutes(10),
+            ]
         ]);
 
-        $user->notify(new \App\Notifications\VerifyEmailOtp($otp));
+        // Send OTP notification to the email provided
+        // Use a temporary User model instance for notification
+        $tempUser = new \App\Models\User([
+            'email' => $request->email,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+        ]);
+        $tempUser->notify(new VerifyEmailOtp($otp));
 
+        // Redirect to OTP verification page
         return redirect()->route('verification.notice')
-            ->with('email', $user->email);
+                         ->with('email', $request->email);
     }
-
 }
