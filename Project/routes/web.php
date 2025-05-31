@@ -5,9 +5,13 @@ use Illuminate\Support\Facades\Route;
 
 // Route default yang mengarahkan ke langkah 1 pendaftaran pekerja
 // Ini akan mengarahkan '/' ke '/joinWorker/join'
-Route::get('/', function () {
-    return redirect()->route('worker.register.step1');
+Route::get('/', function(){
+    return view('joinWorker.joinn');
 });
+
+// Route::get('/', function () {
+//     return redirect()->route('worker.register.step1');
+// });
 
 // Grup route untuk pendaftaran pekerja tanpa autentikasi
 Route::prefix('joinWorker')->name('worker.register.')->group(function () {
