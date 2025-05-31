@@ -1,0 +1,10 @@
+.navbar{
+    border: 1px solid red;
+    padding-left: 7.5vw;
+    padding-right: 7.5vw;
+}
+
+#logoNavbar {
+    width: 120px;
+    border: 2px solid red;
+}
