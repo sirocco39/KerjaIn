@@ -24,46 +24,21 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => $this->faker->firstName(),
-            'last_name' => $this->faker->lastName(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'password' => bcrypt('password'),
-            'phone_number' => fake()->numerify('08##########'),
-            'saldokerjain' => $this->faker->randomFloat(2, 0, 1000000),
-            'role' => fake()->randomElement(['user', 'admin']),
-            'is_worker' => false,
-            'rating' => $this->faker->randomFloat(2, 1, 5),
-            'job_done' => 0,
-            'is_blocked' => false,
-            'bank_acc_num' => null,
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'email_verified_at' => now(),
+            'password' => static::$password ??= Hash::make('password'),
+            'remember_token' => Str::random(10),
         ];
     }
 
-    public function admin(){
-        return $this->state([
-            'role' => 'admin',
-            'rating' => 0,
-            'job_done' => 0,
-            'is_worker' => false,
-        ]);
-    }
-
-    public function worker()
+    /**
+     * Indicate that the model's email address should be unverified.
+     */
+    public function unverified(): static
     {
-        return $this->state([
-            'role' => 'user',
-            'is_worker' => true,
-            'job_done' => $this->faker->numberBetween(1, 100),
-            'bank_acc_num' => $this->faker->numerify('##########'),
-        ]);
-    }
-
-    public function nonWorker()
-    {
-        return $this->state([
-            'role' => 'user',
-            'is_worker' => false,
-            'job_done' => 0,
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
         ]);
     }
 }
