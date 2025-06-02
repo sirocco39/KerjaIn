@@ -40,7 +40,7 @@
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
                             <img src="../Image/Flag/flag-id.png" alt="Bahasa" id="langFlag">
                             <span>Bahasa</span>
-                            <i class="bi bi-chevron-down"></i>
+                            <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dropdownLang">

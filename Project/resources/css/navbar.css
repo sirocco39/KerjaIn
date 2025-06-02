@@ -12,7 +12,6 @@ body{
 
 .pembatas {
     padding: 0 7.5vw;
-    border: 1px solid red;
 }
 
 #navbarCollapse{
@@ -77,6 +76,13 @@ body{
 .navbar-nav .nav-item .dropdown-menu .dropdown-item{
     padding: 10px;
     margin-right: 11px;
+}
+
+#langIcon {
+    transition: transform 0.3s ease;
+}
+.rotate-up {
+    transform: rotate(180deg);
 }
 
 #dropdownLang,
