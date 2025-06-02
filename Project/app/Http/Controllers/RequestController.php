@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Request as ModelsRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class RequestController extends Controller
 {
-    function add(Request $request){
+    function add(Request $request)
+    {
 
         $validated = $request->validate([
             'workTitleLabel' => 'required|string|max:255',
@@ -20,15 +22,15 @@ class RequestController extends Controller
             'workEndTimeLabel' => 'required',
         ]);
 
-        $modelrequest = new ModelsRequest(); 
+        $modelrequest = new ModelsRequest();
 
         //from getting data from other
-        $modelrequest->requester_id = 5; 
+        $modelrequest->requester_id = 5;
 
         $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}:00");
         $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}:00");
 
-    // Check if start is after end
+        // Check if start is after end
         if ($startDatetime > $endDatetime) {
             return back()->withErrors([
                 'datetime' => 'Start time must not be after end time.'
@@ -37,6 +39,7 @@ class RequestController extends Controller
 
         //from handling post
         $modelrequest->title = $request->workTitleLabel;
+        $modelrequest->slug = Str::slug($modelrequest->title);
         $modelrequest->description = $request->workDetailLabel;
         $modelrequest->price = $request->workPriceLabel;
         $modelrequest->location = $request->workAddressLabel;
@@ -46,12 +49,17 @@ class RequestController extends Controller
         //created: 
         $modelrequest->created_at = date("Y-m-d h:i:sa", time());
 
-        $result = $modelrequest->save(); 
-        if($result){
-            return "request added"; 
-        }else{
-            return "request error"; 
+        $result = $modelrequest->save();
+        if ($result) {
+            return redirect("request/$modelrequest->slug");
+        } else {
+            return "request error";
         }
-
     }
+
+    // public function show($slug)
+    // {
+    //     $workRequest = Request::filled($slug);
+    //     return view(view: 'request.show', compact('workRequest'));
+    // }
 }

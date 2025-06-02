@@ -17,6 +17,7 @@ class Request extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'price',
         'location',
