@@ -16,11 +16,11 @@ body{
 
 #logoNavbar {
     width: 120px;
-    margin-right: 5vw;
+    margin-right: 8vw;
 }
 
-#dropLang .dropdown-menu .dropdown-item{
-    min-width: 100%;
+#dropLang .dropdown-menu{
+    min-width: 0;
 }
 
 #dropProfile .dropdown-menu {
@@ -41,10 +41,6 @@ body{
     text-decoration: underline 2px;
     text-underline-offset: 0.6vw;
     font-weight: bold;
-}
-
-#dropdownlang{
-    margin-right: 8.5vw;
 }
 
 .dropdown-menu li a {
@@ -90,7 +86,7 @@ body{
 }
 
 #dropdownLang{
-    margin-right: 8.5vw;
+    margin-right: 8vw;
 }
 
 #langFlag {
@@ -120,7 +116,19 @@ body{
     color: #000000;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1310px) {
+    .navbar{
+        padding: 2vw 2vw;
+    }
+}
+
+@media (max-width: 1130px) {
+    #logoNavbar, #dropdownLang{
+        margin-right: 5vw;
+    }
+}
+
+@media (max-width: 992px) {
     #profileIcon,
     #langFlag {
         width: 25px;

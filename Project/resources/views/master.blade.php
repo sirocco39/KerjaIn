@@ -14,7 +14,7 @@
 
 <body>
     {{-- Navbar Section --}}
-    <nav class="navbar navbar-expand-xl bg-light">
+    <nav class="navbar navbar-expand-lg bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
                 <img src="./Image/Logo/Logo Kerjain - LightBackground.png" alt="Logo Kerjain" id="logoNavbar">
@@ -34,7 +34,7 @@
 
                 <hr class="d-xl-none my-2">
 
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-xl-center">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
                     <!-- Dropdown Bahasa -->
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
@@ -53,8 +53,7 @@
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
                             <img src="./Image/Icon/user-circle.svg" alt="Profil" id="profileIcon">
-                            <span class="d-xl-none">Profil</span>
-                            <i class="bi bi-chevron-down"></i>
+                            <span class="d-lg-none">Profil</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
