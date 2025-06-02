@@ -22,7 +22,6 @@ class Request extends Model
         'location',
         'requester_id',
         'status',
-        'work_date',
         'start_time',
         'end_time',
     ];
@@ -31,7 +30,6 @@ class Request extends Model
     ];
     protected $casts = [
         'price' => 'decimal:2',
-        'work_date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];

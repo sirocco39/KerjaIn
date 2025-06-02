@@ -17,7 +17,7 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'status' => $this->faker->randomElement(['accepted', 'in progress', 'submitted', 'completed', 'cancelled']),
         ];
     }
 }

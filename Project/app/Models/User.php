@@ -12,7 +12,8 @@ class User extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'phone_number',
@@ -46,7 +47,21 @@ class User extends Model
         
     ];
 
-    // Relationships (optional, but useful)
+    public function scopeNonAdmin($query)
+    {   
+        return $query->where('role', 'user');
+    }
+
+    public function scopeWorker($query)
+    {   
+        return $query->where('is_worker', true);
+    }
+
+    public function scopeNonWorker($query)
+    {   
+        return $query->where('is_worker', false)->where('role', 'user');
+    }
+
     public function requests() : HasMany
     {
         return $this->hasMany(Request::class, 'requester_id');

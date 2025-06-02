@@ -17,7 +17,9 @@ class ReportFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'reasons' => $this->faker->sentence(),
+            'status' => fake()->randomElement(['Not Reviewed', 'Reviewed']),
+            'photo_url' => $this->faker->imageUrl(),
         ];
     }
 }

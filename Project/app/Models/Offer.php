@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Offer extends Model
 {
@@ -16,6 +16,7 @@ class Offer extends Model
     protected $fillable = [
         'request_id',
         'chat_room_id',
+        'requester_id',
         'worker_id',
         'amount',
         'status',
@@ -36,6 +37,10 @@ class Offer extends Model
     public function worker() : BelongsTo
     {
         return $this->belongsTo(User::class, 'worker_id');
+    }
+    public function payment() : HasOne
+    {
+        return $this->HasOne(Payment::class);
     }
     
 }
