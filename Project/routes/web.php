@@ -3,9 +3,7 @@
 use App\Http\Controllers\WorkerRegistrationController;
 use Illuminate\Support\Facades\Route;
 
-// Route default yang mengarahkan ke langkah 1 pendaftaran pekerja
-// Ini akan mengarahkan '/' ke '/joinWorker/join'
-Route::get('/', function(){
+Route::get('/', function () {
     return view('joinWorker.joinn');
 });
 
