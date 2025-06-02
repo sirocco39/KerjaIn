@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\WorkerRegistrationController;
+use App\Http\Controllers\browseWorkRequestController;
 use Illuminate\Support\Facades\Route;
 
 // Route default yang mengarahkan ke langkah 1 pendaftaran pekerja
@@ -30,3 +31,7 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
     // URL: /joinWorker/success
     Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
 });
+
+Route::get('/browseWorkRequest', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
+
+Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
