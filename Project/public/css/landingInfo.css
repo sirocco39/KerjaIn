@@ -1,0 +1,59 @@
+  /* Efek hover */
+  .hover-effect {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Angka card */
+  .card-number {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #D3FA0D;
+    font-family: 'Manrope';
+  }
+  
+  /* Warna hover */
+  .hover-effect:hover .card-number {
+    color: #309FFF;
+  }
+  
+  /* Jarak konten card */
+  .card-body {
+    padding: 2rem;
+  }
+  
+  .card-text {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+
+/* Alur Kerja */
+  .workflow-step {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+  }
+  
+  .workflow-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: #309FFF;
+  }
+  
+  .testimonial-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+  }
+  
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }

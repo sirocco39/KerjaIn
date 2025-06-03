@@ -1,19 +1,20 @@
-@extends('layouts.app')
+@extends('master')
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-<!-- Manrope -->
+<!-- CSS -->
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
+<link rel="stylesheet" href="{{ asset('css/login.css') }}">
+
+<!-- Manrope dan Inter Font-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-<!-- Inter -->
-<link href=<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
+<!-- FontAwesome Icon -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <!-- Hero Section -->
 <section class="py-5 text-start text-white" style="background-color: #294287; position: relative; overflow: hidden;">
@@ -47,21 +48,259 @@
     <p class="mb-5" style="font-family: 'Inter';">“Gak ada kerjaan yang terlalu kecil. Di KerjaIn, setiap tugas adalah peluang.”<br>Kerja serabutan? Jangan diremehkan. Dari yang kecil, bisa jadi besar.</p>
 
     <div class="row row-cols-1 row-cols-md-4 g-4">
-      @foreach (['Siapa yang bisa kerja?', 'Kenapa harus KerjaIn?', 'Apa itu KerjaIn?', 'Butuh pengalaman?'] as $index => $title)
-        <div class="col">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <img src="https://cdn-icons-png.flaticon.com/512/2026/2026590.png" class="mb-3" alt="icon" width="60">
-              <h5 class="card-title fw-bold">{{ $title }}</h5>
-              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pelajari lebih lanjut.</p>
-              <a href="#" class="btn btn-link text-primary">Learn more</a>
-            </div>
+      <!-- Card 1 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+          <div class="card-body position-relative">
+            <div class="card-number">1</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/2026/2026590.png" class="mb-3" alt="icon" width="60">
+            <h5 class="card-title fw-bold">Siapa yang bisa pakai?</h5>
+            <p class="card-text">Pencari kerja: Orang-orang yang ingin mendapatkan pengalaman tambahan atau pekerjaan harian dengan cara mudah dan fleksibel.<br><br>Pemberi kerja: Siapa saja yang membutuhkan bantuan untuk pekerjaan serabutan.</p>
+            <a href="#" class="btn btn-link text-primary">Learn more</a>
           </div>
         </div>
-      @endforeach
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+          <div class="card-body position-relative">
+            <div class="card-number">2</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/3446/3446435.png" class="mb-3" alt="icon" width="60">
+            <h5 class="card-title fw-bold">Kenapa harus KerjaIn?</h5>
+            <p class="card-text">Platform mudah digunakan dengan berbagai pilihan pekerjaan dan tenaga kerja yang tersedia.</p>
+            <a href="#" class="btn btn-link text-primary">Learn more</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+          <div class="card-body position-relative">
+            <div class="card-number">3</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/1570/1570887.png" class="mb-3" alt="icon" width="60">
+            <h5 class="card-title fw-bold">Apa itu KerjaIn?</h5>
+            <p class="card-text">KerjaIn adalah platform digital yang menghubungkan orang-orang yang membutuhkan bantuan kerja serabutan dengan mereka yang siap memberikan jasa.</p>
+            <a href="#" class="btn btn-link text-primary">Learn more</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 4 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 hover-effect">
+          <div class="card-body position-relative">
+            <div class="card-number">4</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/3281/3281289.png" class="mb-3" alt="icon" width="60">
+            <h5 class="card-title fw-bold">Butuh pengalaman?</h5>
+            <p class="card-text">Tidak masalah! Banyak pekerjaan di KerjaIn yang bisa dilakukan tanpa pengalaman khusus.</p>
+            <a href="#" class="btn btn-link text-primary">Learn more</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5 fw-bold" style="font-family: 'Manrope';">Top Fitur untuk Anda</h2>
+    
+    <div class="row g-4">
+      <!-- Feature 1 - Riwayat -->
+      <div class="col-md-3">
+        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm">
+          <div class="feature-icon mb-3">
+            <img src="https://cdn-icons-png.flaticon.com/512/3132/3132693.png" alt="Riwayat" width="40">
+          </div>
+          <h5 class="fw-bold mb-3">Riwayat</h5>
+          <h6 class="text-muted mb-3">Alur Kerja</h6>
+          <p class="mb-0">"Jangan tunggu kesempatan datang. Buka aplikasi, dan ciptakan peluangmu sendiri."</p>
+        </div>
+      </div>
+      
+      <!-- Feature 2 - Cari Kerja -->
+      <div class="col-md-3">
+        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm">
+          <div class="feature-icon mb-3">
+            <img src="https://cdn-icons-png.flaticon.com/512/3081/3081985.png" alt="Cari Kerja" width="40">
+          </div>
+          <h5 class="fw-bold mb-3">Cari Kerja</h5>
+          <h6 class="text-muted mb-3">Daftar akun</h6>
+          <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
+        </div>
+      </div>
+      
+      <!-- Feature 3 - Pesan -->
+      <div class="col-md-3">
+        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm">
+          <div class="feature-icon mb-3">
+            <img src="https://cdn-icons-png.flaticon.com/512/542/542638.png" alt="Pesan" width="40">
+          </div>
+          <h5 class="fw-bold mb-3">Pesan</h5>
+          <h6 class="text-muted mb-3">Daftar akun</h6>
+          <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
+        </div>
+      </div>
+      
+      <!-- Feature 4 - Lokasi -->
+      <div class="col-md-3">
+        <div class="feature-card h-100 p-4 bg-white rounded-3 shadow-sm">
+          <div class="feature-icon mb-3">
+            <img src="https://cdn-icons-png.flaticon.com/512/2838/2838694.png" alt="Lokasi" width="40">
+          </div>
+          <h5 class="fw-bold mb-3">Lokasi</h5>
+          <h6 class="text-muted mb-3">Daftar akun</h6>
+          <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Workflow Section -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h1 class="display-5 fw-bold mb-4" style="font-family: 'Manrope';">Alur Kerja</h1>
+        <p class="lead mb-5" style="font-size: 1.25rem; font-style: italic;">"Jangan tunggu kesempatan datang, Buka aplikasi, dan ciptakan peluangmu sendiri."</p>
+        
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-4 mb-5">
+          <!-- Step 1 -->
+          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 300px;">
+            <h3 class="h4 fw-bold mb-3">Daftar akun</h3>
+            <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 300px;">
+            <h3 class="h4 fw-bold mb-3">Daftar akun</h3>
+            <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 300px;">
+            <h3 class="h4 fw-bold mb-3">Daftar akun</h3>
+            <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5" style="background-color: #f8f9fa;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h2 class="h3 fw-bold mb-5" style="font-family: 'Manrope';">Kepuasan Pelanggan adalah yang utama bagi kami</h2>
+        
+        <div class="row g-4">
+          <!-- Testimonial 1 -->
+          <div class="col-md-4">
+            <div class="testimonial-card p-4 h-100 bg-white rounded-3">
+              <p class="mb-4" style="font-style: italic;">"Terima kasih telah menghadirkan kerjain yang sangat membantu kehidupan saya sehari hari, tampilan sangat mudah dimengerti, pelayanan bagus sekali"</p>
+              <div class="testimonial-author">
+                <h5 class="fw-bold mb-1">Iwan Jelek</h5>
+                <p class="text-muted mb-0">Pekerja</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Testimonial 2 -->
+          <div class="col-md-4">
+            <div class="testimonial-card p-4 h-100 bg-white rounded-3">
+              <p class="mb-4" style="font-style: italic;">"Terima kasih telah menghadirkan kerjain yang sangat membantu kehidupan saya sehari hari, tampilan sangat mudah dimengerti, pelayanan bagus sekali"</p>
+              <div class="testimonial-author">
+                <h5 class="fw-bold mb-1">Iwan Jelek</h5>
+                <p class="text-muted mb-0">Pekerja</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Testimonial 3 -->
+          <div class="col-md-4">
+            <div class="testimonial-card p-4 h-100 bg-white rounded-3">
+              <p class="mb-4" style="font-style: italic;">"Terima kasih telah menghadirkan kerjain yang sangat membantu kehidupan saya sehari hari, tampilan sangat mudah dimengerti, pelayanan bagus sekali"</p>
+              <div class="testimonial-author">
+                <h5 class="fw-bold mb-1">Iwan Jelek</h5>
+                <p class="text-muted mb-0">Pekerja</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tombol hijau biru -->
+<section class="py-5">
+  <div class="container d-flex position-relative align-items-center" style="z-index: 1;">
+    <!-- Konten Teks -->
+    <div class="text-content pe-5" style="transform: translateX(-100px); margin-bottom: 3%">
+        <a href="#" class="btn-daftar" style="font-size: 20px; padding: 12px 24px">Daftar Sekarang</a>
+        <a href="#" class="btn-pekerja" style="font-size: 20px; padding: 12px 24px">Cari Pekerja</a>
+      </div>
+    </div>
+
+<!-- Footer -->
+<section class="py-5 text-start text-white" style="background-color: #294287">
+  <div class="container d-flex position-relative align-items-center">
+    <!-- Konten Teks -->
+
+    </div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="login-box">
+    <form action="">
+        <h2>Login</h2>
+        <div class="input-box">
+            <span class="icon"><ion-icon name="mail"></ion-icon></span>
+            <input type="email" required>
+            <label>Email</label>
+        </div>
+        <div class="input-box">
+            <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+            <input type="password" required>
+            <label>Password</label>
+        </div>
+        <div class="remember-forgot">
+            <label><input type="checkbox"> Remember me</label>
+            <a href="#">Forgot Password?</a>
+        </div>
+        <button type="submit">Login</button>
+        <p class="register-link">Belum punya akun? <a href="#">Register</a></p>
+
+    </form>
+</div>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+<!-- Register Modal -->
+<div id="registerModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-[350px]">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold">Register</h2>
+            <button onclick="closeRegister()" class="text-gray-500 hover:text-black">✕</button>
+        </div>
+        <input type="text" placeholder="Name" class="w-full mb-2 border p-2 rounded">
+        <input type="email" placeholder="Email" class="w-full mb-2 border p-2 rounded">
+        <input type="password" placeholder="Password" class="w-full mb-4 border p-2 rounded">
+        <button class="bg-green-500 text-white px-4 py-2 rounded w-full">Register</button>
+        <p class="text-sm mt-3 text-center">Already have an account? <a href="#" onclick="openLogin()" class="text-blue-600 font-semibold">Login</a></p>
+    </div>
+</div>
+
+<!-- menghubungkan js -->
+<script src="{{ asset('js/login.js') }}"></script>
+<script src="{{ asset('js/register.js') }}"></script>
+
+
 @endsection
-
-

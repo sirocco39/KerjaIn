@@ -9,30 +9,16 @@
 </head>
 <body>
 
-  <!-- Navbar -->
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-    <div class="container">
-      <a class="navbar-brand fw-bold text-primary" href="#">Kerja<span class="text-warning">In</span></a>
-      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto me-3">
-          <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Cari Kerja</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Pesan</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Riwayat</a></li>
-        </ul>
-        <div class="dropdown me-2">
-          <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-            Bahasa
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Indonesia</a></li>
-            <li><a class="dropdown-item" href="#">English</a></li>
-          </ul>
-        </div>
-        <a class="btn btn-outline-dark" href="#"><i class="bi bi-person-circle"></i></a>
+                <!-- Tombol Login -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+          Login
+        </button>
+
+        <!-- Tombol Register -->
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#registerModal">
+          Register
+        </button>
+
       </div>
     </div>
   </nav>
