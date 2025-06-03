@@ -57,10 +57,10 @@
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-login.svg" alt="Icon Login" class="navIcon">Masuk</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-logout.svg" alt="Icon Login" class="navIcon">Keluar</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-join.svg" alt="Icon Login" class="navIcon">Menjadi Mitra</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/"><img src="../Image/Icon/icon-change-role.svg" alt="Icon Login" class="navIcon">Ganti Peran</a></li>
+                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#loginModal"><img src="../Image/Icon/icon-login.svg" alt="Icon Login" class="navIcon">Masuk</button></li>
+                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#logoutModal"><img src="../Image/Icon/icon-logout.svg" alt="Icon Logout" class="navIcon">Keluar</button></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-join.svg" alt="Icon Menjadi Mitra" class="navIcon">Menjadi Mitra</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/"><img src="../Image/Icon/icon-change-role.svg" alt="Icon Ganti Peran" class="navIcon">Ganti Peran</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -68,7 +68,6 @@
             </div>
         </div>
     </nav>
-
     {{-- End Navbar Section --}}
 
 
@@ -135,6 +134,38 @@
         </div>
     </footer>
     {{-- End Footer --}}
+
+
+    {{-- Pop Up Login --}}
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    Ini Pop Up Login
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- End Pop Up Login --}}
+
+
+    {{-- Pop Up Logout --}}
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    Ini Pop Up Logout
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- End Pop Up Logout --}}
 </body>
 
 </html>

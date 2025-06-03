@@ -72,7 +72,7 @@ body {
     margin-left: 2px;
 }
 
-#dropProfile .dropdown-menu li a img{
+#dropProfile .dropdown-menu li img{
     filter: brightness(0) saturate(100%);
 }
 
@@ -290,5 +290,5 @@ body {
     #foot-2, #foot-3, #foot-4, #foot-5{
         padding: 0 0 20px 0;
     }
-    /* End Footer */
+    /* End Footer */
 }
