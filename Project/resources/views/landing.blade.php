@@ -1,4 +1,4 @@
-@extends('master')
+@extends('Master.master-job_req')
 
 @section('content')
 
@@ -16,18 +16,19 @@
 <!-- FontAwesome Icon -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-<!-- Hero Section -->
-<section class="py-5 text-start text-white" style="background-color: #294287; position: relative; overflow: hidden;">
-  <div class="container d-flex position-relative align-items-center" style="z-index: 1;">
+<!-- Banner Section -->
+<section class="banner-section">
+   <div class="container-fluid p-0">
+    <div class="d-flex position-relative align-items-center" style="z-index: 1; min-height: 500px;">
     <!-- Konten Teks -->
-    <div class="text-content pe-5" style="transform: translateX(-100px); position: relative; z-index: 3;">
-      <h1 class="display-2 fw-bold mb-3" style="font-family: 'Manrope'; white-space: nowrap;">Mau segala sesuatu selesai ?</h1>
-      <h2 class="display-2 fw-semibold">Yuk, <span style="color: #D3FA0D">Kerja</span><span style="background-color: #309FFF; color: white; padding: 1px 8px; border-radius: 0.5rem;">In</span>!</h2>
-      <p class="mt-5 fs-5" style="font-family: 'Inter';">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
+    <div class="text-content pe-5" style="transform: translate(120px, -20px); position: relative; z-index: 3;">
+      <h1 class="display-4 fw-bold mb-3" style="font-family: 'Manrope'; white-space: nowrap">Mau segala sesuatu selesai ?</h1>
+      <h1 class="display-4 fw-bold mb-3" style="margin-left: 4px">Yuk, <span style="color: #D3FA0D">Kerja</span><span style="background-color: #309FFF; color: white; padding: 1px 8px; border-radius: 0.5rem;">In</span>!</h2>
+      <p class="mt-5 fs-6" style="font-family: 'Inter'; display: grid; grid-template-columns: 2fr 1fr">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
       <div class="mt-5">
         <div class="garis-tengah"></div>
-        <a href="#" class="btn-daftar">Daftar Sekarang</a>
-        <a href="#" class="btn-pekerja">Cari Pekerja</a>
+        <a href="#" class="btn-daftar" style="font-size: 18px">Daftar Sekarang</a>
+        <a href="#" class="btn-pekerja" style="font-size: 18px">Cari Pekerja</a>
       </div>
     </div>
     
@@ -35,7 +36,7 @@
     <div class="color-dots" style="width: 300px; min-width: 300px; position: relative; height: 400px; z-index: 1;">
       <div class="dot dot-1"></div>
       <div class="dot dot-2"></div>
-      <div class="dot dot-3" style="z-index: 0;"></div>
+      <div class="dot dot-3" style="z-index: ;"></div>
     </div>
   </div>
 </section>
@@ -106,7 +107,7 @@
 <!-- Features Section -->
 <section class="py-5 bg-light">
   <div class="container">
-    <h2 class="text-center mb-5 fw-bold" style="font-family: 'Manrope';">Top Fitur untuk Anda</h2>
+    <h2 class="text-center mb-5 fw-bold" style="font-family: 'Manrope'; color: red;">Top Fitur untuk Anda</h2>
     
     <div class="row g-4">
       <!-- Feature 1 - Riwayat -->
@@ -246,13 +247,6 @@
         <a href="#" class="btn-daftar" style="font-size: 20px; padding: 12px 24px">Daftar Sekarang</a>
         <a href="#" class="btn-pekerja" style="font-size: 20px; padding: 12px 24px">Cari Pekerja</a>
       </div>
-    </div>
-
-<!-- Footer -->
-<section class="py-5 text-start text-white" style="background-color: #294287">
-  <div class="container d-flex position-relative align-items-center">
-    <!-- Konten Teks -->
-
     </div>
 
 <!-- Login Modal -->

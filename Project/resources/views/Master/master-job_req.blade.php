@@ -73,9 +73,7 @@
 
 
     {{-- Main Section --}}
-    <div class="container-fluid pembatas">
-        @yield('content')
-    </div>
+    @yield('content')
 
     {{-- End Main Section --}}
 

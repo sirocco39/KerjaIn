@@ -1,3 +1,14 @@
+.banner-section { /* Gunakan class spesifik */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  color: white;
+  overflow: hidden; /* Bisa memotong dot yang keluar container */
+  background-color: #294287; 
+  position: relative;
+  height: 500px;
+}
+
 .btn-daftar {
   background-color: #309FFF;
   color: white;
@@ -34,7 +45,7 @@
   height: 4px; /* Tebal garis */
   background-color: white; /* Warna garis */
   margin-top: 30px;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
   border-radius: 2px;
 }
 
@@ -51,31 +62,31 @@
 }
 
 .dot-1 {
-  width: 775px;
-  height: 775px;
+  width: 750px;
+  height: 750px;
   background-color: #309FFF;
-  bottom: 15%;
-  left: 10%;
+  bottom: 30%;
+  left: -40%;
   margin-left: -50%;
   opacity: 0.60;
 }
 
 .dot-2 {
-  width: 190px;
-  height: 190px;
+  width: 170px;
+  height: 170px;
   background-color: #4D00FF;
-  bottom: 60%;
-  right: 120%;
+  bottom: 65%;
+  right: 165%;
   animation-delay: 0.5s;
-  opacity: 0.70;
+  opacity: 0.60;
 }
 
 .dot-3 {
-  width: 500px;
-  height: 500px;
+  width: 700px;
+  height: 700px;
   background-color: #D3FA0D;
-  top: 40%;
-  left: 50%;
+  top: 20%;
+  left: -10%;
   animation-delay: 1.5s;
 }
 
