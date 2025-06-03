@@ -72,7 +72,9 @@
 
 
     {{-- Main Section --}}
-    @yield('content')
+    <div class="pembatas-y">
+        @yield('content')
+    </div>
     {{-- End Main Section --}}
 
 
