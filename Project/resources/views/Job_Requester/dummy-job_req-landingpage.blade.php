@@ -1,7 +1,9 @@
 @extends('Master.master-job_req')
 
 @section('content')
-    Ini Dummy Job Requester Landing Page
+    <div class="container-fluid pembatas">
+        Ini Dummy Job Requester Landing Page
+    </div>
 @endsection
 
 
