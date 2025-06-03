@@ -16,6 +16,18 @@ Route::get('/job-req/tawarkan-kerja', function () {
     return view('Job_Requester.dummy-job_req-tawarkankerja');
 });
 
+Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
+
+Route::post('/postwork', [RequestController::class, 'add']);
+
+Route::get('/request/{request:slug}', function (Request $request) {
+    return view('request', ['workRequest' => $request]);
+});
+
+Route::get('/edit/{request:slug}', function (Request $request) {
+    return view('edit', ['workRequest' => $request]);
+});
+
 Route::get('/job-req/pesan', function () {
     return view('Job_Requester.dummy-job_req-pesan');
 });
@@ -46,17 +58,9 @@ Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
 });
 
-Route::get('/postwork', function () {
-    return view('postwork');
-});
-
-Route::post('/postwork', [RequestController::class, 'add']);
-
-Route::get('/request/{request:slug}', function (Request $request) {
-    return view('request', ['workRequest' => $request]);
-});
-
-
+// Route::get('/postwork', function () {
+//     return view('postwork');
+// });
 
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');

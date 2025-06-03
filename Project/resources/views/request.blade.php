@@ -29,7 +29,9 @@
             <p>Selesai: {{ $workRequest->end_time }} pukul {{ $workRequest->end_time }}</p>
             <!-- other details -->
         </div>
-
+        <a href="{{ url()->previous() }}"><button>Kembali</button></a>
+        <a href="/edit/{{ $workRequest->slug }}"><button>Sunting</button></a>
+        <button>Batal Ajukan</button>
     </main>
     <footer></footer>
 </body>
