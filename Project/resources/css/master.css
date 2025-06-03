@@ -1,17 +1,28 @@
-body{
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Manrope', sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
-.navbar{
-    padding: 0.75vw 0vw;
-    font-weight: 500;
-    border-bottom: 2px solid #294287;
+body {
+    font-family: 'Manrope', sans-serif;
 }
 
 .pembatas {
     padding: 0 7.5vw;
+}
+
+.pembatas-y{
+    padding: 40px 0;
+}
+
+/* Navbar */
+.navbar{
+    padding: 0.75vw 0vw;
+    font-weight: 500;
+    border-bottom: 2px solid #294287;
 }
 
 #navbarCollapse{
@@ -34,6 +45,10 @@ body{
 .nav-link, .navbar-nav .nav-item .dropdown-menu .dropdown-item{
     color: #000000;
     font-size: 1.1rem;
+}
+
+.nav-link, .navbar-nav .nav-item .dropdown-menu{
+    border-radius: 8px;
 }
 
 .nav-link:hover {
@@ -117,29 +132,132 @@ body{
 
 .navbar-nav .nav-item .dropdown-menu .dropdown-item:hover{
     background-color: #D3FA0D;
+    border-radius: 8px;
 }
 
 .navbar-nav .nav-item .dropdown-menu .dropdown-item:active{
     color: #000000;
 }
+/* End Navbar */
+
+/* Footer */
+.footer{
+    background-color: #294287;
+    color: #FFFFFF;
+    margin-top: auto;
+}
+
+.footer .row{
+    /* border: 1px solid red; */
+    margin: 0;
+}
+
+#foot-content{
+    padding: 4vw 0 0vw 0;
+}
+
+#foot-2, #foot-3, #foot-4, #foot-5{
+    padding: 0 3vw 4vw 3vw;
+}
+
+#foot-1{
+    padding: 0 3vw 4vw 0;
+}
+
+#foot-5{
+    padding: 0 0 4vw 3vw;
+}
+
+#logoNavbar-footer{
+    width: 120px;
+    margin-bottom: 1.5vw;
+}
+
+#foot-quotes{
+    text-align: justify;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#foot-email{
+    text-align: justify;
+    line-height: normal;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.75rem !important;
+}
+
+.footer .row .foot-content-detail h4{
+    font-weight: 550;
+    height: 46.79px;
+    margin-bottom: 1.5vw;
+}
+
+.foot-list{
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#foot-copyright{
+    border-top: 1px solid rgba(255, 255, 255, 0.7);
+    padding: 2vw 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.foot-icon{
+    width: 25px;
+}
+
+#list-foot-icon{
+    gap: 2vw;
+}
+/* End Footer */
 
 @media (max-width: 1310px) {
-    .navbar{
-        padding: 2vw 0;
+    .pembatas{
+        padding: 0 20px;
     }
 
-    .pembatas{
-        padding: 0 2vw;
+    .pembatas-y{
+        padding: 20px 0;
     }
+
+    /* Navbar */
+    .navbar{
+        padding: 20px 0;
+    }
+    /* End Navbar */
+
+    /* Footer */
+    #foot-content{
+        padding: 25px 0 0 0;
+    }
+
+    #foot-1{
+        padding: 0 0 25px 0;
+    }
+
+    #foot-2, #foot-3, #foot-4, #foot-5{
+        padding: 0 0 20px 0;
+    }
+
+    #foot-copyright{
+        padding: 10px 0;
+    }
+    /* End Footer */
 }
 
 @media (max-width: 1130px) {
+    /* Navbar */
     #logoNavbar, #dropdownLang{
         margin-right: 5vw;
     }
+    /* End Navbar */
 }
 
 @media (max-width: 992px) {
+    /* Navbar */
     #profileIcon,
     #langFlag {
         width: 25px;
@@ -150,7 +268,7 @@ body{
     #dropdownProfile {
         display: flex;
         align-items: center;
-        gap: 8px; /* Biar spasi antar ikon dan teks konsisten */
+        gap: 8px;
     }
 
     #dropdownLang span,
@@ -161,4 +279,16 @@ body{
     #dropProfile .dropdown-menu{
         margin-bottom: 10px;
     }
+    /* End Navbar */
+
+    /* Footer */
+    .footer .row .foot-content-detail h4{
+        height: fit-content;
+        margin-bottom: 1.5vw;
+    }
+
+    #foot-2, #foot-3, #foot-4, #foot-5{
+        padding: 0 0 20px 0;
+    }
+    /* End Footer */
 }

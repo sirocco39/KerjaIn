@@ -9,7 +9,6 @@
     <title>KerjaIn</title>
     <link rel="icon" href="../Image/Icon/Icon Kerjain.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
 </head>
 
 <body>
@@ -73,15 +72,67 @@
 
 
     {{-- Main Section --}}
-    <div class="container-fluid pembatas">
+    <div class="pembatas-y">
         @yield('content')
     </div>
-
     {{-- End Main Section --}}
 
 
     {{-- Footer --}}
+    <footer class="container-fluid pembatas footer">
+        <div class="row d-flex flex-wrap justify-content-between align-items-start" id="foot-content">
+            <div class="col-md-12 col-lg-3 foot-content-detail" id="foot-1">
+                <a class="navbar-brand" href="/">
+                    <img src="../Image/Logo/Logo Kerjain - DarkBackground.png" alt="Logo Kerjain" id="logoNavbar-footer">
+                </a>
+                <p class="m-0 p-0" id="foot-quotes">
+                    Kami selalu mengusahakan yang terbaik buat pelanggan dan memberikan pelayanan terbaik yang kami bisa.
+                </p>
+            </div>
 
+            <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-2">
+                <h4>Fitur</h4>
+                <div class="list-group gap-2">
+                    <a href="/job-req/beranda" class="foot-list">Beranda</a>
+                    <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
+                    <a href="/job-req/pesan" class="foot-list">Pesan</a>
+                    <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-3">
+                <h4>Penawaran</h4>
+                <div class="list-group gap-2">
+                    <a href="#" class="foot-list">Acara</a>
+                    <a href="#" class="foot-list">Promo</a>
+                    <a href="#" class="foot-list">Ajukan Percobaan</a>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-4">
+                <h4>Bantuan</h4>
+                <div class="list-group gap-2">
+                    <a href="#" class="foot-list">Akun</a>
+                    <a href="#" class="foot-list">Laporkan</a>
+                    <a href="#" class="foot-list">Saran</a>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-auto col-lg-auto foot-content-detail" id="foot-5">
+                <h4>Contact Us</h4>
+                <p class="m-0 p-0" id="foot-email">kerjain@gmail.com</p>
+                <div class="d-flex flex-row" id="list-foot-icon">
+                    <img src="../Image/Icon/icon-instagram.png" alt="Logo Instagram" class="foot-icon">
+                    <img src="../Image/Icon/icon-facebook.png" alt="Logo Facebook" class="foot-icon">
+                    <img src="../Image/Icon/icon-thread.png" alt="Logo Twitter/Thread" class="foot-icon">
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-center" id="foot-copyright">
+            <p class="m-0 p-0" id="text-copyright">Copyright © 2025 Kerjain. All right reserved</p>
+        </div>
+    </footer>
     {{-- End Footer --}}
 </body>
 
