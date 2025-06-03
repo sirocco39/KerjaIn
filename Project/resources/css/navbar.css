@@ -5,9 +5,13 @@ body{
 }
 
 .navbar{
-    padding: 0.75vw 7.5vw;
+    padding: 0.75vw 0vw;
     font-weight: 500;
     border-bottom: 2px solid #294287;
+}
+
+.pembatas {
+    padding: 0 7.5vw;
 }
 
 #navbarCollapse{
@@ -27,7 +31,7 @@ body{
     min-width: 100%;
 }
 
-.nav-link, .dropdown-item{
+.nav-link, .navbar-nav .nav-item .dropdown-menu .dropdown-item{
     color: #000000;
     font-size: 1.1rem;
 }
@@ -41,10 +45,6 @@ body{
     text-decoration: underline 2px;
     text-underline-offset: 0.6vw;
     font-weight: bold;
-}
-
-.dropdown-menu li a {
-    text-decoration: none;
 }
 
 .flag, .navIcon {
@@ -69,13 +69,20 @@ body{
     padding-right: 0;
 }
 
-.dropdown-menu{
+.navbar-nav .nav-item .dropdown-menu{
     padding: 0;
 }
 
-.dropdown-item{
+.navbar-nav .nav-item .dropdown-menu .dropdown-item{
     padding: 10px;
     margin-right: 11px;
+}
+
+#langIcon {
+    transition: transform 0.3s ease;
+}
+.rotate-up {
+    transform: rotate(180deg);
 }
 
 #dropdownLang,
@@ -108,17 +115,21 @@ body{
     line-height: 1;
 }
 
-.dropdown-item:hover{
+.navbar-nav .nav-item .dropdown-menu .dropdown-item:hover{
     background-color: #D3FA0D;
 }
 
-.dropdown-item:active{
+.navbar-nav .nav-item .dropdown-menu .dropdown-item:active{
     color: #000000;
 }
 
 @media (max-width: 1310px) {
     .navbar{
-        padding: 2vw 2vw;
+        padding: 2vw 0;
+    }
+
+    .pembatas{
+        padding: 0 2vw;
     }
 }
 
