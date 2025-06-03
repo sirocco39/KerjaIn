@@ -53,4 +53,3 @@ Route::get('/navbar-job_taker', function () {
 Route::get('/navbar-job_req', function(){
     return view('Master.master-job_req');
 });
-
