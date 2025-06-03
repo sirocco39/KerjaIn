@@ -1,7 +1,9 @@
 @extends('Master.master-job_taker')
 
 @section('content')
-    Ini Dummy Job Taker Pesan
+    <div class="container-fluid pembatas">
+        Ini Dummy Job Taker Pesan
+    </div>
 @endsection
 
 
