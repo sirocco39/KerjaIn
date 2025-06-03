@@ -102,18 +102,18 @@
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-3">
                 <h4>Penawaran</h4>
                 <div class="list-group gap-2">
-                    <a href="" class="foot-list">Acara</a>
-                    <a href="" class="foot-list">Promo</a>
-                    <a href="" class="foot-list">Ajukan Percobaan</a>
+                    <a href="#" class="foot-list">Acara</a>
+                    <a href="#" class="foot-list">Promo</a>
+                    <a href="#" class="foot-list">Ajukan Percobaan</a>
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-4">
                 <h4>Bantuan</h4>
                 <div class="list-group gap-2">
-                    <a href="" class="foot-list">Akun</a>
-                    <a href="" class="foot-list">Laporkan</a>
-                    <a href="" class="foot-list">Saran</a>
+                    <a href="#" class="foot-list">Akun</a>
+                    <a href="#" class="foot-list">Laporkan</a>
+                    <a href="#" class="foot-list">Saran</a>
                 </div>
             </div>
 
