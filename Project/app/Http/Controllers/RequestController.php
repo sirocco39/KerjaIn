@@ -22,7 +22,7 @@ class RequestController extends Controller
             ->take(5)
             ->get();
         // $fiveLatestRequests = Request::latest()->where() take(5)->get();
-        return view('Job_Requester.dummy-job_req-beranda', compact('fiveLatestRequests'));
+        return view('Job_Requester.beranda', compact('fiveLatestRequests'));
     }
 
     /**
