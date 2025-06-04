@@ -14,4 +14,12 @@
             </div>
         </div>
     </div>
+
+    @if (session('showPasswordResetPopup'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                alert('Akun Anda telah dibuat menggunakan Google. Demi keamanan, silakan ganti kata sandi Anda Sandi sementara Anda telah dikirim ke email Anda.');
+            });
+        </script>
+    @endif
 </x-app-layout>

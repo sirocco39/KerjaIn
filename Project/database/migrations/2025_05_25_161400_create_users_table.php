@@ -6,10 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-public function up()
+    public function up()
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->unique();
@@ -21,8 +22,10 @@ public function up()
             $table->float('rating')->default(0);
             $table->integer('job_done')->default(0);
             $table->char('bank_acc_num', 10)->nullable();
+            $table->string('google_id')->nullable()->unique();
             $table->timestamps();
             $table->softDeletes();
+            $table->rememberToken()->nullable();
             $table->boolean('is_blocked')->default(false);
         });
     }

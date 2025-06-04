@@ -79,7 +79,7 @@
             <a href="{{ route('auth-google-redirect') }}"
             class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-3">
-                Daftar dengan Google
+                Masuk dengan Google
             </a>
         </div>
     </form>

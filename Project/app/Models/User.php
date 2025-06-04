@@ -24,6 +24,7 @@ class User extends Authenticatable
         'is_blocked',
         'saldokerjain',
         'bank_acc_num',
+        'google_id',
     ];
 
     protected $attributes = [
@@ -38,13 +39,13 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'google_id',
     ];
 
     protected $casts = [
         'is_worker' => 'boolean',
         'is_blocked' => 'boolean',
-        'saldokerjain' => 'decimal:2',
-        
+        'saldokerjain' => 'decimal:2',   
     ];
 
     public function scopeNonAdmin($query)
