@@ -1,12 +1,12 @@
-@extends('Master.master-job_taker')
+@extends('Master.master-job_req')
 
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
-        Ini Dummy Job Taker Cari Kerja
+        Ini Dummy Job Requester Tawarkan Kerja
     </div>
 
     <div class="container-fluid pembatas-x pembatas-b">
-        Ini Dummy Job Taker Cari Kerja
+        Ini Dummy Job Requester Tawarkan Kerja
     </div>
 @endsection
 
