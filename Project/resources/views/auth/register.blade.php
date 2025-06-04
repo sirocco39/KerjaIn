@@ -39,30 +39,48 @@
 
         <!-- OTP -->
         <div class="mt-4">
-            <x-input-label for="otp" :value="__('OTP (One Time Password)')" />
-            <x-text-input id="otp" class="block mt-1 w-full" type="text" name="otp" maxlength="6" autocomplete="one-time-code" placeholder="Masukkan OTP jika sudah dikirim" />
-            <x-input-error :messages="$errors->get('otp')" class="mt-2" />
-            <div id="otp-message" class="mt-2 text-sm text-green-600 hidden"></div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="mt-4 flex space-x-4">
-            <!-- Send OTP Button -->
-            <button type="button" id="send-otp-button"
-                class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                {{ __('Kirim OTP ke Email') }}
+        <x-input-label for="otp" :value="__('OTP (One Time Password)')" />
+        <div class="flex justify-between items-center mt-1">
+            <x-text-input id="otp" class="flex-shrink max-w-[75%] mr-4" type="text" name="otp" maxlength="6" autocomplete="one-time-code" placeholder="Masukkan OTP disini" />
+            <button type="button" id="send-otp-button" class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 w-40 justify-center">
+            {{ __('Kirim OTP') }}
             </button>
         </div>
+        <x-input-error :messages="$errors->get('otp')" class="mt-2" />
+        <div id="otp-message" class="mt-2 text-sm text-green-600 hidden"></div>
+        </div>
 
-        <!-- Submit -->
-        <div class="flex items-center justify-between mt-4">
+        <!-- Link -->
+        <div class="w-full flex justify-center items-center mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                 {{ __('Sudah punya akun?') }}
             </a>
+        </div>
 
+        <!-- Submit -->
+        <div class="w-full flex justify-center items-center mt-4">
             <x-primary-button class="ms-4">
                 {{ __('Daftar') }}
             </x-primary-button>
+        </div>
+
+        <!-- OR Divider -->
+        <div class="mt-6 relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="bg-white px-2 text-gray-500">atau daftar dengan</span>
+            </div>
+        </div>
+
+        <!-- Google Login Button -->
+        <div class="mt-4 flex justify-center">
+            <a href="{{ route('auth-google-redirect') }}"
+            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-3">
+                Daftar dengan Google
+            </a>
         </div>
     </form>
 
@@ -97,7 +115,7 @@
             })
             .then(data => {
                 showOtpMessage(data.message, true);
-                startCountdown(60); // 60 seconds
+                startCountdown(60);
             })
             .catch(async (error) => {
                 let message = 'Gagal mengirim OTP';
@@ -134,4 +152,100 @@
             }, 1000);
         }
     </script>
+</x-guest-layout>
+<x-guest-layout>
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
+
+        <!-- TOP ROW: Two Columns -->
+        <div class="flex flex-col md:flex-row gap-x-6">
+            <!-- Left Column -->
+            <div class="md:w-1/2">
+                <!-- First Name -->
+                <div>
+                    <x-input-label for="first_name" :value="__('First Name')" />
+                    <x-text-input id="first_name" class="block mt-1 w-full" type="text" name="first_name" :value="old('first_name')" required autofocus autocomplete="given-name" />
+                    <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
+                </div>
+
+                <!-- Last Name -->
+                <div class="mt-4">
+                    <x-input-label for="last_name" :value="__('Last Name')" />
+                    <x-text-input id="last_name" class="block mt-1 w-full" type="text" name="last_name" :value="old('last_name')" required autocomplete="family-name" />
+                    <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
+                </div>
+
+                <!-- Email -->
+                <div class="mt-4">
+                    <x-input-label for="email" :value="__('Email')" />
+                    <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="email" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="md:w-1/2">
+                <!-- Password -->
+                <div>
+                    <x-input-label for="password" :value="__('Password')" />
+                    <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mt-4">
+                    <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                    <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                </div>
+
+                <!-- OTP -->
+                <div class="mt-4">
+                    <x-input-label for="otp" :value="__('OTP (One Time Password)')" />
+                    <div class="flex justify-between items-center mt-1">
+                        <x-text-input id="otp" class="flex-shrink max-w-[75%] mr-4" type="text" name="otp" maxlength="6" autocomplete="one-time-code" placeholder="Masukkan OTP disini" />
+                        <button type="button" id="send-otp-button" class="flex-shrink-0 inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 w-40 justify-center">
+                            {{ __('Kirim OTP') }}
+                        </button>
+                    </div>
+                    <x-input-error :messages="$errors->get('otp')" class="mt-2" />
+                    <div id="otp-message" class="mt-2 text-sm text-green-600 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM ROW: Link + Submit + OR + Google Login -->
+        <div class="w-full flex justify-center items-center mt-4">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+                {{ __('Sudah punya akun?') }}
+            </a>
+        </div>
+
+        <div class="w-full flex justify-center items-center mt-4">
+            <x-primary-button class="ms-4">
+                {{ __('Daftar') }}
+            </x-primary-button>
+        </div>
+
+        <!-- OR Divider -->
+        <div class="mt-6 relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="bg-white px-2 text-gray-500">atau daftar dengan</span>
+            </div>
+        </div>
+
+        <!-- Google Login Button -->
+        <div class="mt-4 flex justify-center">
+            <a href="{{ route('auth-google-redirect') }}"
+            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5 mr-3">
+                Daftar dengan Google
+            </a>
+        </div>
+    </form>
+
+    <!-- Your JavaScript remains unchanged -->
 </x-guest-layout>

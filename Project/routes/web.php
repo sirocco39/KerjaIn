@@ -1,13 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\RegisteredUserController;   // ✅ correct import
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\ProfileController;
 
-Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])
-     ->name('send.otp');                                  // ✅ placed early for clarity
+Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
-require __DIR__.'/auth.php';                              // Breeze routes
+Route::get('/auth-google-redirect', [SocialController::class, 'google_redirect'])->name('auth-google-redirect');
+Route::get('/auth-google-callback', [SocialController::class, 'google_callback'])->name('auth-google-callback');
+
+require __DIR__.'/auth.php';
 
 Route::get('/', fn () => view('welcome'));
 
@@ -20,5 +23,3 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
