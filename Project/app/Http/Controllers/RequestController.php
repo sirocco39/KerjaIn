@@ -176,7 +176,7 @@ class RequestController extends Controller
         $workRequest->status = 'closed'; // Optionally set status to deleted
         $result = $workRequest->save();
         if ($result) {
-            return redirect()->route('requesttt.index')->with('success', 'Request deleted successfully.');
+            return redirect()->to('/job-req/beranda');
         } else {
             return back()->withErrors(['error' => 'Failed to delete request.']);
         }
