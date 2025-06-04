@@ -22,7 +22,7 @@ class RequestController extends Controller
             ->take(5)
             ->get();
         // $fiveLatestRequests = Request::latest()->where() take(5)->get();
-        return view('Job_Requester.dummy-job_req-beranda', ['requests' => $fiveLatestRequests]);
+        return view('Job_Requester.dummy-job_req-beranda', compact('fiveLatestRequests'));
     }
 
     /**
@@ -31,7 +31,7 @@ class RequestController extends Controller
     public function create()
     {
         // Show the form for creating a new request
-        return view('Job_Requester.dummy-job_req-tawarkankerja');
+        return view('Job_Requester.postwork');
     }
 
     /**
@@ -102,7 +102,7 @@ class RequestController extends Controller
             abort(404, 'Request is not open.');
         }
 
-        return view('request', compact('workRequest'));
+        return view('Job_Requester.request', compact('workRequest'));
     }
 
     /**
@@ -119,7 +119,7 @@ class RequestController extends Controller
         }
 
         // Return the edit view with the request data
-        return view('edit', compact('workRequest'));
+        return view('Job_Requester.edit', compact('workRequest'));
     }
 
     /**

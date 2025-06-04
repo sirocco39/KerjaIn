@@ -11,7 +11,13 @@ Route::get('/', function () {
 Route::resource('requesttt', RequestController::class);
 
 Route::get('/job-req/beranda', function () {
-    return view('Job_Requester.dummy-job_req-beranda');
+    //get five latest open requests and deleted_at is null
+    $fiveLatestRequests = Request::whereNull('deleted_at')
+        ->where('status', 'open')
+        ->latest()
+        ->take(5)
+        ->get();
+    return view('Job_Requester.beranda', compact('fiveLatestRequests'));
 });
 
 Route::get('/job-req/tawarkan-kerja', function () {
