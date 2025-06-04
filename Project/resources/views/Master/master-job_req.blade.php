@@ -14,7 +14,7 @@
 <body>
     {{-- Navbar Section --}}
     <nav class="navbar navbar-expand-lg bg-light">
-        <div class="container-fluid pembatas">
+        <div class="container-fluid pembatas-x">
             <a class="navbar-brand" href="/">
                 <img src="../Image/Logo/Logo Kerjain - LightBackground.png" alt="Logo Kerjain" id="logoNavbar">
             </a>
@@ -70,14 +70,12 @@
 
 
     {{-- Main Section --}}
-    <div class="pembatas-y">
-        @yield('content')
-    </div>
+    @yield('content')
     {{-- End Main Section --}}
 
 
     {{-- Footer --}}
-    <footer class="container-fluid pembatas footer">
+    <footer class="container-fluid pembatas-x footer">
         <div class="row d-flex flex-wrap justify-content-between align-items-start" id="foot-content">
             <div class="col-md-12 col-lg-3 foot-content-detail" id="foot-1">
                 <a class="navbar-brand" href="/">

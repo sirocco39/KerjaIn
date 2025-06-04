@@ -10,12 +10,23 @@ body {
     font-family: 'Manrope', sans-serif;
 }
 
-.pembatas {
-    padding: 0 7.5vw;
+.pembatas-x{
+    padding-right: 7.5vw;
+    padding-left: 7.5vw;
+    border: 1px solid red;
+}
+
+.pembatas-a{
+    padding-top: 40px;
+}
+
+.pembatas-b{
+    padding-bottom: 40px;
 }
 
 .pembatas-y{
-    padding: 40px 0;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 /* Navbar */
@@ -215,12 +226,22 @@ body {
 /* End Footer */
 
 @media (max-width: 1310px) {
-    .pembatas{
-        padding: 0 20px;
+    .pembatas-x{
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .pembatas-a{
+        padding-top: 20px;
+    }
+
+    .pembatas-b{
+        padding-bottom: 20px;
     }
 
     .pembatas-y{
-        padding: 20px 0;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     /* Navbar */
@@ -290,5 +311,5 @@ body {
     #foot-2, #foot-3, #foot-4, #foot-5{
         padding: 0 0 20px 0;
     }
-    /* End Footer */
+    /* End Footer */
 }
