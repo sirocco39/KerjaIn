@@ -8,6 +8,8 @@ Route::get('/', function () {
     return view('Job_Requester.dummy-job_req-landingpage');
 });
 
+Route::resource('requesttt', RequestController::class);
+
 Route::get('/job-req/beranda', function () {
     return view('Job_Requester.dummy-job_req-beranda');
 });

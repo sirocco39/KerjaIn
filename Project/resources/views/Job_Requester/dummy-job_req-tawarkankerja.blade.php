@@ -2,7 +2,7 @@
 
 @section('content')
 Ini Dummy Job Requester Tawarkan Kerja
-<form action="tawarkan-kerja" method="post">
+<form action="{{route('requesttt.store')}}" method="post">
     @csrf
     <div class="work-title">
         <label for="work-title-label">Judul Pekerjaan</label>
