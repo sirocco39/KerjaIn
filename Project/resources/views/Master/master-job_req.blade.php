@@ -57,7 +57,7 @@
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-login.svg" alt="Icon Login" class="navIcon">Masuk</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/"><img src="../Image/Icon/icon-login.svg" alt="Icon Login" class="navIcon">Masuk</a></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-logout.svg" alt="Icon Login" class="navIcon">Keluar</a></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="../Image/Icon/icon-join.svg" alt="Icon Login" class="navIcon">Menjadi Mitra</a></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job_taker"><img src="../Image/Icon/icon-change-role.svg" alt="Icon Login" class="navIcon">Ganti Peran</a></li>

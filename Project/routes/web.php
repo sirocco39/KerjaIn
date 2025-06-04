@@ -11,7 +11,7 @@ Route::get('/job-req/beranda', function(){
 });
 
 Route::get('/job-req/tawarkan-kerja', function(){
-    return view('Job_Requester.dummy-job_req-tawarkankerja');
+    return view('Job_Requester.Tawarkankerja');
 });
 
 Route::get('/job-req/pesan', function(){
