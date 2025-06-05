@@ -1,43 +1,74 @@
-@extends('layouts.app') <!-- Jika kamu pakai layout, atau bisa hapus ini -->
+@extends('Master.master-job_req') 
 
 @section('content')
-<div class="container">
-    <div class="form-container">
-        <div class="form-left">
-            <h1>Buat tawaran kerja</h1>
-            <p>Yuk, mulai! Isi detail pekerjaan agar mitra kami bisa segera membantumu.</p>
-            
-            <form>
-                <label for="judul">Judul Pekerjaan</label>
-                <input type="text" id="judul" placeholder="Contoh: Masangin AC Ruang Tamu">
 
-                <label for="detail">Detail Pekerjaan</label>
-                <textarea id="detail" placeholder="Contoh: Pasang AC 1 PK di ruang tamu bagian atas korden"></textarea>
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      
+      <!-- Kiri: Form -->
+      <div class="col-lg-6">
+        <h2 class="fw-bold mb-2">Buat tawaran kerja</h2>
+        <p class="mb-4">Yuk, mulai! Isi detail pekerjaan agar mitra kami bisa segera membantumu.</p>
 
-                <label for="alamat">Alamat</label>
-                <input type="text" id="alamat" placeholder="Contoh: Jalan Pakuan No 3, Sentul">
+        <form>
+          <!-- Judul Pekerjaan -->
+          <div class="mb-3">
+            <label for="judul" class="form-label fw-semibold">Judul Pekerjaan</label>
+            <input type="text" class="form-control rounded-3" id="judul" placeholder="Contoh: Masangin AC Ruang Tamu">
+          </div>
 
-                <label for="tanggal">Tanggal</label>
-                <input type="date" id="tanggal" value="2025-05-09">
+          <!-- Detail Pekerjaan -->
+          <div class="mb-3">
+            <label for="detail" class="form-label fw-semibold">Detail Pekerjaan</label>
+            <textarea class="form-control rounded-3" id="detail" rows="3" placeholder="Contoh: Pasang AC 1 PK di ruang tamu bagian atas korden"></textarea>
+          </div>
 
-                <label for="waktu">Waktu</label>
-                <div class="waktu">
-                    <input type="time" id="start-time" value="09:09"> –
-                    <input type="time" id="end-time" value="09:09">
-                </div>
+          <!-- Alamat -->
+          <div class="mb-3">
+            <label for="alamat" class="form-label fw-semibold">Alamat</label>
+            <input type="text" class="form-control rounded-3" id="alamat" placeholder="Contoh: Jalan Pakuan No 3, Sentul">
+          </div>
 
-                <label for="biaya">Biaya Jasa</label>
-                <input type="text" id="biaya" placeholder="Contoh: 150.000">
+          <!-- Tanggal -->
+          <div class="mb-3">
+            <label for="tanggal" class="form-label fw-semibold">Tanggal</label>
+            <input type="date" class="form-control rounded-3" id="tanggal">
+          </div>
 
-                <button type="submit">Buat Tawaran Kerja</button>
-            </form>
-        </div>
+          <!-- Waktu -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Waktu</label>
+            <div class="d-flex gap-2">
+              <input type="time" class="form-control rounded-3" />
+              <span class="align-self-center">–</span>
+              <input type="time" class="form-control rounded-3" />
+            </div>
+          </div>
 
-        <div class="form-right">
-            <img src="{{ asset('images/pekerja-ilustrasi.png') }}" alt="Ilustrasi Pekerja">
-        </div>
+          <!-- Biaya Jasa -->
+          <div class="mb-4">
+            <label for="biaya" class="form-label fw-semibold">Biaya Jasa</label>
+            <div class="input-group">
+              <span class="input-group-text rounded-start-3">Rp</span>
+              <input type="text" class="form-control rounded-end-3" id="biaya" placeholder="Contoh: 150.000">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary px-4 py-2 rounded-3">Buat Tawaran Kerja</button>
+        </form>
+      </div>
+
+      <!-- Kanan: Ilustrasi -->
+      <div class="col-lg-6 text-center mt-5 mt-lg-0">
+        <img src="{{ asset('Image/orang/Merah dan Pink Ilustrasi Mochi Logo (12) 1.png') }}" alt="Ilustrasi Orang" class="img-fluid" style="max-height: 400px;">
+      </div>
+
     </div>
-</div>
+  </div>
+</section>
+
+
 @endsection
 
 
