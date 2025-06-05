@@ -6,6 +6,7 @@
   color: white;
   overflow: hidden; /* Bisa memotong dot yang keluar container */
   background-color: #294287; 
+  background-size: cover;
   position: relative;
   height: 500px;
 }
