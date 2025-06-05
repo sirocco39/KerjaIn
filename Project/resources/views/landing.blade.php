@@ -19,9 +19,9 @@
 <!-- Banner Section -->
 <section class="banner-section">
    <div class="container-fluid p-0">
-    <div class="d-flex position-relative align-items-center" style="z-index: 1; min-height: 500px;">
+    <div class="d-flex position-relative align-items-center" style="min-height: 500px;">
     <!-- Konten Teks -->
-    <div class="text-content pe-5" style="transform: translate(120px, -20px); position: relative; z-index: 3;">
+    <div class="text-content pe-5" style="transform: translate(110px, 5px); position: relative; z-index: 3;">
       <h1 class="display-4 fw-bold mb-3" style="font-family: 'Manrope'; white-space: nowrap">Mau segala sesuatu selesai ?</h1>
       <h1 class="display-4 fw-bold mb-3" style="margin-left: 4px">Yuk, <span style="color: #D3FA0D">Kerja</span><span style="background-color: #309FFF; color: white; padding: 1px 8px; border-radius: 0.5rem;">In</span>!</h2>
       <p class="mt-5 fs-6" style="font-family: 'Inter'; display: grid; grid-template-columns: 2fr 1fr">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
@@ -240,61 +240,13 @@
 </section>
 
 <!-- Tombol hijau biru -->
-<section class="py-5">
   <div class="container d-flex position-relative align-items-center" style="z-index: 1;">
     <!-- Konten Teks -->
-    <div class="text-content pe-5" style="transform: translateX(-100px); margin-bottom: 3%">
+    <div class="text-content pe-5" style="transform: translateX(15px); margin-bottom: 3%">
         <a href="#" class="btn-daftar" style="font-size: 20px; padding: 12px 24px">Daftar Sekarang</a>
         <a href="#" class="btn-pekerja" style="font-size: 20px; padding: 12px 24px">Cari Pekerja</a>
       </div>
     </div>
-
-<!-- Login Modal -->
-<div id="loginModal" class="login-box">
-    <form action="">
-        <h2>Login</h2>
-        <div class="input-box">
-            <span class="icon"><ion-icon name="mail"></ion-icon></span>
-            <input type="email" required>
-            <label>Email</label>
-        </div>
-        <div class="input-box">
-            <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
-            <input type="password" required>
-            <label>Password</label>
-        </div>
-        <div class="remember-forgot">
-            <label><input type="checkbox"> Remember me</label>
-            <a href="#">Forgot Password?</a>
-        </div>
-        <button type="submit">Login</button>
-        <p class="register-link">Belum punya akun? <a href="#">Register</a></p>
-
-    </form>
-</div>
-
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-
-<!-- Register Modal -->
-<div id="registerModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-[350px]">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold">Register</h2>
-            <button onclick="closeRegister()" class="text-gray-500 hover:text-black">✕</button>
-        </div>
-        <input type="text" placeholder="Name" class="w-full mb-2 border p-2 rounded">
-        <input type="email" placeholder="Email" class="w-full mb-2 border p-2 rounded">
-        <input type="password" placeholder="Password" class="w-full mb-4 border p-2 rounded">
-        <button class="bg-green-500 text-white px-4 py-2 rounded w-full">Register</button>
-        <p class="text-sm mt-3 text-center">Already have an account? <a href="#" onclick="openLogin()" class="text-blue-600 font-semibold">Login</a></p>
-    </div>
-</div>
-
-<!-- menghubungkan js -->
-<script src="{{ asset('js/login.js') }}"></script>
-<script src="{{ asset('js/register.js') }}"></script>
 
 
 @endsection

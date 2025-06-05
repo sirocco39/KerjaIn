@@ -2,6 +2,7 @@
   width: 100%;
   margin: 0;
   padding: 0;
+  padding-bottom: 500px; /* Tambahkan padding bawah untuk ruang konten */
   color: white;
   overflow: hidden; /* Bisa memotong dot yang keluar container */
   background-color: #294287; 
@@ -65,7 +66,7 @@
   width: 750px;
   height: 750px;
   background-color: #309FFF;
-  bottom: 30%;
+  bottom: 20%;
   left: -40%;
   margin-left: -50%;
   opacity: 0.60;
@@ -85,7 +86,7 @@
   width: 700px;
   height: 700px;
   background-color: #D3FA0D;
-  top: 20%;
+  top: 30%;
   left: -10%;
   animation-delay: 1.5s;
 }

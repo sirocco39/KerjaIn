@@ -140,7 +140,53 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body">
-                    Ini Pop Up Login
+                   <form>
+                    <h1 style="margin-left: 200px; margin-bottom: 25px; font-family: 'Manrope'; font-size: 25px">Login</h1>
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+    <input type="email" id="form2Example1" class="form-control" />
+    <label class="form-label" for="form2Example1">Email address</label>
+  </div>
+
+  <!-- Password input -->
+  <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+    <input type="password" id="form2Example2" class="form-control" />
+    <label class="form-label" for="form2Example2">Password</label>
+  </div>
+
+  <!-- 2 column grid layout for inline styling -->
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-center">
+      <!-- Checkbox -->
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+        <label class="form-check-label" for="form2Example31"> Remember me </label>
+      </div>
+    </div>
+
+    <div class="col">
+      <!-- Simple link -->
+      <a href="#!" style="margin-left: 60px">Lupa kata sandi?</a>
+    </div>
+  </div>
+
+  <!-- Submit button -->
+  <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" style="padding: 10px 170px; margin-left: 9%">Login</button>
+
+  <!-- Register buttons -->
+  <div class="text-center">
+    <p>Belum punya akun? <a href="#!">Daftar</a></p>
+    <p>Atau masuk dengan:</p>
+    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
+      <i class="fab fa-facebook-f"></i>
+    </button>
+
+    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
+      <i class="fab fa-google"></i>
+    </button>
+
+  </div>
+</form>
                 </div>
             </div>
         </div>
@@ -156,7 +202,48 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body">
-                    Ini Pop Up Logout
+                    <form>
+                    <h1 style="margin-left: 200px; margin-bottom: 25px; font-family: 'Manrope'; font-size: 25px">Daftar</h1>
+  <!-- Nama Lengkap input -->
+  <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+    <input type="email" id="form2Example1" class="form-control" />
+    <label class="form-label" for="form2Example1">Nama Lengkap</label>
+  </div>
+
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+    <input type="password" id="form2Example2" class="form-control" />
+    <label class="form-label" for="form2Example2">Email</label>
+  </div>
+
+  <!-- Password input -->
+  <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+    <input type="password" id="form2Example2" class="form-control" />
+    <label class="form-label" for="form2Example2">Password</label>
+  </div>
+
+  <!-- Konfirmasi Password input -->
+  <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+    <input type="password" id="form2Example2" class="form-control" />
+    <label class="form-label" for="form2Example2">Konfirmasi Password</label>
+  </div>
+
+  <!-- Submit button -->
+  <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" style="padding: 10px 170px; margin-left: 9%">Daftar</button>
+
+  <!-- Daftar buttons -->
+  <div class="text-center">
+    <p>Atau daftar dengan:</p>
+    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
+      <i class="fab fa-facebook-f"></i>
+    </button>
+
+    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-link btn-floating mx-1">
+      <i class="fab fa-google"></i>
+    </button>
+
+  </div>
+</form>
                 </div>
             </div>
         </div>
