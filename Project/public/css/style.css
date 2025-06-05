@@ -43,7 +43,7 @@
 }
 
 .garis-tengah {
-  width: 150px; /* Panjang garis */
+  width: 120px; /* Panjang garis */
   height: 4px; /* Tebal garis */
   background-color: white; /* Warna garis */
   margin-top: 30px;

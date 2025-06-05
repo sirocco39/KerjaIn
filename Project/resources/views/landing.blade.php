@@ -27,8 +27,7 @@
       <p class="mt-5 fs-6" style="font-family: 'Inter'; display: grid; grid-template-columns: 2fr 1fr">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
       <div class="mt-5">
         <div class="garis-tengah"></div>
-        <a href="#" class="btn-daftar" style="font-size: 18px">Daftar Sekarang</a>
-        <a href="#" class="btn-pekerja" style="font-size: 18px">Cari Pekerja</a>
+        <a href="#" class="btn-pekerja" style="font-size: 18px">Daftar Sekarang</a>
       </div>
     </div>
     
@@ -238,15 +237,5 @@
     </div>
   </div>
 </section>
-
-<!-- Tombol hijau biru -->
-  <div class="container d-flex position-relative align-items-center" style="z-index: 1;">
-    <!-- Konten Teks -->
-    <div class="text-content pe-5" style="transform: translateX(15px); margin-bottom: 3%">
-        <a href="#" class="btn-daftar" style="font-size: 20px; padding: 12px 24px">Daftar Sekarang</a>
-        <a href="#" class="btn-pekerja" style="font-size: 20px; padding: 12px 24px">Cari Pekerja</a>
-      </div>
-    </div>
-
 
 @endsection
