@@ -110,7 +110,7 @@
 <!-- Features Section -->
 <section class="py-5 bg-light">
   <div class="container">
-    <h2 class="text-center mb-5 fw-bold" style="font-family: 'Manrope'; color: red;">Top Fitur untuk Anda</h2>
+    <h2 class="text-center mb-5 fw-bold" style="font-family: 'Manrope'; color: black;">Top Fitur untuk Anda</h2>
     
     <div class="row g-4">
       <!-- Feature 1 - Riwayat -->
