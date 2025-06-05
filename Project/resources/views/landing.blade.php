@@ -18,27 +18,31 @@
 
 <!-- Banner Section -->
 <section class="banner-section">
-   <div class="container-fluid p-0">
-    <div class="d-flex position-relative align-items-center" style="min-height: 500px;">
-    <!-- Konten Teks -->
-    <div class="text-content pe-5" style="transform: translate(110px, 5px); position: relative; z-index: 3;">
-      <h1 class="display-4 fw-bold mb-3" style="font-family: 'Manrope'; white-space: nowrap">Mau segala sesuatu selesai ?</h1>
-      <h1 class="display-4 fw-bold mb-3" style="margin-left: 4px">Yuk, <span style="color: #D3FA0D">Kerja</span><span style="background-color: #309FFF; color: white; padding: 1px 8px; border-radius: 0.5rem;">In</span>!</h2>
-      <p class="mt-5 fs-6" style="font-family: 'Inter'; display: grid; grid-template-columns: 2fr 1fr">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
-      <div class="mt-5">
-        <div class="garis-tengah"></div>
-        <a href="#" class="btn-pekerja" style="font-size: 18px">Daftar Sekarang</a>
+  <div class="container-fluid p-0">
+    <div class="d-flex flex-wrap flex-lg-nowrap position-relative align-items-center px-3" style="min-height: 500px;">
+      
+      <!-- Konten Teks -->
+      <div class="text-content custom-translate mb-5">
+        <h1 class="display-5 fw-bold mb-3" style="font-family: 'Manrope';">Mau segala sesuatu selesai?</h1>
+        <h1 class="display-5 fw-bold mb-3" style="margin-left: 4px">Yuk, <span style="color: #D3FA0D">Kerja</span><span style="background-color: #309FFF; color: white; padding: 1px 8px; border-radius: 0.5rem;">In</span>!</h1>
+        <p class="mt-4 fs-6" style="font-family: 'Inter';">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
+        <div class="mt-4">
+          <div class="garis-tengah"></div>
+          <a href="#" class="btn-pekerja" style="font-size: 18px">Daftar Sekarang</a>
+        </div>
       </div>
-    </div>
-    
-    <!-- Bulat-bulat Warna-warni - DIPINDAHKAN KE LUAR text-content -->
-    <div class="color-dots" style="width: 300px; min-width: 300px; position: relative; height: 400px; z-index: 1;">
-      <div class="dot dot-1"></div>
-      <div class="dot dot-2"></div>
-      <div class="dot dot-3" style="z-index: ;"></div>
+
+      <!-- Bulat-bulat Warna-warni -->
+      <div class="color-dots" style="width: 300px; min-width: 300px; position: relative; height: 400px; z-index: 1;">
+        <div class="dot dot-1"></div>
+        <div class="dot dot-2"></div>
+        <div class="dot dot-3"></div>
+      </div>
+
     </div>
   </div>
 </section>
+
 
 
 <!-- Info Section -->
@@ -170,19 +174,19 @@
         
         <div class="d-flex flex-column flex-md-row justify-content-center gap-4 mb-5">
           <!-- Step 1 -->
-          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 300px;">
+          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 500px;">
             <h3 class="h4 fw-bold mb-3">Daftar akun</h3>
             <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
           </div>
           
           <!-- Step 2 -->
-          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 300px;">
+          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 500px;">
             <h3 class="h4 fw-bold mb-3">Daftar akun</h3>
             <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
           </div>
           
           <!-- Step 3 -->
-          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 300px;">
+          <div class="workflow-step p-4 rounded-3" style="background-color: #f8f9fa; max-width: 500px;">
             <h3 class="h4 fw-bold mb-3">Daftar akun</h3>
             <p class="mb-0">Pilih peranmu sebagai Pemberi Kerja atau Pekerja Lepas (Serabutan).</p>
           </div>
@@ -237,5 +241,6 @@
     </div>
   </div>
 </section>
+
 
 @endsection
