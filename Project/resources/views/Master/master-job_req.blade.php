@@ -13,7 +13,7 @@
 
 <body>
     {{-- Navbar Section --}}
-    <nav class="navbar navbar-expand-lg bg-light">
+    <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
             <a class="navbar-brand" href="/">
                 <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain" id="logoNavbar">
@@ -70,7 +70,9 @@
 
 
     {{-- Main Section --}}
-    @yield('content')
+    <main class="main-content">
+        @yield('content')
+    </main>
     {{-- End Main Section --}}
 
 
