@@ -33,9 +33,9 @@ Route::get('/joinn', function () {
     return view('joinWorker.joinn');
 });
 
-// Route::get('/', function () {
-//     return redirect()->route('worker.register.step1');
-// });
+Route::get('/joinworker', function () {
+    return redirect()->route('worker.register.step1');
+});
 
 // Grup route untuk pendaftaran pekerja tanpa autentikasi
 Route::prefix('joinWorker')->name('worker.register.')->group(function () {

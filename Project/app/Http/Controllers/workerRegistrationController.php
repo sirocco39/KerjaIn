@@ -21,7 +21,7 @@ class WorkerRegistrationController extends Controller
     {
         // Ambil data dari session jika ada, untuk mengisi ulang form
         $data = Session::get('worker_registration.step1', []);
-        return view('joinWorker.join', compact('data'));
+        return view('joinWorker.joinn', compact('data'));
     }
 
     public function store1(Request $request)
@@ -29,7 +29,6 @@ class WorkerRegistrationController extends Controller
         // Validate input data
         $this->validate($request, [
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
             'nik' => [
                 'required',
                 'string',
@@ -38,20 +37,31 @@ class WorkerRegistrationController extends Controller
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
-            'birthdate' => 'required|date_format:d/m/Y|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
-            'gender' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
+            'birthdate' => 'required|date|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
+            'gender' => 'required|in:Male,Female',
             'address' => 'required|string|max:255',
             'phone_number' => [
                 'required',
                 'string',
-                'regex:/^(\+62|62|0)[0-9]{9,12}$/',
+                'regex:/^(08)[0-9]{9,11}$/',
                 Rule::unique('verification_requests', 'phone_number')->where(function ($query) {
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
+        ],[
+            'first_name.required' => 'Nama depan tidak boleh kosong.',
+            'address.required' => 'Alamat tidak boleh kosong.',
+            'gender.required' => 'Jenis kelamin tidak boleh kosong.',
+            'nik.required' => 'NIK tidak boleh kosong.',
+            'nik.digits' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'phone_number.required' => 'Nomor telepon tidak boleh kosong.',
+            'birthdate.before_or_equal' => 'Usia harus minimal 17 tahun.',
+            'phone_number.regex' => 'Masukkan nomor telepon yang valid dengan format 08XXXXXXXXXX.',
+            'phone_number.unique' => 'Nomor telepon sudah terdaftar.',
+
         ]);
 
-        $formattedBirthdate = Carbon::createFromFormat('d/m/Y', $request->birthdate)->format('Y-m-d');
 
         // Simpan data langkah 1 ke sesi
         Session::put('worker_registration.step1', [
@@ -59,7 +69,7 @@ class WorkerRegistrationController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'nik' => $request->nik,
-            'birthdate' => $formattedBirthdate,
+            'birthdate' => $request->birthdate,
             'gender' => $request->gender, // Simpan format mentah 'Laki-laki'/'Perempuan'
             'address' => $request->address,
             'phone_number' => $request->phone_number,

@@ -1,0 +1,79 @@
+.hero-banner {
+  min-height: 384px;
+  background-image: url('/images/bgBuletBulet.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: "Manrope", sans-serif;
+}
+
+.form-float {
+  position: relative;
+  top: -200px;
+  z-index: 10
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    min-height: 200px;
+  }
+
+  .form-float {
+    position: relative;
+    top: -50px;
+    z-index: 10
+  }
+}
+
+
+.stepper {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.stepper-text {
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  padding-right: 2.25rem;
+  padding-left: 2.25rem;
+  font-weight: 600;
+  font-family: "Manrope", sans-serif;
+}
+
+.step {
+  width: 36px;
+}
+
+.circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #ccc;
+  color: white;
+  line-height: 36px;
+  font-weight: bold;
+}
+
+.circle.active {
+  background-color: #294287;
+  /* warna aktif */
+  color: white !important;
+  text-decoration: none;
+}
+
+.line {
+  height: 2px;
+  flex-grow: 1;
+}
+
+.manrope {
+  font-family: "Manrope", sans-serif;
+}
+
+.inter {
+  font-family: "Inter", sans-serif;
+}
+
+.fs-5x {
+  font-size: 1.125rem;
+}

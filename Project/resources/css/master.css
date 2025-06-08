@@ -6,10 +6,6 @@ html, body {
     flex-direction: column;
 }
 
-body {
-    font-family: 'Manrope', sans-serif;
-}
-
 .pembatas-x{
     padding-right: 7.5vw;
     padding-left: 7.5vw;
