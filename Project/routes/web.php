@@ -49,6 +49,9 @@ Route::get('/job_taker', function () {
 Route::get('/joinn', function () {
     return view('joinWorker.joinn');
 });
+Route::get('/joinn2', function () {
+    return view('joinWorker.joinn2');
+});
 
 Route::get('/joinworker', function () {
     return redirect()->route('worker.register.step1');

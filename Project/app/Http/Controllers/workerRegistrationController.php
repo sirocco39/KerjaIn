@@ -48,7 +48,7 @@ class WorkerRegistrationController extends Controller
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
-        ],[
+        ], [
             'first_name.required' => 'Nama depan tidak boleh kosong.',
             'address.required' => 'Alamat tidak boleh kosong.',
             'gender.required' => 'Jenis kelamin tidak boleh kosong.',
@@ -84,7 +84,7 @@ class WorkerRegistrationController extends Controller
         if (!Session::has('worker_registration.step1')) {
             return redirect()->route('worker.register.step1')->with('error', 'Silakan lengkapi Data Pribadi terlebih dahulu.');
         }
-        return view('joinWorker.join2');
+        return view('joinWorker.joinn2');
     }
 
     public function store2(Request $request)
@@ -94,11 +94,12 @@ class WorkerRegistrationController extends Controller
         }
 
         // Validasi untuk agree_terms tetap dipertahankan karena ada 'required' di HTML
-        $this->validate($request, [
-            'agree_terms' => 'required|accepted',
+        $request->validate([
+            'agree_terms' => 'accepted',
+            'agree_data_usage' => 'accepted',
         ], [
-            'agree_terms.required' => 'Anda harus menyetujui Syarat dan Ketentuan KerjaIn.',
-            'agree_terms.accepted' => 'Anda harus menyetujui Syarat dan Ketentuan KerjaIn.',
+            'agree_terms.accepted' => 'Anda harus menyetujui Syarat dan Ketentuan.',
+            'agree_data_usage.accepted' => 'Anda harus menyetujui penggunaan data untuk verifikasi dan keamanan.',
         ]);
 
         Session::put('worker_registration.step2', ['completed' => true]);
@@ -120,7 +121,7 @@ class WorkerRegistrationController extends Controller
             $step3Data
         );
 
-        return view('joinWorker.join3', compact('allData', 'step3Data'));
+        return view('joinWorker.joinn3', compact('allData', 'step3Data'));
     }
 
     public function finalizeRegistration(Request $request)
@@ -144,7 +145,7 @@ class WorkerRegistrationController extends Controller
             'id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:122880',
             'selfie_with_id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:122880',
             'account_name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:255',
+            'account_number' => 'required|string|max:10',
         ], [
             'photo_url.required' => 'Foto Diri wajib diunggah.',
             'photo_url.image' => 'File harus berupa gambar.',
@@ -167,7 +168,7 @@ class WorkerRegistrationController extends Controller
 
             'account_number.required' => 'Nomor Rekening wajib diisi.',
             'account_number.string' => 'Nomor Rekening harus berupa teks.',
-            'account_number.max' => 'Nomor Rekening tidak boleh lebih dari 255 karakter.',
+            'account_number.max' => 'Nomor Rekening tidak boleh lebih dari 10 karakter.',
         ]);
 
         // Path penyimpanan untuk file yang diunggah
