@@ -22,17 +22,18 @@ class VerificationRequestSeeder extends Seeder
                 'user_id' => $user->id,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'account_name' => $user->first_name . ' ' . $user->last_name,
+                'account_number' => fake()->numerify(str_repeat('#', 10)),
                 'status' => fake()->randomElement(['pending', 'rejected']),
             ]);
         }
-        $workers = User::worker()->get()->random(10);
-        foreach ($workers as $user) {
             VerificationRequest::factory()->create([
                 'user_id' => $user->id,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'account_name' => $user->first_name . ' ' . $user->last_name,
+                'account_number' => fake()->numerify(str_repeat('#', 10)),
                 'status' => 'approved',
             ]);
-        }
     }
 }

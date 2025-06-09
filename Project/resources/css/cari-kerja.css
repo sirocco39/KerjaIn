@@ -1,0 +1,244 @@
+.job-listings{
+    height: 90vh;
+    overflow-y: auto;
+}
+
+.job-listings::-webkit-scrollbar {
+  display: none;
+}
+
+.job-card{
+    background-color: #ffffff;
+    border-radius: 35px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+}
+
+.job-card:hover{
+    cursor: pointer;
+    border: 2px solid #294287;
+}
+
+.job-card.choosed{
+    cursor: default;
+    border: 4px solid #294287;
+}
+
+.job-card-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-card-details li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.icon-wrapper{
+    width: 22px;
+    display: flex;
+    justify-content: center;
+}
+
+.job-card-details li img {
+    height: 20px;
+    display: block;
+}
+
+.job-card-details{
+    position: relative;
+}
+
+.detail-button{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 6px 12px;
+    border-radius: 50px;
+    border: none;
+    background-color: #309FFF;
+    color: #F7F7FF;
+    font-weight: bold;
+    z-index: 9;
+}
+
+.detail-button:hover{
+    background-color: #5CB3FF;
+}
+
+.job-details-placeholder{
+    background-color: #ffffff;
+    border-radius: 35px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    height: 90vh;
+}
+
+.left-arrow{
+    width: 20px;
+    margin-right: 15px;
+}
+
+.img-job-detail-placeholder{
+    height: 100%;
+}
+
+.job-card-details-content{
+    border: 1px solid blue;
+}
+
+#detail-instruction{
+    margin-left: 35px;
+}
+
+.placeholder-img{
+    width: 20vw;
+}
+
+#detail-description-text{
+    text-align: justify;
+}
+
+.detail-buttons-placeholder{
+    margin-top: auto;
+}
+
+.details-button-item{
+    padding: 6px 12px;
+    border-radius: 50px;
+    border: none;
+    background-color: #294287;
+    color: #F7F7FF;
+    font-weight: bold;
+}
+
+#button-tawar:hover, .btn-tawar-modal:hover, #button-hubungi:hover, .btn-hubungi-modal:hover{
+    background-color: #2E52B3;
+}
+
+#button-terima, .btn-terima-modal{
+    background-color: #309FFF !important;
+}
+
+#button-terima:hover, .btn-terima-modal:hover{
+    background-color: #5CB3FF !important;
+}
+
+.pagination{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-nav{
+    display: flex;
+    align-items: center;
+    gap: 8px; /* jarak antara ikon dan teks */
+    color: #294287;
+    text-decoration: none;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.pagination-nav:hover{
+    filter: brightness(0) saturate(100%) invert(29%) sepia(12%) saturate(4547%) hue-rotate(191deg) brightness(109%) contrast(102%);
+}
+
+.pagination-icon{
+    height: 20px;
+}
+
+#prev-page{
+    left: 0;
+}
+
+#next-page{
+    right: 0;
+}
+
+.page-number{
+    width: 40px;
+    height: 40px;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.page-number:hover{
+    background-color: rgba(48, 159, 255, 0.1);
+}
+
+.item-active{
+    color: #F7F7FF;
+    font-weight: bold;
+    background-color: #309FFF;
+}
+
+.item-active:hover{
+    background-color: #309FFF;
+    cursor: default;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.modal-dialog {
+    background: white;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+}
+
+@media (max-width: 992px) {
+    .job-details-placeholder {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-dialog{
+        border-radius: 35px !important;
+        background-color: #ffffff;
+    }
+
+    .modal-content{
+        background-color: #ffffff;
+        border-radius: 25px;
+        border: none;
+    }
+
+    .modal-header{
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    .modal .modal-dialog .modal-header .btn-close{
+        --bs-btn-close-opacity: 1   ;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(11%) saturate(7410%) hue-rotate(201deg) brightness(93%) contrast(90%);
+    }
+
+    .modal .modal-dialog .modal-header .btn-close:hover{
+        filter: brightness(0) saturate(100%) invert(24%) sepia(72%) saturate(1634%) hue-rotate(207deg) brightness(96%) contrast(90%);
+    }
+
+
+}
