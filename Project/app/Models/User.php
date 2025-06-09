@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Model
+class User extends Authenticatable
 {
     use HasFactory, SoftDeletes;
 
@@ -24,6 +24,7 @@ class User extends Model
         'is_blocked',
         'saldokerjain',
         'bank_acc_num',
+        'google_id',
     ];
 
     protected $attributes = [
@@ -38,13 +39,13 @@ class User extends Model
     protected $hidden = [
         'password',
         'remember_token',
+        'google_id',
     ];
 
     protected $casts = [
         'is_worker' => 'boolean',
         'is_blocked' => 'boolean',
-        'saldokerjain' => 'decimal:2',
-        
+        'saldokerjain' => 'decimal:2',   
     ];
 
     public function scopeNonAdmin($query)
