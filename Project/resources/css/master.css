@@ -322,3 +322,7 @@ body {
     }
     /* End Footer */
 }
+
+#logoutModal #loginModal{
+    z-index: 9999;
+}
