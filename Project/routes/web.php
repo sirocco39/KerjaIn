@@ -71,6 +71,8 @@ Route::get('/navbar-job_req', function () {
 });
 
 
+Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
+
 Route::get('/', function () {
     return view('landing');
 });
