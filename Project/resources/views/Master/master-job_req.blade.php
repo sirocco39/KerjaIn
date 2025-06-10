@@ -107,7 +107,7 @@
                                     </form>
                                 @endauth
                             </li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img
+                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/joinworker"><img
                                         src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
                                         class="navIcon">Menjadi Mitra</a></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job_taker"><img
@@ -204,8 +204,8 @@
                             Login</h1>
                         <!-- Email input -->
                         <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
-                            <label class="form-label" for="email" :value="__('Email')">Email address</label>
-                            <input id="email" class="form-control" type="email" name="email"
+                            <label class="form-label" for="email-login" :value="__('Email')">Email address</label>
+                            <input id="email-login" class="form-control" type="email" name="email"
                                 :value="old('email')" required autofocus autocomplete="username" />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>

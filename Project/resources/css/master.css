@@ -16,10 +16,6 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-body {
-    font-family: 'Manrope', sans-serif;
-}
-
 .pembatas-x{
     padding-right: 7.5vw;
     padding-left: 7.5vw;
