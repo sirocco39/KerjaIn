@@ -19,9 +19,14 @@ class WorkerRegistrationController extends Controller
     // Method untuk menampilkan form langkah 1 (Data Pribadi)
     public function createStep1()
     {
+        $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
+        if ($verificationRequest) {
+            // Jika ada permintaan verifikasi yang masih pending atau approved, arahkan ke halaman sukses
+            return redirect()->route('worker.register.pending');
+        }
         // Ambil data dari session jika ada, untuk mengisi ulang form
         $data = Session::get('worker_registration.step1', []);
-        return view('joinWorker.joinn', compact('data'));
+        return view('joinWorker.join', compact('data'));
     }
 
     public function store1(Request $request)
@@ -84,7 +89,7 @@ class WorkerRegistrationController extends Controller
         if (!Session::has('worker_registration.step1')) {
             return redirect()->route('worker.register.step1')->with('error', 'Silakan lengkapi Data Pribadi terlebih dahulu.');
         }
-        return view('joinWorker.joinn2');
+        return view('joinWorker.join2');
     }
 
     public function store2(Request $request)
@@ -121,8 +126,21 @@ class WorkerRegistrationController extends Controller
             $step3Data
         );
 
-        return view('joinWorker.joinn3', compact('allData', 'step3Data'));
+        return view('joinWorker.join3', compact('allData', 'step3Data'));
     }
+
+    private function storeFile(Request $request, string $inputName, string $basePath, int $userId): ?string
+    {
+        if ($request->hasFile($inputName)) {
+            $file = $request->file($inputName);
+            $filename = $inputName . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = "{$basePath}/user_{$userId}";
+            return $file->storeAs($path, $filename);
+        }
+
+        return null;
+    }
+
 
     public function finalizeRegistration(Request $request)
     {
@@ -172,21 +190,22 @@ class WorkerRegistrationController extends Controller
         ]);
 
         // Path penyimpanan untuk file yang diunggah
+        $userId = Auth::id();
         $storagePath = 'public/worker_verification_documents';
-        $selfiePhotoPath = $request->file('photo_url')->store($storagePath);
-        $idCardPhotoPath = $request->file('id_card_url')->store($storagePath);
-        $selfieWithIdCardPhotoPath = $request->file('selfie_with_id_card_url')->store($storagePath);
+        $selfiePhotoPath = $this->storeFile($request, 'photo_url', $storagePath, $userId);
+        $idCardPhotoPath = $this->storeFile($request, 'id_card_url', $storagePath, $userId);
+        $selfieWithIdCardPhotoPath = $this->storeFile($request, 'selfie_with_id_card_url', $storagePath, $userId);
 
         // Siapkan array data untuk model VerificationRequest
         $verificationData = [
             // 'user_id' => Auth::id(), // user_id pasti ada karena sudah divalidasi Auth::check()
-            'user_id' => 1,
+            'user_id' => $userId,
             'status' => 'pending',
             'first_name' => $step1Data['first_name'],
             'last_name' => $step1Data['last_name'],
             'nik' => $step1Data['nik'],
             'birthdate' => $step1Data['birthdate'],
-            'gender' => $step1Data['gender'] == 'Laki-laki' ? 'Male' : ($step1Data['gender'] == 'Perempuan' ? 'Female' : null),
+            'gender' => $step1Data['gender'],
             'address' => $step1Data['address'],
             'phone_number' => $step1Data['phone_number'],
             'photo_url' => $selfiePhotoPath,
@@ -216,5 +235,10 @@ class WorkerRegistrationController extends Controller
     public function showSuccessPage()
     {
         return view('joinWorker.success');
+    }
+
+    public function showPendingPage()
+    {
+        return view('joinWorker.pending');
     }
 }

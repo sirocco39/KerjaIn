@@ -46,13 +46,6 @@ Route::get('/job_taker', function () {
     return view('Job_Taker.dummy-job_taker-landingpage');
 });
 
-Route::get('/joinn', function () {
-    return view('joinWorker.joinn');
-});
-Route::get('/joinn2', function () {
-    return view('joinWorker.joinn2');
-});
-
 Route::get('/joinworker', function () {
     return redirect()->route('worker.register.step1');
 });
@@ -77,6 +70,7 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
     // Halaman Sukses
     // URL: /joinWorker/success
     Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
+    Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
 });
 Route::get('/job-taker/beranda', function(){
     return view('Job_Taker.dummy-job_taker-beranda');
