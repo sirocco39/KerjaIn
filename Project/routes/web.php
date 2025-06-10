@@ -41,7 +41,7 @@ Route::get('/job-req/beranda', function () {
 });
 
 Route::get('/job-req/tawarkan-kerja', function () {
-    return view('Job_Requester.tawarkanKerja');
+    return view('Job_Requester.postwork');
 });
 
 // Route::get('/job-req/pesan', function () {
