@@ -21,6 +21,7 @@ public function definition(): array
     $endTime = (clone $startTime)->addHours(rand(1, 6))->addMinutes(rand(0, 59));
         return [
             'title' => $this->faker->sentence(4),
+            'slug' => $this->faker->slug(),
             'description' => $this->faker->paragraph(),
             'price' => $this->faker->randomFloat(2, 10000, 500000),
             'location' => $this->faker->address(),
