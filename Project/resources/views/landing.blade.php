@@ -14,7 +14,7 @@
         <p class="mt-4 fs-6" style="font-family: 'Inter'; max-width: 800px; padding: 0px 30px; margin-left: -30px">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
         <div class="mt-4">
           <div class="garis-tengah"></div>
-          <a href="#" class="btn-pekerja" style="font-size: 18px">Daftar Sekarang</a>
+          <button type="button" class="btn-pekerja" style="font-size: 18px" data-bs-toggle="modal" data-bs-target="#logoutModal">Daftar Sekarang</button>
         </div>
       </div>
 

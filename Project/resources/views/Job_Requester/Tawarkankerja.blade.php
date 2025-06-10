@@ -30,17 +30,21 @@
             <input type="text" class="form-control rounded-3" id="alamat" placeholder="Contoh: Jalan Pakuan No 3, Sentul">
           </div>
 
-          <!-- Tanggal -->
+          <!-- Waktu mulai pengerjaan -->
           <div class="mb-3">
-            <label for="tanggal" class="form-label fw-semibold">Tanggal</label>
-            <input type="date" class="form-control rounded-3" id="tanggal">
+            <label for="tanggal" class="form-label fw-semibold">Waktu mulai pekerjaan</label>
+            <div class="d-flex gap-2">
+              <input type="date" class="form-control rounded-3" id="tanggal">
+              <span class="align-self-center">–</span>
+              <input type="time" class="form-control rounded-3" />
+            </div>            
           </div>
 
-          <!-- Waktu -->
+          <!-- Waktu selesai pengerjaan -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">Waktu</label>
+            <label class="form-label fw-semibold">Waktu selesai pengerjaan</label>
             <div class="d-flex gap-2">
-              <input type="time" class="form-control rounded-3" />
+              <input type="date" class="form-control rounded-3" id="tanggal">
               <span class="align-self-center">–</span>
               <input type="time" class="form-control rounded-3" />
             </div>

@@ -12,3 +12,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+    function adjustMainContentOffset() {
+        const navbar = document.getElementById('mainNavbar');
+        const mainContent = document.querySelector('.main-content');
+        const navbarHeight = navbar.offsetHeight;
+
+        mainContent.style.marginTop = navbarHeight + 'px';
+    }
+
+    // Panggil saat halaman dimuat dan saat jendela diubah ukurannya
+    window.addEventListener('load', adjustMainContentOffset);
+    window.addEventListener('resize', adjustMainContentOffset);
