@@ -61,6 +61,7 @@
     color: #F7F7FF;
     font-weight: bold;
     z-index: 9;
+    
 }
 
 .detail-button:hover{
@@ -191,7 +192,6 @@
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 1050;
 }
 
 .modal-dialog {

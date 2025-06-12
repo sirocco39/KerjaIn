@@ -1,0 +1,119 @@
+.banner-section { /* Gunakan class spesifik */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 500px; /* Tambahkan padding bawah untuk ruang konten */
+  color: white;
+  overflow: hidden; /* Bisa memotong dot yang keluar container */
+  background-color: #294287; 
+  background-size: cover;
+  position: relative;
+  height: 500px;
+}
+
+.btn-daftar {
+  background-color: #309FFF;
+  color: white;
+  font-family: 'Manrope', sans-serif;
+  border-radius: 0.5rem;
+  padding: 8px 10px;
+  margin-right: 30px;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.btn-daftar:hover {
+  background-color: #D3FA0D;
+  color: black;
+}
+
+.btn-pekerja {
+  background-color: #D3FA0D;
+  color: black;
+  font-family: 'Manrope', sans-serif;
+  border-radius: 0.5rem;
+  padding: 8px 10px;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.btn-pekerja:hover {
+  background-color: #309FFF;
+  color: white;
+}
+
+.garis-tengah {
+  width: 120px; /* Panjang garis */
+  height: 4px; /* Tebal garis */
+  background-color: white; /* Warna garis */
+  margin-top: 30px;
+  margin-bottom: 50px;
+  border-radius: 2px;
+}
+
+/* Style untuk dots */
+.color-dots {
+  height: 100%;
+}
+
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  animation: float 3s ease-in-out infinite;
+  opacity: 0.80;
+}
+
+.dot-1 {
+  width: 750px;
+  height: 750px;
+  background-color: #309FFF;
+  bottom: 20%;
+  left: -40%;
+  margin-left: -50%;
+  opacity: 0.60;
+}
+
+.dot-2 {
+  width: 170px;
+  height: 170px;
+  background-color: #4D00FF;
+  bottom: 65%;
+  right: 165%;
+  animation-delay: 0.5s;
+  opacity: 0.60;
+}
+
+.dot-3 {
+  width: 700px;
+  height: 700px;
+  background-color: #D3FA0D;
+  top: 30%;
+  left: -10%;
+  animation-delay: 1.5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Default (mobile-first) */
+.custom-translate {
+  transform: translate(20px, 5px);
+  position: relative;
+  z-index: 3;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .custom-translate {
+    transform: translate(60px, 5px);
+  }
+}
+
+/* Desktop */
+@media (min-width: 992px) {
+  .custom-translate {
+    transform: translate(110px, 5px);
+  }
+}
