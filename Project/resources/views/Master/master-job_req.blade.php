@@ -249,45 +249,43 @@
 
     {{-- Pop Up Register --}}
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content bg-white rounded shadow-sm border-0">
+                <div class="modal-header border-0 position-relative d-flex justify-content-center align-items-center">
+                    <h1 class="mb-0 fs-4" style="font-weight: 500">Daftar</h1>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" style="padding: 30px">
                         @csrf
-                        <h1 style="margin-left: 200px; margin-bottom: 25px; font-family: 'Manrope'; font-size: 25px">
-                            Daftar</h1>
                         <!-- Nama input -->
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+                        <div data-mdb-input-init class="mb-3" style="min-width: 300px">
                             <label class="form-label" for="first_name" :value="__('First Name')">Nama Depan</label>
                             <input type="text" id="first_name" class="form-control" name="first_name"
                                 :value="old('first_name')" required autofocus autocomplete="given-name" />
                         </div>
-
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+                        <!-- Nama Belakang input -->
+                        <div data-mdb-input-init class="mb-3" style="min-width: 300px">
                             <label class="form-label" for="last_name" :value="__('Last Name')">Nama Belakang</label>
                             <input type="text" id="last_name" class="form-control" name="last_name"
                                 :value="old('last_name')" required autofocus autocomplete="family-name" />
                         </div>
 
                         <!-- Email input -->
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+                        <div data-mdb-input-init class="mb-3" style="min-width: 300px">
                             <label class="form-label" for="email" :value="__('Email')">Email</label>
                             <input class="form-control" id="email" type="email" name="email"
                                 :value="old('email')" required autocomplete="email" />
                         </div>
 
                         <!-- Password input -->
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+                        <div data-mdb-input-init class="mb-3" style="min-width: 300px">
                             <label class="form-label" for="password" :value="__('Password')">Kata Sandi</label>
                             <input id="password" class="form-control" type="password" name="password" required
                                 autocomplete="new-password" />
                         </div>
 
                         <!-- Konfirmasi Password input -->
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
+                        <div data-mdb-input-init class="mb-3" style="min-width: 300px">
                             <label class="form-label" for="password_confirmation"
                                 :value="__('Confirm Password')">Konfirmasi Kata Sandi</label>
                             <input class="form-control" id="password_confirmation"type="password"
@@ -296,22 +294,22 @@
 
                         <!-- OTP -->
                         <div data-mdb-input-init class="form-outline mb-4"
-                            style="padding: 0 40px; margin: 0 auto; max-width: 600px;">
-                            <label class="form-label" for="otp" :value="__('OTP (One Time Password)')">Kode
-                                OTP</label>
+                            style="margin: 0 auto; max-width: 600px;">
+                            <label class="form-label" for="otp" :value="__('OTP (One Time Password)')">Kode OTP</label>
                             <div
                                 style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem;">
                                 <input id="otp" class="form-control" type="text" name="otp"
-                                    maxlength="6" autocomplete="one-time-code" placeholder="Masukkan OTP disini"
+                                    maxlength="6" autocomplete="one-time-code" placeholder="Masukkan Kode OTP"
                                     style="
                                         flex-basis: 60%;
-                                        max-width: 60%;
+                                        max-width: 55%;
                                         padding: 0.5rem;
                                         font-size: 1rem;
                                         border: 1px solid #ccc;
                                         border-radius: 0.375rem;
                                     " />
-                                <button type="button" id="send-otp-button"
+                            </div>
+                            <button type="button" id="send-otp-button"
                                     style="
                                         display: inline-flex;
                                         align-items: center;
@@ -321,11 +319,12 @@
                                         color: white;
                                         border-radius: 0.375rem;
                                         border: none;
-                                        width: 10rem;
+                                        width: 10.5rem;
                                         cursor: pointer;
                                         flex-shrink: 0;
                                         outline: none;
                                         transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+                                        margin-top: 1.5rem;
                                     "
                                     onmouseover="this.style.backgroundColor='#D3FA0D'; this.style.color='#000000';"
                                     onmouseout="this.style.backgroundColor='#309FFF'; this.style.color='white';"
@@ -333,7 +332,6 @@
                                     onblur="this.style.boxShadow='none';">
                                     {{ __('Kirim OTP') }}
                                 </button>
-                            </div>
                             <x-input-error :messages="$errors->get('otp')" class="mt-2" />
                             <div id="otp-message" class="mt-2 text-sm text-green-600 hidden"></div>
                         </div>
@@ -341,8 +339,7 @@
 
                         <!-- Submit button -->
                         <button type="submit" data-mdb-button-init data-mdb-ripple-init
-                            class="btn btn-primary btn-block mb-4"
-                            style="padding: 10px 170px; margin-left: 9%">Daftar</button>
+                            class="btn btn-primary w-100 mb-3 py-2">Daftar</button>
 
                         <!-- Daftar buttons -->
                         <div class="text-center">
@@ -358,7 +355,6 @@
 
                         </div>
                     </form>
-                </div>
             </div>
         </div>
     </div>
