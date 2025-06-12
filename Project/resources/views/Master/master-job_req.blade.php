@@ -107,7 +107,7 @@
                                     </form>
                                 @endauth
                             </li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img
+                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/joinworker"><img
                                         src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
                                         class="navIcon">Menjadi Mitra</a></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job_taker"><img
