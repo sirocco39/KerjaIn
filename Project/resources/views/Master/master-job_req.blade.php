@@ -192,8 +192,8 @@
 
     {{-- Pop Up Login --}}
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-        <div class="modal-content bg-white rounded shadow-sm border-0">      
+    <div class="modal-dialog" style="max-width: 400px;">
+        <div class="modal-content bg-white rounded" style="box-shadow: none !important; border: none !important;">      
             <div class="modal-header border-0 position relative">
                 <h1 class="modal-title w-100 text-center mb-0 fs-4">Login</h1>
                 <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
@@ -249,8 +249,8 @@
 
     {{-- Pop Up Register --}}
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-            <div class="modal-content bg-white rounded shadow-sm border-0">
+        <div class="modal-dialog" style="max-width: 400px;">
+            <div class="modal-content bg-white rounded" style="box-shadow: none !important; border: none !important;">
                 <div class="modal-header border-0 position-relative d-flex justify-content-center align-items-center">
                     <h1 class="mb-0 fs-4" style="font-weight: 500">Daftar</h1>
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
