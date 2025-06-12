@@ -191,80 +191,61 @@
 
 
     {{-- Pop Up Login --}}
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content bg-white rounded shadow-sm border-0">      
+            <div class="modal-header border-0 position relative">
+                <h1 class="modal-title w-100 text-center mb-0 fs-4">Login</h1>
+                <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div> 
+        <form method="POST" action="{{ route('login') }}" style="padding: 30px">
+                @csrf
+            
+                <!-- Email -->
+                <div class="mb-3" style="min-width: 300px">
+                    <label for="email" class="form-label">Email address</label>
+                    <input id="email-login" class="form-control w-100" type="email" name="email" required autofocus>
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <h1 style="margin-left: 200px; margin-bottom: 25px; font-family: 'Manrope'; font-size: 25px">
-                            Login</h1>
-                        <!-- Email input -->
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
-                            <label class="form-label" for="email" :value="__('Email')">Email address</label>
-                            <input id="email-login" class="form-control" type="email" name="email"
-                                :value="old('email')" required autofocus autocomplete="username" />
-                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                        </div>
 
-                        <!-- Password input -->
-                        <div data-mdb-input-init class="form-outline mb-4" style="padding: 0px 40px; margin: center">
-                            <label class="form-label" for="password" :value="__('Password')">Password</label>
-                            <input id="password" class="form-control" type="password" name="password" required
-                                autocomplete="current-password" />
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                        </div>
-
-                        <!-- 2 column grid layout for inline styling -->
-                        <div class="row mb-4">
-                            <div class="col d-flex justify-content-center">
-                                <!-- Checkbox -->
-                                <div class="form-check" for="remember_me">
-                                    <input id="remember_me" type="checkbox" class="form-check-input"
-                                        name="remember">
-                                    <label class="form-check-label" for="form2Example31"> Remember me </label>
-                                </div>
-                            </div>
-
-                            <div class="col">
-                                <!-- Simple link -->
-                                @if (Route::has('password.request'))
-                                    <a href="{{ route('password.request') }}" style="margin-left: 60px">
-                                        Lupa kata sandi?
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Submit button -->
-                        <button type="submit" data-mdb-button-init data-mdb-ripple-init
-                            class="btn btn-primary btn-block mb-4"
-                            style="padding: 10px 170px; margin-left: 9%">Login</button>
-
-                        <!-- Register buttons -->
-                        <div class="text-center">
-                            <p>Belum punya akun? <button type="button" class="btn btn-link w-auto p-0 m-0"
-                                    data-bs-toggle="modal" data-bs-target="#logoutModal">Daftar</button></p>
-                            <p>Atau masuk dengan:</p>
-                            <button type="button" data-mdb-button-init data-mdb-ripple-init
-                                class="btn btn-link btn-floating mx-1">
-                                <a href="{{ route('auth-google-redirect') }}">
-                                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
-                                        style="width: 24px; height: 24px;">
-                                </a>
-                            </button>
-
-                        </div>
-                    </form>
+                <!-- Password -->
+                <div class="mb-3" style="min-width: 300px">
+                    <label for="password" class="form-label">Password</label>
+                    <input id="password" class="form-control w-100" type="password" name="password" required>
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
                 </div>
-            </div>
-        </div>
+
+                <!-- Remember Me & Lupa Password -->
+                <div class="d-flex justify-content-between mb-4">
+                    <div class="form-check">
+                        <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
+                        <label class="form-check-label">Remember me</label>
+                    </div>
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}">Lupa kata sandi?</a>
+                    @endif
+                </div>
+
+                <!-- Tombol Login -->
+                <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Login</button>
+
+                <!-- Footer -->
+                <div class="text-center">
+                    <p class="mb-2">Belum punya akun? 
+                        <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            Daftar
+                        </button>
+                    </p>
+                    <p class="mb-2">Atau masuk dengan:</p>
+                    <a href="{{ route('auth-google-redirect') }}">
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="24">
+                    </a>
+                </div>
+            </form>
+        </div>    
     </div>
-    {{-- End Pop Up Login --}}
-
+</div>
+    {{-- End Pop Up Register --}}
 
     {{-- Pop Up Register --}}
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
