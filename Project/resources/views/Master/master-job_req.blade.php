@@ -12,6 +12,7 @@
     <link rel="icon" href="{{ asset('Image/Icon/Icon Kerjain.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -284,7 +285,7 @@
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                         aria-label="Tutup"></button>
                 </div>
-                <form method="POST" action="{{ route('login') }}" style="padding: 30px">
+                <form id="login-form" method="POST" action="{{ route('login') }}" style="padding: 30px">
                     @csrf
                     <!-- Login Email -->
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
@@ -442,8 +443,6 @@
     {{-- End Pop Up Register --}}
 
     <script>
-        const loginModal = document.getElementById('loginModal');
-        const logoutModal = document.getElementById('logoutModal');
         const loginEmailInput = document.getElementById('email-login');
         const loginEmailErrorDiv = document.getElementById('Loginemail-error');
         const loginPasswordInput = document.getElementById('password-login');
@@ -460,105 +459,136 @@
         const confirmPasswordErrorDiv = document.getElementById('confirm_password-error');
         const otpInput = document.getElementById('otp');
         const otpErrorDiv = document.getElementById('otp-error');
+        const rememberMeCheckbox = document.getElementById('remember_me');
 
-        {{-- const logoutForm = logoutModal.querySelector('form');
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,16}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        logoutForm.addEventListener('submit', function(event) {
-            if (
-                emailInput.classList.contains('is-invalid') ||
-                passwordInput.classList.contains('is-invalid') ||
-                confirmPasswordInput.classList.contains('is-invalid') ||
-                firstNameInput.classList.contains('is-invalid') ||
-                lastNameInput.classList.contains('is-invalid') ||
-                otpInput.classList.contains('is-invalid') 
-            ) {
-                event.preventDefault(); 
-                return;
+        // === Login Email ===
+        loginEmailInput.addEventListener('blur', function() {
+            loginEmailInput.classList.remove('is-invalid');
+            loginEmailErrorDiv.classList.add('d-none');
+        });
+
+        loginEmailInput.addEventListener('input', function() {
+            const errors = [];
+
+            if (loginEmailInput.value.trim() === '') {
+                errors.push('Email harus diisi.');
+            } else if (!emailRegex.test(loginEmailInput.value.trim())) {
+                errors.push('Silakan masukkan alamat email yang valid.');
             }
 
-            logoutForm.submit(); // Submit the form if valid
+            if (errors.length > 0) {
+                loginEmailErrorDiv.innerHTML = `
+            <ul class="mb-0">
+                ${errors.map(err => `<li>${err}</li>`).join('')}
+            </ul>
+        `;
+                loginEmailErrorDiv.classList.remove('d-none');
+                loginEmailInput.classList.add('is-invalid');
+            } else {
+                loginEmailErrorDiv.innerHTML = '';
+                loginEmailErrorDiv.classList.add('d-none');
+                loginEmailInput.classList.remove('is-invalid');
+            }
+        });
+
+        // === Login Password ===
+        loginPasswordInput.addEventListener('blur', function() {
+            loginPasswordInput.classList.remove('is-invalid');
+            loginPasswordErrorDiv.classList.add('d-none');
+        });
+
+        loginPasswordInput.addEventListener('input', function() {
+            const errors = [];
+
+            if (loginPasswordInput.value.trim() === '') {
+                errors.push('Password harus diisi.');
+            } else if (!passwordRegex.test(loginPasswordInput.value.trim())) {
+                errors.push('Silakan masukkan password yang valid.');
+            }
+
+            if (errors.length > 0) {
+                loginPasswordErrorDiv.innerHTML = `
+            <ul class="mb-0">
+                ${errors.map(err => `<li>${err}</li>`).join('')}
+            </ul>
+        `;
+                loginPasswordErrorDiv.classList.remove('d-none');
+                loginPasswordInput.classList.add('is-invalid');
+            } else {
+                loginPasswordErrorDiv.innerHTML = '';
+                loginPasswordErrorDiv.classList.add('d-none');
+                loginPasswordInput.classList.remove('is-invalid');
+            }
         });
 
 
+        const loginModal = document.getElementById('loginModal');
         const loginForm = loginModal.querySelector('form');
 
-        loginForm.addEventListener('submit', function(event) {
-            if (
-                loginEmailInput.classList.contains('is-invalid') ||
-                loginPasswordInput.classList.contains('is-invalid')
-            ) {
-                return;
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Clear previous server errors
+            loginEmailErrorDiv.classList.add('d-none');
+            loginPasswordErrorDiv.classList.add('d-none');
+            loginEmailInput.classList.remove('is-invalid');
+            loginPasswordInput.classList.remove('is-invalid');
+
+            const formData = new FormData(loginForm);
+
+            try {
+                const response = await fetch("{{ route('login') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    window.location.href = result.redirect_url ?? '/dashboard';
+                } else {
+                    if (result.errors) {
+                        if (result.errors.email) {
+                            loginEmailErrorDiv.innerHTML = `
+                        <ul class="mb-0">
+                            ${result.errors.email.map(err => `<li>${err}</li>`).join('')}
+                        </ul>
+                    `;
+                            loginEmailErrorDiv.classList.remove('d-none');
+                            loginEmailInput.classList.add('is-invalid');
+                        }
+
+                        if (result.errors.password) {
+                            loginPasswordErrorDiv.innerHTML = `
+                        <ul class="mb-0">
+                            ${result.errors.password.map(err => `<li>${err}</li>`).join('')}
+                        </ul>
+                    `;
+                            loginPasswordErrorDiv.classList.remove('d-none');
+                            loginPasswordInput.classList.add('is-invalid');
+                            loginPasswordInput.value = '';
+                            loginEmailInput.value = '';
+                            rememberMeCheckbox.checked = false;
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Terjadi kesalahan saat login.');
             }
-                event.preventDefault();
-            loginForm.submit(); // Submit the form if valid
-        }); --}}
+        });
 
 
 
         document.addEventListener('DOMContentLoaded', function() {
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,16}$/;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            // === Login Email ===
-            loginEmailInput.addEventListener('blur', function() {
-                loginEmailInput.classList.remove('is-invalid');
-                loginEmailErrorDiv.classList.add('d-none');
-            });
-
-            loginEmailInput.addEventListener('input', function() {
-                const errors = [];
-
-                if (loginEmailInput.value.trim() === '') {
-                    errors.push('Email harus diisi.');
-                } else if (!emailRegex.test(loginEmailInput.value.trim())) {
-                    errors.push('Silakan masukkan alamat email yang valid.');
-                }
-
-                if (errors.length > 0) {
-                    loginEmailErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    loginEmailErrorDiv.classList.remove('d-none');
-                    loginEmailInput.classList.add('is-invalid');
-                } else {
-                    loginEmailErrorDiv.innerHTML = '';
-                    loginEmailErrorDiv.classList.add('d-none');
-                    loginEmailInput.classList.remove('is-invalid');
-                }
-            });
-
-            // === Login Password ===
-            loginPasswordInput.addEventListener('blur', function() {
-                loginPasswordInput.classList.remove('is-invalid');
-                loginPasswordErrorDiv.classList.add('d-none');
-            });
-
-            loginPasswordInput.addEventListener('input', function() {
-                const errors = [];
-
-                if (loginPasswordInput.value.trim() === '') {
-                    errors.push('Password harus diisi.');
-                } else if (!passwordRegex.test(loginPasswordInput.value.trim())) {
-                    errors.push('Silakan masukkan password yang valid.');
-                }
-
-                if (errors.length > 0) {
-                    loginPasswordErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    loginPasswordErrorDiv.classList.remove('d-none');
-                    loginPasswordInput.classList.add('is-invalid');
-                } else {
-                    loginPasswordErrorDiv.innerHTML = '';
-                    loginPasswordErrorDiv.classList.add('d-none');
-                    loginPasswordInput.classList.remove('is-invalid');
-                }
-            });
-
             // === OTP ===
             otpInput.addEventListener('blur', function() {
                 otpInput.classList.remove('is-invalid');
