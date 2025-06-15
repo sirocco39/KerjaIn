@@ -87,7 +87,6 @@ Route::get('/job-taker/riwayat', function () {
 });
 
 
-
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');
 });

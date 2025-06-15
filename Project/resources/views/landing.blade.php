@@ -155,7 +155,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center">
-        <h1 class="display-5 fw-bold mb-4" style="font-family: 'Manrope';">Alur Kerja</h1>
+        <h1 class="fw-bold mb-5" style="font-family: 'Manrope';">Alur Kerja</h1>
         <p class="lead mb-5" style="font-size: 1.25rem; font-style: italic;">"Jangan tunggu kesempatan datang, Buka aplikasi, dan ciptakan peluangmu sendiri."</p>
         
         <div class="d-flex flex-column flex-md-row justify-content-center gap-4 mb-5">

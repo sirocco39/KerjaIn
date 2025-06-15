@@ -193,6 +193,10 @@
     align-items: center;
 }
 
+.modal.show {
+    display: flex !important;
+}
+
 .modal-dialog {
     background: white;
     border-radius: 8px;
@@ -208,10 +212,6 @@
 
     .modal {
         display: none;
-    }
-
-    .modal.show {
-        display: flex;
     }
 
     .modal-dialog{
