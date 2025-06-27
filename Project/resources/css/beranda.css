@@ -18,10 +18,45 @@
     background-color: #5CB3FF;
 }
 
+.beranda-req-kiri::-webkit-scrollbar {
+  display: none;
+}
+
+.beranda-req-kiri{
+    height: 75vh;
+    overflow-y: auto;
+}
+
+.beranda-req-kanan{
+    height: 75vh;
+}
+
 .work-request{
     background-color: #ffffff;
     border-radius: 35px;
     border: 1.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.job-req-card-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-req-card-details li {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.icon-wrapper-beranda{
+    width: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.job-req-card-details li img {
+    height: 18px;
+    display: block;
 }
 
 .detail-req-button{
@@ -45,4 +80,8 @@
     background-color: #133E87;
     color: #F7F7FF;
     font-weight: bold;
+}
+
+#ilus-beranda{
+    width: 80%;
 }
