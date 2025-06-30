@@ -111,10 +111,14 @@
     background-color: #294287;
     color: #F7F7FF;
     font-weight: bold;
+    display: inline-flex;
+    justify-content: center;
+    width: 100px;
 }
 
 #button-tawar:hover, .btn-tawar-modal:hover, #button-hubungi:hover, .btn-hubungi-modal:hover{
     background-color: #2E52B3;
+    cursor: pointer;
 }
 
 #button-terima, .btn-terima-modal{
@@ -123,6 +127,15 @@
 
 #button-terima:hover, .btn-terima-modal:hover{
     background-color: #5CB3FF !important;
+}
+
+.btn-terima-modal{
+    background-color: #E8FA0D !important;
+    color: #294287;
+}
+
+.btn-terima-modal:hover{
+    background-color: #def113 !important;
 }
 
 .pagination{
@@ -194,12 +207,36 @@
     align-items: center;
 }
 
+.modal.show {
+    display: flex !important;
+}
+
 .modal-dialog {
-    background: white;
-    border-radius: 8px;
-    max-width: 500px;
+    border-radius: 35px !important;
+    background-color: #ffffff;
+    max-width: 600px;
     width: 90%;
     padding: 20px;
+}
+
+.modal-content{
+    background-color: #ffffff;
+    border-radius: 25px;
+    border: none;
+}
+
+.modal-header{
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+.modal .modal-dialog .modal-header .btn-close{
+    --bs-btn-close-opacity: 1   ;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(11%) saturate(7410%) hue-rotate(201deg) brightness(93%) contrast(90%);
+}
+
+.modal .modal-dialog .modal-header .btn-close:hover{
+    filter: brightness(0) saturate(100%) invert(24%) sepia(72%) saturate(1634%) hue-rotate(207deg) brightness(96%) contrast(90%);
 }
 
 @media (max-width: 992px) {
@@ -210,35 +247,4 @@
     .modal {
         display: none;
     }
-
-    .modal.show {
-        display: flex;
-    }
-
-    .modal-dialog{
-        border-radius: 35px !important;
-        background-color: #ffffff;
-    }
-
-    .modal-content{
-        background-color: #ffffff;
-        border-radius: 25px;
-        border: none;
-    }
-
-    .modal-header{
-        border-bottom: none !important;
-        padding-bottom: 0 !important;
-    }
-
-    .modal .modal-dialog .modal-header .btn-close{
-        --bs-btn-close-opacity: 1   ;
-        filter: brightness(0) saturate(100%) invert(23%) sepia(11%) saturate(7410%) hue-rotate(201deg) brightness(93%) contrast(90%);
-    }
-
-    .modal .modal-dialog .modal-header .btn-close:hover{
-        filter: brightness(0) saturate(100%) invert(24%) sepia(72%) saturate(1634%) hue-rotate(207deg) brightness(96%) contrast(90%);
-    }
-
-
 }

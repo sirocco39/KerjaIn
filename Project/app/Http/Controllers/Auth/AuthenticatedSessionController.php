@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -22,15 +23,43 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request)
     {
-        $request->authenticate();
+        // Manual validation
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
+        // Attempt login
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'errors' => [
+                        'password' => ['Email atau kata sandi salah.'],
+                    ]
+                ], 422);
+            }
+
+            return back()->withErrors([
+                'password' => 'Email atau kata sandi salah.',
+            ])->onlyInput('email');
+        }
+
+
+        // Login success
         $request->session()->regenerate();
 
-        return redirect('/')
-            ->with('success', 'Login berhasil! Selamat datang di aplikasi kami.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Login berhasil!',
+                'redirect_url' => url('/')
+            ]);
+        }
+
+        return redirect('/')->with('success', 'Login berhasil! Selamat datang di aplikasi kami.');
     }
+
 
     /**
      * Destroy an authenticated session.

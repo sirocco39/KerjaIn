@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RegisteredUserController extends Controller
 {
@@ -29,9 +31,26 @@ class RegisteredUserController extends Controller
 
     public function sendOtp(Request $request)
     {
-        $request->validate([
+        // Validate manually so we can return JSON response
+        $validator = Validator::make($request->all(), [
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
         ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+
+            // If the unique email rule fails, send custom error message
+            if ($errors->has('email') && str_contains($errors->first('email'), 'unique')) {
+                throw new HttpResponseException(response()->json([
+                    'message' => 'Email sudah terdaftar.'
+                ], 422));
+            }
+
+            // Generic validation error
+            throw new HttpResponseException(response()->json([
+                'message' => $errors->first('email')
+            ], 422));
+        }
 
         $email = $request->email;
         $cooldownKey = 'otp_cooldown_' . $email;
@@ -96,7 +115,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect('/')
+        return redirect('/job-req/beranda')
             ->with('success', 'Daftar berhasil! Selamat datang di aplikasi kami.');
     }
 }

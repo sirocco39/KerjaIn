@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
@@ -30,10 +32,13 @@ Route::resource('requesttt', RequestController::class);
 
 Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
-    $fiveLatestRequests = Request::whereNull('deleted_at')
-        ->where('status', 'open')
+    $requesterId = Auth::id();
+
+    $fiveLatestRequests = Request::where('requester_id', $requesterId)
+        ->whereNull('deleted_at')
         ->latest()
-        ->take(5)
+        ->take(6) // Sementara ganti 6, kalo dah kelar ganti 5
+        ->with('transactions')
         ->get();
     return view('Job_Requester.beranda', compact('fiveLatestRequests'));
 });
@@ -95,8 +100,29 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
     Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
 });
 Route::get('/job-taker/beranda', function(){
-    return view('Job_Taker.dummy-job_taker-beranda');
+    return view('Job_Taker.job_taker-beranda');
 });
+
+Route::get('/job-taker/beranda', function () {
+    //get five latest open requests and deleted_at is null
+    $workerId = Auth::id();
+
+    $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
+        ->whereNull('deleted_at')
+        ->latest()
+        ->take(5)
+        ->with('requester', 'request')
+        ->get();
+
+    $fiveLatestRequests = Request::whereNull('deleted_at')
+        ->where('status', 'open')
+        ->latest()
+        ->take(5)
+        ->with('requester')
+        ->get();
+    return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction', 'fiveLatestRequests'));
+});
+
 
 Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
 
@@ -111,6 +137,7 @@ Route::get('/job-taker/riwayat', function () {
 // Route::get('/postwork', function () {
 //     return view('postwork');
 // });
+
 
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');

@@ -1,7 +1,3 @@
-#greetings-section{
-    border: 1px solid red;
-}
-
 .button-switch{
     width: fit-content;
     padding: 6px 12px;
@@ -67,6 +63,7 @@
     color: #F7F7FF;
     font-weight: bold;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .detail-req-button:hover{
@@ -74,7 +71,10 @@
 }
 
 .status{
+    display: flex;
+    justify-content: center;
     padding: 6px 12px;
+    width: 150px;
     border-radius: 50px;
     border: none;
     background-color: #133E87;
@@ -84,4 +84,83 @@
 
 #ilus-beranda{
     width: 80%;
+}
+
+/* CSS Job Taker */
+
+#header-beranda-job_taker{
+    background: #294287;
+    color: #ffff;
+    padding-top: 20px;
+}
+
+#shortDetail{
+    background-color: #fff;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    border-radius: 25px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+}
+
+#shortDetail .col p{
+    font-size: 0.9rem !important;
+}
+
+#detail-tengah{
+    border-left: 2px solid #676FA3;
+    border-right: 2px solid #676FA3;
+}
+
+.title-detail{
+    font-size: 1.3rem;
+}
+
+.bold-point{
+    font-size: 1.3rem;
+    line-height: 0;
+}
+
+.text-p{
+line-height: 1.1rem;
+}
+
+.btn-hapus-modal{
+    background-color: #B02A37;
+    cursor: pointer;
+}
+
+.btn-hapus-modal:hover{
+    background-color: #BF3F4C;
+}
+
+
+/* CSS Job Taker */
+
+@media (max-width : 675px){
+    .title-detail, .bold-point{
+        font-size: 1rem;
+    }
+
+    #shortDetail .col p{
+        font-size: 0.7rem !important;
+    }
+}
+
+@media (max-width : 555px){
+    .title-detail, .bold-point{
+        font-size: 0.9rem;
+    }
+    #shortDetail .col p{
+        font-size: 0.6rem !important;
+    }
+}
+
+@media (max-width : 475px){
+    .title-detail, .bold-point{
+        font-size: 0.8rem;
+    }
+
+    #shortDetail .col p{
+        font-size: 0.55rem !important;
+    }
 }

@@ -35,7 +35,7 @@
 
                 <hr class="d-lg-none my-2">
 
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
+                <ul class="navbar-nav ms-auto mb-lg-0 d-flex align-items-lg-center">
                     <!-- Dropdown Bahasa -->
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
@@ -44,7 +44,7 @@
                             <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
-                        <ul class="dropdown-menu" aria-labelledby="dropdownLang">
+                        <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
                             <li><a class="dropdown-item d-flex align-items-center" href="#"><img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag" class="flag"> Bahasa</a></li>
                             <li><a class="dropdown-item d-flex align-items-center" href="#"><img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag" class="flag"> English</a></li>
                         </ul>
@@ -57,7 +57,7 @@
                             <span class="d-lg-none">Profil</span>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
+                        <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#loginModal"><img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login" class="navIcon">Masuk</button></li>
                             <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#logoutModal"><img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout" class="navIcon">Keluar</button></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra" class="navIcon">Menjadi Mitra</a></li>
