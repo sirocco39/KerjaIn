@@ -11,8 +11,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PusherController;
 
 // Route on-going-work-request
-
-
+Route::get('/job-req/on-going-work-request', function() {
+    return view('Job_Requester.on-going-work-request');});
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
