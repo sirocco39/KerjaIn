@@ -1,13 +1,32 @@
 @extends('Master.master-job_req')
 
 @section('content')
-    <div class="container-fluid pembatas-x pembatas-y">
-        Ini Dummy Job Requester Beranda
+<pre>
+{{ var_dump($fiveLatestRequests) }}
+</pre>
+<!-- @foreach ($fiveLatestRequests as $key => $r)
+<div class="container-fluid pembatas-x pembatas-y">
+    <div class="work-request">
+        <h2>{{ $r->title }}</h2>
+        <p>{{ $r->description }}</p>
+        <p>Harga: {{ $r->price }}</p>
+        <p>Lokasi: {{ $r->location }}</p>
+        <p>Status: {{ $r->status }}</p>
+        <?php
+        // $startdatetime  = strtotime($r->start_time);
+        // $enddatetime  = strtotime($r->end_time);
+        // $startdate   = date('d M Y', $startdatetime);
+        // $starttime = date('H.i', $startdatetime);
+        // $enddate  = date('d M Y', $enddatetime);
+        // $endtime = date('H.i', $enddatetime);
+        ?>
+        <p>Mulai: {{ $startdate }} pukul {{ $starttime }}</p>
+        <p>Selesai: {{ $enddate }} pukul {{ $endtime }}</p>
+        <a href="{{ route('requesttt.show', $r->slug) }}"><button>Lihat Detail</button></a>
     </div>
+</div>
+@endforeach -->
 
-    <div class="container-fluid pembatas-x pembatas-b">
-        Ini Dummy Job Requester Beranda
-    </div>
 @endsection
 
 {{--
@@ -31,5 +50,3 @@
     pembatas-a itu biar konsisten padding atasnya
     pembatas-b itu biar konsisten padding bawahnya
 --}}
-
-

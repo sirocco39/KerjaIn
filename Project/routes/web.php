@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\WorkerRegistrationController;
 use App\Http\Controllers\browseWorkRequestController;
+use App\Http\Controllers\RequestController;
+use App\Models\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
@@ -20,21 +22,45 @@ Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+
 Route::get('/', function () {
     return view('Job_Requester.dummy-job_req-landingpage');
 });
 
+
+Route::resource('requesttt', RequestController::class);
+
 Route::get('/job-req/beranda', function () {
-    return view('Job_Requester.dummy-job_req-beranda');
+    //get five latest open requests and deleted_at is null
+    $fiveLatestRequests = Request::whereNull('deleted_at')
+        ->where('status', 'open')
+        ->latest()
+        ->take(5)
+        ->get();
+    return view('Job_Requester.beranda', compact('fiveLatestRequests'));
 });
 
 Route::get('/job-req/tawarkan-kerja', function () {
-    return view('Job_Requester.Tawarkankerja');
+    return view('Job_Requester.postwork');
+});
+
+// Route::get('/job-req/pesan', function () {
+Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
+
+Route::post('/postwork', [RequestController::class, 'add']);
+
+Route::get('/request/{request:slug}', function (Request $request) {
+    return view('request', ['workRequest' => $request]);
+});
+
+Route::get('/edit/{request:slug}', function (Request $request) {
+    return view('edit', ['workRequest' => $request]);
 });
 
 Route::get('/job-req/pesan', function () {
     return view('Job_Requester.dummy-job_req-pesan');
 });
+
 
 Route::get('/job-req/riwayat', function () {
     return view('Job_Requester.dummy-job_req-riwayat');
@@ -77,6 +103,10 @@ Route::get('/job-taker/beranda', function(){
 });
 
 Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
+Route::get('/job-taker/cari-kerja', function () {
+    return view('Job_Taker.dummy-job_taker-carikerja');
+});
+
 
 Route::get('/job-taker/pesan', function () {
     return view('Job_Taker.dummy-job_taker-pesan');

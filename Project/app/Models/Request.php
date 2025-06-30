@@ -17,6 +17,7 @@ class Request extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'price',
         'location',
@@ -26,7 +27,7 @@ class Request extends Model
         'end_time',
     ];
     protected $attributes = [
-        'status' => 'pending',
+        'status' => 'open',
     ];
     protected $casts = [
         'price' => 'decimal:2',
@@ -34,19 +35,19 @@ class Request extends Model
         'end_time' => 'datetime',
     ];
 
-    public function requester() : BelongsTo
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
-    public function transactions() : HasMany
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'request_id');
     }
-    public function payments() : HasMany
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'request_id');
     }
-    public function chatRooms() : HasMany
+    public function chatRooms(): HasMany
     {
         return $this->hasMany(ChatRoom::class, 'request_id');
     }
