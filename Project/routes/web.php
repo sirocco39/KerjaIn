@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerRegistrationController;
 use App\Http\Controllers\browseWorkRequestController;
 use App\Http\Controllers\RequestController;
@@ -44,9 +45,10 @@ Route::get('/job-req/beranda', function () {
 });
 
 Route::get('/job-req/tawarkan-kerja', function () {
-    return view('Job_Requester.dummy-job_req-tawarkankerja');
+    return view('Job_Requester.postwork');
 });
 
+// Route::get('/job-req/pesan', function () {
 Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
 
 Route::post('/postwork', [RequestController::class, 'add']);
@@ -63,14 +65,9 @@ Route::get('/job-req/pesan', function () {
     return view('Job_Requester.dummy-job_req-pesan');
 });
 
+
 Route::get('/job-req/riwayat', function () {
     return view('Job_Requester.dummy-job_req-riwayat');
-});
-
-
-
-Route::get('/job_taker', function () {
-    return view('Job_Taker.dummy-job_taker-landingpage');
 });
 
 Route::get('/joinworker', function () {
@@ -99,9 +96,6 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
     Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
     Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
 });
-Route::get('/job-taker/beranda', function(){
-    return view('Job_Taker.job_taker-beranda');
-});
 
 Route::get('/job-taker/beranda', function () {
     //get five latest open requests and deleted_at is null
@@ -113,15 +107,10 @@ Route::get('/job-taker/beranda', function () {
         ->take(5)
         ->with('requester', 'request')
         ->get();
-
-    $fiveLatestRequests = Request::whereNull('deleted_at')
-        ->where('status', 'open')
-        ->latest()
-        ->take(5)
-        ->with('requester')
-        ->get();
-    return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction', 'fiveLatestRequests'));
+    return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction'));
 });
+
+Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
 
 Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
@@ -133,11 +122,6 @@ Route::get('/job-taker/pesan', function () {
 Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
 });
-
-// Route::get('/postwork', function () {
-//     return view('postwork');
-// });
-
 
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');

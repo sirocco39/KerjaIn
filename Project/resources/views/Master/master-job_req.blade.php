@@ -195,7 +195,7 @@
                                 <li><a class="dropdown-item d-flex align-items-center gap-1" href="/joinworker"><img
                                             src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
                                             class="navIcon">Menjadi Mitra</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job_taker"><img
+                                <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job-taker/beranda"><img
                                             src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                             class="navIcon">Ganti Peran</a></li>
                             @endauth

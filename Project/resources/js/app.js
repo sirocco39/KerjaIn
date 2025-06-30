@@ -5,3 +5,4 @@ import '../css/master.css';
 import '../css/search.css';
 import '../css/cari-kerja.css';
 import '../css/beranda.css';
+import '../css/postwork.css';

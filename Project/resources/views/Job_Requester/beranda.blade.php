@@ -271,14 +271,14 @@
 
                             if(statusText === 'Diterima'){
                                 buttonAction1.innerHTML = `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="#">Pesan</a>`
-                                buttonAction2.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Batalkan</a>`
-                            } else if(statusText === 'Dikerjakan'){
+                                buttonAction2.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Batalin</a>`
+                            } else if(statusText === 'Dikerjain'){
                                 buttonAction1.innerHTML = `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="#">Pesan</a>`
-                                buttonAction2.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Laporkan</a>`
+                                buttonAction2.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Laporin</a>`
                             } else if(statusText === 'Ditinjau'){
                                 buttonAction1.innerHTML = `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Konfirmasi</a>`
                                 buttonAction2.innerHTML = `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
-                                buttonAction3.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporkan</a>`
+                                buttonAction3.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporin</a>`
                             }
 
                             modalStatus.innerHTML = `<p class="mb-0">${statusText}</p>`;
@@ -306,10 +306,10 @@
             function getStatusText(status) {
                 switch (status?.toLowerCase()) {
                     case 'accepted': return 'Diterima';
-                    case 'in progress': return 'Dikerjakan';
+                    case 'in progress': return 'Dikerjain';
                     case 'submitted': return 'Ditinjau';
                     case 'completed': return 'Selesai';
-                    case 'cancelled': return 'Dibatalkan';
+                    case 'cancelled': return 'Dibatalin';
                     default: return '-';
                 }
             }

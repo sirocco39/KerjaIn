@@ -80,7 +80,7 @@ class RequestController extends Controller
 
         $result = $workRequest->save();
         if ($result) {
-            return redirect()->route('requesttt.show', $workRequest->slug);
+            return redirect()->to('/job-req/beranda');
         } else {
             return "request error";
         }
@@ -157,7 +157,7 @@ class RequestController extends Controller
         // now update the request on database
         $result = $workRequest->save();
         if ($result) {
-            return redirect()->route('requesttt.show', $workRequest->slug);
+            return redirect()->to('/job-req/beranda');
         } else {
             return "request update error";
         }
