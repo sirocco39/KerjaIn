@@ -5,7 +5,14 @@ use App\Http\Controllers\browseWorkRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;       
+use App\Http\Controllers\PusherController;
+
+// Route untuk feature chat on going work request
+Route::get('/job-req/on-going-work-request', [PusherController::class, 'index']);
+Route::get('/broadcast', [PusherController::class, 'broadcast']);
+Route::get('/receive', [PusherController::class, 'receive']);
+
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
@@ -19,6 +26,11 @@ Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('lo
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+// Route on going-work-request
+Route::get('/job-req/on-going-work-request', function () {
+    return view('workRequest.on-going-work-request');
+});
 
 Route::get('/', function () {
     return view('Job_Requester.dummy-job_req-landingpage');
@@ -101,3 +113,4 @@ Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])-
 Route::get('/', function () {
     return view('landing');
 });
+
