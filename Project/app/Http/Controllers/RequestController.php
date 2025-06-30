@@ -53,7 +53,7 @@ class RequestController extends Controller
         $workRequest = new RequestModel();
 
         //from getting data from other
-        $workRequest->requester_id = 5;
+        $workRequest->requester_id = 6; // Assuming the user is authenticated
 
         $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}:00");
         $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}:00");

@@ -19,6 +19,11 @@ class WorkerRegistrationController extends Controller
     // Method untuk menampilkan form langkah 1 (Data Pribadi)
     public function createStep1()
     {
+        $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
+        if ($verificationRequest) {
+            // Jika ada permintaan verifikasi yang masih pending atau approved, arahkan ke halaman sukses
+            return redirect()->route('worker.register.pending');
+        }
         // Ambil data dari session jika ada, untuk mengisi ulang form
         $data = Session::get('worker_registration.step1', []);
         return view('joinWorker.join', compact('data'));
@@ -29,7 +34,6 @@ class WorkerRegistrationController extends Controller
         // Validate input data
         $this->validate($request, [
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
             'nik' => [
                 'required',
                 'string',
@@ -38,20 +42,31 @@ class WorkerRegistrationController extends Controller
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
-            'birthdate' => 'required|date_format:d/m/Y|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
-            'gender' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
+            'birthdate' => 'required|date|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
+            'gender' => 'required|in:Male,Female',
             'address' => 'required|string|max:255',
             'phone_number' => [
                 'required',
                 'string',
-                'regex:/^(\+62|62|0)[0-9]{9,12}$/',
+                'regex:/^(08)[0-9]{9,11}$/',
                 Rule::unique('verification_requests', 'phone_number')->where(function ($query) {
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
+        ], [
+            'first_name.required' => 'Nama depan tidak boleh kosong.',
+            'address.required' => 'Alamat tidak boleh kosong.',
+            'gender.required' => 'Jenis kelamin tidak boleh kosong.',
+            'nik.required' => 'NIK tidak boleh kosong.',
+            'nik.digits' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'phone_number.required' => 'Nomor telepon tidak boleh kosong.',
+            'birthdate.before_or_equal' => 'Usia harus minimal 17 tahun.',
+            'phone_number.regex' => 'Masukkan nomor telepon yang valid dengan format 08XXXXXXXXXX.',
+            'phone_number.unique' => 'Nomor telepon sudah terdaftar.',
+
         ]);
 
-        $formattedBirthdate = Carbon::createFromFormat('d/m/Y', $request->birthdate)->format('Y-m-d');
 
         // Simpan data langkah 1 ke sesi
         Session::put('worker_registration.step1', [
@@ -59,7 +74,7 @@ class WorkerRegistrationController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'nik' => $request->nik,
-            'birthdate' => $formattedBirthdate,
+            'birthdate' => $request->birthdate,
             'gender' => $request->gender, // Simpan format mentah 'Laki-laki'/'Perempuan'
             'address' => $request->address,
             'phone_number' => $request->phone_number,
@@ -84,11 +99,12 @@ class WorkerRegistrationController extends Controller
         }
 
         // Validasi untuk agree_terms tetap dipertahankan karena ada 'required' di HTML
-        $this->validate($request, [
-            'agree_terms' => 'required|accepted',
+        $request->validate([
+            'agree_terms' => 'accepted',
+            'agree_data_usage' => 'accepted',
         ], [
-            'agree_terms.required' => 'Anda harus menyetujui Syarat dan Ketentuan KerjaIn.',
-            'agree_terms.accepted' => 'Anda harus menyetujui Syarat dan Ketentuan KerjaIn.',
+            'agree_terms.accepted' => 'Anda harus menyetujui Syarat dan Ketentuan.',
+            'agree_data_usage.accepted' => 'Anda harus menyetujui penggunaan data untuk verifikasi dan keamanan.',
         ]);
 
         Session::put('worker_registration.step2', ['completed' => true]);
@@ -113,6 +129,19 @@ class WorkerRegistrationController extends Controller
         return view('joinWorker.join3', compact('allData', 'step3Data'));
     }
 
+    private function storeFile(Request $request, string $inputName, string $basePath, int $userId): ?string
+    {
+        if ($request->hasFile($inputName)) {
+            $file = $request->file($inputName);
+            $filename = $inputName . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = "{$basePath}/user_{$userId}";
+            return $file->storeAs($path, $filename);
+        }
+
+        return null;
+    }
+
+
     public function finalizeRegistration(Request $request)
     {
         // Pastikan pengguna sudah login
@@ -134,7 +163,7 @@ class WorkerRegistrationController extends Controller
             'id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:122880',
             'selfie_with_id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:122880',
             'account_name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:255',
+            'account_number' => 'required|string|max:10',
         ], [
             'photo_url.required' => 'Foto Diri wajib diunggah.',
             'photo_url.image' => 'File harus berupa gambar.',
@@ -157,25 +186,26 @@ class WorkerRegistrationController extends Controller
 
             'account_number.required' => 'Nomor Rekening wajib diisi.',
             'account_number.string' => 'Nomor Rekening harus berupa teks.',
-            'account_number.max' => 'Nomor Rekening tidak boleh lebih dari 255 karakter.',
+            'account_number.max' => 'Nomor Rekening tidak boleh lebih dari 10 karakter.',
         ]);
 
         // Path penyimpanan untuk file yang diunggah
+        $userId = Auth::id();
         $storagePath = 'public/worker_verification_documents';
-        $selfiePhotoPath = $request->file('photo_url')->store($storagePath);
-        $idCardPhotoPath = $request->file('id_card_url')->store($storagePath);
-        $selfieWithIdCardPhotoPath = $request->file('selfie_with_id_card_url')->store($storagePath);
+        $selfiePhotoPath = $this->storeFile($request, 'photo_url', $storagePath, $userId);
+        $idCardPhotoPath = $this->storeFile($request, 'id_card_url', $storagePath, $userId);
+        $selfieWithIdCardPhotoPath = $this->storeFile($request, 'selfie_with_id_card_url', $storagePath, $userId);
 
         // Siapkan array data untuk model VerificationRequest
         $verificationData = [
             // 'user_id' => Auth::id(), // user_id pasti ada karena sudah divalidasi Auth::check()
-            'user_id' => 1,
+            'user_id' => $userId,
             'status' => 'pending',
             'first_name' => $step1Data['first_name'],
             'last_name' => $step1Data['last_name'],
             'nik' => $step1Data['nik'],
             'birthdate' => $step1Data['birthdate'],
-            'gender' => $step1Data['gender'] == 'Laki-laki' ? 'Male' : ($step1Data['gender'] == 'Perempuan' ? 'Female' : null),
+            'gender' => $step1Data['gender'],
             'address' => $step1Data['address'],
             'phone_number' => $step1Data['phone_number'],
             'photo_url' => $selfiePhotoPath,
@@ -205,5 +235,10 @@ class WorkerRegistrationController extends Controller
     public function showSuccessPage()
     {
         return view('joinWorker.success');
+    }
+
+    public function showPendingPage()
+    {
+        return view('joinWorker.pending');
     }
 }

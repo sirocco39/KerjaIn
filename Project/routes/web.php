@@ -27,6 +27,7 @@ Route::get('/', function () {
     return view('Job_Requester.dummy-job_req-landingpage');
 });
 
+
 Route::resource('requesttt', RequestController::class);
 
 Route::get('/job-req/beranda', function () {
@@ -41,9 +42,10 @@ Route::get('/job-req/beranda', function () {
 
 Route::get('/job-req/tawarkan-kerja', function () {
     return view('Job_Requester.Tawarkankerja');
+    return view('Job_Requester.postwork');
 });
 
-
+// Route::get('/job-req/pesan', function () {
 Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
 
 Route::post('/postwork', [RequestController::class, 'add']);
@@ -71,7 +73,32 @@ Route::get('/job_taker', function () {
     return view('Job_Taker.dummy-job_taker-landingpage');
 });
 
+Route::get('/joinworker', function () {
+    return redirect()->route('worker.register.step1');
+});
 
+// Grup route untuk pendaftaran pekerja tanpa autentikasi
+Route::prefix('joinWorker')->name('worker.register.')->group(function () {
+    // Langkah 1: Data Pribadi (Form GET, Proses POST)
+    // URL: /joinWorker/join
+    Route::get('/join', [WorkerRegistrationController::class, 'createStep1'])->name('step1');
+    Route::post('/join', [WorkerRegistrationController::class, 'store1'])->name('store1'); // <-- KEMBALIKAN KE 'store1'
+
+    // Langkah 2: Detail Kontrak (Form GET, Proses POST)
+    // URL: /joinWorker/join2
+    Route::get('/join2', [WorkerRegistrationController::class, 'createStep2'])->name('step2');
+    Route::post('/join2', [WorkerRegistrationController::class, 'store2'])->name('store2');
+
+    // Langkah 3: Verifikasi / Upload Dokumen / Finalisasi (Form GET, Proses POST)
+    // URL: /joinWorker/join3
+    Route::get('/join3', [WorkerRegistrationController::class, 'createStep3'])->name('step3');
+    Route::post('/join3', [WorkerRegistrationController::class, 'finalizeRegistration'])->name('finalize');
+
+    // Halaman Sukses
+    // URL: /joinWorker/success
+    Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
+    Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
+});
 Route::get('/job-taker/beranda', function () {
     return view('Job_Taker.dummy-job_taker-beranda');
 });
@@ -91,9 +118,6 @@ Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
 });
 
-// Route::get('/postwork', function () {
-//     return view('postwork');
-// });
 
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');
@@ -103,7 +127,6 @@ Route::get('/navbar-job_taker', function () {
 Route::get('/navbar-job_req', function () {
     return view('Master.master-job_req');
 });
-
 
 
 Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');

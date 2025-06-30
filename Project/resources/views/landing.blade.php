@@ -8,10 +8,10 @@
     <div class="d-flex flex-wrap flex-lg-nowrap position-relative align-items-center px-3" style="min-height: 500px;">
       
       <!-- Konten Teks -->
-      <div class="text-content custom-translate mb-5">
-        <h1 class="display-5 fw-bold mb-3" style="font-family: 'Manrope';">Mau segala sesuatu selesai?</h1>
+      <div class="text-content custom-translate mb-5" style: "margin-left: 20px">
+        <h1 class="display-5 fw-bold mb-3" style="font-family: 'Manrope'">Mau segala sesuatu selesai?</h1>
         <h1 class="display-5 fw-bold mb-3" style="margin-left: 4px">Yuk, <span style="color: #D3FA0D">Kerja</span><span style="background-color: #309FFF; color: white; padding: 1px 8px; border-radius: 0.5rem;">In</span>!</h1>
-        <p class="mt-4 fs-6" style="font-family: 'Inter';">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
+        <p class="mt-4 fs-6" style="font-family: 'Inter'; max-width: 800px; padding: 0px 30px; margin-left: -30px">Kerjain adalah solusi digital untuk kebutuhan kerja serabutan. Platform ini menghubungkan pemberi kerja dengan pekerja harian secara cepat, mudah, dan efisien. Temukan bantuan yang kamu butuhkan, atau mulai dapat penghasilan hari ini.</p>
         <div class="mt-4">
           <div class="garis-tengah"></div>
           <button type="button" class="btn-pekerja" style="font-size: 18px" data-bs-toggle="modal" data-bs-target="#logoutModal">Daftar Sekarang</button>
@@ -155,7 +155,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center">
-        <h1 class="display-5 fw-bold mb-4" style="font-family: 'Manrope';">Alur Kerja</h1>
+        <h1 class="fw-bold mb-5" style="font-family: 'Manrope';">Alur Kerja</h1>
         <p class="lead mb-5" style="font-size: 1.25rem; font-style: italic;">"Jangan tunggu kesempatan datang, Buka aplikasi, dan ciptakan peluangmu sendiri."</p>
         
         <div class="d-flex flex-column flex-md-row justify-content-center gap-4 mb-5">
