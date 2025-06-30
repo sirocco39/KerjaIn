@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
+            $table->string('slug', 512);
             $table->foreignId('requester_id')->constrained('users');
             $table->string('title', 256);
             $table->text('description');
