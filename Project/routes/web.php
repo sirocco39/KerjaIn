@@ -116,9 +116,6 @@ Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
 });
 
-Route::get('/postwork', function () {
-    return view('Job_Requester.postwork');
-});
 
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');
