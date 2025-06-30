@@ -8,10 +8,8 @@ use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;       
 use App\Http\Controllers\PusherController;
 
-// Route untuk feature chat on going work request
-Route::get('/job-req/on-going-work-request', [PusherController::class, 'index']);
-Route::get('/broadcast', [PusherController::class, 'broadcast']);
-Route::get('/receive', [PusherController::class, 'receive']);
+// Route on-going-work-request
+
 
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
