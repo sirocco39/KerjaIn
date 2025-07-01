@@ -69,7 +69,7 @@
                             $endtime = date('H.i', $enddatetime);
                             ?>
 
-                            <h4 class="fw-bold mb-1">{{ $r->title }}</h4>
+                            <h4 class="fw-bold mb-1">{{ $r->request->title }}</h4>
 
                             <ul class="job-req-card-details d-flex justify-content-between mt-1 flex-column flex-md-row">
                                 <li class="col-12 col-md-2 gap-2 me-2">
