@@ -89,7 +89,7 @@
     {{-- Navbar Section --}}
     <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="/job-req/beranda">
                 <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain"
                     id="logoNavbar">
             </a>
@@ -195,7 +195,8 @@
                                 <li><a class="dropdown-item d-flex align-items-center gap-1" href="/joinworker"><img
                                             src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
                                             class="navIcon">Menjadi Mitra</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job-taker/beranda"><img
+                                <li><a class="dropdown-item d-flex align-items-center gap-1"
+                                        href="/job-taker/beranda"><img
                                             src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                             class="navIcon">Ganti Peran</a></li>
                             @endauth
@@ -235,28 +236,32 @@
                     @auth
                         <a href="/job-req/beranda" class="foot-list">Beranda</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Beranda</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">Beranda</a>
                     @endauth
 
 
                     @auth
                         <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan Kerja</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
+                            Kerja</a>
                     @endauth
 
 
                     @auth
                         <a href="/job-req/pesan" class="foot-list">Pesan</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Pesan</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">Pesan</a>
                     @endauth
 
 
                     @auth
                         <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Riwayat</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">Riwayat</a>
                     @endauth
                 </div>
             </div>
@@ -264,17 +269,32 @@
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-3">
                 <h4>Penawaran</h4>
                 <div class="list-group gap-2">
-                    <a href="#" class="foot-list">Acara</a>
-                    <a href="#" class="foot-list">Promo</a>
+                    @auth
+                        <a href="#" class="foot-list">Acara</a>
+                        <a href="#" class="foot-list">Promo</a>
+                    @else
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Acara</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Promo</a>
+                    @endauth
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-4">
                 <h4>Bantuan</h4>
                 <div class="list-group gap-2">
-                    <a href="#" class="foot-list">Akun</a>
-                    <a href="#" class="foot-list">Laporkan</a>
-                    <a href="#" class="foot-list">Saran</a>
+                    @auth
+                        <a href="#" class="foot-list">Akun</a>
+                        <a href="#" class="foot-list">Laporkan</a>
+                        <a href="#" class="foot-list">Saran</a>
+                    @else
+                        <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Laporkan</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Saran</a>
+                    @endauth
                 </div>
             </div>
 
