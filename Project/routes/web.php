@@ -9,10 +9,14 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;       
 use App\Http\Controllers\PusherController;
+use App\Http\Controllers\TransactionController;
 
 // Route on-going-work-request
-Route::get('/job-req/on-going-work-request', function() {
-    return view('Job_Requester.on-going-work-request');});
+Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing');
+
+Route::post('/transaction/{id}/cancel', [TransactionController::class, 'cancel'])->name('transaction.cancel');
+
+
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 

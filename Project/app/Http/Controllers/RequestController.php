@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Request as JobRequest;
 
 use App\Models\Request as RequestModel; // Avoid conflict with the Request facade
 
@@ -180,5 +181,10 @@ class RequestController extends Controller
         } else {
             return back()->withErrors(['error' => 'Failed to delete request.']);
         }
+    }
+        public function showOngoing($id)
+    {
+        $request = JobRequest::findOrFail($id);
+        return view('Job_Requester.on-going-work-request', compact('request'));
     }
 }

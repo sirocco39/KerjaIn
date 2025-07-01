@@ -1,0 +1,8 @@
+.star-rating {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating.hovered
+.star-rating.selected {
+    color: #ceab00; /* warna biru saat dipilih */
+}
