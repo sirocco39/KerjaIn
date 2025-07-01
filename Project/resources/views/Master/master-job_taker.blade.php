@@ -26,6 +26,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarCollapseFull">
+
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}" href="/job-taker/beranda">Beranda</a></li>
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}" href="/job-taker/cari-kerja">Cari Kerja</a></li>
@@ -61,7 +62,7 @@
                             <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#loginModal"><img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login" class="navIcon">Masuk</button></li>
                             <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#logoutModal"><img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout" class="navIcon">Keluar</button></li>
                             <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra" class="navIcon">Menjadi Mitra</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/"><img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran" class="navIcon">Ganti Peran</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job-req/beranda"><img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran" class="navIcon">Ganti Peran</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -106,7 +107,6 @@
                 <div class="list-group gap-2">
                     <a href="#" class="foot-list">Acara</a>
                     <a href="#" class="foot-list">Promo</a>
-                    <a href="#" class="foot-list">Ajukan Percobaan</a>
                 </div>
             </div>
 

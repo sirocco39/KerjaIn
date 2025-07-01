@@ -33,6 +33,16 @@
     border: 1.5px solid rgba(0, 0, 0, 0.1);
 }
 
+.work-request:hover{
+    cursor: pointer;
+    border: 2px solid #294287;
+}
+
+.work-request.choosed{
+    cursor: default;
+    border: 4px solid #294287;
+}
+
 .job-req-card-details {
     list-style: none;
     padding: 0;
@@ -133,6 +143,9 @@ line-height: 1.1rem;
     background-color: #BF3F4C;
 }
 
+#modal-detail-description-text, #detail-description-text{
+    text-align: justify;
+}
 
 /* CSS Job Taker */
 

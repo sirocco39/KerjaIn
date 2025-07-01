@@ -204,7 +204,9 @@
                         </li>
                     </ul>
                     <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
-                    <p class="mb-3" id="modal-detail-description-text"></p>
+                    <div class="wrapDesc mb-3">
+                        <p class="mb-0" id="modal-detail-description-text"></p>
+                    </div>
 
                     <h5 class="detail-status fw-bold d-flex mt-3">Status:</h5>
                     <p class="mb-3" id="modal-detail-status"></p>
@@ -315,10 +317,12 @@
                         } else if(statusText === 'Dikerjain'){
                             buttonAction1.innerHTML = `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Selesai</a>`
                             buttonAction2.innerHTML = `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
-                            buttonAction3.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporin</a>`
                         } else if(statusText === 'Ditinjau'){
-                            buttonAction1.innerHTML = `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="#">Pesan</a>`
-                            buttonAction2.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Laporin</a>`
+                            buttonAction1.innerHTML = `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
+                            buttonAction2.innerHTML = `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
+                            buttonAction3.innerHTML = `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporin</a>`
+                        } else if(statusText === 'Selesai'){
+                            buttonAction1.innerHTML = `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
                         }
 
                         modalStatus.innerHTML = `<p class="mb-0">${statusText}</p>`;
@@ -340,6 +344,15 @@
                     });
             });
 
+            // Event listener untuk menutup modal
+            modal.addEventListener('hidden.bs.modal', function () {
+                // Hapus kelas 'choosed' dari semua elemen 'work-request'
+                const workRequestCards = document.querySelectorAll('.work-request');
+                workRequestCards.forEach(card => {
+                    card.classList.remove('choosed');
+                });
+            });
+
             function getStatusText(status) {
                 switch (status?.toLowerCase()) {
                     case 'accepted': return 'Diterima';
@@ -350,6 +363,29 @@
                     default: return '-';
                 }
             }
+
+            // Mendapatkan semua elemen dengan kelas 'work-request'
+            const workRequestCards = document.querySelectorAll('.work-request');
+
+            workRequestCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Hapus kelas 'choosed' dari semua elemen 'work-request' lainnya
+                    workRequestCards.forEach(otherCard => {
+                        otherCard.classList.remove('choosed');
+                    });
+
+                    // Tambahkan kelas 'choosed' ke elemen 'work-request' yang diklik
+                    this.classList.add('choosed');
+
+                    // Temukan tombol detail di dalam elemen 'work-request' yang diklik
+                    const detailButton = this.querySelector('.detail-req-button');
+
+                    // Pastikan tombol detail ditemukan sebelum memicu klik
+                    if (detailButton) {
+                        detailButton.click(); // Memicu event klik pada tombol detail
+                    }
+                });
+            });
         });
     </script>
 @endsection

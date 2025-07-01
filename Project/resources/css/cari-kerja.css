@@ -4,7 +4,7 @@
 }
 
 .job-listings::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 .job-card{
@@ -96,6 +96,20 @@
     width: 20vw;
 }
 
+.wrapDesc::-webkit-scrollbar, .wrapDesc_ori::-webkit-scrollbar{
+    display: none;
+}
+
+.wrapDesc{
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+.wrapDesc_ori{
+    overflow-y: auto;
+    max-height: 300px;
+}
+
 #detail-description-text{
     text-align: justify;
 }
@@ -122,19 +136,11 @@
 }
 
 #button-terima, .btn-terima-modal{
-    background-color: #309FFF !important;
-}
-
-#button-terima:hover, .btn-terima-modal:hover{
-    background-color: #5CB3FF !important;
-}
-
-.btn-terima-modal{
     background-color: #E8FA0D !important;
     color: #294287;
 }
 
-.btn-terima-modal:hover{
+#button-terima:hover, .btn-terima-modal:hover{
     background-color: #def113 !important;
 }
 
