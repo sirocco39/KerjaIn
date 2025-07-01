@@ -24,23 +24,27 @@ class ChatRoom extends Model
     protected $casts = [
         'is_open' => 'boolean',
     ];
-    public function chatMessages() : HasMany
+    public function lastMessage()
+    {
+        return $this->hasOne(ChatMessage::class)->latestOfMany();
+    }
+    public function chatMessages(): HasMany
     {
         return $this->hasMany(ChatMessage::class, 'chat_room_id');
     }
-    public function request() : BelongsTo
+    public function request(): BelongsTo
     {
         return $this->belongsTo(Request::class, 'request_id');
     }
-    public function requester() : BelongsTo
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
-    public function worker() : BelongsTo
+    public function worker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'worker_id');
     }
-    public function offers() : HasMany
+    public function offers(): HasMany
     {
         return $this->hasMany(Offer::class, 'chat_room_id');
     }

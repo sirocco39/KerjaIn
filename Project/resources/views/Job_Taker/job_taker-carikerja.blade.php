@@ -136,7 +136,11 @@
 
                     <div class="detail-buttons-placeholder d-flex gap-3 justify-content-end mt-auto">
                         <button class="details-button-item" id="button-tawar">Tawar</button>
+<<<<<<< Updated upstream
                         <button class="details-button-item" id="button-hubungi">Pesan</button>
+=======
+                        <a href="#" class="details-button-item" id="button-hubungi">Hubungi</a>
+>>>>>>> Stashed changes
                         <button class="details-button-item" id="button-terima">Terima</button>
                     </div>
                 </div>
@@ -195,7 +199,7 @@
 
                         <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
                             <button class="details-button-item btn-tawar-modal">Tawar</button>
-                            <button class="details-button-item btn-hubungi-modal">Pesan</button>
+                            <a href="#" class="details-button-item btn-hubungi-modal">Hubungi</a>
                             <button class="details-button-item btn-terima-modal">Terima</button>
                         </div>
                     </div>
@@ -269,6 +273,14 @@
                         return response.json();
                     })
                     .then(data => {
+                        document.querySelector('.btn-hubungi-modal').setAttribute(
+                            'href',
+                            `/hubungi/${requestId}`
+                        );
+                        document.getElementById('button-hubungi').setAttribute(
+                            'href',
+                            `/hubungi/${requestId}`
+                        );
                         // Populate the detail panel with fetched data
                         detailTitle.textContent = data.title;
                         detailInstruction.style.display = 'none'; // Hide "Tampilkan Detail Di sini" after loading

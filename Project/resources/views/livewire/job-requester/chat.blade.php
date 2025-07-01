@@ -1,0 +1,95 @@
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        {{-- Kolom Kiri: Daftar Request & Worker --}}
+        <div class="col-4 border-end overflow-auto py-4">
+            <h5 class="fw-bold mb-4 ps-3">Pesan Pekerjaan</h5>
+            @forelse ($requestsWithChats as $request)
+                <div class="border-bottom mb-2 pb-2">
+                    <div wire:click="toggleExpand({{ $request->id }})" class="px-3 py-2" style="cursor: pointer;">
+                        <p class="fw-bold mb-1">{{ $request->title }}</p>
+                        <p class="mb-0 text-muted small">{{ $request->location }}</p>
+                    </div>
+
+                    @if ($expandedRequestId === $request->id)
+                        <div class="ps-4 pe-2 mt-2">
+                            @forelse ($request->chatRooms as $room)
+                                <div wire:click="selectChat({{ $room->id }})"
+                                    class="p-2 rounded mb-1 {{ $selectedChatRoomId === $room->id ? 'bg-primary text-white' : 'hover:bg-light' }}"
+                                    style="cursor: pointer;">
+                                    <p class="mb-0 fw-semibold">{{ $room->worker->first_name ?? 'Worker' }}</p>
+                                    @if ($room->lastMessage)
+                                        <p class="mb-0 small text-truncate {{ $selectedChatRoomId === $room->id ? 'text-white-50' : 'text-muted' }}">
+                                            {{ $room->lastMessage->message }}
+                                        </p>
+                                    @endif
+                                </div>
+                            @empty
+                                <p class="text-muted small ps-2">Belum ada percakapan.</p>
+                            @endforelse
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <p class="text-muted ps-3">Tidak ada pekerjaan dengan percakapan aktif.</p>
+            @endforelse
+        </div>
+
+        {{-- Kolom Kanan: Panel Chat --}}
+        <div class="col-8 d-flex flex-column p-0 h-100">
+            @if ($chatRoom)
+                {{-- Header Chat --}}
+                <div class="border-bottom p-3">
+                    <h5 class="fw-bold mb-1">Chat dengan {{ $chatRoom->worker->first_name ?? '-' }}</h5>
+                    <p class="mb-1 text-muted">Pekerjaan: {{ $chatRoom->request->title }}</p>
+                </div>
+
+                {{-- Body Chat dengan Auto-Scroll --}}
+                <div x-data x-ref="chatBody"
+                    @scroll-to-bottom.window="$nextTick(() => { $refs.chatBody.scrollTop = $refs.chatBody.scrollHeight; })"
+                    class="flex-grow-1 overflow-auto p-3" style="background-color: #f5f5f5;" wire:poll.10s>
+                    @forelse ($this->messages as $date => $groupedMessages)
+                        {{-- Pembatas Tanggal --}}
+                        <div class="text-center my-3">
+                            <span class="px-3 py-1 bg-white border rounded-pill text-muted small">
+                                {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}
+                            </span>
+                        </div>
+
+                        {{-- Pesan pada tanggal ini --}}
+                        @foreach ($groupedMessages as $msg)
+                            <div class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
+                                <div class="px-3 py-2 rounded-3 mw-75 {{ $msg->sender_id === auth()->id() ? 'bg-primary text-white' : 'bg-white border' }}"
+                                     style="max-width: 75%;">
+                                    {{ $msg->message }}
+                                </div>
+                                <div class="small text-muted mt-1">
+                                    {{ $msg->created_at->format('H:i') }}
+                                </div>
+                            </div>
+                        @endforeach
+                    @empty
+                        <div class="text-center text-muted mt-5">
+                            Mulai percakapan dengan worker ini.
+                        </div>
+                    @endforelse
+                </div>
+
+                {{-- Form Input Chat --}}
+                <form wire:submit.prevent="sendMessage" class="p-3 bg-white border-top">
+                    <div class="input-group">
+                        <input wire:model.defer="newMessage" type="text" class="form-control" placeholder="Tulis pesan..." autocomplete="off">
+                        <button type="submit" class="btn btn-primary">Kirim</button>
+                    </div>
+                </form>
+            @else
+                {{-- Tampilan Default --}}
+                <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
+                    <div class="text-center">
+                        <i class="bi bi-chat-left-text" style="font-size: 3rem;"></i>
+                        <p class="mt-2">Pilih percakapan untuk ditampilkan.</p>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
