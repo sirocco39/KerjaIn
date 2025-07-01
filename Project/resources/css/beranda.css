@@ -1,0 +1,179 @@
+.button-switch{
+    width: fit-content;
+    padding: 6px 12px;
+    border-radius: 50px;
+    border: none;
+    background-color: #309FFF;
+    color: #F7F7FF;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.button-switch:hover{
+    cursor: pointer;
+    background-color: #5CB3FF;
+}
+
+.beranda-req-kiri::-webkit-scrollbar {
+  display: none;
+}
+
+.beranda-req-kiri{
+    height: 75vh;
+    overflow-y: auto;
+}
+
+.beranda-req-kanan{
+    height: 75vh;
+}
+
+.work-request{
+    background-color: #ffffff;
+    border-radius: 35px;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.work-request:hover{
+    cursor: pointer;
+    border: 2px solid #294287;
+}
+
+.work-request.choosed{
+    cursor: default;
+    border: 4px solid #294287;
+}
+
+.job-req-card-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-req-card-details li {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.icon-wrapper-beranda{
+    width: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.job-req-card-details li img {
+    height: 18px;
+    display: block;
+}
+
+.detail-req-button{
+    padding: 6px 12px;
+    border-radius: 50px;
+    border: none;
+    background-color: #309FFF;
+    color: #F7F7FF;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.detail-req-button:hover{
+    background-color: #5CB3FF;
+}
+
+.status{
+    display: flex;
+    justify-content: center;
+    padding: 6px 12px;
+    width: 150px;
+    border-radius: 50px;
+    border: none;
+    background-color: #133E87;
+    color: #F7F7FF;
+    font-weight: bold;
+}
+
+#ilus-beranda{
+    width: 80%;
+}
+
+/* CSS Job Taker */
+
+#header-beranda-job_taker{
+    background: #294287;
+    color: #ffff;
+    padding-top: 20px;
+}
+
+#shortDetail{
+    background-color: #fff;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    border-radius: 25px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+}
+
+#shortDetail .col p{
+    font-size: 0.9rem !important;
+}
+
+#detail-tengah{
+    border-left: 2px solid #676FA3;
+    border-right: 2px solid #676FA3;
+}
+
+.title-detail{
+    font-size: 1.3rem;
+}
+
+.bold-point{
+    font-size: 1.3rem;
+    line-height: 0;
+}
+
+.text-p{
+line-height: 1.1rem;
+}
+
+.btn-hapus-modal{
+    background-color: #B02A37;
+    cursor: pointer;
+}
+
+.btn-hapus-modal:hover{
+    background-color: #BF3F4C;
+}
+
+#modal-detail-description-text, #detail-description-text{
+    text-align: justify;
+}
+
+/* CSS Job Taker */
+
+@media (max-width : 675px){
+    .title-detail, .bold-point{
+        font-size: 1rem;
+    }
+
+    #shortDetail .col p{
+        font-size: 0.7rem !important;
+    }
+}
+
+@media (max-width : 555px){
+    .title-detail, .bold-point{
+        font-size: 0.9rem;
+    }
+    #shortDetail .col p{
+        font-size: 0.6rem !important;
+    }
+}
+
+@media (max-width : 475px){
+    .title-detail, .bold-point{
+        font-size: 0.8rem;
+    }
+
+    #shortDetail .col p{
+        font-size: 0.55rem !important;
+    }
+}

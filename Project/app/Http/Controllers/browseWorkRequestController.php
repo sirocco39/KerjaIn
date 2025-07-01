@@ -20,6 +20,7 @@ class browseWorkRequestController extends Controller
         // Start with all open requests
         $query = WorkRequest::where('status', 'open')
                             ->where('end_time', '>', now()) // Only show requests that haven't passed their end time
+                            ->with('requester')
                             ->orderBy('created_at', 'desc'); // Order by newest first
 
         // Apply search filters using the dedicated method
@@ -66,7 +67,7 @@ class browseWorkRequestController extends Controller
     public function show(WorkRequest $request)
     {
         // Pastikan relasi requester dimuat jika Anda ingin menampilkan info requester
-        // $request->load('requester');
+        $request->load('requester');
 
         return response()->json([
             'id' => $request->id,
@@ -78,6 +79,7 @@ class browseWorkRequestController extends Controller
             'end_time' => $request->end_time->format('Y-m-d H:i'),      // Format untuk JS
             'display_date' => $request->start_time->format('d M Y'), // Untuk tampilan '19 Mei 2025'
             'display_time_range' => $request->start_time->format('H.i') . ' - ' . $request->end_time->format('H.i'),
+            'requester_first_name' => $request->requester->first_name
             // Tambahkan data lain yang mungkin Anda perlukan di detail panel
         ]);
     }
