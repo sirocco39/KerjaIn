@@ -156,7 +156,7 @@
                 <h4>Fitur</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="/job-req/beranda" class="foot-list">Beranda</a>
+                        <a href="/job-taker/beranda" class="foot-list">Beranda</a>
                     @else
                         <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
                             class="foot-list">Beranda</a>
@@ -172,7 +172,7 @@
 
 
                     @auth
-                        <a href="/job-req/pesan" class="foot-list">Pesan</a>
+                        <a href="/job-taker/pesan" class="foot-list">Pesan</a>
                     @else
                         <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
                             class="foot-list">Pesan</a>
@@ -180,7 +180,7 @@
 
 
                     @auth
-                        <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
+                        <a href="/job-taker/riwayat" class="foot-list">Riwayat</a>
                     @else
                         <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
                             class="foot-list">Riwayat</a>
