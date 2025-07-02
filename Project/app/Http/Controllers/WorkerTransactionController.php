@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\CompletionProof;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Models\Request as JobRequest;
+
 
 
 class WorkerTransactionController extends Controller
@@ -17,8 +20,19 @@ class WorkerTransactionController extends Controller
         // Ambil data transaction berdasarkan ID
         $transaction = Transaction::findOrFail($id);
 
+        $request = JobRequest::findOrFail($transaction->request_id);
+
+        // Ambil pekerja yang melakukan pekerjaan berdasarkan relasi
+        $worker = $transaction->worker; // Pastikan relasi sudah ada di model Transaction
+
+        // Generate nomor pesanan random (misalnya 12 digit)
+        $orderNumber = '#' . str_pad(rand(0, 999999999999), 12, '0', STR_PAD_LEFT);
+
+        // Ambil completion proof terkait
+        $completionProof = $transaction->completionProof;
+
         // Kirim ke view
-        return view('Job_Taker.accepted-work-request', compact('transaction'));
+        return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'orderNumber', 'completionProof'));
     }
 
     public function startWork($id, Request $request)
@@ -98,6 +112,5 @@ class WorkerTransactionController extends Controller
                 'price' => $job->price,
             ],
         ]);
-
     }
 }
