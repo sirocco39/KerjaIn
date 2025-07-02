@@ -136,11 +136,7 @@
 
                     <div class="detail-buttons-placeholder d-flex gap-3 justify-content-end mt-auto">
                         <button class="details-button-item" id="button-tawar">Tawar</button>
-<<<<<<< Updated upstream
-                        <button class="details-button-item" id="button-hubungi">Pesan</button>
-=======
                         <a href="#" class="details-button-item" id="button-hubungi">Hubungi</a>
->>>>>>> Stashed changes
                         <button class="details-button-item" id="button-terima">Terima</button>
                     </div>
                 </div>
@@ -393,5 +389,51 @@
                     this.classList.remove('show');
                 }
             });
+            const acceptButtons = document.querySelectorAll('#button-terima, .btn-terima-modal');
+
+        acceptButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (!currentRequestId) {
+                    alert('Silakan pilih pekerjaan terlebih dahulu.');
+                    return;
+                }
+
+                // Tampilkan konfirmasi
+                if (!confirm('Apakah Anda yakin ingin menerima pekerjaan ini?')) {
+                    return;
+                }
+
+                // URL endpoint yang kita buat di routes/web.php
+                const url = `{{ url('/requests') }}/${currentRequestId}/accept`;
+
+                // Ambil CSRF token dari meta tag
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                // Lakukan Fetch request dengan metode POST
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Tampilkan pesan sukses dan redirect
+                        alert(data.message);
+                        window.location.href = data.redirect_url;
+                    } else {
+                        // Handle jika ada error dari server
+                        alert('Terjadi kesalahan. Silakan coba lagi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan koneksi.' +);
+                });
+            });
+        });
         </script>
     @endsection

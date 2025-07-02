@@ -51,4 +51,25 @@ class Request extends Model
     {
         return $this->hasMany(ChatRoom::class, 'request_id');
     }
+
+    public static function hireAndFinalize(Request $request, User $worker): ChatRoom
+    {
+        // Cari atau buat ChatRoom pemenang
+        $winningChatRoom = ChatRoom::firstOrCreate([
+            'request_id'   => $request->id,
+            'worker_id'    => $worker->id,
+            'requester_id' => $request->requester_id,
+        ], ['is_open' => true]);
+
+        // Pastikan room pemenang terbuka
+        $winningChatRoom->update(['is_open' => true]);
+
+        // Tutup semua room lainnya
+        $request->chatRooms()->where('id', '!=', $winningChatRoom->id)->update(['is_open' => false]);
+
+        // Tutup request
+        $request->update(['status' => 'closed']);
+
+        return $winningChatRoom;
+    }
 }

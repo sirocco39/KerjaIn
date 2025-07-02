@@ -4,6 +4,7 @@ namespace App\Livewire\JobRequester;
 
 use App\Models\ChatMessage;
 use App\Models\ChatRoom;
+use App\Models\Offer;
 use App\Models\Request;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,9 +16,9 @@ class Chat extends Component
     public $requestsWithChats = [];
     public $expandedRequestId = null;
     public $selectedChatRoomId = null;
-    public $chatRoom;
-    public $newMessage = '';
-
+    public ?ChatRoom $chatRoom = null;
+    public ?Offer $activeOffer = null; // Properti untuk menyimpan tawaran aktif
+    public $newMessage = ''; // <-- TAMBAHKAN BARIS INI
     public function mount()
     {
         $this->loadRequests();
@@ -26,11 +27,11 @@ class Chat extends Component
     public function loadRequests()
     {
         $this->requestsWithChats = Request::where('requester_id', Auth::id())
+            ->where('status', 'open') // Hanya ambil permintaan yang masih terbuka
             ->whereHas('chatRooms.chatMessages')
-            ->with(['chatRooms.worker', 'chatRooms.lastMessage']) // Tambahkan lastMessage untuk sorting
+            ->with(['chatRooms.worker', 'chatRooms.lastMessage'])
             ->get()
             ->each(function ($request) {
-                // Urutkan chat rooms berdasarkan pesan terakhir
                 $request->chatRooms = $request->chatRooms->sortByDesc(fn($room) => optional($room->lastMessage)->created_at);
             });
     }
@@ -45,11 +46,21 @@ class Chat extends Component
         $this->selectedChatRoomId = $chatRoomId;
         $this->chatRoom = ChatRoom::with(['request', 'worker'])->find($chatRoomId);
 
-        // Kirim event ke browser untuk scroll ke bawah
+        $this->loadActiveOffer(); // Panggil method untuk memuat tawaran
         $this->dispatch('scroll-to-bottom');
     }
 
-    // Menggunakan Computed Property untuk pesan
+    // Method baru untuk memuat tawaran aktif
+    public function loadActiveOffer()
+    {
+        if ($this->chatRoom) {
+            $this->activeOffer = Offer::where('chat_room_id', $this->chatRoom->id)->where('status', 'open')
+                ->latest() // Ambil tawaran yang paling baru
+                ->first();
+        }
+    }
+
+    // Computed property HANYA untuk pesan chat
     public function getMessagesProperty(): Collection
     {
         if (!$this->selectedChatRoomId) {
@@ -64,25 +75,43 @@ class Chat extends Component
             });
     }
 
-    public function sendMessage()
+    // Method untuk merespon tawaran
+    public function respondToOffer(Offer $offer, string $response)
     {
-        if (!$this->chatRoom || trim($this->newMessage) === '') return;
+        if ($offer->requester_id !== Auth::id() || $offer->status !== 'open' || !in_array($response, ['accepted', 'rejected'])) {
+            return; // Validasi keamanan
+        }
 
-        $this->chatRoom->chatMessages()->create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $this->chatRoom->worker_id,
-            'message' => $this->newMessage,
+        $offer->update(['status' => 'closed']);
+
+        if ($response === 'accepted') {
+            $offer->request->update(['price' => $offer->amount]);
+            Request::hireAndFinalize($offer->request, $offer->worker);
+        }
+
+        $this->loadActiveOffer(); // Perbarui tampilan panel tawaran
+    }
+
+    public function send()
+    {
+        if (!$this->chatRoom || trim($this->newMessage) === '') {
+            return;
+        }
+
+        ChatMessage::create([
+            'chat_room_id' => $this->chatRoom->id,
+            'sender_id'    => Auth::id(),
+            'receiver_id'  => $this->chatRoom->worker_id,
+            'message'      => $this->newMessage,
         ]);
 
         $this->reset('newMessage');
-
-        // Kirim event ke browser untuk scroll ke bawah
+        $this->dispatch('clear-input');
         $this->dispatch('scroll-to-bottom');
     }
 
     public function render()
     {
-        // Tidak ada lagi query di sini, lebih efisien!
         return view('livewire.job-requester.chat');
     }
 }

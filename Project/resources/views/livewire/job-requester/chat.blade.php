@@ -18,7 +18,8 @@
                                     style="cursor: pointer;">
                                     <p class="mb-0 fw-semibold">{{ $room->worker->first_name ?? 'Worker' }}</p>
                                     @if ($room->lastMessage)
-                                        <p class="mb-0 small text-truncate {{ $selectedChatRoomId === $room->id ? 'text-white-50' : 'text-muted' }}">
+                                        <p
+                                            class="mb-0 small text-truncate {{ $selectedChatRoomId === $room->id ? 'text-white-50' : 'text-muted' }}">
                                             {{ $room->lastMessage->message }}
                                         </p>
                                     @endif
@@ -35,7 +36,7 @@
         </div>
 
         {{-- Kolom Kanan: Panel Chat --}}
-        <div class="col-8 d-flex flex-column p-0 h-100">
+        <div class="col-8 d-flex flex-column p-0 h-100" wire:poll.5s="loadActiveOffer">
             @if ($chatRoom)
                 {{-- Header Chat --}}
                 <div class="border-bottom p-3">
@@ -43,42 +44,69 @@
                     <p class="mb-1 text-muted">Pekerjaan: {{ $chatRoom->request->title }}</p>
                 </div>
 
+                {{-- Panel Tawaran --}}
+                <div class="p-3 border-bottom bg-light">
+                    @if ($activeOffer)
+                        <div class="text-center">
+                            <p class="mb-1 text-muted">Tawaran Upah Terakhir dari
+                                {{ $activeOffer->worker->first_name }}:</p>
+                            <h4 class="fw-bold">Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}</h4>
+                            @if ($activeOffer->status === 'open')
+                                @if (auth()->id() === $activeOffer->requester_id)
+                                    <div class="d-flex justify-content-center gap-2 mt-2">
+                                        <button wire:click="respondToOffer({{ $activeOffer->id }}, 'rejected')"
+                                            class="btn btn-danger btn-sm">Tolak</button>
+                                        <button wire:click="respondToOffer({{ $activeOffer->id }}, 'accepted')"
+                                            class="btn btn-success btn-sm">Terima</button>
+                                    </div>
+                                @else
+                                    <span class="badge bg-warning text-dark">Menunggu Respon Anda</span>
+                                @endif
+                            @else
+                                <span
+                                    class="badge fs-6 {{ $activeOffer->status === 'accepted' ? 'bg-success' : 'bg-danger' }}">
+                                    Tawaran {{ $activeOffer->status === 'accepted' ? 'Diterima' : 'Ditolak' }}
+                                </span>
+                            @endif
+                        </div>
+                    @else
+                        <p class="text-center text-muted mb-0">Belum ada tawaran yang diajukan.</p>
+                    @endif
+                </div>
+
                 {{-- Body Chat dengan Auto-Scroll --}}
                 <div x-data x-ref="chatBody"
                     @scroll-to-bottom.window="$nextTick(() => { $refs.chatBody.scrollTop = $refs.chatBody.scrollHeight; })"
-                    class="flex-grow-1 overflow-auto p-3" style="background-color: #f5f5f5;" wire:poll.10s>
+                    class="flex-grow-1 overflow-auto p-3" style="background-color: #f5f5f5;" wire:poll.3s>
+
                     @forelse ($this->messages as $date => $groupedMessages)
-                        {{-- Pembatas Tanggal --}}
                         <div class="text-center my-3">
                             <span class="px-3 py-1 bg-white border rounded-pill text-muted small">
                                 {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}
                             </span>
                         </div>
-
-                        {{-- Pesan pada tanggal ini --}}
                         @foreach ($groupedMessages as $msg)
-                            <div class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
-                                <div class="px-3 py-2 rounded-3 mw-75 {{ $msg->sender_id === auth()->id() ? 'bg-primary text-white' : 'bg-white border' }}"
-                                     style="max-width: 75%;">
+                            <div
+                                class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
+                                <div
+                                    class="px-3 py-2 rounded-3 mw-75 {{ $msg->sender_id === auth()->id() ? 'bg-primary text-white' : 'bg-white border' }}">
                                     {{ $msg->message }}
                                 </div>
-                                <div class="small text-muted mt-1">
-                                    {{ $msg->created_at->format('H:i') }}
-                                </div>
+                                <div class="small text-muted mt-1">{{ $msg->created_at->format('H:i') }}</div>
                             </div>
                         @endforeach
                     @empty
-                        <div class="text-center text-muted mt-5">
-                            Mulai percakapan dengan worker ini.
-                        </div>
+                        <div class="text-center text-muted mt-5">Belum ada pesan.</div>
                     @endforelse
                 </div>
 
-                {{-- Form Input Chat --}}
-                <form wire:submit.prevent="sendMessage" class="p-3 bg-white border-top">
+                <form wire:submit.prevent="send" class="p-3 bg-white border-top">
                     <div class="input-group">
-                        <input wire:model.defer="newMessage" type="text" class="form-control" placeholder="Tulis pesan..." autocomplete="off">
-                        <button type="submit" class="btn btn-primary">Kirim</button>
+                        <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''" type="text"
+                            class="form-control" placeholder="Tulis pesan..." autocomplete="off">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
                     </div>
                 </form>
             @else

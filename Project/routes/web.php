@@ -147,3 +147,6 @@ Route::get('/job-taker/pesan/{selectedRoomId?}', function ($selectedRoomId = nul
 Route::get(('/job-req/pesan'), function () {
     return view('Job_Requester.pesan');
 })->name('jobrequester.chat');
+
+Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
+Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
