@@ -535,19 +535,54 @@
             }
         });
 
-        // === Login Password ===
+        // === Register Password ===
+        const rules = {
+            length: {
+                test: value => value.length >= 8 && value.length <= 16,
+                message: 'Minimal 8 dan maksimal 16 karakter.',
+            },
+            lowercase: {
+                test: value => /[a-z]/.test(value),
+                message: 'Mengandung huruf kecil (a–z).',
+            },
+            uppercase: {
+                test: value => /[A-Z]/.test(value),
+                message: 'Mengandung huruf besar (A–Z).',
+            },
+            digit: {
+                test: value => /\d/.test(value),
+                message: 'Mengandung angka (0–9).',
+            },
+            special: {
+                test: value => /[\W_]/.test(value),
+                message: 'Mengandung karakter spesial (contoh: !@#%).',
+            },
+            noSpaces: {
+                test: value => /^\S+$/.test(value),
+                message: 'Tidak boleh mengandung spasi.',
+            }
+        };
+
         loginPasswordInput.addEventListener('blur', function() {
             loginPasswordInput.classList.remove('is-invalid');
             loginPasswordErrorDiv.classList.add('d-none');
         });
 
         loginPasswordInput.addEventListener('input', function() {
-            const errors = [];
+            const value = loginPasswordInput.value.trim();
+            let errors = [];
 
-            if (loginPasswordInput.value.trim() === '') {
-                errors.push('Password harus diisi.');
-            } else if (!passwordRegex.test(loginPasswordInput.value.trim())) {
-                errors.push('Silakan masukkan password yang valid.');
+            if (value === '') {
+                loginPasswordErrorDiv.innerHTML = 'Password harus diisi.';
+                loginPasswordErrorDiv.classList.remove('d-none');
+                loginPasswordInput.classList.add('is-invalid');
+                return;
+            }
+
+            for (const key in rules) {
+                if (!rules[key].test(value)) {
+                    errors.push(rules[key].message);
+                }
             }
 
             if (errors.length > 0) {
