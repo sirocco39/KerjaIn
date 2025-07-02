@@ -46,5 +46,3 @@ class TransactionController extends Controller
     
 
 }
-
-

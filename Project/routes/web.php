@@ -10,14 +10,24 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;       
 use App\Http\Controllers\PusherController;
-use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerTransactionController;
+use App\Models\Transaction;
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 // Route on-going-work-request
 Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing');
 
 Route::post('/transaction/{id}/cancel', [TransactionController::class, 'cancel'])->name('transaction.cancel');
 
+// Route view-accepted-work-request
+Route::get('/job-taker/accepted-work-request/{id}', [WorkerTransactionController::class, 'show'])->name('worker.workRequest.show');
+
+Route::post('/worker/start-work/{id}', [WorkerTransactionController::class, 'startWork'])->name('worker.startWork');
+
+Route::post('/worker/upload-proof/{transaction}', [WorkerTransactionController::class, 'uploadProof'])->name('worker.uploadProof');
+
+Route::post('/worker/mark-complete/{transaction}', [WorkerTransactionController::class, 'markComplete'])->name('worker.markComplete');
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
@@ -40,7 +50,7 @@ Route::resource('requesttt', RequestController::class);
 
 Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
-    $requesterId = Auth::id();
+    $requesterId = FacadesAuth::id();
 
     $fiveLatestRequests = Request::where('requester_id', $requesterId)
         ->whereNull('deleted_at')
@@ -106,7 +116,7 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
 
 Route::get('/job-taker/beranda', function () {
     //get five latest open requests and deleted_at is null
-    $workerId = Auth::id();
+    $workerId = FacadesAuth::id();
 
     $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
         ->whereNull('deleted_at')
