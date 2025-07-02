@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerRegistrationController;
 use App\Http\Controllers\browseWorkRequestController;
 use App\Http\Controllers\RequestController;
@@ -31,20 +32,21 @@ Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-
 Route::get('/', function () {
     return view('Job_Requester.dummy-job_req-landingpage');
 });
-
 
 Route::resource('requesttt', RequestController::class);
 
 Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
-    $fiveLatestRequests = Request::whereNull('deleted_at')
-        ->where('status', 'open')
+    $requesterId = Auth::id();
+
+    $fiveLatestRequests = Request::where('requester_id', $requesterId)
+        ->whereNull('deleted_at')
         ->latest()
-        ->take(5)
+        ->take(6) // Sementara ganti 6, kalo dah kelar ganti 5
+        ->with('transactions')
         ->get();
     return view('Job_Requester.beranda', compact('fiveLatestRequests'));
 });
@@ -75,12 +77,6 @@ Route::get('/job-req/riwayat', function () {
     return view('Job_Requester.dummy-job_req-riwayat');
 });
 
-
-
-Route::get('/job_taker', function () {
-    return view('Job_Taker.dummy-job_taker-landingpage');
-});
-
 Route::get('/joinworker', function () {
     return redirect()->route('worker.register.step1');
 });
@@ -107,15 +103,24 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
     Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
     Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
 });
-Route::get('/job-taker/beranda', function(){
-    return view('Job_Taker.dummy-job_taker-beranda');
+
+Route::get('/job-taker/beranda', function () {
+    //get five latest open requests and deleted_at is null
+    $workerId = Auth::id();
+
+    $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
+        ->whereNull('deleted_at')
+        ->latest()
+        ->take(5)
+        ->with('requester', 'request')
+        ->get();
+    return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction'));
 });
+
+Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
+
 
 Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
-Route::get('/job-taker/cari-kerja', function () {
-    return view('Job_Taker.dummy-job_taker-carikerja');
-});
-
 
 Route::get('/job-taker/pesan', function () {
     return view('Job_Taker.dummy-job_taker-pesan');
@@ -125,7 +130,6 @@ Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
 });
 
-
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');
 });
@@ -134,6 +138,7 @@ Route::get('/navbar-job_req', function () {
     return view('Master.master-job_req');
 });
 
+// Route::get('/browseWorkRequest', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
 
 Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
 

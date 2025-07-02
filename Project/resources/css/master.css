@@ -36,7 +36,7 @@ html::-webkit-scrollbar {
 
 /* Navbar */
 .navbar{
-    padding: 0.75vw 0vw;
+    padding: 15px 0vw;
     font-weight: 500;
     border-bottom: 2px solid #294287;
 }
@@ -248,12 +248,6 @@ html::-webkit-scrollbar {
         padding-top: 20px;
         padding-bottom: 20px;
     }
-
-    /* Navbar */
-    .navbar{
-        padding: 20px 0;
-    }
-    /* End Navbar */
 
     /* Footer */
     #foot-content{

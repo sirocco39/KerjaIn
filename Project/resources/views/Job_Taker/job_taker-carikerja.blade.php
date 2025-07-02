@@ -12,6 +12,13 @@
                         <ul class="job-card-details">
                             <li class="gap-2">
                                 <div class="icon-wrapper">
+                                    <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                                </div>
+                                <span>Kak {{ $request->requester->first_name }}</span>
+                            </li>
+
+                            <li class="gap-2">
+                                <div class="icon-wrapper">
                                     <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
                                 </div>
                                 <span>{{ $request->location }}</span>
@@ -89,6 +96,13 @@
                     <ul class="job-card-details">
                         <li class="gap-2">
                             <div class="icon-wrapper">
+                                <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                            </div>
+                            <span>Kak <span id="detail-profile"></span></span>
+                        </li>
+
+                        <li class="gap-2">
+                            <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
                             </div>
                             <span id="detail-location"></span>
@@ -116,11 +130,13 @@
                         </li>
                     </ul>
                     <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
-                    <p class="mb-3" id="detail-description-text"></p>
+                    <div class="wrapDesc_ori">
+                        <p class="mb-3" id="detail-description-text"></p>
+                    </div>
 
                     <div class="detail-buttons-placeholder d-flex gap-3 justify-content-end mt-auto">
                         <button class="details-button-item" id="button-tawar">Tawar</button>
-                        <button class="details-button-item" id="button-hubungi">Hubungi</button>
+                        <button class="details-button-item" id="button-hubungi">Pesan</button>
                         <button class="details-button-item" id="button-terima">Terima</button>
                     </div>
                 </div>
@@ -137,6 +153,13 @@
                     <div id="modal-content-container" class="p-3">
                         <h1 class="fw-bold mb-3" id="modal-detail-title">Pilih Lowongan Kerja di Kiri</h1>
                         <ul class="job-card-details">
+                            <li class="gap-2">
+                                <div class="icon-wrapper">
+                                    <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                                </div>
+                                <span>Kak <span id="modal-detail-profile"></span></span>
+                            </li>
+
                             <li class="gap-2">
                                 <div class="icon-wrapper">
                                     <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
@@ -166,11 +189,13 @@
                             </li>
                         </ul>
                         <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
-                        <p class="mb-3" id="modal-detail-description-text"></p>
+                        <div class="wrapDesc mb-3">
+                            <p class="mb-0" id="modal-detail-description-text"></p>
+                        </div>
 
                         <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
                             <button class="details-button-item btn-tawar-modal">Tawar</button>
-                            <button class="details-button-item btn-hubungi-modal">Hubungi</button>
+                            <button class="details-button-item btn-hubungi-modal">Pesan</button>
                             <button class="details-button-item btn-terima-modal">Terima</button>
                         </div>
                     </div>
@@ -250,6 +275,7 @@
                         detailImage.style.display = 'none'; // Hide the default image
                         detailImageWrapper.style.display = 'none'; // Hide the image wrapper
 
+                        document.getElementById('detail-profile').textContent = data.requester_first_name;
                         document.getElementById('detail-location').textContent = data.location;
                         document.getElementById('detail-date').textContent = data.display_date;
                         document.getElementById('detail-time').textContent = data.display_time_range;
@@ -260,6 +286,7 @@
                         // backArrow.style.visibility = 'visible'; // Show back arrow
                         if (isMobile) {
                                 document.getElementById('modal-detail-title').textContent = data.title;
+                                document.getElementById('modal-detail-profile').textContent = data.requester_first_name;
                                 document.getElementById('modal-detail-location').textContent = data.location;
                                 document.getElementById('modal-detail-date').textContent = data.display_date;
                                 document.getElementById('modal-detail-time').textContent = data.display_time_range;
@@ -278,13 +305,6 @@
                         // backArrow.style.visibility = 'hidden';
                     });
             }
-
-            document.getElementById('job-details-modal').addEventListener('click', function (e) {
-                const modalContent = this.querySelector('.modal-content');
-                if (!modalContent.contains(e.target)) {
-                    this.classList.remove('show');
-                }
-            });
 
             window.addEventListener('resize', () => {
                 const isMobile = window.innerWidth <= 992;

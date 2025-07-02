@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Request as JobRequest;
 
 use App\Models\Request as RequestModel; // Avoid conflict with the Request facade
+use Illuminate\Support\Facades\Auth;
 
 class RequestController extends Controller
 {
@@ -54,7 +55,7 @@ class RequestController extends Controller
         $workRequest = new RequestModel();
 
         //from getting data from other
-        $workRequest->requester_id = 6; // Assuming the user is authenticated
+        $workRequest->requester_id = Auth::id();
 
         $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}:00");
         $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}:00");
@@ -75,12 +76,12 @@ class RequestController extends Controller
         $workRequest->start_time = $startDatetime;
         $workRequest->end_time = $endDatetime;
 
-        //created: 
+        //created:
         $workRequest->created_at = date("Y-m-d h:i:sa", time());
 
         $result = $workRequest->save();
         if ($result) {
-            return redirect()->route('requesttt.show', $workRequest->slug);
+            return redirect()->to('/job-req/beranda');
         } else {
             return "request error";
         }
@@ -92,18 +93,14 @@ class RequestController extends Controller
     public function show(string $slug)
     {
         //get the request by slug
-        $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
+        $workRequest = RequestModel::where('slug', $slug)->with('transactions')->firstOrFail();
         // If the request is not found, it will throw a 404 error
         // Return the view with the request data
         if (!$workRequest || $workRequest->deleted_at) {
             abort(404, 'Request not found or has been deleted.');
         }
-        // Check if the request is open
-        if ($workRequest->status !== 'open') {
-            abort(404, 'Request is not open.');
-        }
 
-        return view('Job_Requester.request', compact('workRequest'));
+        return response()->json($workRequest);
     }
 
     /**
@@ -161,7 +158,7 @@ class RequestController extends Controller
         // now update the request on database
         $result = $workRequest->save();
         if ($result) {
-            return redirect()->route('requesttt.show', $workRequest->slug);
+            return redirect()->to('/job-req/beranda');
         } else {
             return "request update error";
         }
