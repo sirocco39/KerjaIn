@@ -56,7 +56,7 @@
         }
 
         /* Hapus semua CSS untuk menghilangkan panah pada input type="number"
-                karena sekarang sudah menjadi type="text" */
+                                    karena sekarang sudah menjadi type="text" */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -127,34 +127,12 @@
             padding: 0;
         }
 
-        /* Pastikan area tombol juga memiliki padding vertikal dan sejajar */
+        /* Pastikan area tombol juga memiliki padding vertikal */
         .chat-button-area {
             padding: 0.5rem 1rem !important;
             border-bottom: 1px solid #ddd;
             background-color: #F7F7FF;
-            display: flex; /* Tambahkan flexbox */
-            justify-content: space-between; /* Sejajarkan item ke ujung */
-            align-items: center; /* Pusatkan item secara vertikal */
-            flex-wrap: wrap; /* Biarkan item wrap ke baris baru jika ruang tidak cukup */
         }
-
-        /* Gaya untuk container nominal upah di area tombol */
-        #wageDisplayContainer {
-            display: flex;
-            align-items: center;
-            /* Tambahkan sedikit margin agar tidak terlalu mepet dengan tombol */
-            margin-right: auto; /* Mendorong elemen ke kiri sejauh mungkin */
-        }
-        #wageDisplayContainer small {
-            color: #333; /* Warna teks yang cocok dengan background terang */
-            white-space: nowrap; /* Pastikan teks tidak patah */
-        }
-        #wageDisplayContainer strong {
-            color: #103F91; /* Warna harga yang menonjol */
-            white-space: nowrap; /* Pastikan harga tidak patah */
-            margin-left: 5px; /* Jarak antara teks dan harga */
-        }
-
 
         /* Pastikan area pesan chat memiliki padding internal */
         .chat-messages-area {
@@ -323,20 +301,6 @@
                 color: white;
                 font-size: 1.5rem;
             }
-
-            /* Penyesuaian untuk chat-button-area di mobile */
-            .chat-button-area {
-                flex-direction: column; /* Tumpuk item secara vertikal di mobile */
-                align-items: flex-start; /* Sejajarkan item ke kiri */
-                gap: 0.5rem; /* Beri sedikit jarak vertikal antar item */
-            }
-            #wageDisplayContainer {
-                margin-right: 0; /* Hapus auto margin di mobile */
-            }
-            #wageInteractionContainer {
-                width: 100%; /* Agar tombol dan form mengambil lebar penuh */
-                justify-content: flex-end; /* Sejajarkan ke kanan di mobile */
-            }
         }
 
         /* Pastikan tombol kembali tersembunyi di desktop */
@@ -383,35 +347,50 @@
                                     <small class="text-success">Online</small>
                                 </div>
                             </div>
+
+                            {{-- {{-- Elemen Nominal Upah yang Diajukan SEKARANG SUDAH DIHAPUS DARI SINI --}}
+
                             {{-- Bulatan hijau dipindahkan ke sini --}}
                             <span class="online-indicator me-2"></span>
                         </div>
 
-                        {{-- AREA TOMBOL TAWAR UPAH, BATAL AJUKAN, dan NOMINAL UPAH --}}
-                        <div class="chat-button-area bg-white border">
-                            {{-- Elemen untuk Nominal Upah yang Diajukan dipindahkan ke sini --}}
-                            <div id="wageDisplayContainer">
-                                <small>Nominal Upah yang Anda Ajukan:</small>
-                                <strong id="nominalDiajukan">-</strong>
+                        {{-- AREA TOMBOL TAWAR UPAH DAN BATAL AJUKAN --}}
+                        {{-- AREA TOMBOL TAWAR UPAH DAN BATAL AJUKAN --}}
+                        <div class="d-flex justify-content-between align-items-center chat-button-area bg-white border">
+
+                            {{-- BAGIAN KIRI: Tampilan Nominal Upah --}}
+                            <div>
+                                <small class="">Nominal Upah yang Anda Ajukan:</small><br>
+                                <strong class="fw-bold fs-5" id="nominalDiajukan">-</strong>
                             </div>
 
-                            <div class="d-flex align-items-center gap-2 border-2">
-                                <form id="upahForm" class="upah-input-form">
-                                    <div class="input-group rounded-pill shadow-sm border border-2 border-primary"
-                                        style="overflow: hidden;">
-                                        <span class="input-group-text bg-white border-0 fw-bold px-3">Rp</span>
-                                        <input type="text" id="inputNominal" class="form-control border-0"
-                                            placeholder="150000" style="box-shadow: none;">
-                                    </div>
-                                </form>
+                            {{-- BAGIAN KANAN: Grup Tombol --}}
+                            <div class="d-flex align-items-center gap-2">
 
-                                <button id="btnUpah" class="btn fw-bold text-white" onclick="toggleUpahForm()">
-                                    Tawar Upah
-                                </button>
+                                {{-- Kontainer untuk interaksi 'Tawar Upah' (PENTING untuk animasi) --}}
+                                <div id="wageInteractionContainer">
+                                    {{-- Form untuk input upah (tetap tersembunyi) --}}
+                                    <form id="upahForm" class="upah-input-form">
+                                        <div class="input-group rounded-pill shadow-sm border border-2 border-primary"
+                                            style="overflow: hidden;">
+                                            <span class="input-group-text bg-white border-0 fw-bold px-3">Rp</span>
+                                            <input type="text" id="inputNominal" class="form-control border-0"
+                                                placeholder="150000" style="box-shadow: none;">
+                                        </div>
+                                    </form>
+
+                                    {{-- Tombol untuk memicu form --}}
+                                    <button id="btnUpah" class="btn fw-bold text-white" onclick="toggleUpahForm()">
+                                        Tawar Upah
+                                    </button>
+                                </div>
+
+                                {{-- Tombol Batal Ajukan --}}
+                                <button class="btn btn-danger rounded-5 fw-bold"
+                                    style="font-size: 16px; height: 30px; align-items: center; display: flex;">Batal
+                                    Ajukan</button>
+
                             </div>
-                            <button class="btn btn-danger btn-sm ms-2 rounded-5 fw-bold"
-                                style="font-size: 16px; height: 30px; align-items: center; display: flex;">Batal
-                                Ajukan</button>
                         </div>
 
                         {{-- AREA CHAT UTAMA --}}
@@ -443,23 +422,6 @@
                                         @php
                                             $isRead = true; // Ganti ini dengan logika Anda (misal: $message->is_read)
                                         @endphp
-                                        @if ($isRead)
-                                            <img src="{{ asset('Image/Icon/icon-read.svg') }}" alt="Read"
-                                                class="read">
-                                        @else
-                                            <img src="{{ asset('Image/Icon/icon-Noread.svg') }}" alt="Unread"
-                                                class="unread">
-                                        @endif
-                                    </small>
-                                </div>
-                            </div>
-                            {{-- Bubble Pengirim untuk tawaran upah --}}
-                             <div class="d-flex justify-content-end mb-2">
-                                <div class="shadow-sm bubble-sender">
-                                    <p>Nominal Upah Anda: Rp 150.000</p>
-                                    <small class="timestamp-status">
-                                        <span>17.06</span>
-                                        @php $isRead = true; @endphp
                                         @if ($isRead)
                                             <img src="{{ asset('Image/Icon/icon-read.svg') }}" alt="Read"
                                                 class="read">
@@ -532,7 +494,6 @@
                     console.log('Success:', data);
                     // Tambahkan logika setelah berhasil mengirim, misalnya menambahkan bubble chat baru
                 })
-                })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
@@ -557,7 +518,8 @@
             const chatColumn = document.getElementById('chatColumn');
             const backButton = document.getElementById('backToJobList');
             const jobCards = document.querySelectorAll('.job-card'); // Pilih semua elemen card pekerjaan
-            const nominalDiajukanElement = document.getElementById('nominalDiajukan'); // Dapatkan elemen ini saat DOMContentLoaded
+            const nominalDiajukanElement = document.getElementById(
+                'nominalDiajukan'); // Dapatkan elemen ini saat DOMContentLoaded
 
             // Inisialisasi tampilan nominal upah saat halaman dimuat
             nominalDiajukanElement.textContent = submittedWage;
