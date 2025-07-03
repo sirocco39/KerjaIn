@@ -8,10 +8,20 @@
                     class="px-3 py-2 mb-2 {{ $selectedRoom && $room->id === $selectedRoom->id ? 'bg-light border-start border-primary' : 'hover:bg-light' }}"
                     style="cursor: pointer; border-left-width: 4px; border-color: transparent;">
 
-                    <p class="mb-1 fw-semibold">{{ $room->request->title }}</p>
+                    {{-- Jika ada pesan belum dibaca & room ini tidak sedang dipilih, buat judul jadi tebal --}}
+                    <p
+                        class="mb-1 fw-semibold {{ $room->has_unread_messages && (!$selectedRoom || $room->id !== $selectedRoom->id) ? 'fw-bold' : '' }}">
+                        {{ $room->request->title }}
+                    </p>
+
                     <p class="mb-0 text-muted small">Requester: {{ $room->requester->first_name }}</p>
+
                     @if ($room->lastMessage)
-                        <p class="mb-0 text-muted small text-truncate">{{ $room->lastMessage->message }}</p>
+                        {{-- Jika ada pesan belum dibaca & room ini tidak sedang dipilih, buat pesannya jadi tebal dan berwarna gelap --}}
+                        <p
+                            class="mb-0 small text-truncate {{ !$selectedRoom || $room->id !== $selectedRoom->id ? ($room->has_unread_messages ? 'text-dark fw-bold' : 'text-muted') : 'text-muted' }}">
+                            {{ $room->lastMessage->message }}
+                        </p>
                     @endif
                 </div>
             @empty
@@ -30,7 +40,7 @@
                 </div>
 
                 {{-- Panel Tawaran --}}
-                <div class="p-3 border-bottom bg-light">
+                <div class="p-3 border-bottom bg-light" wire:poll.5s="loadActiveOffer">
                     @if ($showOfferForm)
                         {{-- Form untuk mengajukan tawaran --}}
                         <div class="input-group">
@@ -63,7 +73,8 @@
                                 class="badge fs-6 
                                 @switch($activeOffer->status)
                                     @case('open') bg-success @break
-                                    @case('closed') bg-danger @break
+                                    @case('rejected') bg-danger @break
+                                    @case('accepted') bg-success @break
                                 @endswitch">
                                 Status: {{ ucfirst($activeOffer->status) }}
                             </span>
@@ -98,7 +109,7 @@
                 {{-- Form Input Chat --}}
                 <form wire:submit.prevent="send" class="p-3 bg-white border-top">
                     <div class="input-group">
-                        <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''"type="text"
+                        <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''" type="text"
                             class="form-control" placeholder="Tulis pesan..." autocomplete="off">
                         <button type="submit" class="btn btn-primary">Kirim</button>
                     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -70,6 +71,14 @@ class Request extends Model
         // Tutup request
         $request->update(['status' => 'closed']);
 
+        $request->transactions()->create([
+            'request_id'   => $request->id, // Mengambil ID request
+            'requester_id' => $request->requester_id,
+            'worker_id'    => $worker->id, // Mengambil harga final dari request
+            'status'       => 'accepted',      // Status awal transaksi/ Catat waktu kesepakatan terjadi
+        ]);
+
+        // Kembalikan chat room pemenang untuk keperluan redirect
         return $winningChatRoom;
     }
 }

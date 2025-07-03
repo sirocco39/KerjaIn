@@ -112,7 +112,7 @@ Route::get('/job-taker/beranda', function () {
         ->with('requester', 'request')
         ->get();
     return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction'));
-});
+})->name('job-taker.beranda');
 
 Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
@@ -140,6 +140,7 @@ Route::get('/', function () {
 });
 
 Route::get('/hubungi/{requestId}', [ChatController::class, 'startChat'])->name('chat.start');
+Route::post('/tawar/{requestId}', [ChatController::class, 'startOffer'])->name('chat.offer');
 Route::get('/job-taker/pesan/{selectedRoomId?}', function ($selectedRoomId = null) {
     return view('Job_Taker.pesan', ['chatRoomId' => $selectedRoomId]);
 })->name('chat.job-taker');

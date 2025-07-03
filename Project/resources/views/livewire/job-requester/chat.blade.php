@@ -16,10 +16,17 @@
                                 <div wire:click="selectChat({{ $room->id }})"
                                     class="p-2 rounded mb-1 {{ $selectedChatRoomId === $room->id ? 'bg-primary text-white' : 'hover:bg-light' }}"
                                     style="cursor: pointer;">
-                                    <p class="mb-0 fw-semibold">{{ $room->worker->first_name ?? 'Worker' }}</p>
+
+                                    {{-- Jika ada pesan belum dibaca & room ini tidak sedang dipilih, buat nama jadi tebal --}}
+                                    <p
+                                        class="mb-0 fw-semibold {{ $room->has_unread_messages && $selectedChatRoomId !== $room->id ? 'fw-bold' : '' }}">
+                                        {{ $room->worker->first_name ?? 'Worker' }}
+                                    </p>
+
                                     @if ($room->lastMessage)
+                                        {{-- Jika ada pesan belum dibaca & room ini tidak sedang dipilih, buat pesannya jadi tebal dan berwarna gelap --}}
                                         <p
-                                            class="mb-0 small text-truncate {{ $selectedChatRoomId === $room->id ? 'text-white-50' : 'text-muted' }}">
+                                            class="mb-0 small text-truncate {{ $selectedChatRoomId === $room->id ? 'text-white-50' : ($room->has_unread_messages ? 'text-dark fw-bold' : 'text-muted') }}">
                                             {{ $room->lastMessage->message }}
                                         </p>
                                     @endif
@@ -56,8 +63,12 @@
                                     <div class="d-flex justify-content-center gap-2 mt-2">
                                         <button wire:click="respondToOffer({{ $activeOffer->id }}, 'rejected')"
                                             class="btn btn-danger btn-sm">Tolak</button>
-                                        <button wire:click="respondToOffer({{ $activeOffer->id }}, 'accepted')"
-                                            class="btn btn-success btn-sm">Terima</button>
+
+                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#confirmAcceptOfferModal">
+                                            Terima
+                                        </button>
+
                                     </div>
                                 @else
                                     <span class="badge bg-warning text-dark">Menunggu Respon Anda</span>
@@ -79,12 +90,15 @@
                     @scroll-to-bottom.window="$nextTick(() => { $refs.chatBody.scrollTop = $refs.chatBody.scrollHeight; })"
                     class="flex-grow-1 overflow-auto p-3" style="background-color: #f5f5f5;" wire:poll.3s>
 
+                    {{-- ... (Isi chat Anda tetap sama) ... --}}
                     @forelse ($this->messages as $date => $groupedMessages)
+                        {{-- Tampilan tanggal --}}
                         <div class="text-center my-3">
                             <span class="px-3 py-1 bg-white border rounded-pill text-muted small">
                                 {{ \Carbon\Carbon::parse($date)->translatedFormat('l, d F Y') }}
                             </span>
                         </div>
+                        {{-- Tampilan pesan --}}
                         @foreach ($groupedMessages as $msg)
                             <div
                                 class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
@@ -98,8 +112,10 @@
                     @empty
                         <div class="text-center text-muted mt-5">Belum ada pesan.</div>
                     @endforelse
+
                 </div>
 
+                {{-- Form Input Pesan --}}
                 <form wire:submit.prevent="send" class="p-3 bg-white border-top">
                     <div class="input-group">
                         <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''" type="text"
@@ -110,7 +126,7 @@
                     </div>
                 </form>
             @else
-                {{-- Tampilan Default --}}
+                {{-- Tampilan Default Saat Belum Ada Chat Terpilih --}}
                 <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
                     <div class="text-center">
                         <i class="bi bi-chat-left-text" style="font-size: 3rem;"></i>
@@ -120,4 +136,34 @@
             @endif
         </div>
     </div>
+
+    @if ($activeOffer)
+        <div class="modal fade" id="confirmAcceptOfferModal" tabindex="-1"
+            aria-labelledby="confirmAcceptOfferModalLabel" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmAcceptOfferModalLabel">Konfirmasi Terima Tawaran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin menerima tawaran upah sebesar
+                            <strong>Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}</strong> dari
+                            <strong>{{ $activeOffer->worker->first_name }}</strong>?</p>
+                        <p class="text-danger small">Tindakan ini akan menyelesaikan proses tawar-menawar dan tidak
+                            dapat dibatalkan.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+
+                        <button type="button" class="btn btn-success"
+                            wire:click="respondToOffer({{ $activeOffer->id }}, 'accepted')" data-bs-dismiss="modal">
+                            Ya, Terima Tawaran
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

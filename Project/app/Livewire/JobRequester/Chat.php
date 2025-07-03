@@ -18,21 +18,49 @@ class Chat extends Component
     public $selectedChatRoomId = null;
     public ?ChatRoom $chatRoom = null;
     public ?Offer $activeOffer = null; // Properti untuk menyimpan tawaran aktif
-    public $newMessage = ''; // <-- TAMBAHKAN BARIS INI
+    public $newMessage = '';
+
     public function mount()
     {
         $this->loadRequests();
     }
 
+    /**
+     * Memuat permintaan yang dimiliki oleh pengguna yang sedang login,
+     * berstatus 'open', dan memiliki setidaknya satu pesan chat atau satu tawaran.
+     * Ruang obrolan di dalam setiap permintaan diurutkan berdasarkan aktivitas terbaru
+     * (baik itu pesan terakhir atau tawaran terakhir).
+     */
     public function loadRequests()
     {
         $this->requestsWithChats = Request::where('requester_id', Auth::id())
             ->where('status', 'open') // Hanya ambil permintaan yang masih terbuka
-            ->whereHas('chatRooms.chatMessages')
-            ->with(['chatRooms.worker', 'chatRooms.lastMessage'])
+            // Tambahkan kondisi: permintaan harus memiliki chat ATAU memiliki tawaran
+            ->where(function ($query) {
+                $query->whereHas('chatRooms.chatMessages')
+                    ->orWhereHas('chatRooms.offers');
+            })
+            // Eager load relasi yang dibutuhkan untuk optimasi performa
+            ->with([
+                'chatRooms' => function ($query) {
+                    // Pastikan relasi 'offers' di-load bersama dengan relasi lainnya
+                    $query->with(['worker', 'lastMessage', 'offers']);
+                }
+            ])
             ->get()
+            // Lakukan iterasi pada setiap request untuk mengurutkan ruang obrolannya
             ->each(function ($request) {
-                $request->chatRooms = $request->chatRooms->sortByDesc(fn($room) => optional($room->lastMessage)->created_at);
+                $request->chatRooms = $request->chatRooms->sortByDesc(function ($room) {
+                    // Dapatkan timestamp dari pesan terakhir di dalam room
+                    $lastMessageTimestamp = optional($room->lastMessage)->created_at;
+
+                    // Dapatkan timestamp dari tawaran terbaru di dalam room
+                    // Asumsi: relasi 'offers' sudah di-eager load
+                    $lastOfferTimestamp = $room->offers->max('created_at');
+
+                    // Gunakan timestamp yang paling baru (pesan atau tawaran) sebagai dasar pengurutan
+                    return max($lastMessageTimestamp, $lastOfferTimestamp);
+                });
             });
     }
 
@@ -43,6 +71,10 @@ class Chat extends Component
 
     public function selectChat($chatRoomId)
     {
+        ChatMessage::where('chat_room_id', $chatRoomId)
+            ->where('receiver_id', Auth::id()) // Pastikan hanya update pesan UNTUK kita
+            ->whereNull('read_at')          // Hanya yang belum dibaca
+            ->update(['read_at' => now()]); // Isi dengan waktu sekarang
         $this->selectedChatRoomId = $chatRoomId;
         $this->chatRoom = ChatRoom::with(['request', 'worker'])->find($chatRoomId);
 
@@ -82,7 +114,7 @@ class Chat extends Component
             return; // Validasi keamanan
         }
 
-        $offer->update(['status' => 'closed']);
+        $offer->update(['status' => $response]);
 
         if ($response === 'accepted') {
             $offer->request->update(['price' => $offer->amount]);
@@ -112,6 +144,7 @@ class Chat extends Component
 
     public function render()
     {
+        $this->selectChat($this->selectedChatRoomId); // Pastikan chat room yang dipilih sudah terisi
         return view('livewire.job-requester.chat');
     }
 }

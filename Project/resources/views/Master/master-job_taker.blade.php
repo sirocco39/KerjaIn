@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>KerjaIn</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="icon" href="{{ asset('Image/Icon/Icon Kerjain.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body>
@@ -114,12 +114,15 @@
                                         </button>
                                     </form>
                                 </li>
-                                <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img
-                                            src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                            class="navIcon">Menjadi Mitra</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center gap-1" href="/job-req/beranda"><img
-                                            src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
-                                            class="navIcon">Ganti Peran</a></li>
+                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-1"
+                                        href="{{ route('job-taker.beranda') }}">
+                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                            class="navIcon">
+                                        Ganti Peran
+                                    </a>
+                                </li>
                             @endauth
                         </ul>
                     </li>

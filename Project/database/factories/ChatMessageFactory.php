@@ -18,8 +18,6 @@ class ChatMessageFactory extends Factory
     {
         return [
             'message' => $this->faker->sentence(),
-            'sent_at' => now(),
-            'delivered_at' => now(),
             'read_at' => now(),
         ];
     }

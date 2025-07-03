@@ -198,7 +198,7 @@ class RequestController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
-            'redirect_url' => route('job-taker.chat', ['selectedRoomId' => $winningChatRoom->id])
+            'redirect_url' => route('job-taker.beranda')
         ]);
     }
 }

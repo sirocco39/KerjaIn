@@ -15,13 +15,9 @@ class ChatMessage extends Model
         'sender_id',
         'receiver_id',
         'message',
-        'sent_at',
-        'delivered_at',
         'read_at',
     ];
     protected $casts = [
-        'sent_at' => 'datetime',
-        'delivered_at' => 'datetime',
         'read_at' => 'datetime',
     ];
     public function chatRoom() : BelongsTo

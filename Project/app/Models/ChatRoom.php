@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class ChatRoom extends Model
 {
@@ -47,5 +48,14 @@ class ChatRoom extends Model
     public function offers(): HasMany
     {
         return $this->hasMany(Offer::class, 'chat_room_id');
+    }
+    public function getHasUnreadMessagesAttribute()
+    {
+        // Cek apakah ada chatMessages yang sender_id-nya bukan user saat ini
+        // DAN kolom read_at-nya masih NULL.
+        return $this->chatMessages()
+            ->where('sender_id', '!=', Auth::id())
+            ->whereNull('read_at')
+            ->exists();
     }
 }

@@ -3,7 +3,7 @@
 
 <head>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -192,13 +192,27 @@
                                         </button>
                                     </form>
                                 </li>
-                                <li><a class="dropdown-item d-flex align-items-center gap-1" href="/joinworker"><img
-                                            src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                            class="navIcon">Menjadi Mitra</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center gap-1"
-                                        href="/job-taker/beranda"><img
-                                            src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
-                                            class="navIcon">Ganti Peran</a></li>
+                                @if (auth()->user()->is_worker)
+                                    {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
+                                            href="{{ route('job-taker.beranda') }}">
+                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                                alt="Icon Ganti Peran" class="navIcon">
+                                            Ganti Peran
+                                        </a>
+                                    </li>
+                                @else
+                                    {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
+                                            href="{{ route('worker.register.step1') }}">
+                                            <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
+                                                class="navIcon">
+                                            Menjadi Mitra
+                                        </a>
+                                    </li>
+                                @endif
                             @endauth
                         </ul>
                     </li>
