@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('worker_id')->constrained('users');
             $table->foreignId('requester_id')->constrained('users');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['open', 'closed']);
+            $table->enum('status', ['open', 'rejected', 'accepted']);
             $table->timestamps();
             $table->softDeletes();
         });

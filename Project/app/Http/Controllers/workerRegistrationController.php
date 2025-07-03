@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\VerificationRequest;
@@ -48,7 +49,7 @@ class WorkerRegistrationController extends Controller
             'phone_number' => [
                 'required',
                 'string',
-                'regex:/^(08)[0-9]{9,11}$/',
+                'regex:/^(08)[0-9]{9,10}$/',
                 Rule::unique('verification_requests', 'phone_number')->where(function ($query) {
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
@@ -227,8 +228,9 @@ class WorkerRegistrationController extends Controller
         }
 
         // Bersihkan data sesi pendaftaran setelah finalisasi berhasil
+        User::where('id', Auth::id())->update(['is_worker' => 1]);
         Session::forget('worker_registration');
-
+        // update is_worker user jadi 1
         return redirect()->route('worker.register.success')->with('success', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
     }
 

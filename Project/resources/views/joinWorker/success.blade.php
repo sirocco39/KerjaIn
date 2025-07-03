@@ -1,44 +1,55 @@
 @extends('master.master-job_req')
+
 @section('content')
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <div class="row justify-content-center align-items-center my-5 py-5 px-5">
-    <div class="bg-white rounded-xl shadow-2xl p-8 md:p-12 text-center max-w-lg w-full transform transition-all duration-300 hover:scale-105">
+{{-- Link ke Tailwind CSS sudah dihapus, diasumsikan Bootstrap sudah ada di master layout --}}
 
-        <div class="mb-8">
-            <svg class="w-24 h-24 mx-auto text-green-500 checkmark-circle" viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="3" />
-                <path class="checkmark-path" fill="none" stroke="currentColor" stroke-width="3"
-                    d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-            </svg>
-        </div>
+<div class="container">
+    {{-- Menggunakan grid Bootstrap untuk membuat konten responsif dan terpusat --}}
+    <div class="row justify-content-center align-items-center min-vh-100 py-5">
+        <div class="col-lg-7 col-md-9">
 
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">Pendaftaran Berhasil!</h1>
+            {{-- Card utama dengan kelas-kelas Bootstrap --}}
+            <div class="card shadow-lg border-0 rounded-4 p-4 p-md-5 text-center">
 
-        @if (session('success'))
-            <p class="text-green-600 text-lg mb-6">{{ session('success') }}</p>
-        @else
-            <p class="text-gray-700 text-lg mb-6">Terima kasih telah mendaftar. Permintaan Anda telah berhasil disubmit.</p>
-        @endif
+                <div class="mb-4">
+                    {{-- Ikon checkmark menggunakan kelas warna Bootstrap 'text-success' --}}
+                    <svg class="mx-auto text-success" style="width: 6rem; height: 6rem;" viewBox="0 0 52 52">
+                        <circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="3" />
+                        <path fill="none" stroke="currentColor" stroke-width="3" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
 
-        <p class="text-gray-600 mb-8">
-            Tim kami akan segera memproses verifikasi data Anda. Proses ini mungkin memakan waktu <strong>1-3 hari kerja</strong>.
-            Anda akan menerima notifikasi melalui WhatsApp atau email setelah proses verifikasi selesai.
-        </p>
+                {{-- Judul utama --}}
+                <h1 class="display-6 fw-bold text-dark mb-3">Pendaftaran Berhasil!</h1>
 
-        <a href="{{ url('/') }}"
-            class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0v-9l-2 2M9 5h6m-6 0H9">
-                </path>
-            </svg>
-            Kembali ke Beranda
-        </a>
+                {{-- Menampilkan pesan sukses dari session jika ada --}}
+                @if (session('success'))
+                    <p class="fs-5 mb-4 text-success">{{ session('success') }}</p>
+                @else
+                    <p class="fs-5 mb-4 text-body-secondary">Terima kasih telah mendaftar. Permintaan Anda telah berhasil disubmit.</p>
+                @endif
 
-        <div class="mt-8 text-gray-500 text-sm">
-            Jika ada pertanyaan, hubungi <a href="mailto:support@kerjain.com"
-                class="text-blue-500 hover:underline">support@kerjain.com</a>.
+                <p class="mb-5">
+                    Tim kami akan segera memproses verifikasi data Anda. Proses ini mungkin memakan waktu <strong>1-3 hari kerja</strong>. Anda akan menerima notifikasi melalui WhatsApp atau email setelah proses verifikasi selesai.
+                </p>
+
+                {{-- Tombol utama menggunakan kelas 'btn', 'btn-primary', dan 'btn-lg' --}}
+                <a href="{{ url('/') }}"
+                    class="btn btn-primary btn-lg d-inline-flex align-items-center px-4 shadow-sm">
+                    
+                    {{-- Ikon di dalam tombol --}}
+                    <svg class="me-2" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0v-9l-2 2M9 5h6m-6 0H9"></path>
+                    </svg>
+                    Kembali ke Beranda
+                </a>
+
+                {{-- Teks catatan kaki di bagian bawah --}}
+                <div class="mt-5 text-muted small">
+                    Jika ada pertanyaan, hubungi <a href="mailto:support@kerjain.com">support@kerjain.com</a>.
+                </div>
+
+            </div>
         </div>
     </div>
 </div>

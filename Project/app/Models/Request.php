@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,7 @@ class Request extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'price',
         'location',
@@ -26,7 +28,7 @@ class Request extends Model
         'end_time',
     ];
     protected $attributes = [
-        'status' => 'pending',
+        'status' => 'open',
     ];
     protected $casts = [
         'price' => 'decimal:2',
@@ -34,20 +36,49 @@ class Request extends Model
         'end_time' => 'datetime',
     ];
 
-    public function requester() : BelongsTo
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
-    public function transactions() : HasMany
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'request_id');
     }
-    public function payments() : HasMany
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'request_id');
     }
-    public function chatRooms() : HasMany
+    public function chatRooms(): HasMany
     {
         return $this->hasMany(ChatRoom::class, 'request_id');
+    }
+
+    public static function hireAndFinalize(Request $request, User $worker): ChatRoom
+    {
+        // Cari atau buat ChatRoom pemenang
+        $winningChatRoom = ChatRoom::firstOrCreate([
+            'request_id'   => $request->id,
+            'worker_id'    => $worker->id,
+            'requester_id' => $request->requester_id,
+        ], ['is_open' => true]);
+
+        // Pastikan room pemenang terbuka
+        $winningChatRoom->update(['is_open' => true]);
+
+        // Tutup semua room lainnya
+        $request->chatRooms()->where('id', '!=', $winningChatRoom->id)->update(['is_open' => false]);
+
+        // Tutup request
+        $request->update(['status' => 'closed']);
+
+        $request->transactions()->create([
+            'request_id'   => $request->id, // Mengambil ID request
+            'requester_id' => $request->requester_id,
+            'worker_id'    => $worker->id, // Mengambil harga final dari request
+            'status'       => 'accepted',      // Status awal transaksi/ Catat waktu kesepakatan terjadi
+        ]);
+
+        // Kembalikan chat room pemenang untuk keperluan redirect
+        return $winningChatRoom;
     }
 }

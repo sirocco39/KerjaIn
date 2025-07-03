@@ -12,6 +12,13 @@
                         <ul class="job-card-details">
                             <li class="gap-2">
                                 <div class="icon-wrapper">
+                                    <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                                </div>
+                                <span>Kak {{ $request->requester->first_name }}</span>
+                            </li>
+
+                            <li class="gap-2">
+                                <div class="icon-wrapper">
                                     <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
                                 </div>
                                 <span>{{ $request->location }}</span>
@@ -28,7 +35,8 @@
                                 <div class="icon-wrapper">
                                     <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Address">
                                 </div>
-                                <span>{{ $request->start_time->format('H.i') }} - {{ $request->end_time->format('H.i') }}</span>
+                                <span>{{ $request->start_time->format('H.i') }} -
+                                    {{ $request->end_time->format('H.i') }}</span>
                             </li>
 
                             <li class="gap-2">
@@ -45,7 +53,7 @@
                 @endforelse
 
                 {{-- Pagination Links --}}
-            <div class="pagination mt-auto">
+                <div class="pagination mt-auto">
                     @if ($workRequests->currentPage() > 1)
                         <a href="{{ $workRequests->previousPageUrl() }}" class="pagination-nav" id="prev-page">
                             <img src="{{ asset('Image/Icon/icon-previous.svg') }}" alt="Previous" class="pagination-icon">
@@ -56,8 +64,8 @@
                     <div class="page-numbering d-flex gap-3">
                         @for ($i = 1; $i <= $workRequests->lastPage(); $i++)
                             <a href="{{ $workRequests->url($i) }}"
-                            class="page-number d-flex align-items-center justify-content-center {{ $workRequests->currentPage() == $i ? 'item-active' : '' }}">
-                            {{ $i }}
+                                class="page-number d-flex align-items-center justify-content-center {{ $workRequests->currentPage() == $i ? 'item-active' : '' }}">
+                                {{ $i }}
                             </a>
                         @endfor
                     </div>
@@ -75,18 +83,28 @@
                 {{-- Initial content for the right panel --}}
                 {{-- <i class="fas fa-chevron-left back-arrow" id="back-arrow" onclick="hideRequestDetails()"></i> --}}
                 <div class="title-job-detail-placeholder d-flex align-item-center mb-3">
-                    <img src="{{ asset('Image/Icon/icon-left-arrow.svg')}}" alt="Left Arrow" class="left-arrow" id="left-arrow-icon">
+                    <img src="{{ asset('Image/Icon/icon-left-arrow.svg') }}" alt="Left Arrow" class="left-arrow"
+                        id="left-arrow-icon">
                     <h1 class="fw-bold m-0" id="detail-title">Pilih Lowongan Kerja di Kiri</h1>
                 </div>
                 <p id="detail-instruction">Tampilkan Detail Di sini</p>
-                <div class="img-job-detail-placeholder align-items-center justify-content-center" id="detail-image-placeholder-wrapper">
-                    <img src="{{ asset('Image/Icon/people-search.svg') }}" alt="People Search" class="placeholder-img" id="detail-image">
+                <div class="img-job-detail-placeholder align-items-center justify-content-center"
+                    id="detail-image-placeholder-wrapper">
+                    <img src="{{ asset('Image/Icon/people-search.svg') }}" alt="People Search" class="placeholder-img"
+                        id="detail-image">
                 </div>
 
                 {{-- These elements will be dynamically populated by JavaScript --}}
                 {{-- Hide them initially, show when details are loaded --}}
                 <div class="mx-3 flex-fill flex-column" id="dynamic-details-content" style="display: none;">
                     <ul class="job-card-details">
+                        <li class="gap-2">
+                            <div class="icon-wrapper">
+                                <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                            </div>
+                            <span>Kak <span id="detail-profile"></span></span>
+                        </li>
+
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
@@ -116,11 +134,15 @@
                         </li>
                     </ul>
                     <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
-                    <p class="mb-3" id="detail-description-text"></p>
+                    <div class="wrapDesc_ori">
+                        <p class="mb-3" id="detail-description-text"></p>
+                    </div>
 
-                    <div class="detail-buttons-placeholder d-flex gap-3 justify-content-end mt-auto">
-                        <button class="details-button-item" id="button-tawar">Tawar</button>
-                        <button class="details-button-item" id="button-hubungi">Hubungi</button>
+                    <div class="detail-buttons-placeholder d-flex gap-2 justify-content-end mt-auto align-items-center">
+                        <input type="number" id="offer-amount-input" class="form-control" placeholder="Rp Tawarkan"
+                            style="max-width: 150px; height: 38px;">
+                        <button class="details-button-item" id="submit-offer-button">Kirim</button>
+                        <a href="#" class="details-button-item" id="button-hubungi">Hubungi</a>
                         <button class="details-button-item" id="button-terima">Terima</button>
                     </div>
                 </div>
@@ -137,6 +159,13 @@
                     <div id="modal-content-container" class="p-3">
                         <h1 class="fw-bold mb-3" id="modal-detail-title">Pilih Lowongan Kerja di Kiri</h1>
                         <ul class="job-card-details">
+                            <li class="gap-2">
+                                <div class="icon-wrapper">
+                                    <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                                </div>
+                                <span>Kak <span id="modal-detail-profile"></span></span>
+                            </li>
+
                             <li class="gap-2">
                                 <div class="icon-wrapper">
                                     <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
@@ -166,18 +195,22 @@
                             </li>
                         </ul>
                         <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
-                        <p class="mb-3" id="modal-detail-description-text"></p>
+                        <div class="wrapDesc mb-3">
+                            <p class="mb-0" id="modal-detail-description-text"></p>
+                        </div>
 
-                        <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
-                            <button class="details-button-item btn-tawar-modal">Tawar</button>
-                            <button class="details-button-item btn-hubungi-modal">Hubungi</button>
+                        <div
+                            class="detail-buttons-placeholder d-flex gap-2 justify-content-center mt-auto align-items-center">
+                            <input type="number" id="modal-offer-amount-input" class="form-control"
+                                placeholder="Rp Tawarkan" style="max-width: 150px; height: 38px;">
+                            <button class="details-button-item" id="modal-submit-offer-button">Kirim</button>
+                            <a href="#" class="details-button-item btn-hubungi-modal">Hubungi</a>
                             <button class="details-button-item btn-terima-modal">Terima</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
 
         <script>
             // Fungsi untuk format mata uang Rupiah
@@ -188,6 +221,47 @@
                 }).format(amount);
             };
             let currentRequestId = null;
+            // TAMBAHKAN FUNGSI BARU INI
+            function submitOffer(amount) {
+                if (!currentRequestId) {
+                    alert('Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.');
+                    return;
+                }
+                if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                    alert('Harap masukkan jumlah tawaran yang valid.');
+                    return;
+                }
+
+                const urlTemplate = `{{ route('chat.offer', ['requestId' => ':id']) }}`;
+                const finalUrl = urlTemplate.replace(':id', currentRequestId);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch(finalUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            amount: parseFloat(amount)
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message || 'Tawaran berhasil dikirim!');
+                            window.location.href = data.redirect_url;
+                        } else {
+                            alert(data.message || 'Terjadi kesalahan saat mengirim tawaran.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan koneksi.' + error.message);
+                    });
+            }
+
 
             // Fungsi untuk menampilkan detail permintaan kerja
             function showRequestDetails(requestId) {
@@ -244,12 +318,21 @@
                         return response.json();
                     })
                     .then(data => {
+                        document.querySelector('.btn-hubungi-modal').setAttribute(
+                            'href',
+                            `/hubungi/${requestId}`
+                        );
+                        document.getElementById('button-hubungi').setAttribute(
+                            'href',
+                            `/hubungi/${requestId}`
+                        );
                         // Populate the detail panel with fetched data
                         detailTitle.textContent = data.title;
                         detailInstruction.style.display = 'none'; // Hide "Tampilkan Detail Di sini" after loading
                         detailImage.style.display = 'none'; // Hide the default image
                         detailImageWrapper.style.display = 'none'; // Hide the image wrapper
 
+                        document.getElementById('detail-profile').textContent = data.requester_first_name;
                         document.getElementById('detail-location').textContent = data.location;
                         document.getElementById('detail-date').textContent = data.display_date;
                         document.getElementById('detail-time').textContent = data.display_time_range;
@@ -259,18 +342,20 @@
                         dynamicContent.style.display = 'flex'; // Show the populated dynamic content
                         // backArrow.style.visibility = 'visible'; // Show back arrow
                         if (isMobile) {
-                                document.getElementById('modal-detail-title').textContent = data.title;
-                                document.getElementById('modal-detail-location').textContent = data.location;
-                                document.getElementById('modal-detail-date').textContent = data.display_date;
-                                document.getElementById('modal-detail-time').textContent = data.display_time_range;
-                                document.getElementById('modal-detail-description-text').textContent = data.description;
-                                document.getElementById('modal-detail-price-value').textContent = formatRupiah(data.price);
-                            }
+                            document.getElementById('modal-detail-title').textContent = data.title;
+                            document.getElementById('modal-detail-profile').textContent = data.requester_first_name;
+                            document.getElementById('modal-detail-location').textContent = data.location;
+                            document.getElementById('modal-detail-date').textContent = data.display_date;
+                            document.getElementById('modal-detail-time').textContent = data.display_time_range;
+                            document.getElementById('modal-detail-description-text').textContent = data.description;
+                            document.getElementById('modal-detail-price-value').textContent = formatRupiah(data.price);
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching request details:', error);
                         detailTitle.textContent = 'Gagal Memuat Detail';
-                        detailInstruction.textContent = 'Terjadi kesalahan saat memuat detail pekerjaan. Silakan coba lagi.';
+                        detailInstruction.textContent =
+                            'Terjadi kesalahan saat memuat detail pekerjaan. Silakan coba lagi.';
                         detailInstruction.style.display = 'block';
                         detailImage.style.display = 'block';
                         detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
@@ -278,13 +363,6 @@
                         // backArrow.style.visibility = 'hidden';
                     });
             }
-
-            document.getElementById('job-details-modal').addEventListener('click', function (e) {
-                const modalContent = this.querySelector('.modal-content');
-                if (!modalContent.contains(e.target)) {
-                    this.classList.remove('show');
-                }
-            });
 
             window.addEventListener('resize', () => {
                 const isMobile = window.innerWidth <= 992;
@@ -321,45 +399,119 @@
                 detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
                 dynamicContent.style.display = 'none'; // Hide dynamic content
                 // backArrow.style.visibility = 'hidden'; // Hide back arrow
+                document.getElementById('offer-amount-input').value = '';
+                document.getElementById('modal-offer-amount-input').value = '';
             }
 
             // Call hideRequestDetails on page load to ensure initial state is correct
             document.addEventListener('DOMContentLoaded', () => {
-                hideRequestDetails(); // tetap panggil untuk set awal
 
-                // Tambahkan event listener untuk semua elemen dengan class "job-card"
+                hideRequestDetails(); // Set state awal saat halaman dimuat
+
+                // Event listener untuk setiap kartu pekerjaan
                 document.querySelectorAll('.job-card').forEach(card => {
-                    card.addEventListener('click', function (e) {
-                        // Cegah aksi ganda jika tombol DETAIL diklik langsung
-                    const targetButton = e.target.closest('.detail-button');
-
-                        const requestId = targetButton
-                            ? targetButton.getAttribute('data-request-id')
-                            : this.getAttribute('data-request-id');
-
+                    card.addEventListener('click', function(e) {
+                        const targetButton = e.target.closest('.detail-button');
+                        const requestId = targetButton ?
+                            targetButton.getAttribute('data-request-id') :
+                            this.getAttribute('data-request-id');
                         if (requestId) {
                             showRequestDetails(requestId);
                         }
                     });
                 });
 
+                document.getElementById('submit-offer-button').addEventListener('click', function() {
+                    const amount = document.getElementById('offer-amount-input').value;
+                    submitOffer(amount);
+                });
+
+                document.getElementById('modal-submit-offer-button').addEventListener('click', function() {
+                    const amount = document.getElementById('modal-offer-amount-input').value;
+                    submitOffer(amount);
+                });
+
+                // Event listener untuk paginasi
                 document.querySelectorAll('.page-number').forEach(item => {
-                    item.addEventListener('click', function (e) {
+                    item.addEventListener('click', function(e) {
                         if (item.classList.contains('item-active')) {
                             e.preventDefault();
                         }
                     });
                 });
-            });
 
-            document.getElementById('modal-close-button').addEventListener('click', function () {
-                document.getElementById('job-details-modal').classList.remove('show');
-            });
+                // Event listener untuk tombol close pada modal
+                document.getElementById('modal-close-button').addEventListener('click', function() {
+                    document.getElementById('job-details-modal').classList.remove('show');
+                });
 
-            document.getElementById('job-details-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('show');
-                }
+                // Event listener untuk menutup modal saat mengklik di luar area konten
+                document.getElementById('job-details-modal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('show');
+                    }
+                });
+
+                // Event listener untuk tombol "Terima"
+                const acceptButtons = document.querySelectorAll('#button-terima, .btn-terima-modal');
+                acceptButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (!currentRequestId) {
+                            alert('Silakan pilih pekerjaan terlebih dahulu.');
+                            return;
+                        }
+                        if (!confirm('Apakah Anda yakin ingin menerima pekerjaan ini?')) {
+                            return;
+                        }
+
+                        const urlTemplate = `{{ route('requests.accept', ['request' => ':id']) }}`;
+                        const finalUrl = urlTemplate.replace(':id', currentRequestId);
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content');
+
+                        fetch(finalUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Server response was not ok.');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    alert(data.message);
+                                    window.location.href = data.redirect_url;
+                                } else {
+                                    alert(data.message ||
+                                        'Terjadi kesalahan saat memproses permintaan.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Terjadi kesalahan koneksi.' + error.message);
+                            });
+                    });
+                });
+
+                // Event listener untuk resize window (sudah benar)
+                window.addEventListener('resize', () => {
+                    const isMobile = window.innerWidth <= 992;
+                    const modal = document.getElementById('job-details-modal');
+
+                    if (!isMobile && modal.classList.contains('show')) {
+                        modal.classList.remove('show');
+                    }
+                    if (isMobile && currentRequestId) {
+                        showRequestDetails(currentRequestId);
+                    }
+                });
+
             });
         </script>
     @endsection
