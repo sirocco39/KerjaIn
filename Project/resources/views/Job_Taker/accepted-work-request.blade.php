@@ -12,7 +12,7 @@
         @elseif($transaction->status == 'cancelled')
         <div class="badge px-4 py-3 rounded-pill bg-warning text-dark">Dibatalin</div>
         @elseif($transaction->status == 'accepted')
-        <div class="badge px-4 py-3 rounded-pill bg-warning text-dark text-light fs-6" style="background-color:#294287;">Diterima</div>
+        <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:#294287;">Diterima</div>
         @elseif($transaction->status == 'in progress')
         <div class="badge px-4 py-3 rounded-5 bg-info text-light fs-6" style="background-color:#309FFF;">Dikerjain</div>
         @elseif($transaction->status == 'completed')
@@ -89,12 +89,14 @@
                     <div class="px-4 py-3 rounded-pill bg-warning text-dark">Dibatalin</div>
                     @elseif($transaction->status == 'accepted')
                     <div class="d-flex">
-                        <svg width="16" height="111" viewBox="0 0 16 111" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="8" cy="8" r="8" fill="#294287" />
-                            <circle cx="8" cy="103" r="8" fill="#D9D9D9" />
-                            <circle cx="8" cy="56" r="8" fill="#D9D9D9" />
-                            <path d="M7.99989 16L8 95" stroke="#D9D9D9" stroke-width="2" />
-                        </svg>
+                        <div class="svg align-items-center d-flex py-2 px-1 ms-2">
+                            <svg width="16" height="111" viewBox="0 0 16 111" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="8" cy="8" r="8" fill="#294287" />
+                                <circle cx="8" cy="103" r="8" fill="#D9D9D9" />
+                                <circle cx="8" cy="56" r="8" fill="#D9D9D9" />
+                                <path d="M7.99989 16L8 95" stroke="#D9D9D9" stroke-width="2" />
+                            </svg>
+                        </div>
                         <div class="column">
                             <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1" style="">Diterima</div>
                             <div class="px-4 rounded-5 bg-info text-dark fs-6" style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
@@ -126,34 +128,207 @@
                     </div>
                     @elseif($transaction->status == 'completed')
                     <div class="d-flex">
-                        <svg width="16" height="111" viewBox="0 0 16 111" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 64L8 95" stroke="url(#paint0_linear_0_1)" stroke-width="2" />
-                            <path d="M8 16L8 48" stroke="url(#paint1_linear_0_1)" stroke-width="2" />
-                            <circle cx="8" cy="8" r="8" fill="#294287" />
-                            <circle cx="8" cy="103" r="8" fill="#D3FA0D" />
-                            <circle cx="8" cy="56" r="8" fill="#309FFF" />
-                            <defs>
-                                <linearGradient id="paint0_linear_0_1" x1="8" y1="95" x2="8" y2="64" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#D3FA0D" />
-                                    <stop offset="1" stop-color="#309FFF" />
-                                </linearGradient>
-                                <linearGradient id="paint1_linear_0_1" x1="8" y1="48" x2="8" y2="16" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#309FFF" />
-                                    <stop offset="1" stop-color="#294287" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
+                        <div class="svg align-items-center d-flex py-2 px-1 ms-2">
+                            <svg width="16" height="111" viewBox="0 0 16 111" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 64L8 95" stroke="url(#paint0_linear_0_1)" stroke-width="2" />
+                                <path d="M8 16L8 48" stroke="url(#paint1_linear_0_1)" stroke-width="2" />
+                                <circle cx="8" cy="8" r="8" fill="#294287" />
+                                <circle cx="8" cy="103" r="8" fill="#D3FA0D" />
+                                <circle cx="8" cy="56" r="8" fill="#309FFF" />
+                                <defs>
+                                    <linearGradient id="paint0_linear_0_1" x1="8" y1="95" x2="8" y2="64" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#D3FA0D" />
+                                        <stop offset="1" stop-color="#309FFF" />
+                                    </linearGradient>
+                                    <linearGradient id="paint1_linear_0_1" x1="8" y1="48" x2="8" y2="16" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#309FFF" />
+                                        <stop offset="1" stop-color="#294287" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
                         <div class="column">
-                            <div class="px-4 py-3 rounded-pill bg-warning text-dark fs-6">Diterima</div>
-                            <div class="px-4 py-3 rounded-5 bg-info text-dark fs-6">Dikerjain</div>
-                            <div class="px-4 py-3 rounded-pill text-dark fs-6">Selesai</div>
+                            <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1" style="">Diterima</div>
+                            <div class="px-4 rounded-5 bg-info text-dark fs-6" style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
+                            <div class="px-4 rounded-pill  text-dark fs-6">Selesai</div>
                         </div>
                     </div>
                     @endif
                 </div>
             </div>
             <div class="contain bg-light mt-3 px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center" style="border: 1px solid #cacadd;">
-                @if($transaction->status == 'submitted')
+                {{-- Tombol aksi berdasarkan status --}}
+                {{-- Tombol aksi berdasarkan status --}}
+                @if($transaction->status === 'accepted')
+                {{-- Tombol Mulai Kerja --}}
+                <form id="start-work-form" action="{{ route('worker.startWork', $transaction->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" id="start-work-button" class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold" style="background-color:#294287;">
+                        Mulai Kerja
+                    </button>
+
+
+                </form>
+                <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5" data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja
+                </button>
+                {{-- Batalkan kerja --}}
+                <div class="modal fade" id="cancelWorkModal" tabindex="-1" aria-labelledby="cancelWorkModalLabel" aria-hidden="true">
+                    <div class="modal-dialog p-5">
+                        <div class="modal-content p-2 d-flex justify-content-center">
+                            <div class="d-flex flex-fill justify-content-center">
+                                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#B02A37" />
+                                </svg>
+                                <h2 class="text-danger mx-4 fw-bold">Batalkan Pekerjaan?</h2>
+                                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#B02A37" />
+                                </svg>
+                            </div>
+                            <div class="d-flex flex-column flex-fill justify-content-center text-center my-4" style="font-size: 16px;">
+                                <div>Apakah kamu yakin ingin membatalkan pekerjaan ini?</div>
+                                <div>Tindakan ini bisa mempengaruhi reputasimu di platform KerjaIn</div>
+                            </div>
+                            <div class="d-flex flex-fill mt-4 justify-content-between">
+                                <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST" class="flex-fill d-flex justify-content-between">
+                                    @csrf
+                                    <button type="button" class="btn flex-fill p-3 px-5 me-3" style="color:#294287; border-color:#294287; border-width: 2px;" data-bs-dismiss="modal">Lanjut Kerja</button>
+                                    <button type="submit" class="btn btn-danger flex-fill p-3 px-5">Ya, Tetap Batalin</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @elseif($transaction->status === 'completed')
+                {{-- Tombol Sudah Dikerjakan --}}
+                <button class="btn btn-success" disabled>
+                    Sudah Dikerjakan
+                </button>
+                @elseif($transaction->status === 'in progress')
+                {{-- Tombol untuk buka modal --}}
+                <button class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold" style="background-color:#309FFF;"
+                    data-bs-toggle="modal"
+                    data-bs-target="#completionProofModal">
+                    Selesai Kerja
+                </button>
+                <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">Batalkan Kerja</div>
+
+                <!-- Modal Bukti Penyelesaian -->
+                <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" style="max-width: 800px;">
+                        <div class="modal-content p-4">
+                            <div class="flex-fill text-center fs-4">Konfirmasi Penyelesaian Pekerjaan</div>
+                            <form id="proofForm" action="{{ route('worker.uploadProof', $transaction->id) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="d-flex mt-4">
+                                    <div class="mb-3">
+                                        <label for="photo" class="form-label fw-semibold">Upload Foto Bukti Pekerjaan</label>
+                                        <div class="rounded p-4 text-center d-flex flex-column align-items-center justify-content-between"
+                                            style="cursor: pointer; min-height: 200px; border-style:dashed; border-color:#cacadd; background-color: #F4f4f4;"
+                                            onclick="document.getElementById('photoInput').click()">
+                                            <p class="mb-0 text-muted">Klik disini untuk upload gambar</p>
+                                            <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287" />
+                                            </svg>
+                                            <input type="file" id="photoInput" name="photo[]" accept="image/*" multiple class="d-none">
+                                            <div id="previewContainer" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
+                                        </div>
+                                    </div>
+                                    <div class="vr mx-3"></div>
+                                    <div class=" mb-3 flex-grow-1">
+                                        <label for="note" class="form-label fw-semibold">Catatan (Opsional)</label>
+                                        <textarea name="note" id="note" rows="3" class="form-control" style="height: 70%; border-color:#b4b4b4;"></textarea>
+                                        <div class="d-flex mt-2 flex-end">
+                                            <button type="button" class="btn me-1 flex-fill fw-semibold" style="color:#294287; border-color:#294287; border-width: 2px;" data-bs-dismiss="modal">Kembali</button>
+                                            <button type="button" class="btn ms-1 flex-fill fw-semibold text-light" style="background-color:#309FFF;" data-bs-toggle="modal"
+                                                data-bs-target="#finishWorkModal">Selesaikan Pekerjaan</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Konfirmasi di atas -->
+                <div class=" modal fade" id="finishWorkModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="finishWorkModalLabel" aria-hidden="true" style="z-index:1065;">
+                    <div class="modal-dialog">
+                        <div class="modal-content p-4 d-flex justify-content-center">
+                            <div class="d-flex flex-fill justify-content-center">
+                                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#D3FA0D" />
+                                </svg>
+                                <h5 class="mx-3 fw-bold fs-2 mt-1" style="color:#309FFF;">Selesaikan Pekerjaan?</h5>
+                                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#D3FA0D" />
+                                </svg>
+                            </div>
+                            <div class="d-flex flex-column flex-fill justify-content-center text-center my-4 fw-semibold" style="font-size: 16px;">
+                                <div>Apakah kamu yakin pekerjaan ini sudah benar-benar selesai?</div>
+                                <div>Setelah pekerjaan diselesaikan, kamu tidak dapat mengubah statusnya kembali.</div>
+                            </div>
+                            <div class="d-flex justify-content-center mt-4">
+                                <button type="button" class="btn py-2 me-3 fw-semibold flex-fill" style="color:#294287; border-color:#294287; border-width: 2px;" data-bs-dismiss="modal">Kembali</button>
+                                <button type="button" class="btn py-2 text-light fw-semibold flex-fill" style="background-color:#309FFF;" onclick="submitProof()">Ya, Selesaikan Pekerjaan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JS untuk submit form utama -->
+                <script>
+                    // function submitProof() {
+                    //     const modalConfirm = bootstrap.Modal.getInstance(document.getElementById('finishWorkModal'));
+                    //     modalConfirm.hide();
+                    //     document.getElementById('proofForm').submit();
+                    // }
+                    const input = document.getElementById('photoInput');
+                    const previewContainer = document.getElementById('previewContainer');
+
+                    input.addEventListener('change', function() {
+                        previewContainer.innerHTML = ''; // clear previous previews
+
+                        const files = Array.from(input.files);
+
+                        files.forEach(file => {
+                            if (!file.type.startsWith('image/')) return;
+
+                            const reader = new FileReader();
+
+                            reader.onload = function(e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = "rounded border img-thumbnail";
+                                img.style.width = "120px";
+                                img.style.height = "120px";
+                                img.style.objectFit = "cover";
+                                previewContainer.appendChild(img);
+                            };
+
+                            reader.readAsDataURL(file);
+                        });
+                    });
+
+                    function submitProof() {
+                        const finishModalEl = document.getElementById('finishWorkModal');
+                        const proofModalEl = document.getElementById('completionProofModal');
+
+                        const finishModal = bootstrap.Modal.getInstance(finishModalEl);
+                        const proofModal = bootstrap.Modal.getInstance(proofModalEl);
+
+                        finishModal.hide();
+                        proofModal.hide();
+
+                        setTimeout(() => {
+                            document.getElementById('proofForm').submit();
+                        }, 300);
+                    }
+                </script>
+
+
+                @endif
+
+                <!-- @if($transaction->status == 'submitted')
                 <div class="badge px-4 py-3 rounded-pill bg-primary">Ditinjau</div>
                 @elseif($transaction->status == 'cancelled')
                 <div class="badge px-4 py-3 rounded-pill bg-warning text-dark">Dibatalin</div>
@@ -167,7 +342,7 @@
 
                 @elseif($transaction->status == 'completed')
                 <div class="badge px-4 py-3 rounded-pill bg-success text-dark fs-4" style="background-color:#D3FA0D;">Udah Dikerjain</div>
-                @endif
+                @endif -->
             </div>
         </div>
         <div class="three flex-grow-3 container-fluid p-0 mt-3" style="flex: 4;">
@@ -269,3 +444,8 @@
     @endif
 
     @endsection
+</div>
+
+<script>
+
+</script>
