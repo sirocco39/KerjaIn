@@ -142,7 +142,7 @@ Route::get('/', function () {
 Route::get('/hubungi/{requestId}', [ChatController::class, 'startChat'])->name('chat.start');
 Route::post('/tawar/{requestId}', [ChatController::class, 'startOffer'])->name('chat.offer');
 Route::get('/job-taker/pesan/{selectedRoomId?}', function ($selectedRoomId = null) {
-    return view('Job_Taker.pesan', ['chatRoomId' => $selectedRoomId]);
+    return view('Job_Taker.job_taker-pesan', ['chatRoomId' => $selectedRoomId]);
 })->name('chat.job-taker');
 
 Route::get(('/job-req/pesan'), function () {
@@ -151,3 +151,7 @@ Route::get(('/job-req/pesan'), function () {
 
 Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
 Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
+
+Route::get('/test', function() {
+    return view('Job_Taker.job_taker-pesanSon');
+});
