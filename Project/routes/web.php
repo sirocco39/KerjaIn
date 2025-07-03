@@ -101,3 +101,7 @@ Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])-
 Route::get('/', function () {
     return view('landing');
 });
+
+Route::get('/test', function(){
+    return view('Job_Taker.job_taker-pesanSon');
+});
