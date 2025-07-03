@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Request as JobRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request as HttpRequest;
 
 class TransactionController extends Controller
@@ -43,7 +44,35 @@ class TransactionController extends Controller
         return back()->with('info', 'Pekerjaan dibatalkan dan request status diubah menjadi closed.');
     }
 
-    
+    public function submitCompletion(HttpRequest $request, Transaction $transaction)
+    {
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $transaction->status = 'completed';
+        $transaction->rating = $validated['rating'];
+        $transaction->comment = $validated['comment'];
+        $transaction->completed_at = now();
+        $transaction->save();
+
+        return back()->with('success', 'Pekerjaan berhasil ditandai selesai dan rating serta komentar telah terkirim.');
+    }
+
+    public function markComplete(Transaction $transaction)
+    {
+        // Cek agar hanya transaksi in progress atau submitted yang bisa ditandai selesai
+        if (in_array($transaction->status, ['in progress', 'submitted'])) {
+            $transaction->status = 'completed';
+            $transaction->save();
+
+            return back()->with('success', 'Pekerjaan berhasil ditandai selesai.');
+        }
+
+        return back()->with('error', 'Transaksi tidak dapat ditandai selesai.');
+    }
+
 
 }
 

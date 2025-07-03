@@ -1,6 +1,7 @@
 import './bootstrap';
 import './dropdown';
-import './cari-kerja'
+import './cari-kerja';
+import './rating';
 import '../css/master.css';
 import '../css/search.css';
 import '../css/cari-kerja.css';
