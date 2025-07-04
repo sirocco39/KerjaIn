@@ -4,7 +4,7 @@
 @php
 $start_time = $request->start_time;
 $end_time = $request->end_time;
-$date = date('j F Y', strtotime($start_time));
+$date = date('d M Y', strtotime($start_time));
 $time = date('H:i', strtotime($start_time));
 $start = new DateTime($start_time);
 $end = new DateTime($end_time);
@@ -21,10 +21,13 @@ $duration = $interval->format('%h jam %i menit');
 $created_at = $worker->created_at;
 $year = date('F Y', strtotime($created_at));
 
+$start_work = date('d M Y H:i', strtotime($transaction->start_work));
+$finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
+
 @endphp
 
 
-<div class="container-fluid pembatas-x">
+<div class="container-fluid pembatas-x mb-5">
     <div class="mb-2 mt-5">
         <h2 style="font-weight: 800;">Pesanan Kamu</h2>
     </div>
@@ -58,7 +61,7 @@ $year = date('F Y', strtotime($created_at));
 
                         <div class="p-2">Tanggal</div>
                     </div>
-                    <div class="py-2 fw-bold">{{$date}}</div>
+                    <div class="py-2 fw-bold text-end">{{$date}}</div>
                 </div>
                 <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                     <div class="separate d-flex align-items-center">
@@ -68,7 +71,7 @@ $year = date('F Y', strtotime($created_at));
 
                         <div class="p-2">Jam</div>
                     </div>
-                    <div class="py-2 fw-bold">{{$time}}</div>
+                    <div class="py-2 fw-bold text-end">{{$time}}</div>
                 </div>
                 <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                     <div class="separate d-flex align-items-center">
@@ -78,7 +81,7 @@ $year = date('F Y', strtotime($created_at));
 
                         <div class="p-2">Durasi</div>
                     </div>
-                    <div class="py-2 fw-bold">{{$duration}}</div>
+                    <div class="py-2 fw-bold text-end">{{$duration}}</div>
                 </div>
                 <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                     <div class="separate d-flex align-items-center">
@@ -90,7 +93,7 @@ $year = date('F Y', strtotime($created_at));
 
                         <div class="p-2">Upah</div>
                     </div>
-                    <div class="py-2 fw-bold">{{$formatted}}</div>
+                    <div class="py-2 fw-bold text-end">{{$formatted}}</div>
                 </div>
                 <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                     <div class="separate d-flex align-items-center">
@@ -104,7 +107,7 @@ $year = date('F Y', strtotime($created_at));
                         <a href={{$mapsLink}}
                             target="_blank" class="text-end"
                             style="text-decoration: none; color: #007BFF;">
-                            Jln. Sutami No. 612, Mojokerto 41762, Jatim
+                            {{ $request->location }}
                         </a>
                     </div>
                 </div>
@@ -127,6 +130,7 @@ $year = date('F Y', strtotime($created_at));
                 </div>
             </div>
 
+            @if ($transaction->status !== 'cancelled')
             <div class="contain bg-light mt-3 px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center" style="border: 1px solid #cacadd;">
 
                 <!-- Tombol Tandai Selesai -->
@@ -139,7 +143,7 @@ $year = date('F Y', strtotime($created_at));
 
                 @if($transaction->status == 'completed')
                 <!-- Tombol Tandai Selesai hanya muncul jika status sesuai -->
-                <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold" style="width:88%;">
+                <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold" style="width:88%;cursor: not-allowed;pointer-events: none;">
                     Selesai
                 </a>
                 @endif
@@ -162,6 +166,7 @@ $year = date('F Y', strtotime($created_at));
                 @endif
 
             </div>
+            @endif
         </div>
         <div class="three flex-grow-3 container-fluid p-0 mt-3" style="flex: 3;">
             <div class="contain bg-light px-4 py-3 rounded-top-4 d-flex align-items-center" style="border: 1px solid #cacadd; height:12%;">
@@ -308,14 +313,14 @@ $year = date('F Y', strtotime($created_at));
                                 <input type="hidden" name="rating" id="rating-input" value="0">
                         </div>
                         <!-- Komentar -->
-                        <div class="px-3 flex-fill d-flex justify-content-start flex-column" style="width:94%;">
+                        <div class="ps-3 flex-fill d-flex justify-content-start flex-column" style="width:94%;">
                             <label for="comment" class="form-label text-start">Komentar</label>
-                            <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..." style="height: 100%;"></textarea>
+                            <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..." style="height: 100%; border-color:#8a8a8a;"></textarea>
                         </div>
                         <div class="d-flex flex-column mt-3 justify-content-center">
-                            <button type="submit" class="btn btn-primary">Kirim</button>
+                            <button type="submit" class="btn btn-primary fw-medium rounded-3">Kirim</button>
                             <div class="m-1 text-center">Atau</div>
-                            <button type="button" class="m-0 p-0 fw-medium btn text-danger">Laporkan masalah</button>
+                            <button type="button" class="m-0 p-0 fw-medium btn text-danger" data-bs-toggle="modal" data-bs-target="#reportWorkModal">Laporkan masalah</button>
                         </div>
                     </div>
 
@@ -327,16 +332,50 @@ $year = date('F Y', strtotime($created_at));
 </div>
 
 
-
 <!-- Modal lihat bukti penyelesaian -->
 <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg py-5 px-5" style="max-width: 800px; width: 100%; height:auto;">
         <div class="modal-content p-3">
-            <div class="modal-header">
-                <h5 class="modal-title" id="completionProofModalLabel">Bukti Penyelesaian</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            <div class="modal-header d-flex m-0 p-0 mb-3">
+                <h3 class="modal-title text-center flex-fill fw-semibold" id="completionProofModalLabel">Bukti Penyelesaian Pekerjaan</h3>
             </div>
-            <div class="modal-body text-center">
+            <div class="d-flex">
+                <div class="d-flex flex-column" style="width:50%;">
+                    <h6 class="fw-bold">Lampiran Bukti Pekerjaan</h6>
+                    {{-- Tempat Foto Bukti --}}
+                    <div class="rounded-3 my-2 p-2 d-flex justify-content-center align-items-center"
+                        style="border-color:#8a8a8a; border-style:solid; width:100%; height:40vh; border-width:1px; background-color: #f9f9f9; overflow: hidden;">
+
+                        @if (!empty($completionProof) && $completionProof->photo_url)
+                        <img src="{{ $completionProof->photo_url }}"
+                            alt="Bukti Foto"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                            class="rounded">
+                        @else
+                        <div class="text-center text-muted d-flex flex-column justify-content-center align-items-center">
+                            <!-- Placeholder SVG -->
+                            <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287" />
+                            </svg>
+                            <div class="fw-semibold">Tidak ada bukti foto dari pekerja.</div>
+                        </div>
+                        @endif
+
+                    </div>
+                </div>
+                <div class="vr mx-3"></div>
+
+                <div class="d-flex flex-column" style="width:50%;">
+                    <h6 class="fw-bold">Catatan dari Pekerja</h6>
+                    <div class="rounded-3 mt-2 mb-4 p-2" style="border-color:#8a8a8a; border-style:solid; width:100%; height:64%; border-width:1px;">
+                        <p>{{ $completionProof->note ?? 'Tidak ada catatan dari pekerja.' }}</p>
+                    </div>
+                    <div class="flex-fill" style="width:100%; height:10%;">
+                        <button type="button" class="flex-fill rounded-4 py-3 px-4 fw-bold bg-light" data-bs-dismiss="modal" style="border-width:2px; border-color:#294287; color:#294287; width:100%;">Kembali</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="modal-body text-center">
                 {{-- Tempat Foto Bukti --}}
                 <img src="{{ $completionProof->photo_url ?? 'tidak ada bukti foto dari pekerja.' }}"
                     alt="Bukti Foto"
@@ -344,10 +383,7 @@ $year = date('F Y', strtotime($created_at));
 
                 {{-- Note dari pekerja --}}
                 <p>{{ $completionProof->note ?? 'Tidak ada catatan dari pekerja.' }}</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Kembali</button>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -380,6 +416,110 @@ $year = date('F Y', strtotime($created_at));
     </div>
 </div>
 
+<div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg py-3 px-5" style="max-width: 1000px; width: 100%;">
+        <div class="modal-content p-2 d-flex justify-content-center">
+            <div class="modal-header d-flex flex-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="title d-flex justify-content-center">
+                <h3 class="fw-bold">Laporan</h3>
+            </div>
+            <hr class="mt-0" style="width: 50%; background-color:#D3FA0D; height:4px; align-self: center; border-color:#D3FA0D;">
+            <div class="d-flex flex-fill">
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
+                    <p class="fw-medium">{{ $request->title }}</p>
+                </div>
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
+                    <p class="fw-medium">{{ $orderNumber }}</p>
+                </div>
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
+                    <p class="fw-medium">{{ $worker->first_name }} {{ $worker->last_name }}</p>
+                </div>
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
+                    <p class="fw-medium">{{ $request->location }}</p>
+                </div>
+            </div>
+            <div class="d-flex flex-fill">
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
+                    <p class="fw-medium">{{ $transaction->created_at->format('d M Y') }}</p>
+                </div>
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
+                    <p class="fw-medium">{{ $transaction->updated_at->format('d M Y') }}</p>
+                </div>
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Waktu Mulai Kerja</p>
+                    <p class="fw-medium">{{ $start_work }}</p>
+                </div>
+                <div class="text" style="width:25%;">
+                    <p class="m-0 p-0 text-black-50 fw-semibold">Waktu Selesai Kerja</p>
+                    <p class="fw-medium">{{ $finish_work }}</p>
+                </div>
+            </div>
+            <div class="text d-flex justify-content-between align-items-center" style="width:50%;">
+                <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
+                <p class="p-0 m-0 fw-medium fs-5">Rp {{ number_format($request->price, 2, ',', '.') }}</p>
+            </div>
+            <!-- Upload Gambar -->
+            <div class="mt-4">
+                <label class="form-label fw-semibold">Upload Bukti (gambar):</label>
+                <div class="d-flex flex-wrap gap-3 align-items-start" id="imagePreviewContainer">
+                    <!-- Tombol Tambah -->
+                    <div class="pb-2" onclick="document.getElementById('reportImageInput').click()" style="width: 80px; height: 80px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer; background-color:#f7f7ff; border-color:#309FFF;">
+                        <span class="text-center" style="font-size: 48px; color:#309FFF;">+</span>
+                    </div>
+                </div>
+                <input type="file" class="d-none" id="reportImageInput" name="images[]" accept="image/*" multiple>
+            </div>
+
+            <!-- Keluhan -->
+            <div class="mt-4">
+                <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                <textarea name="note" id="reportNote" class="form-control" rows="4" placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff !important;"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-danger px-4 py-2">Kirim Laporan</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const imageInput = document.getElementById('reportImageInput');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+
+    imageInput.addEventListener('change', function() {
+        const files = Array.from(imageInput.files);
+
+        files.forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = "rounded border img-thumbnail";
+                img.style.width = "120px";
+                img.style.height = "120px";
+                img.style.objectFit = "cover";
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Reset input so same image can be re-uploaded
+        imageInput.value = '';
+    });
+</script>
 
 
 @endsection

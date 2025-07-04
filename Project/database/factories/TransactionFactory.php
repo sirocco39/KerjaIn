@@ -18,6 +18,9 @@ class TransactionFactory extends Factory
     {
         return [
             'status' => $this->faker->randomElement(['accepted', 'in progress', 'submitted', 'completed', 'cancelled']),
+            'order_number' => $this->faker->numerify('############'),
+            'start_work' => $this->faker->dateTimeBetween('now', 'now', null),
+            'finish_work' => $this->faker->dateTimeBetween('now', '+1 day', null),
         ];
     }
 }

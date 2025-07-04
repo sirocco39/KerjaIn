@@ -15,7 +15,7 @@ class RequestSeeder extends Seeder
     public function run(): void
     {
         $users = User::nonWorker()->pluck('id');
-        for( $i = 0; $i < 40; $i++) {
+        for ($i = 0; $i < 40; $i++) {
             Request::factory()->create([
                 'requester_id' => $users->random(),
             ]);

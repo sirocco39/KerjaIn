@@ -24,7 +24,7 @@ class TransactionController extends Controller
         $orderNumber = '#' . str_pad(rand(0, 999999999999), 12, '0', STR_PAD_LEFT);
 
         // Ambil completion proof terkait
-        $completionProof = $transaction->completionProof; 
+        $completionProof = $transaction->completionProof;
 
         // Kirim data ke view
         return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'orderNumber', 'completionProof'));
@@ -72,8 +72,4 @@ class TransactionController extends Controller
 
         return back()->with('error', 'Transaksi tidak dapat ditandai selesai.');
     }
-
-
 }
-
-
