@@ -3,7 +3,24 @@
 @section('content')
 @php
 $start_time = $request->start_time;
+$end_time = $request->end_time;
 $date = date('j F Y', strtotime($start_time));
+$time = date('H:i', strtotime($start_time));
+$start = new DateTime($start_time);
+$end = new DateTime($end_time);
+$interval = $start->diff($end);
+
+$amount = $request->price;
+$formatted = 'Rp ' . number_format($amount, 2, ',', '.');
+
+$alamat = $request->alamat;
+$alamatEncoded = urlencode($alamat);
+$mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
+
+$duration = $interval->format('%h jam %i menit');
+$created_at = $worker->created_at;
+$year = date('F Y', strtotime($created_at));
+
 @endphp
 
 
@@ -13,15 +30,15 @@ $date = date('j F Y', strtotime($start_time));
     </div>
     <div class="contain bg-light mt-2 px-4 py-3 rounded-4 d-flex align-items-center" style="border: 1px solid #cacadd; ">
         @if($transaction->status == 'submitted')
-        <div class="badge px-4 py-2 rounded-pill bg-primary fw-semibold fs-2" style="background-color: #294287;">Ditinjau</div>
+        <div class="badge px-4 py-3 rounded-pill bg-primary text-light fs-6" style="background-color:#294287;">Ditinjau</div>
         @elseif($transaction->status == 'cancelled')
-        <div class="badge px-4 py-2 rounded-pill bg-warning text-dark fw-semibold" style="background-color: #294287;">Dibatalin</div>
+        <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:crimson;">Dibatalin</div>
         @elseif($transaction->status == 'accepted')
-        <div class="badge px-4 py-2 rounded-pill bg-warning text-dark fw-semibold" style="background-color: #294287;">Diterima</div>
+        <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:#294287;">Diterima</div>
         @elseif($transaction->status == 'in progress')
-        <div class="px-4 py-2 rounded-5 d-inline text-light fw-semibold fs-6" style="background-color: #309FFF;">Dikerjain</div>
+        <div class="badge px-4 py-3 rounded-5 bg-info text-light fs-6" style="background-color:#309FFF;">Dikerjain</div>
         @elseif($transaction->status == 'completed')
-        <div class="badge px-4 py-2 rounded-pill bg-success fw-semibold" style="background-color: greenyellow;">Selesai</div>
+        <div class="badge px-4 py-3 rounded-pill bg-success text-dark fs-6" style="background-color:#D3FA0D;">Selesai</div>
         @endif
         <h3 class="d-inline mx-3 mt-1" style="color:#294287; font-weight: 800;">{{$request->title}}</h3>
     </div>
@@ -51,17 +68,17 @@ $date = date('j F Y', strtotime($start_time));
 
                         <div class="p-2">Jam</div>
                     </div>
-                    <div class="py-2 fw-bold">19 Mei 2025</div>
+                    <div class="py-2 fw-bold">{{$time}}</div>
                 </div>
                 <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                     <div class="separate d-flex align-items-center">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.54 22.351L11.61 22.391L11.638 22.407C11.749 22.467 11.8733 22.4985 11.9995 22.4985C12.1257 22.4985 12.25 22.467 12.361 22.407L12.389 22.392L12.46 22.351C12.8511 22.1191 13.2328 21.8716 13.604 21.609C14.5651 20.9305 15.463 20.1667 16.287 19.327C18.231 17.337 20.25 14.347 20.25 10.5C20.25 8.31196 19.3808 6.21354 17.8336 4.66637C16.2865 3.11919 14.188 2.25 12 2.25C9.81196 2.25 7.71354 3.11919 6.16637 4.66637C4.61919 6.21354 3.75 8.31196 3.75 10.5C3.75 14.346 5.77 17.337 7.713 19.327C8.53664 20.1667 9.43427 20.9304 10.395 21.609C10.7666 21.8716 11.1485 22.1191 11.54 22.351ZM12 13.5C12.7956 13.5 13.5587 13.1839 14.1213 12.6213C14.6839 12.0587 15 11.2956 15 10.5C15 9.70435 14.6839 8.94129 14.1213 8.37868C13.5587 7.81607 12.7956 7.5 12 7.5C11.2044 7.5 10.4413 7.81607 9.87868 8.37868C9.31607 8.94129 9 9.70435 9 10.5C9 11.2956 9.31607 12.0587 9.87868 12.6213C10.4413 13.1839 11.2044 13.5 12 13.5Z" fill="#133E87" />
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2.25C6.615 2.25 2.25 6.615 2.25 12C2.25 17.385 6.615 21.75 12 21.75C17.385 21.75 21.75 17.385 21.75 12C21.75 6.615 17.385 2.25 12 2.25ZM12.75 6C12.75 5.80109 12.671 5.61032 12.5303 5.46967C12.3897 5.32902 12.1989 5.25 12 5.25C11.8011 5.25 11.6103 5.32902 11.4697 5.46967C11.329 5.61032 11.25 5.80109 11.25 6V12C11.25 12.414 11.586 12.75 12 12.75H16.5C16.6989 12.75 16.8897 12.671 17.0303 12.5303C17.171 12.3897 17.25 12.1989 17.25 12C17.25 11.8011 17.171 11.6103 17.0303 11.4697C16.8897 11.329 16.6989 11.25 16.5 11.25H12.75V6Z" fill="#133E87" />
                         </svg>
 
-                        <div class="p-2">Lokasi</div>
+                        <div class="p-2">Durasi</div>
                     </div>
-                    <div class="py-2 fw-bold">19 Mei 2025</div>
+                    <div class="py-2 fw-bold">{{$duration}}</div>
                 </div>
                 <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                     <div class="separate d-flex align-items-center">
@@ -73,23 +90,39 @@ $date = date('j F Y', strtotime($start_time));
 
                         <div class="p-2">Upah</div>
                     </div>
-                    <div class="py-2 fw-bold">19 Mei 2025</div>
+                    <div class="py-2 fw-bold">{{$formatted}}</div>
+                </div>
+                <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
+                    <div class="separate d-flex align-items-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.54 22.351L11.61 22.391L11.638 22.407C11.749 22.467 11.8733 22.4985 11.9995 22.4985C12.1257 22.4985 12.25 22.467 12.361 22.407L12.389 22.392L12.46 22.351C12.8511 22.1191 13.2328 21.8716 13.604 21.609C14.5651 20.9305 15.463 20.1667 16.287 19.327C18.231 17.337 20.25 14.347 20.25 10.5C20.25 8.31196 19.3808 6.21354 17.8336 4.66637C16.2865 3.11919 14.188 2.25 12 2.25C9.81196 2.25 7.71354 3.11919 6.16637 4.66637C4.61919 6.21354 3.75 8.31196 3.75 10.5C3.75 14.346 5.77 17.337 7.713 19.327C8.53664 20.1667 9.43427 20.9304 10.395 21.609C10.7666 21.8716 11.1485 22.1191 11.54 22.351ZM12 13.5C12.7956 13.5 13.5587 13.1839 14.1213 12.6213C14.6839 12.0587 15 11.2956 15 10.5C15 9.70435 14.6839 8.94129 14.1213 8.37868C13.5587 7.81607 12.7956 7.5 12 7.5C11.2044 7.5 10.4413 7.81607 9.87868 8.37868C9.31607 8.94129 9 9.70435 9 10.5C9 11.2956 9.31607 12.0587 9.87868 12.6213C10.4413 13.1839 11.2044 13.5 12 13.5Z" fill="#133E87" />
+                        </svg>
+
+                        <div class="p-2">Lokasi</div>
+                    </div>
+                    <div class="py-2 fw-bold text-end">
+                        <a href={{$mapsLink}}
+                            target="_blank" class="text-end"
+                            style="text-decoration: none; color: #007BFF;">
+                            Jln. Sutami No. 612, Mojokerto 41762, Jatim
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="contain bg-light mt-3 px-4 py-3 rounded-4 d-flex align-items-center justify-content-between" style="border: 1px solid #cacadd;">
                 <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}" alt="" style="width:50%; aspect-ratio:2/3; object-fit:cover;" class="me-3">
                 <div class="info d-flex flex-column">
-                    <div id="name" class="fw-bold">Park Ir Ran</div>
+                    <div id="name" class="fw-bold">{{$worker->first_name . ' ' . $worker->last_name}}</div>
                     <div id="rating" class="d-flex">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8.99008 2.67508C9.36342 1.77758 10.6368 1.77758 11.0101 2.67508L12.7451 6.84675L17.2484 7.20841C18.2184 7.28591 18.6118 8.49591 17.8726 9.12924L14.4418 12.0684L15.4893 16.4626C15.7151 17.4092 14.6859 18.1567 13.8559 17.6501L10.0001 15.2951L6.14425 17.6501C5.31425 18.1567 4.28508 17.4084 4.51092 16.4626L5.55842 12.0684L2.12758 9.12924C1.38842 8.49591 1.78175 7.28591 2.75175 7.20841L7.25508 6.84675L8.99008 2.67508Z" fill="#FFDD00" />
                         </svg>
 
-                        <div class="rate">4.8</div>
+                        <div class="rate fw-semibold">{{$worker->rating}}</div>
                         <div class="banyak">(120)</div>
                     </div>
                     <div id="join">
-                        <p style="font-size: 9px;">Bergabung dengan Kerjain sejak <span>Januari 2025</span></p>
+                        <p style="font-size: 9px;">Bergabung dengan Kerjain sejak <span>{{$year}}</span></p>
                     </div>
                 </div>
             </div>
@@ -99,39 +132,44 @@ $date = date('j F Y', strtotime($start_time));
                 <!-- Tombol Tandai Selesai -->
                 @if($transaction->status == 'submitted')
                 <!-- Tombol Tandai Selesai hanya muncul jika status sesuai -->
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn">
+                <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold" data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn" style="background-color:#294287; width:88%;">
                     Tandai Selesai
                 </button>
                 @endif
 
+                @if($transaction->status == 'completed')
+                <!-- Tombol Tandai Selesai hanya muncul jika status sesuai -->
+                <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold" style="width:88%;">
+                    Selesai
+                </a>
+                @endif
+
                 {{-- Lihat Bukti Penyelesaian --}}
                 @if($transaction->status == 'in progress')
-                    <a href="#" style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
-                        Lihat Bukti Penyelesaian
-                    </a>
+                <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#" style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
+                    Lihat Bukti Penyelesaian
+                </a>
                 @elseif($transaction->status == 'submitted' || $transaction->status == 'completed')
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#completionProofModal" style="color: #0d6efd; text-decoration: none;">
-                        Lihat Bukti Penyelesaian
-                    </a>
+                <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#" data-bs-toggle="modal" data-bs-target="#completionProofModal" style="color: #0d6efd; text-decoration: none;">
+                    Lihat Bukti Penyelesaian
+                </a>
                 @endif
 
                 {{-- Batalkan --}}
                 @if($transaction->status == 'accepted')
-                    <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-danger">Ya, Tetap Batalin</button>
-                    </form>
+                <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center" style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5" data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
                 @endif
 
             </div>
         </div>
-        <div class="three flex-grow-3 container-fluid p-0 mt-3" style="flex: 4;">
+        <div class="three flex-grow-3 container-fluid p-0 mt-3" style="flex: 3;">
             <div class="contain bg-light px-4 py-3 rounded-top-4 d-flex align-items-center" style="border: 1px solid #cacadd; height:12%;">
                 <div class="atas d-flex justify-content-between align-items-center flex-fill">
                     <div class="profile d-flex">
                         <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}" alt="" style="width: 48px; height: 48px;" class="rounded-5">
                         <div class="containe-name-status ms-2 d-flex flex-column">
-                            <div class="name fw-bold">Park Ir Ran</div>
+                            <div class="name fw-bold">{{$worker->first_name . ' ' . $worker->last_name}}</div>
                             <div class="kecil">Online</div>
                         </div>
                     </div>
@@ -156,98 +194,132 @@ $date = date('j F Y', strtotime($start_time));
     </div>
 </div>
 
-<div class="d-flex flex-column align-items-start">
 
-
-    
-    {{-- Badge status dinamis label --}}
-    @if($transaction->status == 'submitted')
-    <span class="badge rounded-pill bg-primary mb-2">Ditinjau</span>
-    @elseif($transaction->status == 'cancelled')
-    <span class="badge rounded-pill bg-warning text-dark mb-2">Dibatalin</span>
-    @elseif($transaction->status == 'accepted')
-    <span class="badge rounded-pill bg-warning text-dark mb-2">Diterima</span>
-    @elseif($transaction->status == 'in progress')
-    <span class="badge rounded-pill bg-info text-dark mb-2">Dikerjain</span>
-    @elseif($transaction->status == 'completed')
-    <span class="badge rounded-pill bg-success mb-2">Selesai</span>
-    @endif
-    
-    <!-- Modal tandai selesai flow pertama-->
-    <div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="completeJobModalLabel">Selesaikan Pekerjaan?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal tandai selesai flow pertama-->
+<div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-content p-4 d-flex justify-content-center">
+                <div class="d-flex flex-fill justify-content-center">
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#D3FA0D" />
+                    </svg>
+                    <h5 class="mx-3 fw-bold fs-2 mt-1" style="color:#309FFF;">Selesaikan Pekerjaan?</h5>
+                    <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#D3FA0D" />
+                    </svg>
                 </div>
-                <div class="modal-body">
-                    <!-- Peringatan akan muncul di sini jika status masih In Progress -->
-                    <div class="warning-alert" id="warningAlert" style="display: none;">
-                        <strong>Peringatan:</strong> Status transaksi masih In Progress. Anda tidak dapat menyelesaikan pekerjaan saat status masih In Progress.
-                    </div>
-                    
-                    <ul class="mb-3">
-                        <li>Peringalatar: Peityllä lukuun energimilauttavasti periyehdeiden kertelut.</li>
-                        <li>Reinoiti</li>
-                        <li>AL Selesaikan Pekerjaan</li>
-                    </ul>
-                    
-                    <hr>
-                    <h6 class="mb-3">ijin AC Ruang Tamu</h6>
-                    <hr>
-                    <h6 class="mb-3">Tekemee:</h6>
-                    <hr>
-                    <p>Riin vetoja</p>
+                <div class="d-flex flex-column flex-fill justify-content-center text-center my-4 fw-semibold" style="font-size: 16px;">
+                    <div>Apakah kamu yakin pekerjaan ini sudah benar-benar selesai?</div>
+                    <div>Setelah pekerjaan diselesaikan, kamu tidak dapat mengubah statusnya kembali.</div>
                 </div>
-                <div class="modal-footer">
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn py-3 fw-semibold rounded-4" style="color:#294287; border-color:#294287; border-width: 2px; width:45%;" data-bs-dismiss="modal">Kembali</button>
+                    <button type="button" class="btn py-3 text-light fw-semibold rounded-4" style="background-color:#309FFF; width:45%;" data-bs-toggle="modal" data-bs-target="#completionModal">Ya, Selesaikan Pekerjaan</button>
+                </div>
+                <!-- <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completionModal">Ya, Selesaikan Pekerjaan</button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
 </div>
 
 
+
 <!-- Modal tandai selesai flow kedua-->
 <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg py-5 px-5" style="max-width: 1000px; width: 100%;">
         <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="completionModalLabel">Detail Penyelesaian</h5>
+                    <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">Detail Penyelesaian</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body d-flex">
                     <!-- Detail Pesanan -->
-                    <p><strong>Judul Pesanan:</strong> {{ $request->title }}</p>
-                    <p><strong>Nomor Pesanan:</strong> {{ $orderNumber }}</p>
-                    <p><strong>Nama Pekerja:</strong> {{ $worker->first_name }} {{ $worker->last_name }}</p>
-                    <p><strong>Lokasi:</strong> {{ $request->location }} </p>
-                    <p><strong>Tanggal Pemesanan:</strong> {{ $transaction->created_at->format('d M Y') }} </p>
-                    <p><strong>Tanggal Selesai:</strong> {{ $transaction->updated_at->format('d M Y') }} </p>
-                    <p><strong>Total:</strong> Rp {{ number_format($request->price, 2, ',', '.') }} </p>
-
-                <div class="text-center mb-3">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <i class="bi bi-star-fill text-secondary fs-2 star-rating"
-                                data-value="{{ $i }}"></i>
-                        @endfor
-                        <input type="hidden" name="rating" id="rating-input" value="0">
-                </div>
-
-
-                    <!-- Komentar -->
-                    <div class="mb-3">
-                        <label for="comment" class="form-label">Komentar</label>
-                        <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..."></textarea>
+                    <div class="d-flex flex-column" style="width:50%;">
+                        <div class="d-flex flex-fill">
+                            <div class="text flex-fill">
+                                <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
+                                <p class="fw-medium">{{ $request->title }}</p>
+                            </div>
+                            <div class="text">
+                                <p class="m-0 p-0 text-black-50 fw-semibold"></p>
+                                <p class="fw-medium"></p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="text">
+                                <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
+                                <p class="fw-medium">{{ $orderNumber }}</p>
+                            </div>
+                            <div class="text">
+                                <p class="m-0 p-0 text-black-50 fw-semibold"></p>
+                                <p class="fw-medium"></p>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-fill">
+                            <div class="text" style="width:50%;">
+                                <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
+                                <p class="fw-medium">{{ $worker->first_name }} {{ $worker->last_name }}</p>
+                            </div>
+                            <div class="text" style="width:50%;">
+                                <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
+                                <p class="fw-medium">{{ $request->location }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="text" style="width:50%;">
+                                <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
+                                <p class="fw-medium">{{ $transaction->created_at->format('d M Y') }}</p>
+                            </div>
+                            <div class="text" style="width:50%;">
+                                <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
+                                <p class="fw-medium">{{ $transaction->updated_at->format('d M Y') }}</p>
+                            </div>
+                        </div>
+                        <hr class="my-1 border border-dark">
+                        <div class="d-flex mt-1">
+                            <div class="text d-flex justify-content-between align-items-center" style="width:50%;">
+                                <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
+                                <p class="p-0 m-0 fw-medium fs-6">Rp {{ number_format($request->price, 2, ',', '.') }}</p>
+                            </div>
+                            <div class="text d-flex justify-content-end align-items-center" style="width:50%;">
+                                <a href="#" class="d-flex text-decoration-none justify-content-center align-items-center">
+                                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z" fill="#309FFF" />
+                                    </svg>
+                                    <div class="ms-2 fw-medium fs-5">Invoice</div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary">Laporkan masalah</button>
-                    <button type="submit" class="btn btn-success">Kirim</button>
+                    <div class="vr mx-3"></div>
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="width:50%;">
+                        <h4 class="fw-semibold mb-1">Kasih penilaian, yuk!</h4>
+                        <div class="text-center mt-0 mb-3" style="width:100%;">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="bi bi-star-fill text-secondary star-rating fs-2" style="font-size: 40px;"
+                                data-value="{{ $i }}"></i>
+                                @endfor
+                                <input type="hidden" name="rating" id="rating-input" value="0">
+                        </div>
+                        <!-- Komentar -->
+                        <div class="px-3 flex-fill d-flex justify-content-start flex-column" style="width:94%;">
+                            <label for="comment" class="form-label text-start">Komentar</label>
+                            <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..." style="height: 100%;"></textarea>
+                        </div>
+                        <div class="d-flex flex-column mt-3 justify-content-center">
+                            <button type="submit" class="btn btn-primary">Kirim</button>
+                            <div class="m-1 text-center">Atau</div>
+                            <button type="button" class="m-0 p-0 fw-medium btn text-danger">Laporkan masalah</button>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
         </form>
@@ -256,30 +328,58 @@ $date = date('j F Y', strtotime($start_time));
 
 
 
-    <!-- Modal lihat bukti penyelesaian -->
-    <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-                <div class="modal-content p-3">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="completionProofModalLabel">Bukti Penyelesaian</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        {{-- Tempat Foto Bukti --}}
-                        <img src="{{ $completionProof->photo_url ?? 'tidak ada bukti foto dari pekerja.' }}"
-                            alt="Bukti Foto"
-                            class="img-fluid mb-3 rounded">
+<!-- Modal lihat bukti penyelesaian -->
+<div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completionProofModalLabel">Bukti Penyelesaian</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body text-center">
+                {{-- Tempat Foto Bukti --}}
+                <img src="{{ $completionProof->photo_url ?? 'tidak ada bukti foto dari pekerja.' }}"
+                    alt="Bukti Foto"
+                    class="img-fluid mb-3 rounded">
 
-                        {{-- Note dari pekerja --}}
-                        <p>{{ $completionProof->note ?? 'Tidak ada catatan dari pekerja.' }}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Kembali</button>
-                    </div>
-                </div>
+                {{-- Note dari pekerja --}}
+                <p>{{ $completionProof->note ?? 'Tidak ada catatan dari pekerja.' }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Kembali</button>
+            </div>
         </div>
     </div>
 </div>
+</div>
+
+<div class="modal fade" id="cancelWorkModal" tabindex="-1" aria-labelledby="cancelWorkModalLabel" aria-hidden="true">
+    <div class="modal-dialog p-5">
+        <div class="modal-content p-2 d-flex justify-content-center">
+            <div class="d-flex flex-fill justify-content-center">
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#B02A37" />
+                </svg>
+                <h2 class="text-danger mx-4 fw-bold">Batalkan Pekerjaan?</h2>
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#B02A37" />
+                </svg>
+            </div>
+            <div class="d-flex flex-column flex-fill justify-content-center text-center my-4" style="font-size: 16px;">
+                <div>Apakah kamu yakin ingin membatalkan pekerjaan ini?</div>
+                <div>Tindakan ini bisa mempengaruhi reputasimu di platform KerjaIn</div>
+            </div>
+            <div class="d-flex flex-fill mt-4 justify-content-between">
+                <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST" class="flex-fill d-flex justify-content-between">
+                    @csrf
+                    <button type="button" class="btn flex-fill p-3 px-5 me-3" style="color:#294287; border-color:#294287; border-width: 2px;" data-bs-dismiss="modal">Lanjut Kerja</button>
+                    <button type="submit" class="btn btn-danger flex-fill p-3 px-5">Ya, Tetap Batalin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 @endsection
