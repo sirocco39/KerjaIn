@@ -1,11 +1,11 @@
-@extends('Master.master-job_req') 
+@extends('Master.master-job_req')
 
 @section('content')
 
 <section class="py-5 bg-light">
   <div class="container">
     <div class="row align-items-center">
-      
+
       <!-- Kiri: Form -->
       <div class="col-lg-6">
         <h2 class="fw-bold mb-2">Buat tawaran kerja</h2>
@@ -37,7 +37,7 @@
               <input type="date" class="form-control rounded-3" id="tanggal">
               <span class="align-self-center">–</span>
               <input type="time" class="form-control rounded-3" />
-            </div>            
+            </div>
           </div>
 
           <!-- Waktu selesai pengerjaan -->
@@ -74,5 +74,3 @@
 
 
 @endsection
-
-

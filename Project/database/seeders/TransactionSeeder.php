@@ -17,7 +17,7 @@ class TransactionSeeder extends Seeder
      */
     public function run(): void
     {
-        $offers = Offer::where('status', 'closed')->get();
+        $offers = Offer::where('status', 'accepted')->get();
         foreach($offers as $offer){
             Transaction::factory()->create([
                 'request_id' => $offer->request_id,

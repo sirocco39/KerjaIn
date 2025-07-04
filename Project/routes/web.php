@@ -4,15 +4,21 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerRegistrationController;
 use App\Http\Controllers\browseWorkRequestController;
 use App\Http\Controllers\RequestController;
-use App\Models\Request;
+use App\Models\Request as WorkRequest;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;       
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PusherController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WorkerTransactionController;
 use App\Models\Transaction;
+use App\Http\Controllers\ChatController;
+use App\Livewire\JobTaker\Chat;
+use App\Livewire\jobTaker\JobTakerChatRoom;
+use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
+use App\Models\ChatRoom;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 // Route on-going-work-request
@@ -50,8 +56,7 @@ Route::resource('requesttt', RequestController::class);
 Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
     $requesterId = Auth::id();
-
-    $fiveLatestRequests = Request::where('requester_id', $requesterId)
+    $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId)
         ->whereNull('deleted_at')
         ->latest()
         ->take(6) // Sementara ganti 6, kalo dah kelar ganti 5
@@ -69,21 +74,20 @@ Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
 
 Route::post('/postwork', [RequestController::class, 'add']);
 
-Route::get('/request/{request:slug}', function (Request $request) {
+Route::get('/request/{request:slug}', function (WorkRequest $request) {
     return view('request', ['workRequest' => $request]);
 });
 
-Route::get('/edit/{request:slug}', function (Request $request) {
+Route::get('/edit/{request:slug}', function (WorkRequest $request) {
     return view('edit', ['workRequest' => $request]);
 });
 
-Route::get('/job-req/pesan', function () {
-    return view('Job_Requester.dummy-job_req-pesan');
-});
-
-
 Route::get('/job-req/riwayat', function () {
     return view('Job_Requester.dummy-job_req-riwayat');
+});
+
+Route::get('/job_taker', function () {
+    return view('Job_Taker.dummy-job_taker-landingpage');
 });
 
 Route::get('/joinworker', function () {
@@ -124,16 +128,12 @@ Route::get('/job-taker/beranda', function () {
         ->with('requester', 'request')
         ->get();
     return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction'));
-});
+})->name('job-taker.beranda');
 
 Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
 
 Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
-
-Route::get('/job-taker/pesan', function () {
-    return view('Job_Taker.dummy-job_taker-pesan');
-});
 
 Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
@@ -155,3 +155,24 @@ Route::get('/', function () {
     return view('landing');
 });
 
+
+Route::get('/hubungi/{requestId}', [ChatController::class, 'startChat'])->name('chat.start');
+Route::post('/tawar/{requestId}', [ChatController::class, 'startOffer'])->name('chat.offer');
+Route::get('/job-taker/pesan/{selectedRoomId?}', function ($selectedRoomId = null) {
+    return view('Job_Taker.pesan', ['chatRoomId' => $selectedRoomId]);
+})->name('chat.job-taker');
+
+Route::get(('/job-req/pesan'), function () {
+    return view('Job_Requester.pesan');
+})->name('jobrequester.chat');
+
+Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
+Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
+
+Route::get('/test', function () {
+    return view('Job_Taker.job_taker-pesanSon');
+});
+
+Route::get('/livetest', function () {
+    return view('livetest');
+});

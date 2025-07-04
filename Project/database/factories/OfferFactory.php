@@ -18,7 +18,6 @@ class OfferFactory extends Factory
     {
         return [
             'amount' => $this->faker->randomFloat(2, 10000, 500000),
-            'status' => fake()->randomElement(['pending', 'accepted', 'rejected', 'withdrawn']),
         ];
     }
 
@@ -29,9 +28,15 @@ class OfferFactory extends Factory
         ]);
     }
 
-    public function closedOffer(){
+    public function rejectedOffer(){
         return $this->state([
-            'status' => 'closed',
+            'status' => 'rejected',
+        ]);
+    }
+
+    public function acceptedOffer(){
+        return $this->state([
+            'status' => 'accepted',
         ]);
     }
 }
