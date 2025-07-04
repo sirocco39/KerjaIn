@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    @livewireStyles
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
@@ -850,6 +851,7 @@
             }, 1000);
         }
     </script>
+    @livewireScripts
 </body>
 
 </html>

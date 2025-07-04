@@ -19,6 +19,7 @@ class Chat extends Component
 
     public $showOfferForm = false;
     public $offerAmount = '';
+    public bool $isChatVisibleOnMobile = false;
 
     public function mount($selectedRoomId = null)
     {
@@ -40,9 +41,18 @@ class Chat extends Component
         $this->selectedRoomId = $roomId;
         $this->selectedRoom = ChatRoom::with(['request', 'requester'])->find($roomId);
         $this->loadActiveOffer();
+
+        // Atur agar chat terlihat di mobile saat room dipilih
+        $this->isChatVisibleOnMobile = true;
+
         $this->dispatch('scroll-to-bottom');
+
     }
 
+    public function hideChatOnMobile()
+    {
+        $this->isChatVisibleOnMobile = false;
+    }
     public function loadActiveOffer()
     {
         if ($this->selectedRoom) {
@@ -105,7 +115,7 @@ class Chat extends Component
     public function render()
     {
         // 1. Ambil daftar chat room yang sudah ada pesannya.
-        $this->selectRoom($this->selectedRoomId);
+        // $this->selectRoom($this->selectedRoomId);
         $chatRooms = ChatRoom::where('worker_id', Auth::id())
             ->where('is_open', true)
             ->where(function ($query) {
