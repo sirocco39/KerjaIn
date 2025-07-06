@@ -50,34 +50,34 @@ class WorkerTransactionController extends Controller
         return back()->with('success', 'Pekerjaan dimulai.');
     }
 
-   public function uploadProof(Request $request, Transaction $transaction)
-{
-    $request->validate([
-        'photo' => 'required|array',
-        'photo.*' => 'image|max:2048',
-        'note' => 'nullable|string',
-    ]);
+    public function uploadProof(Request $request, Transaction $transaction)
+    {
+        $request->validate([
+            'photo' => 'required|array',
+            'photo.*' => 'image|max:2048',
+            'note' => 'nullable|string',
+        ]);
 
-    foreach ($request->file('photo') as $file) {
-        $path = $file->store('completion_proofs', 'public');
-        $photoUrl = Storage::url($path);
+        foreach ($request->file('photo') as $file) {
+            $path = $file->store('completion_proofs', 'public');
+            $photoUrl = Storage::url($path);
 
-        CompletionProof::create([
-            'transaction_id' => $transaction->id,
-            'photo_url' => $photoUrl,
-            'note' => $request->note,
-            'submitted_at' => now(),
+            CompletionProof::create([
+                'transaction_id' => $transaction->id,
+                'photo_url' => $photoUrl,
+                'note' => $request->note,
+                'submitted_at' => now(),
+            ]);
+        }
+
+        $transaction->status = 'submitted';
+        $transaction->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bukti pekerjaan berhasil diupload.'
         ]);
     }
-
-    $transaction->status = 'submitted';
-    $transaction->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Bukti pekerjaan berhasil diupload.'
-    ]);
-}
 
 
     public function markComplete(Transaction $transaction)
@@ -153,25 +153,30 @@ class WorkerTransactionController extends Controller
             'reporter_id' => 'required|exists:users,id',
             'reported_id' => 'required|exists:users,id',
             'reasons' => 'required|string',
-            'photo' => 'required|image|max:2048',
-
+            'photo' => 'required|array',
+            'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Simpan foto ke storage
-        $path = $request->file('photo')->store('report_photos', 'public');
-        $photoUrls = Storage::url($path);
+        try {
+            $photoUrls = [];
 
-        Report::create([
-            'transaction_id' => $request->transaction_id,
-            'reporter_id' => $request->reporter_id,
-            'reported_id' => $request->reported_id,
-            'reasons' => $request->reasons,
-            'photo_url' => $photoUrls,
-            'status' => 'Not Reviewed',
-        ]);
+            foreach ($request->file('photo') as $file) {
+                $path = $file->store('report_photos', 'public');
+                $photoUrls[] = Storage::url($path);
+            }
 
-        return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');
+            Report::create([
+                'transaction_id' => $request->transaction_id,
+                'reporter_id' => $request->reporter_id,
+                'reported_id' => $request->reported_id,
+                'reasons' => $request->reasons,
+                'photo_url' => json_encode($photoUrls),
+                'status' => 'Not Reviewed',
+            ]);
 
-
+            return back()->with('success', 'Laporan berhasil dikirim.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

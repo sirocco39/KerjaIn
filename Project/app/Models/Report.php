@@ -14,6 +14,7 @@ class Report extends Model
         'transaction_id',
         'reporter_id',
         'reported_id',
+        'photo_url',
         'reasons',
         'status',
     ];
@@ -21,17 +22,17 @@ class Report extends Model
         'status' => 'Not Reviewed',
     ];
 
-    public function transaction() : BelongsTo
+    public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class, 'transaction_id');
     }
 
-    public function reporter() : BelongsTo
+    public function reporter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reporter_id');
     }
-    
-    public function reported() : BelongsTo
+
+    public function reported(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reported_id');
     }

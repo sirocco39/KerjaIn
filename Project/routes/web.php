@@ -8,7 +8,7 @@ use App\Models\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;       
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PusherController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WorkerTransactionController;
@@ -36,7 +36,7 @@ Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store
 
 Route::post('/reports', [WorkerTransactionController::class, 'storeReport'])->name('reports.store');
 
-Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'submitReport'])->name('worker.submitReport');
+Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'storeReport'])->name('worker.submitReport');
 
 
 
@@ -167,4 +167,3 @@ Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])-
 Route::get('/', function () {
     return view('landing');
 });
-
