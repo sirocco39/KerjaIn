@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\Request as JobRequest;
+use App\Models\Report;
+use Illuminate\Support\Facades\Auth;
+
+
 
 
 
@@ -46,35 +50,35 @@ class WorkerTransactionController extends Controller
         return back()->with('success', 'Pekerjaan dimulai.');
     }
 
-    public function uploadProof(Request $request, Transaction $transaction)
-    {
-        $request->validate([
-            'photo' => 'required|image|max:2048', // max 2MB
-            'note' => 'nullable|string',
-        ]);
+   public function uploadProof(Request $request, Transaction $transaction)
+{
+    $request->validate([
+        'photo' => 'required|array',
+        'photo.*' => 'image|max:2048',
+        'note' => 'nullable|string',
+    ]);
 
-        // Simpan file ke storage
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('completion_proofs', 'public');
-            $photoUrl = Storage::url($path);
-        } else {
-            return back()->with('error', 'Foto bukti harus diunggah.');
-        }
+    foreach ($request->file('photo') as $file) {
+        $path = $file->store('completion_proofs', 'public');
+        $photoUrl = Storage::url($path);
 
-        // Insert ke tabel completion_proofs
         CompletionProof::create([
             'transaction_id' => $transaction->id,
             'photo_url' => $photoUrl,
             'note' => $request->note,
             'submitted_at' => now(),
         ]);
-
-        // Update status transaction menjadi 'submitted'
-        $transaction->status = 'submitted';
-        $transaction->save();
-
-        return back()->with('success', 'Bukti pekerjaan berhasil diupload.');
     }
+
+    $transaction->status = 'submitted';
+    $transaction->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Bukti pekerjaan berhasil diupload.'
+    ]);
+}
+
 
     public function markComplete(Transaction $transaction)
     {
@@ -112,5 +116,62 @@ class WorkerTransactionController extends Controller
                 'price' => $job->price,
             ],
         ]);
+    }
+
+    public function finishWork(Request $request, Transaction $transaction)
+    {
+        $request->validate([
+            'photo' => 'required|image|max:2048',
+            'note' => 'nullable|string|max:500',
+        ]);
+
+        // Simpan foto ke storage
+        $path = $request->file('photo')->store('report_photos', 'public');
+        $photoUrl = Storage::url($path);
+
+        // Simpan ke tabel reports
+        Report::create([
+            'transaction_id' => $transaction->id,
+            'reporter_id' => Auth::id(),
+            'reported_id' => $transaction->request->user_id, // requester sebagai reported
+            'reasons' => $request->note ?? '-',
+            'photo_url' => $photoUrl,
+            'status' => 'submitted',
+        ]);
+
+        // Update status transaction
+        $transaction->status = 'submitted';
+        $transaction->save();
+
+        return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');
+    }
+
+    public function storeReport(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,id',
+            'reporter_id' => 'required|exists:users,id',
+            'reported_id' => 'required|exists:users,id',
+            'reasons' => 'required|string',
+            'photo' => 'required|image|max:2048',
+
+        ]);
+
+        // Simpan foto ke storage
+        $path = $request->file('photo')->store('report_photos', 'public');
+        $photoUrls = Storage::url($path);
+
+        Report::create([
+            'transaction_id' => $request->transaction_id,
+            'reporter_id' => $request->reporter_id,
+            'reported_id' => $request->reported_id,
+            'reasons' => $request->reasons,
+            'photo_url' => $photoUrls,
+            'status' => 'Not Reviewed',
+        ]);
+
+        return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');
+
+
     }
 }

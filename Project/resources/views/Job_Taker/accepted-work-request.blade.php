@@ -1,7 +1,8 @@
-@extends('Master.master-job_req')
+@extends('Master.master-job_taker')
 @php
 @endphp
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="container-fluid pembatas-x">
     <div class="mb-2 mt-5">
         <h2 style="font-weight: 800;">Kerjaan Kamu</h2>
@@ -160,6 +161,7 @@
                 {{-- Tombol aksi berdasarkan status --}}
                 {{-- Tombol aksi berdasarkan status --}}
                 @if($transaction->status === 'accepted')
+
                 {{-- Tombol Mulai Kerja --}}
                 <form id="start-work-form" action="{{ route('worker.startWork', $transaction->id) }}" method="POST">
                     @csrf
@@ -198,6 +200,7 @@
                         </div>
                     </div>
                 </div>
+
                 @elseif($transaction->status === 'completed')
                 {{-- Tombol Sudah Dikerjakan --}}
                 <button class="btn btn-success" disabled>
@@ -212,7 +215,7 @@
                 </button>
                 <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">Batalkan Kerja</div>
 
-                <!-- Modal Bukti Penyelesaian -->
+                <!-- Modal konfirmasi penyelesaian pekerjaan -->
                 <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" style="max-width: 800px;">
                         <div class="modal-content p-4">
@@ -224,13 +227,13 @@
                                         <label for="photo" class="form-label fw-semibold">Upload Foto Bukti Pekerjaan</label>
                                         <div class="rounded p-4 text-center d-flex flex-column align-items-center justify-content-between"
                                             style="cursor: pointer; min-height: 200px; border-style:dashed; border-color:#cacadd; background-color: #F4f4f4;"
-                                            onclick="document.getElementById('photoInput').click()">
+                                            onclick="document.getElementById('photoInputReport').click()">
                                             <p class="mb-0 text-muted">Klik disini untuk upload gambar</p>
                                             <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287" />
                                             </svg>
-                                            <input type="file" id="photoInput" name="photo[]" accept="image/*" multiple class="d-none">
-                                            <div id="previewContainer" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
+                                            <input type="file" id="photoInputReport" name="photo[]" accept="image/*" multiple class="d-none">
+                                            <div id="previewContainerReport" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
                                         </div>
                                     </div>
                                     <div class="vr mx-3"></div>
@@ -239,8 +242,7 @@
                                         <textarea name="note" id="note" rows="3" class="form-control" style="height: 70%; border-color:#b4b4b4;"></textarea>
                                         <div class="d-flex mt-2 flex-end">
                                             <button type="button" class="btn me-1 flex-fill fw-semibold" style="color:#294287; border-color:#294287; border-width: 2px;" data-bs-dismiss="modal">Kembali</button>
-                                            <button type="button" class="btn ms-1 flex-fill fw-semibold text-light" style="background-color:#309FFF;" data-bs-toggle="modal"
-                                                data-bs-target="#finishWorkModal">Selesaikan Pekerjaan</button>
+                                            <button type="button" class="btn ms-1 flex-fill fw-semibold text-light" style="background-color:#309FFF;"   onclick="uploadProof()">Selesaikan Pekerjaan</button>
                                         </div>
                                     </div>
                                 </div>
@@ -249,81 +251,123 @@
                     </div>
                 </div>
 
-                <!-- Modal Konfirmasi di atas -->
-                <div class=" modal fade" id="finishWorkModal" data-bs-backdrop="static" data-bs-keyboard="false"
-                    tabindex="-1" aria-labelledby="finishWorkModalLabel" aria-hidden="true" style="z-index:1065;">
+                <!-- Modal completed-->
+                <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content p-4 d-flex justify-content-center">
-                            <div class="d-flex flex-fill justify-content-center">
-                                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#D3FA0D" />
-                                </svg>
-                                <h5 class="mx-3 fw-bold fs-2 mt-1" style="color:#309FFF;">Selesaikan Pekerjaan?</h5>
-                                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z" fill="#D3FA0D" />
-                                </svg>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="completionModalLabel">Detail Penyelesaian</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="d-flex flex-column flex-fill justify-content-center text-center my-4 fw-semibold" style="font-size: 16px;">
-                                <div>Apakah kamu yakin pekerjaan ini sudah benar-benar selesai?</div>
-                                <div>Setelah pekerjaan diselesaikan, kamu tidak dapat mengubah statusnya kembali.</div>
+                            <div class="modal-body">
+                                <p><strong>Judul Pesanan:</strong> {{ $request->title }}</p>
+                                <p><strong>Nomor Pesanan:</strong> {{ $orderNumber }}</p>
+                                <p><strong>Nama Pekerja:</strong> {{ $worker->first_name }} {{ $worker->last_name }}</p>
+                                <p><strong>Lokasi:</strong> {{ $request->location }} </p>
+                                <p><strong>Tanggal Pemesanan:</strong> {{ $transaction->created_at->format('d M Y') }} </p>
+                                <p><strong>Tanggal Selesai:</strong> {{ $transaction->updated_at->format('d M Y') }} </p>
+                                <p><strong>Total:</strong> Rp {{ number_format($request->price, 2, ',', '.') }} </p>
                             </div>
-                            <div class="d-flex justify-content-center mt-4">
-                                <button type="button" class="btn py-2 me-3 fw-semibold flex-fill" style="color:#294287; border-color:#294287; border-width: 2px;" data-bs-dismiss="modal">Kembali</button>
-                                <button type="button" class="btn py-2 text-light fw-semibold flex-fill" style="background-color:#309FFF;" onclick="submitProof()">Ya, Selesaikan Pekerjaan</button>
+                            <h5 class="text-center">Kasih penilaian, yuk!</h5>
+                    <div class="text-center mb-3">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="bi bi-star-fill text-secondary fs-2 star-rating"
+                                data-value="{{ $i }}"></i>
+                        @endfor
+                        <input type="hidden" name="rating" id="rating-input" value="0">
+                    </div>
+                            <div class=" mb-3 flex-grow-1">
+                                <label for="note" class="form-label fw-semibold">Komentar</label>
+                                <textarea name="note" id="note" rows="3" class="form-control" style="height: 70%; border-color:#b4b4b4;"></textarea>
+                                <div class="d-flex mt-2 flex-end">
+                                    <button type="button" class="btn me-1 flex-fill fw-semibold" style="color:#294287; border-color:#294287; border-width: 2px;" onclick="submitReview()">Kirim</button>
+                                    <button type="button" class="btn ms-1 flex-fill fw-semibold text-light" style="background-color:#ff0000;" onclick="openReportModal()">Laporkan Masalah</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- JS untuk submit form utama -->
-                <script>
-                    // function submitProof() {
-                    //     const modalConfirm = bootstrap.Modal.getInstance(document.getElementById('finishWorkModal'));
-                    //     modalConfirm.hide();
-                    //     document.getElementById('proofForm').submit();
-                    // }
-                    const input = document.getElementById('photoInput');
-                    const previewContainer = document.getElementById('previewContainer');
+                <!-- Modal laporkan Masalah -->
+                <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="modal-title fw-semibold" id="reportModalLabel">Laporan</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                            </div>
 
-                    input.addEventListener('change', function() {
-                        previewContainer.innerHTML = ''; // clear previous previews
+                            <div class="border-bottom mb-3" style="border-color: #c7ea46; border-width: 3px; width: 50px; margin: auto;"></div>
 
-                        const files = Array.from(input.files);
+                            <div class="row text-center mb-4">
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Judul Pesanan</p>
+                                    <p class="fw-semibold">{{ $request->title }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Nomor Pesanan</p>
+                                    <p class="fw-semibold">{{ $orderNumber }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Nama Pekerja</p>
+                                    <p class="fw-semibold">{{ $worker->first_name }} {{ $worker->last_name }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Lokasi</p>
+                                    <p class="fw-semibold">{{ $request->location }}</p>
+                                </div>
+                            </div>
 
-                        files.forEach(file => {
-                            if (!file.type.startsWith('image/')) return;
+                            <div class="row text-center mb-4">
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Tanggal Selesai</p>
+                                    <p class="fw-semibold">{{ $transaction->updated_at->format('d - m - Y') }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Tanggal Pemesanan</p>
+                                    <p class="fw-semibold">{{ $transaction->created_at->format('d - m - Y') }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Jam Mulai Kerja</p>
+                                    <p class="fw-semibold">{{ $transaction->start_time ?? '-' }}</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-1 text-muted">Jam Selesai Kerja</p>
+                                    <p class="fw-semibold">{{ $transaction->end_time ?? '-' }}</p>
+                                </div>
+                            </div>
 
-                            const reader = new FileReader();
+                            <div class="text-center mb-3">
+                                <p class="fs-5 fw-semibold">Total : Rp {{ number_format($request->price, 0, ',', '.') }}</p>
+                            </div>
 
-                            reader.onload = function(e) {
-                                const img = document.createElement('img');
-                                img.src = e.target.result;
-                                img.className = "rounded border img-thumbnail";
-                                img.style.width = "120px";
-                                img.style.height = "120px";
-                                img.style.objectFit = "cover";
-                                previewContainer.appendChild(img);
-                            };
+                            <form id="reportForm" action="{{ route('worker.submitReport', $transaction->id) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="reportNote" class="form-label">Keterangan Masalah</label>
+                                    <textarea id="reportNote" name="reasons" rows="3" class="form-control" placeholder="Jelaskan masalah yang terjadi..."></textarea>
+                                </div>
 
-                            reader.readAsDataURL(file);
-                        });
-                    });
+                                <div class="rounded p-4 text-center d-flex flex-column align-items-center justify-content-between"
+                                    style="cursor: pointer; min-height: 200px; border-style:dashed; border-color:#cacadd; background-color: #F4f4f4;"
+                                    onclick="document.getElementById('photoInputProof').click()">
+                                    <p class="mb-0 text-muted">Klik disini untuk upload gambar</p>
+                                    <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287" />
+                                    </svg>
+                                    <input type="file" id="photoInputProof" name="photo[]" accept="image/*" multiple class="d-none">
+                                    <div id="previewContainerProof" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
+                                </div>
 
-                    function submitProof() {
-                        const finishModalEl = document.getElementById('finishWorkModal');
-                        const proofModalEl = document.getElementById('completionProofModal');
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary fw-semibold" onclick="submitReport()">Kirim</button>
+                                </div>
+                            </form>
 
-                        const finishModal = bootstrap.Modal.getInstance(finishModalEl);
-                        const proofModal = bootstrap.Modal.getInstance(proofModalEl);
+                        </div>
+                    </div>
+                </div>
 
-                        finishModal.hide();
-                        proofModal.hide();
-
-                        setTimeout(() => {
-                            document.getElementById('proofForm').submit();
-                        }, 300);
-                    }
-                </script>
 
 
                 @endif
@@ -365,7 +409,7 @@
                         @csrf
                         <input type="text" class="me-2 form-control rounded-5 flex-grow-1" id="biaya" placeholder="Tulis pesan...">
                         <button class="btn rounded-5" style="background-color:#309FFF; height:100%; aspect-ratio: 1/1;">
-                            <svg width="29" height="30" viewBox="0 0  30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="29" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.80209 15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644 12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </button>
@@ -412,28 +456,6 @@
         Selesai Kerja
     </button>
     </form>
-    <!-- Modal kirim bukti penyelesaian -->
-    <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content p-3">
-                <form action="{{ route('worker.uploadProof', $transaction->id) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-
-                    <div class="mb-3">
-                        <label for="photo" class="form-label">Upload Foto Bukti Pekerjaan</label>
-                        <input type="file" name="photo" id="photo" class="form-control" accept="image/*" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="note" class="form-label">Catatan (Opsional)</label>
-                        <textarea name="note" id="note" rows="3" class="form-control"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Selesaikan Pekerjaan</button>
-                </form>
-            </div>
-        </div>
-    </div>
 
     {{-- Batalkan kerja --}}
     <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST">
@@ -443,9 +465,269 @@
 
     @endif
 
-    @endsection
-</div>
+    {{-- upload proof --}}
+    <script>
+function uploadProof() {
+    var form = document.getElementById('proofForm');
+    var formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Upload gagal.');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+
+        // Tutup modal completionProofModal
+        var modal = bootstrap.Modal.getInstance(document.getElementById('completionProofModal'));
+        modal.hide();
+
+        // Buka modal completionModal
+        var completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+        completionModal.show();
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Terjadi kesalahan saat upload foto.');
+    });
+}
+    </script>
+
+    {{-- preview photo --}}
+<script>
+function initPhotoPreview(inputId, previewContainerId) {
+    const input = document.getElementById(inputId);
+    const previewContainer = document.getElementById(previewContainerId);
+
+    if (input && previewContainer) {
+        input.addEventListener('change', function(event) {
+            const files = event.target.files;
+            previewContainer.innerHTML = '';
+
+            Array.from(files).forEach(file => {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('img-thumbnail', 'me-2', 'mb-2');
+                        img.style.maxWidth = '120px';
+                        img.style.maxHeight = '120px';
+                        img.style.objectFit = 'cover';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    }
+}
+
+// Panggil ini setelah DOM loaded
+document.addEventListener('DOMContentLoaded', function () {
+    initPhotoPreview('photoInputReport', 'previewContainerReport');
+    initPhotoPreview('photoInputProof', 'previewContainerProof');
+});
+</script>
+
+
+    {{-- laporkan masalah --}}
+<script>
+function openReportModal() {
+    // Tutup completionModal
+    var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+    completionModal.hide();
+
+    // Buka reportModal setelah modal sebelumnya tertutup dengan delay aman
+    setTimeout(() => {
+        var reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+        reportModal.show();
+    }, 500);
+}
+
+// Fungsi kirim laporan
+function submitReport() {
+    const note = document.getElementById('reportNote').value;
+    if (!note.trim()) {
+        alert('Harap isi keterangan masalah terlebih dahulu.');
+        return;
+    }
+
+    // Kirim via AJAX ke route laporanmu jika mau langsung dikirim tanpa refresh
+    // Atau bisa tutup modal dan tampilkan notifikasi
+    alert('Laporan telah dikirim.');
+
+    // Tutup modal setelah kirim
+    var reportModal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+    reportModal.hide();
+}
+</script>
+
+    {{-- bintang rating tampilan --}}
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star-rating');
+            const ratingInput = document.getElementById('rating-input');
+            let selectedRating = 0;
+
+            stars.forEach(star => {
+                // Hover effect
+                star.addEventListener('mouseover', function() {
+                    const val = parseInt(this.getAttribute('data-value'));
+                    stars.forEach(s => {
+                        const sVal = parseInt(s.getAttribute('data-value'));
+                        if (sVal <= val) {
+                            s.classList.add('star-green');
+                            s.classList.remove('text-secondary');
+                        } else {
+                            s.classList.remove('star-green');
+                            s.classList.remove('star-blue');
+                            s.classList.add('text-secondary');
+                        }
+                    });
+                });
+
+                // Remove green on mouseout (but keep blue selection)
+                star.addEventListener('mouseout', function() {
+                    stars.forEach(s => {
+                        s.classList.remove('star-green');
+                        if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
+                            s.classList.add('star-blue');
+                            s.classList.remove('text-secondary');
+                        } else {
+                            s.classList.remove('star-blue');
+                            s.classList.add('text-secondary');
+                        }
+                    });
+                });
+
+                // Click to select rating
+                star.addEventListener('click', function() {
+                    selectedRating = parseInt(this.getAttribute('data-value'));
+                    ratingInput.value = selectedRating;
+                    stars.forEach(s => {
+                        if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
+                            s.classList.add('star-blue');
+                            s.classList.remove('text-secondary');
+                        } else {
+                            s.classList.remove('star-blue');
+                            s.classList.add('text-secondary');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 
 <script>
+let selectedRating = 0;
+
+// Handle click rating
+document.querySelectorAll('.star-rating').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = this.getAttribute('data-value');
+        document.querySelectorAll('.star-rating').forEach(s => s.classList.remove('text-warning'));
+        for (let i = 0; i < selectedRating; i++) {
+            document.querySelectorAll('.star-rating')[i].classList.add('text-warning');
+        }
+    });
+});
+
+function submitReview() {
+    const comment = document.getElementById('note').value.trim();
+
+    if (selectedRating == 0) {
+        alert('Silakan pilih rating terlebih dahulu.');
+        return;
+    }
+
+    if (comment == '') {
+        alert('Silakan isi komentar.');
+        return;
+    }
+
+    fetch("{{ route('reviews.store') }}", {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            transaction_id: "{{ $transaction->id }}",
+            reviewer_id: "{{ auth()->id() }}",
+            reviewee_id: "{{ $worker->id }}",
+            rating: selectedRating,
+            comment: comment,
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Review berhasil disimpan!');
+            var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+            completionModal.hide();
+            location.reload();
+        } else {
+            alert('Gagal menyimpan review, coba lagi.');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Terjadi kesalahan, coba lagi.');
+    });
+}
+</script>
+
+   {{-- laporkan masalah --}}
+<script>
+function submitReport() {
+    const form = document.getElementById('reportForm');
+    if (!form) {
+        console.error('reportForm not found!');
+        return;
+    }
+    const formData = new FormData(form);
+
+    fetch(form.action,{
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return response.json();
+        } else {
+            return response.text().then(text => { throw new Error('Expected JSON but received HTML:\n' + text); });
+        }
+    })
+
+    .then(data => {
+        console.log(data);
+        alert(data.message);
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat mengirim laporan.');
+    });
+}
 
 </script>
+
+
+    @endsection

@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;       
 use App\Http\Controllers\PusherController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WorkerTransactionController;
 use App\Models\Transaction;
 use Illuminate\Container\Attributes\Auth;
@@ -28,6 +29,17 @@ Route::post('/worker/start-work/{id}', [WorkerTransactionController::class, 'sta
 Route::post('/worker/upload-proof/{transaction}', [WorkerTransactionController::class, 'uploadProof'])->name('worker.uploadProof');
 
 Route::post('/worker/mark-complete/{transaction}', [WorkerTransactionController::class, 'markComplete'])->name('worker.markComplete');
+
+Route::post('/worker/finish-work/{transaction}', [WorkerTransactionController::class, 'finishWork'])->name('worker.finishWork');
+
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+Route::post('/reports', [WorkerTransactionController::class, 'storeReport'])->name('reports.store');
+
+Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'submitReport'])->name('worker.submitReport');
+
+
+
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
