@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\On; // Penting: import atribut On
 
 class Chat extends Component
 {
@@ -17,48 +18,33 @@ class Chat extends Component
     public $expandedRequestId = null;
     public $selectedChatRoomId = null;
     public ?ChatRoom $chatRoom = null;
-    public ?Offer $activeOffer = null; // Properti untuk menyimpan tawaran aktif
+    public ?Offer $activeOffer = null;
     public $newMessage = '';
+    public $showChatPanel = false; // Default: false (tampilkan list chat di mobile)
 
     public function mount()
     {
         $this->loadRequests();
     }
 
-    /**
-     * Memuat permintaan yang dimiliki oleh pengguna yang sedang login,
-     * berstatus 'open', dan memiliki setidaknya satu pesan chat atau satu tawaran.
-     * Ruang obrolan di dalam setiap permintaan diurutkan berdasarkan aktivitas terbaru
-     * (baik itu pesan terakhir atau tawaran terakhir).
-     */
     public function loadRequests()
     {
         $this->requestsWithChats = Request::where('requester_id', Auth::id())
-            ->where('status', 'open') // Hanya ambil permintaan yang masih terbuka
-            // Tambahkan kondisi: permintaan harus memiliki chat ATAU memiliki tawaran
+            ->where('status', 'open')
             ->where(function ($query) {
                 $query->whereHas('chatRooms.chatMessages')
                     ->orWhereHas('chatRooms.offers');
             })
-            // Eager load relasi yang dibutuhkan untuk optimasi performa
             ->with([
                 'chatRooms' => function ($query) {
-                    // Pastikan relasi 'offers' di-load bersama dengan relasi lainnya
                     $query->with(['worker', 'lastMessage', 'offers']);
                 }
             ])
             ->get()
-            // Lakukan iterasi pada setiap request untuk mengurutkan ruang obrolannya
             ->each(function ($request) {
                 $request->chatRooms = $request->chatRooms->sortByDesc(function ($room) {
-                    // Dapatkan timestamp dari pesan terakhir di dalam room
                     $lastMessageTimestamp = optional($room->lastMessage)->created_at;
-
-                    // Dapatkan timestamp dari tawaran terbaru di dalam room
-                    // Asumsi: relasi 'offers' sudah di-eager load
                     $lastOfferTimestamp = $room->offers->max('created_at');
-
-                    // Gunakan timestamp yang paling baru (pesan atau tawaran) sebagai dasar pengurutan
                     return max($lastMessageTimestamp, $lastOfferTimestamp);
                 });
             });
@@ -69,30 +55,40 @@ class Chat extends Component
         $this->expandedRequestId = $this->expandedRequestId === $requestId ? null : $requestId;
     }
 
+    // --- MODIFIKASI INI: Tambahkan atribut #[On] ---
+    #[On('chat-selected')]
     public function selectChat($chatRoomId)
     {
         ChatMessage::where('chat_room_id', $chatRoomId)
-            ->where('receiver_id', Auth::id()) // Pastikan hanya update pesan UNTUK kita
-            ->whereNull('read_at')          // Hanya yang belum dibaca
-            ->update(['read_at' => now()]); // Isi dengan waktu sekarang
+            ->where('receiver_id', Auth::id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
         $this->selectedChatRoomId = $chatRoomId;
         $this->chatRoom = ChatRoom::with(['request', 'worker'])->find($chatRoomId);
-
-        $this->loadActiveOffer(); // Panggil method untuk memuat tawaran
+        $this->loadActiveOffer();
         $this->dispatch('scroll-to-bottom');
+        $this->dispatch('chatSelected');
+        $this->showChatPanel = true; // Tampilkan panel chat di mobile
+    }
+    // ------------------------------------------------
+
+    public function backToChatList()
+    {
+        $this->showChatPanel = false;
+        $this->selectedChatRoomId = null;
+        $this->chatRoom = null;
     }
 
-    // Method baru untuk memuat tawaran aktif
     public function loadActiveOffer()
     {
         if ($this->chatRoom) {
             $this->activeOffer = Offer::where('chat_room_id', $this->chatRoom->id)->where('status', 'open')
-                ->latest() // Ambil tawaran yang paling baru
+                ->latest()
                 ->first();
         }
     }
 
-    // Computed property HANYA untuk pesan chat
     public function getMessagesProperty(): Collection
     {
         if (!$this->selectedChatRoomId) {
@@ -107,11 +103,10 @@ class Chat extends Component
             });
     }
 
-    // Method untuk merespon tawaran
     public function respondToOffer(Offer $offer, string $response)
     {
         if ($offer->requester_id !== Auth::id() || $offer->status !== 'open' || !in_array($response, ['accepted', 'rejected'])) {
-            return; // Validasi keamanan
+            return;
         }
 
         $offer->update(['status' => $response]);
@@ -121,7 +116,7 @@ class Chat extends Component
             Request::hireAndFinalize($offer->request, $offer->worker);
         }
 
-        $this->loadActiveOffer(); // Perbarui tampilan panel tawaran
+        $this->loadActiveOffer();
     }
 
     public function send()
@@ -144,7 +139,9 @@ class Chat extends Component
 
     public function render()
     {
-        $this->selectChat($this->selectedChatRoomId); // Pastikan chat room yang dipilih sudah terisi
+        if ($this->selectedChatRoomId && !$this->chatRoom) {
+            $this->chatRoom = ChatRoom::with(['request', 'worker'])->find($this->selectedChatRoomId);
+        }
         return view('livewire.job-requester.chat');
     }
 }

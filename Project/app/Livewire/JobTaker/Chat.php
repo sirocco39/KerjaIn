@@ -8,6 +8,7 @@ use App\Models\Offer;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Chat extends Component
@@ -16,7 +17,7 @@ class Chat extends Component
     public ?ChatRoom $selectedRoom = null;
     public ?Offer $activeOffer = null;
     public $newMessage = '';
-
+    public $showChatPanel = false; // Default: false (tampilkan list chat di mobile)
     public $showOfferForm = false;
     public $offerAmount = '';
 
@@ -28,6 +29,7 @@ class Chat extends Component
         }
     }
 
+    #[On('chat-selected')]
     public function selectRoom($roomId)
     {
         ChatMessage::where('chat_room_id', $roomId)
@@ -41,6 +43,14 @@ class Chat extends Component
         $this->selectedRoom = ChatRoom::with(['request', 'requester'])->find($roomId);
         $this->loadActiveOffer();
         $this->dispatch('scroll-to-bottom');
+        $this->showChatPanel = true; // Tampilkan panel chat di mobile
+    }
+
+    public function backToChatList()
+    {
+        $this->showChatPanel = false;
+        $this->selectedRoomId = null;
+        $this->selectedRoom = null;
     }
 
     public function loadActiveOffer()
@@ -50,6 +60,15 @@ class Chat extends Component
                 ->latest()
                 ->first();
         }
+    }
+
+    public function deleteOffer()
+    {
+        if ($this->activeOffer) {
+            $this->activeOffer->delete();
+            $this->activeOffer = null; // Reset active offer after deletion
+        }
+        $this->loadActiveOffer();
     }
 
     public function getMessagesProperty(): Collection
@@ -105,7 +124,6 @@ class Chat extends Component
     public function render()
     {
         // 1. Ambil daftar chat room yang sudah ada pesannya.
-        $this->selectRoom($this->selectedRoomId);
         $chatRooms = ChatRoom::where('worker_id', Auth::id())
             ->where('is_open', true)
             ->where(function ($query) {

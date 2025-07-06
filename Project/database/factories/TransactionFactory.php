@@ -18,6 +18,7 @@ class TransactionFactory extends Factory
     {
         return [
             'status' => $this->faker->randomElement(['accepted', 'in progress', 'submitted', 'completed', 'cancelled']),
+            'order_number' => $this->faker->numerify('############'),
         ];
     }
 }

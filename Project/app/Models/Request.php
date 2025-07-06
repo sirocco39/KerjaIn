@@ -71,11 +71,37 @@ class Request extends Model
         // Tutup request
         $request->update(['status' => 'closed']);
 
+        // 1. Ambil 3 digit terakhir dari setiap ID.
+        //    Menggunakan modulo (%) memastikan ID yang besar tetap menjadi 3 digit.
+        $requestIdPart      = str_pad($request->id % 1000, 3, '0', STR_PAD_LEFT);
+        $requesterIdPart    = str_pad($request->requester_id % 1000, 3, '0', STR_PAD_LEFT);
+        $workerIdPart       = str_pad($worker->id % 1000, 3, '0', STR_PAD_LEFT);
+
+        // 2. Gabungkan bagian-bagian ID untuk membentuk 9 digit pertama.
+        $baseNumber = $requestIdPart . $requesterIdPart . $workerIdPart;
+
+        // 3. Tambahkan 3 digit dari timestamp untuk keunikan.
+        //    Ini mengambil 3 angka terakhir dari detik Unix saat ini.
+        $timeSuffix = substr(time(), -3);
+
+        // 4. Gabungkan menjadi nomor order 12 digit.
+        $orderNumber = $baseNumber . $timeSuffix;
+
+        // 5. (Pengaman) Pastikan nomor ini belum ada di database.
+        //    Ini untuk menangani kasus yang sangat langka jika 2 transaksi terjadi di milidetik yang sama.
+        while (\App\Models\Transaction::where('order_number', $orderNumber)->exists()) {
+            usleep(1000); // Tunggu 1 milidetik
+            $timeSuffix = substr(time(), -3);
+            $orderNumber = $baseNumber . $timeSuffix;
+        }
+
+        // 6. Gunakan nomor order yang sudah unik.
         $request->transactions()->create([
-            'request_id'   => $request->id, // Mengambil ID request
+            'order_number' => $orderNumber,
+            'request_id'   => $request->id,
             'requester_id' => $request->requester_id,
-            'worker_id'    => $worker->id, // Mengambil harga final dari request
-            'status'       => 'accepted',      // Status awal transaksi/ Catat waktu kesepakatan terjadi
+            'worker_id'    => $worker->id,
+            'status'       => 'accepted',
         ]);
 
         // Kembalikan chat room pemenang untuk keperluan redirect
