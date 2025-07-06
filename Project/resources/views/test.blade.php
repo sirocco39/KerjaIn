@@ -27,6 +27,7 @@
 
 </body>
 
+<<<<<<< HEAD
 </html>
 
 
@@ -786,3 +787,6 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
 
 
     @endsection
+=======
+</html>
+>>>>>>> 7977aea1d219aee85eed0f56d39125c20c2c6f38
