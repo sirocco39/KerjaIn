@@ -170,7 +170,7 @@ Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hir
 Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
 
 Route::get('/test', function () {
-    return view('Job_Taker.job_taker-pesanSon');
+    return view('test');
 });
 
 Route::get('/livetest', function () {
