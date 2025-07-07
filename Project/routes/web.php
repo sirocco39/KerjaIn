@@ -30,8 +30,8 @@ Route::post('/transaction/submit-completion/{transaction}', [TransactionControll
 
 Route::post('/transaction/{transaction}/mark-complete', [TransactionController::class, 'markComplete'])->name('transaction.markComplete');
 
-Route::post('/reviews/store/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
-
+Route::post('/reviews/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
+Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'submitReport'])->name('user.submitReport');
 
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');

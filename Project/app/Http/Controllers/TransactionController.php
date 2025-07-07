@@ -6,6 +6,8 @@ use App\Models\Transaction;
 use App\Models\Request as JobRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request as HttpRequest;
+use App\Models\Request;
+
 
 class TransactionController extends Controller
 {
@@ -72,4 +74,31 @@ class TransactionController extends Controller
 
         return back()->with('error', 'Transaksi tidak dapat ditandai selesai.');
     }
+    public function submitReport(Request $request, Transaction $transaction)
+{
+    $validated = $request->validate([
+        'note' => 'required|string|max:1000',
+        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    // Simpan report ke tabel reports
+    $report = $transaction->reports()->create([
+        'worker_id' => $transaction->worker_id,
+        'note' => $validated['note'],
+    ]);
+
+    // Simpan foto-foto ke storage dan database jika ada
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('reports', 'public');
+
+            $report->images()->create([
+                'path' => $path,
+            ]);
+        }
+    }
+
+    return back()->with('success', 'Laporan berhasil dikirim.');
+}
+
 }

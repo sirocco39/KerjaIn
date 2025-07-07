@@ -453,7 +453,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
 
 <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
-        <form action="#" method="POST" enctype="multipart/form-data" class="modal-content">
+        <form action="{{ route('user.submitReport', $transaction->id) }}" method="POST" enctype="multipart/form-data" class="modal-content">
 
             <!-- Header -->
             <div class="modal-header border-0 justify-content-center">
@@ -565,6 +565,27 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
         imageInput.value = '';
     });
 </script>
+
+<script>
+document.getElementById('reportImageInput').addEventListener('change', function(event) {
+    const container = document.getElementById('imagePreviewContainer');
+    container.innerHTML = '';
+    Array.from(event.target.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'rounded';
+            img.style.width = '80px';
+            img.style.height = '80px';
+            img.style.objectFit = 'cover';
+            container.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+</script>
+
 
 
 @endsection
