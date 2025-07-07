@@ -47,7 +47,7 @@ Route::get('/job-req/beranda', function () {
         ->with('transactions')
         ->get();
     return view('Job_Requester.beranda', compact('fiveLatestRequests'));
-});
+})->name('job-req.beranda');
 
 Route::get('/job-req/tawarkan-kerja', function () {
     return view('Job_Requester.postwork');

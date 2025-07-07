@@ -250,7 +250,9 @@
                             <p>Tidak ada pekerjaan dengan percakapan aktif.</p>
                         </div>
                     @endforelse
+                    @endforelse
                 </div>
+            </div>
             </div>
 
             {{-- =================================================================== --}}
@@ -351,6 +353,28 @@
                 @endif
             </div>
         </div>
+                    {{-- Form Input Pesan --}}
+                    <form wire:submit.prevent="send" class="chat-input-area rounded-bottom-5 border">
+                        <div class="input-group">
+                            <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''"
+                                type="text" class="form-control chat-input border rounded-5"
+                                placeholder="Tulis pesan..." autocomplete="off">
+                            <button type="submit" class="btn btn-send-circle ms-2 rounded-circle">
+                                <img src="{{ asset('Image/Icon/icon-send.svg') }}" alt="">
+                            </button>
+                        </div>
+                    </form>
+                @else
+                    {{-- Tampilan Default Saat Belum Ada Chat Terpilih --}}
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
+                        <div class="text-center">
+                            <i class="bi bi-chat-left-text" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Pilih percakapan untuk ditampilkan.</p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
 
         {{-- Modal Konfirmasi --}}
         @if ($activeOffer)
@@ -394,6 +418,8 @@
                     </div>
                 </div>
             </div>
+        @endif
+    </div>
         @endif
     </div>
 </div>
