@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Review;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,12 @@ class ReviewController extends Controller
             'rating' => $request->rating,
             'comment' => $request->comment,
         ]);
+
+        $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
+
+        // 3. Update ke tabel users
+        User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
+
 
         return response()->json(['success' => true]);
     }
