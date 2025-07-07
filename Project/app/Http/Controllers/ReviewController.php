@@ -19,6 +19,8 @@ class ReviewController extends Controller
             'comment' => 'required|string',
         ]);
 
+        $ratingGiven = $validated['rating'] ?? 5;
+
         Review::create([
             'transaction_id' => $request->transaction_id,
             'reviewer_id' => $request->reviewer_id,
