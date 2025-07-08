@@ -66,9 +66,7 @@ Route::get('/edit/{request:slug}', function (WorkRequest $request) {
     return view('edit', ['workRequest' => $request]);
 });
 
-Route::get('/job-req/riwayat', function () {
-    return view('Job_Requester.dummy-job_req-riwayat');
-});
+Route::get('/job-req/riwayat', [TransactionController::class, 'index'])->name('orders.index');
 
 Route::get('/job_taker', function () {
     return view('Job_Taker.dummy-job_taker-landingpage');

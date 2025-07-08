@@ -53,4 +53,35 @@ class Transaction extends Model
     {
         return $this->hasOne(Report::class, 'transaction_id');
     }
+
+    // Define status mapping for better readability based on your string statuses
+    public function getStatusTextAttribute()
+    {
+        switch ($this->status) {
+            case 'accepted': return 'Diterima';
+            case 'in progress': return 'Dikerjain';
+            case 'completed': return 'Selesai';
+            case 'cancelled': return 'Dibatalin';
+            case 'submitted': return 'Diselesaiin'; // Assuming 'submitted' exists
+            // Add more status mappings as per your database values if they exist
+            default: return ucfirst($this->status); // Fallback to capitalized status
+        }
+    }
+
+    public function getStatusColorAttribute()
+    {
+        switch ($this->status) {
+            case 'completed':
+                return 'bg-green-200 text-green-800'; // Selesai nih
+            case 'in progress':
+            case 'accepted':
+            case 'pending':
+            case 'submitted':
+                return 'bg-yellow-200 text-yellow-800'; // Dikerjain, Diterima, Menunggu, Diajukan
+            case 'cancelled':
+                return 'bg-red-200 text-red-800'; // Dibatalkan
+            default:
+                return 'bg-gray-200 text-gray-800'; // Unknown
+        }
+    }
 }
