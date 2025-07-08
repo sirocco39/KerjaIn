@@ -22,14 +22,11 @@ class TransactionController extends Controller
         // Ambil pekerja yang melakukan pekerjaan berdasarkan relasi
         $worker = $transaction->worker; // Pastikan relasi sudah ada di model Transaction
 
-        // Generate nomor pesanan random (misalnya 12 digit)
-        $orderNumber = '#' . str_pad(rand(0, 999999999999), 12, '0', STR_PAD_LEFT);
-
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
 
         // Kirim data ke view
-        return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'orderNumber', 'completionProof'));
+        return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
     }
 
 

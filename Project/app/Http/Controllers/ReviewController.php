@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Review;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 
@@ -11,6 +12,7 @@ class ReviewController extends Controller
 {
     public function store(Request $request)
     {
+
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
             'reviewer_id' => 'required|exists:users,id',

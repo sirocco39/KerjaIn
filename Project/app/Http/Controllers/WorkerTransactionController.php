@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\Request as JobRequest;
 use App\Models\Report;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -28,9 +30,6 @@ class WorkerTransactionController extends Controller
 
         // Ambil pekerja yang melakukan pekerjaan berdasarkan relasi
         $worker = $transaction->worker; // Pastikan relasi sudah ada di model Transaction
-
-        // Generate nomor pesanan random (misalnya 12 digit)
-        $orderNumber = '#' . str_pad(rand(0, 999999999999), 12, '0', STR_PAD_LEFT);
 
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
@@ -178,5 +177,34 @@ class WorkerTransactionController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+        public function store(Request $request)
+    {
+
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,id',
+            'reviewer_id' => 'required|exists:users,id',
+            'reviewee_id' => 'required|exists:users,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string',
+        ]);
+
+        $ratingGiven = $validated['rating'] ?? 5;
+
+        Review::create([
+            'transaction_id' => $request->transaction_id,
+            'reviewer_id' => $request->reviewer_id,
+            'reviewee_id' => $request->reviewee_id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
+
+        // 3. Update ke tabel users
+        User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
+
+
+        return response()->json(['success' => true]);
     }
 }

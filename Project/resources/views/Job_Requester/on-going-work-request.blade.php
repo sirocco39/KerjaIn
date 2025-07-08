@@ -201,7 +201,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                         @csrf
                         <input type="text" class="me-2 form-control rounded-5 flex-grow-1" id="biaya" placeholder="Tulis pesan...">
                         <button class="btn rounded-5" style="background-color:#309FFF; height:100%; aspect-ratio: 1/1;">
-                            <svg width="29" height="30" viewBox="0 0  30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="29" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.80209 15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644 12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </button>
@@ -275,7 +275,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                             <div class="d-flex">
                                 <div class="text">
                                     <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
-                                    <p class="fw-medium">{{ $orderNumber }}</p>
+                                    <p class="fw-medium">{{ $transaction->order_number }}</p>
                                 </div>
                                 <div class="text">
                                     <p class="m-0 p-0 text-black-50 fw-semibold"></p>
@@ -473,7 +473,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
-                        <p class="fw-medium">{{ $orderNumber }}</p>
+                        <p class="fw-medium">{{ $transaction->order_number }}</p>
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <p class="text-black-50 fw-semibold mb-0">Nama Pekerja</p>
@@ -585,7 +585,5 @@ document.getElementById('reportImageInput').addEventListener('change', function(
     });
 });
 </script>
-
-
 
 @endsection
