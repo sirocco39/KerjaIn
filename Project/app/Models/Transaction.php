@@ -28,28 +28,48 @@ class Transaction extends Model
         'accepted_at' => 'datetime',
         'price' => 'decimal:2',
     ];
-    public function request() : BelongsTo
+    public function request(): BelongsTo
     {
         return $this->belongsTo(Request::class, 'request_id');
     }
-    public function requester() : BelongsTo
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
-    public function worker() : BelongsTo
+    public function worker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'worker_id');
     }
-    public function reviews() : HasMany
+    public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'transaction_id');
     }
-    public function completionProof() : HasOne
+    public function completionProof(): HasOne
     {
         return $this->hasOne(CompletionProof::class, 'transaction_id');
     }
-    public function report() : HasOne
+    public function report(): HasOne
     {
         return $this->hasOne(Report::class, 'transaction_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            if (empty($order->order_number)) {
+                $order->order_number = self::generateUniqueOrderNumber();
+            }
+        });
+    }
+
+    protected static function generateUniqueOrderNumber()
+    {
+        do {
+            $number = str_pad(mt_rand(0, 999999999999), 12, '0', STR_PAD_LEFT);
+        } while (self::where('order_number', $number)->exists());
+
+        return $number;
     }
 }

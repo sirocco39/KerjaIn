@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatRoom;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Request as JobRequest;
 
 use App\Models\Request as RequestModel; // Avoid conflict with the Request facade
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class RequestController extends Controller
@@ -171,11 +174,45 @@ class RequestController extends Controller
         $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
         $workRequest->deleted_at = date("Y-m-d h:i:sa", time());
         $workRequest->status = 'closed'; // Optionally set status to deleted
+        $workRequest->chatRooms()->update(['is_open' => false]);
         $result = $workRequest->save();
         if ($result) {
             return redirect()->to('/job-req/beranda');
         } else {
             return back()->withErrors(['error' => 'Failed to delete request.']);
         }
+    }
+    public function showOngoing($id)
+    {
+        $request = JobRequest::findOrFail($id);
+        return view('Job_Requester.on-going-work-request', compact('request'));
+    }
+
+    public function acceptRequest(RequestModel $request) // <-- PERUBAHAN DI SINI
+    {
+        $worker = Auth::user();
+        // cari JobRequest berdasarkan ID
+        $id = $request->id; // Ambil ID dari request yang diterima
+        $jobrequest = JobRequest::findOrFail($id); // Pastikan request ditemukan
+
+        // Ubah status transaction menjadi cancelled
+        $jobrequest->status = 'closed';
+        $jobrequest->save(); // Pastikan status transaction tersimpan
+
+
+        // Pastikan worker ditemukan
+        if (!$worker) {
+            return response()->json(['success' => false, 'message' => 'User tidak terautentikasi.'], 401);
+        }
+
+        // Panggil static method yang ada di model Request
+        $winningChatRoom = RequestModel::hireAndFinalize($request, $worker);
+
+        // Kembalikan response dalam format JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
+            'redirect_url' => route('job-taker.beranda')
+        ]);
     }
 }

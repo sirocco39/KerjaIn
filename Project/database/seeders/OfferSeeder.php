@@ -26,7 +26,7 @@ class OfferSeeder extends Seeder
             ]);
         }
         foreach($closedChatRooms as $chatRoom) {
-            Offer::factory()->closedOffer()->create([
+            Offer::factory()->acceptedOffer()->create([
                 'chat_room_id' => $chatRoom->id,
                 'request_id' => $chatRoom->request_id,
                 'requester_id' => $chatRoom->requester_id,

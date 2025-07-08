@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,5 +51,36 @@ class Request extends Model
     public function chatRooms(): HasMany
     {
         return $this->hasMany(ChatRoom::class, 'request_id');
+    }
+
+    public static function hireAndFinalize(Request $request, User $worker): Transaction // Ubah return type menjadi Transaction
+    {
+        // Cari atau buat ChatRoom pemenang
+        $winningChatRoom = ChatRoom::firstOrCreate([
+            'request_id'     => $request->id,
+            'worker_id'       => $worker->id,
+            'requester_id' => $request->requester_id,
+        ], ['is_open' => true]);
+
+        // Pastikan room pemenang terbuka
+        $winningChatRoom->update(['is_open' => true]);
+
+        // Tutup semua room lainnya
+        $request->chatRooms()->where('id', '!=', $winningChatRoom->id)->update(['is_open' => false]);
+
+        // Tutup request
+        $request->update(['status' => 'closed']);
+
+        // Buat transaksi
+        $transaction = $request->transactions()->create([
+            'request_id'     => $request->id, // Mengambil ID request
+            'requester_id' => $request->requester_id,
+            'worker_id'       => $worker->id, // Mengambil harga final dari request
+            'order_number' => now()->format('dmYHis') . rand(100, 999), // Generate nomor pesanan
+            'status'         => 'accepted',          // Status awal transaksi/ Catat waktu kesepakatan terjadi
+        ]);
+
+        // Kembalikan object transaction
+        return $transaction;
     }
 }

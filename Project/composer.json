@@ -10,6 +10,7 @@
         "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.6",
+        "livewire/livewire": "^3.6",
         "overtrue/socialite": "^4.11"
     },
     "require-dev": {
