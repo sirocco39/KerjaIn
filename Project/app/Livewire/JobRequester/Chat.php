@@ -30,7 +30,6 @@ class Chat extends Component
     public function loadRequests()
     {
         $this->requestsWithChats = Request::where('requester_id', Auth::id())
-            ->where('status', 'open')
             ->where(function ($query) {
                 $query->whereHas('chatRooms.chatMessages')
                     ->orWhereHas('chatRooms.offers');

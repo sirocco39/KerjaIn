@@ -124,16 +124,17 @@ class Chat extends Component
     public function render()
     {
         // 1. Ambil daftar chat room yang sudah ada pesannya.
-        $chatRooms = ChatRoom::where('worker_id', Auth::id())
-            ->where('is_open', true)
+        $userId = Auth::id();
+
+        $chatRooms = ChatRoom::where('worker_id', $userId)->where('is_open', true)
+            // Grup Kondisi 1: HARUS punya pesan ATAU penawaran
             ->where(function ($query) {
-                $query->whereHas('chatMessages')      // di mana memiliki pesan
-                    ->orWhereHas('offers');         // ATAU di mana memiliki penawaran
+                $query->whereHas('chatMessages')
+                    ->orWhereHas('offers');
             })
-            ->with(['request', 'requester', 'lastMessage', 'offers']) // Tambahkan 'offers'
+            ->with(['request', 'requester', 'lastMessage', 'offers',])
             ->get()
             ->sortByDesc(function ($room) {
-                // Logika sorting disesuaikan untuk mempertimbangkan keduanya
                 $lastMessageTime = optional($room->lastMessage)->created_at;
                 $lastOfferTime = optional($room->offers->last())->created_at;
                 return max($lastMessageTime, $lastOfferTime);

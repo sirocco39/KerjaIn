@@ -1,8 +1,6 @@
     @extends('Master.master-job_taker')
 
     @section('content')
-
-
         <x-search></x-search>
 
         <div class="container-fluid pembatas-x pembatas-y d-flex gap-4">
@@ -200,7 +198,8 @@
                             <p class="mb-0" id="modal-detail-description-text"></p>
                         </div>
 
-                        <div class="detail-buttons-placeholder d-flex gap-2 justify-content-center mt-auto align-items-center">
+                        <div
+                            class="detail-buttons-placeholder d-flex gap-2 justify-content-center mt-auto align-items-center">
                             <input type="number" id="modal-offer-amount-input" class="form-control"
                                 placeholder="Rp Tawarkan" style="max-width: 150px; height: 38px;">
                             <button class="details-button-item" id="modal-submit-offer-button">Kirim</button>
@@ -225,7 +224,8 @@
                         <div class="d-flex justify-content-center gap-3 mt-4">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                                 id="cancel-accept-job">Kembali</button>
-                            <button type="button" class="btn btn-primary" id="confirm-accept-job">Ya, Saya Yakin</button>
+                            <button type="button" class="btn btn-primary" id="confirm-accept-job">Ya, Saya
+                                Yakin</button>
                         </div>
                     </div>
                 </div>
@@ -233,7 +233,8 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiK3g3K9d8r71/5/lFw2" crossorigin="anonymous"></script>
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+        </script>
 
         <script>
             // Fungsi untuk format mata uang Rupiah
@@ -526,11 +527,11 @@
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
-                                    alert('Terjadi kesalahan koneksi.' + error.message);
+                                    alert('Terjadi kesalahan koneksi babi.' + error.message);
                                 })
                                 .finally(() => {
                                     acceptJobConfirmationModal
-                                .hide(); // Hide modal after fetch completes (success or failure)
+                                        .hide(); // Hide modal after fetch completes (success or failure)
                                 });
                         });
                     }

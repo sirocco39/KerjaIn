@@ -275,7 +275,7 @@
                     </div>
 
                     {{-- Panel Tawaran --}}
-                    @if ($activeOffer && $activeOffer->status === 'open' && auth()->id() === $activeOffer->requester_id)
+                    @if ($activeOffer && $activeOffer->status === 'open' && auth()->id() === $activeOffer->requester_id && $chatRoom->request->status !== 'closed')
                         <div class="offer-panel d-flex justify-content-between align-items-center border">
                             <div>
                                 <span class="text-muted">Nominal Upah yang Anda Ajukan:</span>

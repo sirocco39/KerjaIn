@@ -201,19 +201,19 @@
                 @if ($showChatPanel) d-none @else d-block @endif">
                 {{-- Area Daftar Chat (Dibuat scrollable) --}}
                 <div class="p-3 overflow-auto flex-grow-1">
-                        @forelse ($chatRooms as $room)
-                            {{-- div pembungkus ini menangani klik dan status terpilih --}}
-                            <div wire:key="room-{{ $room->id }}" wire:click="selectRoom({{ $room->id }})"
-                                class="px-3 py-2 mb-2 cursor-pointer {{ $selectedRoom && $room->id === $selectedRoom->id ? 'selected-wrapper' : '' }}">
-                                {{-- Memanggil komponen Card dan mengirim data request --}}
-                                <x-job-taker.card :request="$room->request" />
-                            </div>
-                        @empty
-                            <div class="text-center text-muted mt-5">
-                                <i class="bi bi-chat-left-dots fs-1"></i>
-                                <p>Tidak ada pekerjaan dengan percakapan aktif.</p>
-                            </div>
-                        @endforelse
+                    @forelse ($chatRooms as $room)
+                        {{-- div pembungkus ini menangani klik dan status terpilih --}}
+                        <div wire:key="room-{{ $room->id }}" wire:click="selectRoom({{ $room->id }})"
+                            class="px-3 py-2 mb-2 cursor-pointer {{ $selectedRoom && $room->id === $selectedRoom->id ? 'selected-wrapper' : '' }}">
+                            {{-- Memanggil komponen Card dan mengirim data request --}}
+                            <x-job-taker.card :request="$room->request" />
+                        </div>
+                    @empty
+                        <div class="text-center text-muted mt-5">
+                            <i class="bi bi-chat-left-dots fs-1"></i>
+                            <p>Tidak ada pekerjaan dengan percakapan aktif.</p>
+                        </div>
+                    @endforelse
                 </div>
 
             </div>
@@ -240,79 +240,68 @@
                     {{-- Panel Tawaran --}}
 
                     {{-- Panel Tawaran --}}
-                    <div class="offer-panel" wire:poll.5s="loadActiveOffer">
-                        @if ($showOfferForm)
-                            <div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    {{-- Bagian Kiri: Input Nominal --}}
-                                    <div class="input-group" style="max-width: 250px;">
-                                        <span class="input-group-text">Rp</span>
-                                        <input type="number" wire:model.defer="offerAmount" class="form-control"
-                                            placeholder="Masukkan nominal...">
-                                    </div>
+                    @if ($selectedRoom && $selectedRoom->request->status !== 'closed')
 
-                                    {{-- Bagian Kanan: Tombol Aksi --}}
-                                    <div class="d-flex gap-2">
-                                        <button wire:click="toggleOfferForm"
-                                            class="btn btn-outline-secondary btn-pill">Batal</button>
-                                        <button wire:click="makeOffer" class="btn btn-success btn-pill">Kirim
-                                            Tawaran</button>
-                                    </div>
-                                </div>
-                                @error('offerAmount')
-                                    <div class="text-danger small mt-2">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        @else
-                            {{-- Tampilan default panel tawaran --}}
-                            <div class="d-flex justify-content-between align-items-center">
-
+                        <div class="offer-panel" wire:poll.5s="loadActiveOffer">
+                            @if ($showOfferForm)
                                 <div>
-                                    @if ($activeOffer)
-                                        <span class="text-muted">Nominal Upah yang Anda Ajukan:</span>
-
-                                        {{-- Wrapper baru untuk menyejajarkan nominal dan status --}}
-                                        <div class="d-flex align-items-center gap-2">
-
-                                            {{-- Nominal Tawaran (kelas d-block dihapus) --}}
-                                            <strong class="text-dark fs-5">
-                                                Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}
-                                            </strong>
-
-                                            {{-- Badge Status (dipindahkan ke sini) --}}
-                                            <span
-                                                class="badge @if ($activeOffer->status == 'open') bg-warning text-dark @elseif($activeOffer->status == 'accepted') bg-success @else bg-danger @endif">
-                                                Status:
-                                                {{ $activeOffer->status == 'open' ? 'Menunggu Respon' : 'Tawaran ' . ucfirst($activeOffer->status) }}
-                                            </span>
-
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        {{-- Bagian Kiri: Input Nominal --}}
+                                        <div class="input-group" style="max-width: 250px;">
+                                            <span class="input-group-text">Rp</span>
+                                            <input type="number" wire:model.defer="offerAmount" class="form-control"
+                                                placeholder="Masukkan nominal...">
                                         </div>
-                                    @else
-                                        <span class="text-muted">Anda belum mengajukan penawaran.</span>
-                                    @endif
-                                </div>
-                                <div class="d-flex gap-2">
-                                    @if (!$activeOffer || $activeOffer->status === 'rejected')
-                                        <button wire:click="toggleOfferForm" class="btn btn-primary btn-pill">
-                                            {{-- Teks tombol berubah secara dinamis --}}
-                                            {{ $activeOffer ? 'Tawar Lagi' : 'Tawar Upah' }}
-                                        </button>
-                                    @endif
 
-                                    {{-- =============================================================== --}}
-                                    {{-- KODE BARU: Tombol Batal hanya muncul jika ada tawaran aktif --}}
-                                    {{-- =============================================================== --}}
-                                    @if ($activeOffer && $activeOffer->status === 'open')
-                                        <button wire:click="deleteOffer" class="btn btn-outline-danger btn-pill">
-                                            Batal Ajukan
-                                        </button>
-                                    @endif
-                                    {{-- =============================================================== --}}
-
+                                        {{-- Bagian Kanan: Tombol Aksi --}}
+                                        <div class="d-flex gap-2">
+                                            <button wire:click="toggleOfferForm"
+                                                class="btn btn-outline-secondary btn-pill">Batal</button>
+                                            <button wire:click="makeOffer" class="btn btn-success btn-pill">Kirim
+                                                Tawaran</button>
+                                        </div>
+                                    </div>
+                                    @error('offerAmount')
+                                        <div class="text-danger small mt-2">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                            </div>
-                        @endif
-                    </div>
+                            @else
+                                {{-- Tampilan default panel tawaran --}}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        @if ($activeOffer)
+                                            <span class="text-muted">Nominal Upah yang Anda Ajukan:</span>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <strong class="text-dark fs-5">
+                                                    Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}
+                                                </strong>
+                                                <span
+                                                    class="badge @if ($activeOffer->status == 'open') bg-warning text-dark @elseif($activeOffer->status == 'accepted') bg-success @else bg-danger @endif">
+                                                    Status:
+                                                    {{ $activeOffer->status == 'open' ? 'Menunggu Respon' : 'Tawaran ' . ucfirst($activeOffer->status) }}
+                                                </span>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">Anda belum mengajukan penawaran.</span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        @if (!$activeOffer || $activeOffer->status === 'rejected')
+                                            <button wire:click="toggleOfferForm" class="btn btn-primary btn-pill">
+                                                {{ $activeOffer ? 'Tawar Lagi' : 'Tawar Upah' }}
+                                            </button>
+                                        @endif
+                                        @if ($activeOffer && $activeOffer->status === 'open')
+                                            <button wire:click="deleteOffer" class="btn btn-outline-danger btn-pill">
+                                                Batal Ajukan
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+
+                    @endif
                     {{-- Body Chat dengan Auto-Scroll --}}
                     <div x-data x-ref="chatBody"
                         @scroll-to-bottom.window="$nextTick(() => { $refs.chatBody.scrollTop = $refs.chatBody.scrollHeight; })"

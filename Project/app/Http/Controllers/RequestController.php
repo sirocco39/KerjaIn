@@ -94,7 +94,7 @@ class RequestController extends Controller
     public function show(string $slug)
     {
         //get the request by slug
-        $workRequest = RequestModel::where('slug', $slug)->with('transactions')->firstOrFail();
+        $workRequest = RequestModel::where('slug', $slug)->with('transaction')->firstOrFail();
         // If the request is not found, it will throw a 404 error
         // Return the view with the request data
         if (!$workRequest || $workRequest->deleted_at) {
@@ -189,9 +189,7 @@ class RequestController extends Controller
         // Pastikan worker ditemukan
         if (!$worker) {
             return response()->json(['success' => false, 'message' => 'User tidak terautentikasi.'], 401);
-        }
-
-        // Panggil static method yang ada di model Request
+        }        // Panggil static method yang ada di model Request
         $winningChatRoom = RequestModel::hireAndFinalize($request, $worker);
 
         // Kembalikan response dalam format JSON

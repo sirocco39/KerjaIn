@@ -44,7 +44,7 @@ Route::get('/job-req/beranda', function () {
         ->whereNull('deleted_at')
         ->latest()
         ->take(6) // Sementara ganti 6, kalo dah kelar ganti 5
-        ->with('transactions')
+        ->with('transaction')
         ->get();
     return view('Job_Requester.beranda', compact('fiveLatestRequests'));
 })->name('job-req.beranda');

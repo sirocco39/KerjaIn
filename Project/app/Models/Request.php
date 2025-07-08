@@ -40,9 +40,9 @@ class Request extends Model
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
-    public function transactions(): HasMany
+    public function transaction(): HasOne
     {
-        return $this->hasMany(Transaction::class, 'request_id');
+        return $this->hasOne(Transaction::class, 'request_id');
     }
     public function payments(): HasMany
     {
@@ -96,7 +96,7 @@ class Request extends Model
         }
 
         // 6. Gunakan nomor order yang sudah unik.
-        $request->transactions()->create([
+        $request->transaction()->create([
             'order_number' => $orderNumber,
             'request_id'   => $request->id,
             'requester_id' => $request->requester_id,

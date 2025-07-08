@@ -60,7 +60,7 @@
                 <strong>{{ $request->location }}</strong>
             </div>
             <div class="col-md-6 mb-1 icon-text">
-                <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Done">
+                <img class="ms-2" src="{{ asset('Image/Icon/icon-done.svg') }}" alt="Icon Done">
                 <small class="text-muted">Selesai Kerja</small><br>
                 <strong>{{ $request->end_time }}</strong>
                 <div></div>
