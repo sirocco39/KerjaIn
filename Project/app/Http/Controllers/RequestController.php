@@ -191,6 +191,14 @@ class RequestController extends Controller
     public function acceptRequest(RequestModel $request) // <-- PERUBAHAN DI SINI
     {
         $worker = Auth::user();
+        // cari JobRequest berdasarkan ID
+        $id = $request->id; // Ambil ID dari request yang diterima
+        $jobrequest = JobRequest::findOrFail($id); // Pastikan request ditemukan
+
+        // Ubah status transaction menjadi cancelled
+        $jobrequest->status = 'closed';
+        $jobrequest->save(); // Pastikan status transaction tersimpan
+
 
         // Pastikan worker ditemukan
         if (!$worker) {

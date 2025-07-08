@@ -18,9 +18,9 @@ $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
 $duration = $interval->format('%h jam %i menit');
 $created_at = $worker->created_at;
 $year = date('F Y', strtotime($created_at));
+$start_work = $transaction->start_work ? date('d M Y H:i', strtotime($transaction->start_work)): null;
+$finish_work = $transaction->finish_work ? date('d M Y H:i', strtotime($transaction->finish_work)) : null;
 
-$start_work = date('d M Y H:i', strtotime($transaction->start_work));
-$finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
 
 @endphp
 @section('content')
@@ -273,36 +273,26 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                                                 <!-- Detail Pesanan -->
                                                 <div class="d-flex flex-column flex-grow-1">
                                                     <div class="d-flex flex-fill">
-                                                        <div class="text flex-fill">
+                                                        <div class="text flex-fill" style="width:50%;">
                                                             <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
                                                             <p class="fw-medium">{{ $request->title }}</p>
                                                         </div>
-                                                        <div class="text">
-                                                            <p class="m-0 p-0 text-black-50 fw-semibold"></p>
-                                                            <p class="fw-medium"></p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex">
-                                                        <div class="text">
+                                                        <div class="text" style="width:50%;">
                                                             <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
                                                             <p class="fw-medium">{{ $transaction->order_number }}</p>
                                                         </div>
-                                                        <div class="text">
-                                                            <p class="m-0 p-0 text-black-50 fw-semibold"></p>
-                                                            <p class="fw-medium"></p>
-                                                        </div>
                                                     </div>
-                                                    <div class="d-flex flex-fill">
+                                                    <div class="d-flex">
                                                         <div class="text" style="width:50%;">
-                                                            <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
-                                                            <p class="fw-medium">{{ $worker->first_name }} {{ $worker->last_name }}</p>
+                                                            <p class="m-0 p-0 text-black-50 fw-semibold">Nama Klien</p>
+                                                            <p class="fw-medium">{{$request->requester->first_name}} {{$request->requester->last_name}}</p>
                                                         </div>
                                                         <div class="text" style="width:50%;">
                                                             <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
                                                             <p class="fw-medium">{{ $request->location }}</p>
                                                         </div>
                                                     </div>
-                                                    <div class="d-flex">
+                                                    <div class="d-flex flex-fill">
                                                         <div class="text" style="width:50%;">
                                                             <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
                                                             <p class="fw-medium">{{ $transaction->created_at->format('d M Y') }}</p>
@@ -310,6 +300,16 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                                                         <div class="text" style="width:50%;">
                                                             <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
                                                             <p class="fw-medium">{{ $transaction->updated_at->format('d M Y') }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex">
+                                                        <div class="text" style="width:50%;">
+                                                            <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                                            <p class="fw-medium">{{ $start_work }}</p>
+                                                        </div>
+                                                        <div class="text" style="width:50%;">
+                                                            <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                                            <p class="fw-medium">{{ $finish_work}}</p>
                                                         </div>
                                                     </div>
                                                     <hr class="my-1 border border-dark">
@@ -472,34 +472,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
             </div>
         </div>
 
-        <div class="three gx-3 gy-3 col-12 col-lg-9 mt-3 px-md-1 ps-3 mt-lg-0 order-1 order-lg-1" style="min-height:70vh;">
-            <div class="contain bg-light px-4 py-3 rounded-top-4 d-flex align-items-center" style="border: 1px solid #cacadd; height:12%; min-height:72px;">
-                <div class="atas d-flex justify-content-between align-items-center flex-fill">
-                    <div class="profile d-flex">
-                        <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}" alt="" style="width: 48px; height: 48px;" class="rounded-5">
-                        <div class="container-name-status ms-2 d-flex align-items-center">
-                            <div class="name fw-bold">{{$request->requester->first_name . ' ' . $request->requester->last_name}}</div>
-                            <!-- <div class="kecil">Online</div> -->
-                        </div>
-                    </div>
-                    <!-- <div class="bullet rounded-5" style="width:24px; height:24px; background-color: greenyellow;"></div> -->
-                </div>
-            </div>
-            <div class="px-4 pb-3 chat-container container-fluid bg-light rounded-bottom-4 flex-fill flex-column justify-content-between" style="height:88%; border: 1px solid #cacadd;">
-                <div class="chat-layout flex-fill" style="flex:6; height:85%;"></div>
-                <div class="send-layout d-flex align-items-center justify-content-between" style="flex:1; height:15%;">
-                    <form action="" class="d-flex flex-fill">
-                        @csrf
-                        <input type="text" class="me-2 form-control rounded-5 flex-grow-1" id="biaya" placeholder="Tulis pesan...">
-                        <button class="btn rounded-5" style="background-color:#309FFF; height:100%; aspect-ratio: 1/1;">
-                            <svg width="29" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7.80209 15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644 12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @livewire('job-taker.chat-work', ['selectedRoomId' => $room->id])
     </div>
 </div>
 
@@ -595,108 +568,6 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
     </div>
 </div>
 
-<div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
-        <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
-            @csrf
-            <div class="modal-content p-3">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">Detail Penyelesaian</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <!-- Modal body with responsive scroll behavior -->
-                <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 90vh;">
-                    <div class="d-flex flex-column flex-lg-row gap-3">
-                        <!-- Detail Pesanan -->
-                        <div class="d-flex flex-column flex-grow-1">
-                            <div class="d-flex flex-fill">
-                                <div class="text flex-fill">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
-                                    <p class="fw-medium">{{ $request->title }}</p>
-                                </div>
-                                <div class="text">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold"></p>
-                                    <p class="fw-medium"></p>
-                                </div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="text">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
-                                    <p class="fw-medium">{{ $transaction->order_number }}</p>
-                                </div>
-                                <div class="text">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold"></p>
-                                    <p class="fw-medium"></p>
-                                </div>
-                            </div>
-                            <div class="d-flex flex-fill">
-                                <div class="text" style="width:50%;">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
-                                    <p class="fw-medium">{{ $worker->first_name }} {{ $worker->last_name }}</p>
-                                </div>
-                                <div class="text" style="width:50%;">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
-                                    <p class="fw-medium">{{ $request->location }}</p>
-                                </div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="text" style="width:50%;">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
-                                    <p class="fw-medium">{{ $transaction->created_at->format('d M Y') }}</p>
-                                </div>
-                                <div class="text" style="width:50%;">
-                                    <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
-                                    <p class="fw-medium">{{ $transaction->updated_at->format('d M Y') }}</p>
-                                </div>
-                            </div>
-                            <hr class="my-1 border border-dark">
-                            <div class="d-flex mt-1">
-                                <div class="text d-flex justify-content-between align-items-center" style="width:50%;">
-                                    <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
-                                    <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp {{ number_format($request->price, 2, ',', '.') }}</p>
-                                </div>
-                                <div class="text d-flex justify-content-end align-items-center" style="width:50%;">
-                                    <a href="#" class="d-flex text-decoration-none justify-content-center align-items-center">
-                                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z" fill="#309FFF" />
-                                        </svg>
-                                        <div class="ms-2 fw-medium fs-5">Invoice</div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="vr d-none d-lg-block mx-3"></div>
-
-                        <!-- Rating + Comment -->
-                        <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                            <h4 class="fw-semibold mt-3 mb-1">Kasih penilaian, yuk!</h4>
-                            <div class="text-center mt-0 mb-3 w-100">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
-                                    @endfor
-                                    <input type="hidden" name="rating" id="rating-input" value="0">
-                            </div>
-
-                            <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                <label for="comment" class="form-label text-start">Komentar</label>
-                                <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
-                            </div>
-
-                            <div class="d-flex flex-column mt-3 justify-content-center">
-                                <button type="submit" class="btn btn-primary fw-medium rounded-3">Kirim</button>
-                                <div class="m-1 text-center">Atau</div>
-                                <button type="button" class="m-0 p-0 fw-medium btn text-danger" data-bs-toggle="modal" data-bs-target="#reportWorkModal">Laporkan masalah</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </form>
-    </div>
-</div>
 {{-- upload proof --}}
 <script>
     function uploadProof() {
@@ -872,7 +743,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
     });
 
     function submitReview() {
-        const comment = document.getElementById('note').value.trim();
+        const comment = document.getElementById('comment').value.trim();
 
         if (selectedRating == 0) {
             alert('Silakan pilih rating terlebih dahulu.');

@@ -181,34 +181,7 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                 </div>
             </div>
         </div>
-        <div class="three gx-3 gy-3 col-12 col-lg-9 mt-3 px-md-1 ps-3 mt-lg-0 order-1 order-lg-1" style="min-height:70vh;">
-            <div class="contain bg-light px-4 py-3 rounded-top-4 d-flex align-items-center" style="border: 1px solid #cacadd; height:12%; min-height:72px;">
-                <div class="atas d-flex justify-content-between align-items-center flex-fill">
-                    <div class="profile d-flex">
-                        <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}" alt="" style="width: 48px; height: 48px;" class="rounded-5">
-                        <div class="container-name-status ms-2 d-flex align-items-center">
-                            <div class="name fw-bold">{{$worker->first_name . ' ' . $worker->last_name}}</div>
-                            <!-- <div class="kecil">Online</div> -->
-                        </div>
-                    </div>
-                    <!-- <div class="bullet rounded-5" style="width:24px; height:24px; background-color: greenyellow;"></div> -->
-                </div>
-            </div>
-            <div class="px-4 pb-3 chat-container container-fluid bg-light rounded-bottom-4 flex-fill flex-column justify-content-between" style="height:88%; border: 1px solid #cacadd;">
-                <div class="chat-layout flex-fill" style="flex:6; height:85%;"></div>
-                <div class="send-layout d-flex align-items-center justify-content-between" style="flex:1; height:15%;">
-                    <form action="" class="d-flex flex-fill">
-                        @csrf
-                        <input type="text" class="me-2 form-control rounded-5 flex-grow-1" id="biaya" placeholder="Tulis pesan...">
-                        <button class="btn rounded-5" style="background-color:#309FFF; height:100%; aspect-ratio: 1/1;">
-                            <svg width="29" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7.80209 15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644 12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @livewire('job-requester.chat-work', ['selectedRoomId' => $room->id])
     </div>
 </div>
 
@@ -332,14 +305,14 @@ $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
                             </div>
 
                             <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                <label for="comment" class="form-label text-start">Komentar</label>
-                                <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+                                <label for="note" class="form-label text-start">Komentar</label>
+                                <textarea name="note" id="comment" class="form-control" rows="3" placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
                             </div>
 
                             <div class="d-flex flex-column mt-3 justify-content-center">
-                                <button type="submit" class="btn btn-primary fw-medium rounded-3">Kirim</button>
+                                <button type="button" class="btn btn-primary fw-medium rounded-3" onclick="submitReview()">Kirim</button>
                                 <div class="m-1 text-center">Atau</div>
-                                <button type="button" class="m-0 p-0 fw-medium btn text-danger" data-bs-toggle="modal" data-bs-target="#reportWorkModal">Laporkan masalah</button>
+                                <button type="button" class="m-0 p-0 fw-medium btn text-danger" onclick="openReportModal()">Laporkan masalah</button>
                             </div>
                         </div>
                     </div>
@@ -584,6 +557,148 @@ document.getElementById('reportImageInput').addEventListener('change', function(
         reader.readAsDataURL(file);
     });
 });
+    function openReportModal() {
+        // Tutup completionModal
+        var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+        completionModal.hide();
+
+        // Buka reportModal setelah modal sebelumnya tertutup dengan delay aman
+        setTimeout(() => {
+            var reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+            reportModal.show();
+        }, 500);
+    }
+
+    // Fungsi kirim laporan
+    function submitReport() {
+        const note = document.getElementById('reportNote').value;
+        if (!note.trim()) {
+            alert('Harap isi keterangan masalah terlebih dahulu.');
+            return;
+        }
+
+        // Kirim via AJAX ke route laporanmu jika mau langsung dikirim tanpa refresh
+        // Atau bisa tutup modal dan tampilkan notifikasi
+        alert('Laporan telah dikirim.');
+
+        // Tutup modal setelah kirim
+        var reportModal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+        reportModal.hide();
+    }
+
+    // {{-- bintang rating tampilan --}}
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-rating');
+        const ratingInput = document.getElementById('rating-input');
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            // Hover effect
+            star.addEventListener('mouseover', function() {
+                const val = parseInt(this.getAttribute('data-value'));
+                stars.forEach(s => {
+                    const sVal = parseInt(s.getAttribute('data-value'));
+                    if (sVal <= val) {
+                        s.classList.add('star-green');
+                        s.classList.remove('text-secondary');
+                    } else {
+                        s.classList.remove('star-green');
+                        s.classList.remove('star-blue');
+                        s.classList.add('text-secondary');
+                    }
+                });
+            });
+
+            // Remove green on mouseout (but keep blue selection)
+            star.addEventListener('mouseout', function() {
+                stars.forEach(s => {
+                    s.classList.remove('star-green');
+                    if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
+                        s.classList.add('star-blue');
+                        s.classList.remove('text-secondary');
+                    } else {
+                        s.classList.remove('star-blue');
+                        s.classList.add('text-secondary');
+                    }
+                });
+            });
+
+            // Click to select rating
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-value'));
+                ratingInput.value = selectedRating;
+                stars.forEach(s => {
+                    if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
+                        s.classList.add('star-blue');
+                        s.classList.remove('text-secondary');
+                    } else {
+                        s.classList.remove('star-blue');
+                        s.classList.add('text-secondary');
+                    }
+                });
+            });
+        });
+    });
+
+
+    let selectedRating = 0;
+
+    // Handle click rating
+    document.querySelectorAll('.star-rating').forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = this.getAttribute('data-value');
+            document.querySelectorAll('.star-rating').forEach(s => s.classList.remove('text-warning'));
+            for (let i = 0; i < selectedRating; i++) {
+                document.querySelectorAll('.star-rating')[i].classList.add('text-warning');
+            }
+        });
+    });
+
+    function submitReview() {
+        const comment = document.getElementById('comment').value.trim();
+
+        if (selectedRating == 0) {
+            alert('Silakan pilih rating terlebih dahulu.');
+            return;
+        }
+
+        if (comment == '') {
+            alert('Silakan isi komentar.');
+            return;
+        }
+
+        fetch("{{ route('reviews.store', $transaction->id) }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    transaction_id: "{{ $transaction->id }}",
+                    reviewer_id: "{{ auth()->id() }}",
+                    reviewee_id: "{{ $worker->id }}",
+                    rating: selectedRating,
+                    comment: comment,
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Review berhasil disimpan!');
+                    var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                    completionModal.hide();
+                    location.reload();
+                } else {
+                    alert('Gagal menyimpan review, coba lagi.');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Terjadi kesalahan, coba lagi.');
+            });
+    }
 </script>
+
+
 
 @endsection

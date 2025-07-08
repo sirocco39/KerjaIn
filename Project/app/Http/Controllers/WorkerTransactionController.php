@@ -33,9 +33,30 @@ class WorkerTransactionController extends Controller
 
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
+        $room = \App\Models\ChatRoom::where('request_id', $request->id)
+            ->where('worker_id', $worker->id)
+            ->first();
+
+        // Jika tidak ditemukan, kamu bisa buat baru (opsional)
+        if (!$room) {
+            $room = \App\Models\ChatRoom::create([
+                'request_id'   => $request->id,
+                'requester_id' => $request->requester_id,
+                'worker_id'    => $worker->id,
+            ]);
+        }
 
         // Kirim ke view
-        return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'orderNumber', 'completionProof'));
+        return view('Job_Taker.accepted-work-request', compact(
+            'transaction',
+            'request',
+            'worker',
+            'completionProof',
+            'room'
+        ));
+
+        // Kirim ke view
+        // return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
     }
 
     public function startWork($id, Request $request)
@@ -44,6 +65,7 @@ class WorkerTransactionController extends Controller
 
         // Update status menjadi in_progress
         $transaction->status = 'in progress';
+        $transaction->start_work = Carbon::now(); // Set waktu mulai kerja
         $transaction->save();
 
         return back()->with('success', 'Pekerjaan dimulai.');
@@ -140,6 +162,7 @@ class WorkerTransactionController extends Controller
 
         // Update status transaction
         $transaction->status = 'submitted';
+        $transaction->finish_work = Carbon::now(); // Set waktu selesai kerja
         $transaction->save();
 
         return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');

@@ -16,6 +16,7 @@ use App\Models\Transaction;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\JobTakerRequestController;
 use App\Livewire\JobTaker\Chat;
 use App\Livewire\jobTaker\JobTakerChatRoom;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
@@ -52,6 +53,13 @@ Route::post('/transaction/{transaction}/mark-complete', [TransactionController::
 
 Route::post('/reviews/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
 Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'submitReport'])->name('user.submitReport');
+
+// Route jobtaker_carikerja
+Route::post('/job-taker/cari-kerja/{id}', [JobTakerRequestController::class, 'acceptRequest'])->name('job-taker.accept-request');
+Route::get('/job-taker/accepted-work-request/{id}', [WorkerTransactionController::class, 'show'])->name('job-taker.accepted-work-request');
+
+
+
 
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');

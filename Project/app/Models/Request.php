@@ -53,12 +53,12 @@ class Request extends Model
         return $this->hasMany(ChatRoom::class, 'request_id');
     }
 
-    public static function hireAndFinalize(Request $request, User $worker): ChatRoom
+    public static function hireAndFinalize(Request $request, User $worker): Transaction // Ubah return type menjadi Transaction
     {
         // Cari atau buat ChatRoom pemenang
         $winningChatRoom = ChatRoom::firstOrCreate([
-            'request_id'   => $request->id,
-            'worker_id'    => $worker->id,
+            'request_id'     => $request->id,
+            'worker_id'       => $worker->id,
             'requester_id' => $request->requester_id,
         ], ['is_open' => true]);
 
@@ -71,14 +71,16 @@ class Request extends Model
         // Tutup request
         $request->update(['status' => 'closed']);
 
-        $request->transactions()->create([
-            'request_id'   => $request->id, // Mengambil ID request
+        // Buat transaksi
+        $transaction = $request->transactions()->create([
+            'request_id'     => $request->id, // Mengambil ID request
             'requester_id' => $request->requester_id,
-            'worker_id'    => $worker->id, // Mengambil harga final dari request
-            'status'       => 'accepted',      // Status awal transaksi/ Catat waktu kesepakatan terjadi
+            'worker_id'       => $worker->id, // Mengambil harga final dari request
+            'order_number' => now()->format('dmYHis') . rand(100, 999), // Generate nomor pesanan
+            'status'         => 'accepted',          // Status awal transaksi/ Catat waktu kesepakatan terjadi
         ]);
 
-        // Kembalikan chat room pemenang untuk keperluan redirect
-        return $winningChatRoom;
+        // Kembalikan object transaction
+        return $transaction;
     }
 }

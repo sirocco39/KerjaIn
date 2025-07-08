@@ -26,6 +26,7 @@ class TransactionController extends Controller
         $completionProof = $transaction->completionProof;
 
         // Kirim data ke view
+        
         return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
     }
 
@@ -97,5 +98,16 @@ class TransactionController extends Controller
 
     return back()->with('success', 'Laporan berhasil dikirim.');
 }
+
+public function showAcceptedWork($transactionId)
+{
+    $transaction = Transaction::findOrFail($transactionId);
+    $request = $transaction->request;
+    $worker = $transaction->worker;
+    $completionProof = $transaction->completionProof ?? null;
+
+    return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
+}
+
 
 }
