@@ -44,7 +44,7 @@ Route::post('/reports', [WorkerTransactionController::class, 'storeReport'])->na
 
 Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'storeReport'])->name('worker.submitReport');
 
-
+Route::post('/reviews', [WorkerTransactionController::class, 'store'])->name('reviews.store');
 
 Route::post('/transaction/submit-completion/{transaction}', [TransactionController::class, 'submitCompletion'])->name('transaction.submitCompletion');
 
@@ -77,7 +77,7 @@ Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
     $requesterId = FacadesAuth::id();
 
-    $fiveLatestRequests = Request::where('requester_id', $requesterId);
+    $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId);
     $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId)
         ->whereNull('deleted_at')
         ->latest()
