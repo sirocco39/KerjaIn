@@ -14,14 +14,16 @@ class JobTakerRequestController extends Controller
     {
         // 1. Ambil data request
         $jobRequest = JobRequest::findOrFail($id);
-
         // 2. Panggil static function dari model Request
         $transaction = JobRequest::hireAndFinalize($jobRequest, Auth::user()); // Assuming Auth::user() returns the logged-in job taker
 
         // 3. Periksa apakah transaction berhasil dibuat dan lakukan redirect
         if ($transaction instanceof Transaction) {
-            return redirect()->route('job-taker.accepted-work-request', $transaction->id)
-                             ->with('success', 'Pekerjaan berhasil diterima.');
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Pekerjaan berhasil diterima.',
+                'redirect_url' => route('job-taker.accepted-work-request', $transaction->id)
+            ]);
         } else {
             // Handle jika terjadi kesalahan saat membuat transaction
             return back()->with('error', 'Terjadi kesalahan saat menerima pekerjaan.');

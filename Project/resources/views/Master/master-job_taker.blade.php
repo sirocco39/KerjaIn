@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    @vite(["resources/sass/app.scss","resources/js/app.js"])
-
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -19,19 +19,25 @@
     <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
             <a class="navbar-brand" href="/job_taker">
-                <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain" id="logoNavbar">
+                <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain"
+                    id="logoNavbar">
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapseFull" aria-controls="navbarCollapseFull" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapseFull"
+                aria-controls="navbarCollapseFull" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarCollapseFull">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
-                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}" href="/job-taker/beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}" href="/job-taker/cari-kerja">Cari Kerja</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/pesan') ? 'active' : '' }}" href="/job-taker/pesan">Pesan</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/riwayat') ? 'active' : '' }}" href="/job-taker/riwayat">Riwayat</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}"
+                            href="/job-taker/beranda">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
+                            href="/job-taker/cari-kerja">Cari Kerja</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/pesan') ? 'active' : '' }}"
+                            href="/job-taker/pesan">Pesan</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/riwayat') ? 'active' : '' }}"
+                            href="/job-taker/riwayat">Riwayat</a></li>
                 </ul>
 
                 <hr class="d-lg-none my-2">
@@ -46,8 +52,12 @@
                         </a>
 
                         <ul class="dropdown-menu" aria-labelledby="dropdownLang">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag" class="flag"> Bahasa</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag" class="flag"> English</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                                        src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
+                                        class="flag"> Bahasa</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                                        src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
+                                        class="flag"> English</a></li>
                         </ul>
                     </li>
 
@@ -58,11 +68,35 @@
                             <span class="d-lg-none">Profil</span>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
-                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#loginModal"><img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login" class="navIcon">Masuk</button></li>
-                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#logoutModal"><img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout" class="navIcon">Keluar</button></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra" class="navIcon">Menjadi Mitra</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/"><img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran" class="navIcon">Ganti Peran</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
+                            @guest
+                                <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#loginModal"><img
+                                            src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
+                                            class="navIcon">Masuk</button></li>
+                            @endguest
+                            @auth
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                                class="navIcon">
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </li>
+                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-1"
+                                        href="{{ route('job-req.beranda') }}">
+                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                            class="navIcon">
+                                        Ganti Peran
+                                    </a>
+                                </li>
+                            @endauth
                         </ul>
                     </li>
                 </ul>
@@ -85,10 +119,12 @@
         <div class="row d-flex flex-wrap justify-content-between align-items-start" id="foot-content">
             <div class="col-md-12 col-lg-3 foot-content-detail" id="foot-1">
                 <a class="navbar-brand" href="/job_taker">
-                    <img src="{{ asset('Image/Logo/Logo Kerjain - DarkBackground.png') }}" alt="Logo Kerjain" id="logoNavbar-footer">
+                    <img src="{{ asset('Image/Logo/Logo Kerjain - DarkBackground.png') }}" alt="Logo Kerjain"
+                        id="logoNavbar-footer">
                 </a>
                 <p class="m-0 p-0" id="foot-quotes">
-                    Kami selalu mengusahakan yang terbaik buat pelanggan dan memberikan pelayanan terbaik yang kami bisa.
+                    Kami selalu mengusahakan yang terbaik buat pelanggan dan memberikan pelayanan terbaik yang kami
+                    bisa.
                 </p>
             </div>
 
@@ -126,7 +162,8 @@
                 <div class="d-flex flex-row" id="list-foot-icon">
                     <img src="{{ asset('Image/Icon/icon-instagram.png') }}" alt="Logo Instagram" class="foot-icon">
                     <img src="{{ asset('Image/Icon/icon-facebook.png') }}" alt="Logo Facebook" class="foot-icon">
-                    <img src="{{ asset('Image/Icon/icon-thread.png') }}" alt="Logo Twitter/Thread" class="foot-icon">
+                    <img src="{{ asset('Image/Icon/icon-thread.png') }}" alt="Logo Twitter/Thread"
+                        class="foot-icon">
                 </div>
             </div>
         </div>

@@ -119,15 +119,12 @@ class WorkerTransactionController extends Controller
         $job = Request::find($transaction->job->request_id);
         $requester = $transaction->job->requester;
 
-        // Generate nomor pesanan
-        $orderNumber = '#' . Str::random(12);
-
         // Kirim data ke view via session flash
         return back()->with([
             'show_rating_modal' => true,
             'rating_data' => [
                 'title' => $job->title,
-                'order_number' => $orderNumber,
+                'order_number' => $transaction->order_number,
                 'client_name' => $requester->first_name . ' ' . $requester->last_name,
                 'location' => $job->location,
                 'order_date' => $job->start_time->format('Y-m-d'),
@@ -137,35 +134,6 @@ class WorkerTransactionController extends Controller
                 'price' => $job->price,
             ],
         ]);
-    }
-
-    public function finishWork(Request $request, Transaction $transaction)
-    {
-        $request->validate([
-            'photo' => 'required|image|max:2048',
-            'note' => 'nullable|string|max:500',
-        ]);
-
-        // Simpan foto ke storage
-        $path = $request->file('photo')->store('report_photos', 'public');
-        $photoUrl = Storage::url($path);
-
-        // Simpan ke tabel reports
-        Report::create([
-            'transaction_id' => $transaction->id,
-            'reporter_id' => Auth::id(),
-            'reported_id' => $transaction->request->user_id, // requester sebagai reported
-            'reasons' => $request->note ?? '-',
-            'photo_url' => $photoUrl,
-            'status' => 'submitted',
-        ]);
-
-        // Update status transaction
-        $transaction->status = 'submitted';
-        $transaction->finish_work = Carbon::now(); // Set waktu selesai kerja
-        $transaction->save();
-
-        return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');
     }
 
     public function storeReport(Request $request)

@@ -14,6 +14,7 @@ class Transaction extends Model
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
     use HasFactory, SoftDeletes;
     protected $fillable = [
+        'order_number',
         'request_id',
         'requester_id',
         'worker_id',
