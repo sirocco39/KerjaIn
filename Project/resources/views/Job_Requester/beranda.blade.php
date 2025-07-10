@@ -24,7 +24,12 @@
                     <p>Anda belum pernah menawarkan pekerjaan!</p>
                 @else
                     @foreach ($fiveLatestRequests as $r)
-                        <div class="work-request p-4 d-flex flex-column">
+                        @php
+                            $hasTransaction = $r->transaction ? 'true' : 'false';
+                        @endphp
+                        <div class="work-request p-4 d-flex flex-column"
+                            data-url="{{ $r->transaction && $r->transaction->status !== 'cancelled' ? route('request.ongoing', ['transactionId' => $r->transaction->id]) : '' }}"
+                            data-has-transaction="{{ $r->transaction ? 'true' : 'false' }}">
                             <?php
                             $startdatetime = strtotime($r->start_time);
                             $enddatetime = strtotime($r->end_time);
@@ -75,8 +80,8 @@
                                     <div class="status">
                                         <p class="mb-0">Diterima</p>
                                     </div>
-                                @elseif($r->transaction->status == 'in progress')
-                                    <div class="status">
+                                @elseif($r->transaction->status == 'in progress' )
+                                    <div class="status" style="background-color: #309FFF">
                                         <p class="mb-0">Dikerjain</p>
                                     </div>
                                 @elseif($r->transaction->status == 'submitted')
@@ -240,9 +245,9 @@
                 modalDate.textContent = '-';
                 modalTime.textContent = '-';
                 modalPrice.textContent = '-';
-                buttonAction1.innerHTML = '';
-                buttonAction2.innerHTML = '';
-                buttonAction3.innerHTML = '';
+                // buttonAction1.innerHTML = '';
+                // buttonAction2.innerHTML = '';
+                // buttonAction3.innerHTML = '';
                 modalDescription.textContent = 'Memuat deskripsi...';
                 modalStatus.innerHTML = '<p class="mb-0">Memuat status...</p>';
 
@@ -281,31 +286,8 @@
                                 `<a class="details-button-item btn-hapus-modal text-decoration-none" data-bs-target="#deleteConfirmation" data-bs-toggle="modal" id="button-action-2">Hapus</a>`
                             deleteForm.setAttribute('action', deleteUrl);
                         } else if (data.status === 'closed') {
-                            const latestTransaction = data.transactions?.slice(-1)[0];
-                            const statusText = getStatusText(latestTransaction?.status);
-
-                            if (statusText === 'Diterima') {
-                                buttonAction1.innerHTML =
-                                    `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="#">Pesan</a>`
-                                buttonAction2.innerHTML =
-                                    `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Batalin</a>`
-                            } else if (statusText === 'Dikerjain') {
-                                buttonAction1.innerHTML =
-                                    `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="#">Pesan</a>`
-                                buttonAction2.innerHTML =
-                                    `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-2" href="#">Laporin</a>`
-                            } else if (statusText === 'Ditinjau') {
-                                buttonAction1.innerHTML =
-                                    `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Konfirmasi</a>`
-                                buttonAction2.innerHTML =
-                                    `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
-                                buttonAction3.innerHTML =
-                                    `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporin</a>`
-                            } else if (statusText === 'Selesai') {
-                                buttonAction1.innerHTML =
-                                    `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
-                            }
-
+                            const transaction = data.transaction;
+                            const statusText = getStatusText(transaction?.status);
                             modalStatus.innerHTML = `<p class="mb-0">${statusText}</p>`;
                         } else {
                             modalStatus.innerHTML = `<p class="mb-0">Status Tidak Diketahui</p>`;
@@ -355,24 +337,37 @@
             }
 
             // Mendapatkan semua elemen dengan kelas 'work-request'
-            const workRequestCards = document.querySelectorAll('.work-request');
+            document.querySelectorAll('.work-request').forEach(card => {
+                card.addEventListener('click', function(event) {
 
-            workRequestCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Hapus kelas 'choosed' dari semua elemen 'work-request' lainnya
-                    workRequestCards.forEach(otherCard => {
-                        otherCard.classList.remove('choosed');
-                    });
+                    // Baca penanda apakah request ini punya transaksi atau tidak.
+                    const hasTransaction = this.dataset.hasTransaction === 'true';
 
-                    // Tambahkan kelas 'choosed' ke elemen 'work-request' yang diklik
-                    this.classList.add('choosed');
+                    if (hasTransaction) {
+                        // ---> KONDISI 1: Request PUNYA transaksi (mode navigasi aktif)
 
-                    // Temukan tombol detail di dalam elemen 'work-request' yang diklik
-                    const detailButton = this.querySelector('.detail-req-button');
+                        // Cek apakah yang diklik adalah tombol DETAIL itu sendiri atau ikon di dalamnya.
+                        if (event.target.closest('.detail-req-button')) {
+                            // Jika ya, jangan lakukan apa-apa.
+                            // Biarkan Bootstrap yang bekerja membuka modal.
+                            return;
+                        } else {
+                            // Jika yang diklik adalah area lain di kartu, baru pindah halaman.
+                            const url = this.dataset.url;
+                            if (url) {
+                                window.location.href = url;
+                            }
+                        }
 
-                    // Pastikan tombol detail ditemukan sebelum memicu klik
-                    if (detailButton) {
-                        detailButton.click(); // Memicu event klik pada tombol detail
+                    } else {
+                        // ---> KONDISI 2: Request TIDAK punya transaksi (mode pop-up)
+
+                        // Pakai logika lama: seluruh kartu akan membuka modal.
+                        // Cari tombol detail di dalam kartu ini dan klik secara programmatic.
+                        const detailButton = this.querySelector('.detail-req-button');
+                        if (detailButton) {
+                            detailButton.click();
+                        }
                     }
                 });
             });

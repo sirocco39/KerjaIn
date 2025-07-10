@@ -53,12 +53,12 @@ class Request extends Model
         return $this->hasMany(ChatRoom::class, 'request_id');
     }
 
-    public static function hireAndFinalize(Request $request, User $worker): ChatRoom
+    public static function hireAndFinalize(Request $request, User $worker): Transaction // Ubah return type menjadi Transaction
     {
         // Cari atau buat ChatRoom pemenang
         $winningChatRoom = ChatRoom::firstOrCreate([
-            'request_id'   => $request->id,
-            'worker_id'    => $worker->id,
+            'request_id'     => $request->id,
+            'worker_id'       => $worker->id,
             'requester_id' => $request->requester_id,
         ], ['is_open' => true]);
 
@@ -96,15 +96,14 @@ class Request extends Model
         }
 
         // 6. Gunakan nomor order yang sudah unik.
-        $request->transaction()->create([
+        $transaction = $request->transaction()->create([
             'order_number' => $orderNumber,
             'request_id'   => $request->id,
             'requester_id' => $request->requester_id,
             'worker_id'    => $worker->id,
             'status'       => 'accepted',
         ]);
-
-        // Kembalikan chat room pemenang untuk keperluan redirect
-        return $winningChatRoom;
+        // Kembalikan object transaction
+        return $transaction;
     }
 }

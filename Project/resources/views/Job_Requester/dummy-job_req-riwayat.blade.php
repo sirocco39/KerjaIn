@@ -1,13 +1,13 @@
 @extends('Master.master-job_req')
 
 @section('content')
-    <div class="container-fluid pembatas-x pembatas-y">
-        Ini Dummy Job Requester Riwayat
-    </div>
+<div class="container-fluid pembatas-x pembatas-y">
+    Ini Dummy Job Requester Riwayat
+</div>
 
-    <div class="container-fluid pembatas-x pembatas-b">
-        Ini Dummy Job Requester Riwayat
-    </div>
+<div class="container-fluid pembatas-x pembatas-b">
+    Ini Dummy Job Requester Riwayat
+</div>
 @endsection
 
 {{--

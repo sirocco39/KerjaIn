@@ -14,7 +14,7 @@
                                 <div class="icon-wrapper">
                                     <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                                 </div>
-                                <span>Kak {{ $request->requester->first_name }}</span>
+                                <span>Kak {{ $request->requester->first_name }} {{ $request->id }}</span>
                             </li>
 
                             <li class="gap-2">
@@ -143,7 +143,12 @@
                             style="max-width: 150px; height: 38px;">
                         <button class="details-button-item" id="submit-offer-button">Kirim</button>
                         <a href="#" class="details-button-item" id="button-hubungi">Hubungi</a>
-                        <button class="details-button-item" id="button-terima">Terima</button>
+                        <button class="details-button-item btn-terima-modal">Terima</button>
+                        {{-- <form action="{{ route('job-taker.accept-request', $request->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="details-button-item" id="button-terima">Terima</button>
+                    </form> --}}
+
                     </div>
                 </div>
             </div>
@@ -496,9 +501,9 @@
                                 acceptJobConfirmationModal.hide(); // Hide modal if no ID
                                 return;
                             }
-
-                            const urlTemplate = `{{ route('requests.accept', ['request' => ':id']) }}`;
-                            const finalUrl = urlTemplate.replace(':id', currentRequestId);
+                            const pathTemplate = '/job-taker/cari-kerja/:id';
+                            // Ganti :id dengan nilai dari currentRequestId
+                            const finalUrl = pathTemplate.replace(':id', currentRequestId);
                             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
                                 'content');
 

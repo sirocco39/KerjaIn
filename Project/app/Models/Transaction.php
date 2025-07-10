@@ -53,4 +53,24 @@ class Transaction extends Model
     {
         return $this->hasOne(Report::class, 'transaction_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            if (empty($order->order_number)) {
+                $order->order_number = self::generateUniqueOrderNumber();
+            }
+        });
+    }
+
+    protected static function generateUniqueOrderNumber()
+    {
+        do {
+            $number = str_pad(mt_rand(0, 999999999999), 12, '0', STR_PAD_LEFT);
+        } while (self::where('order_number', $number)->exists());
+
+        return $number;
+    }
 }

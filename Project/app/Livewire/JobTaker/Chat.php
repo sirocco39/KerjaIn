@@ -20,6 +20,7 @@ class Chat extends Component
     public $showChatPanel = false; // Default: false (tampilkan list chat di mobile)
     public $showOfferForm = false;
     public $offerAmount = '';
+    public bool $isChatVisibleOnMobile = false;
 
     public function mount($selectedRoomId = null)
     {
@@ -42,6 +43,10 @@ class Chat extends Component
         $this->selectedRoomId = $roomId;
         $this->selectedRoom = ChatRoom::with(['request', 'requester'])->find($roomId);
         $this->loadActiveOffer();
+
+        // Atur agar chat terlihat di mobile saat room dipilih
+        $this->isChatVisibleOnMobile = true;
+
         $this->dispatch('scroll-to-bottom');
         $this->showChatPanel = true; // Tampilkan panel chat di mobile
     }
@@ -53,6 +58,10 @@ class Chat extends Component
         $this->selectedRoom = null;
     }
 
+    public function hideChatOnMobile()
+    {
+        $this->isChatVisibleOnMobile = false;
+    }
     public function loadActiveOffer()
     {
         if ($this->selectedRoom) {

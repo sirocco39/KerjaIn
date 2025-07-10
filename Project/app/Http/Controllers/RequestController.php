@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChatRoom;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\Request as JobRequest;
 
 use App\Models\Request as RequestModel; // Avoid conflict with the Request facade
 use App\Models\User;
@@ -181,10 +182,23 @@ class RequestController extends Controller
             return back()->withErrors(['error' => 'Failed to delete request.']);
         }
     }
+    public function showOngoing($id)
+    {
+        $request = JobRequest::findOrFail($id);
+        return view('Job_Requester.on-going-work-request', compact('request'));
+    }
 
     public function acceptRequest(RequestModel $request) // <-- PERUBAHAN DI SINI
     {
         $worker = Auth::user();
+        // cari JobRequest berdasarkan ID
+        $id = $request->id; // Ambil ID dari request yang diterima
+        $jobrequest = JobRequest::findOrFail($id); // Pastikan request ditemukan
+
+        // Ubah status transaction menjadi cancelled
+        $jobrequest->status = 'closed';
+        $jobrequest->save(); // Pastikan status transaction tersimpan
+
 
         // Pastikan worker ditemukan
         if (!$worker) {

@@ -9,14 +9,50 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\PusherController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WorkerTransactionController;
 use App\Models\Transaction;
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\JobTakerRequestController;
 use App\Livewire\JobTaker\Chat;
 use App\Livewire\jobTaker\JobTakerChatRoom;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
 use App\Models\ChatRoom;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
+// Route on-going-work-request
+Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing');
+
+Route::post('/transaction/{id}/cancel', [TransactionController::class, 'cancel'])->name('transaction.cancel');
+
+// Route view-accepted-work-request
+Route::get('/job-taker/accepted-work-request/{id}', [WorkerTransactionController::class, 'show'])->name('worker.workRequest.show');
+
+Route::post('/worker/start-work/{id}', [WorkerTransactionController::class, 'startWork'])->name('worker.startWork');
+
+Route::post('/worker/upload-proof/{transaction}', [WorkerTransactionController::class, 'uploadProof'])->name('worker.uploadProof');
+
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'storeReport'])->name('worker.submitReport');
+
+Route::post('/reviews', [WorkerTransactionController::class, 'store'])->name('reviews.store');
+
+Route::post('/transaction/{transaction}/mark-complete', [TransactionController::class, 'markComplete'])->name('transaction.markComplete');
+
+Route::post('/reviews/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
+Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'submitReport'])->name('user.submitReport');
+
+// Route jobtaker_carikerja
+Route::post('/job-taker/cari-kerja/{id}', [JobTakerRequestController::class, 'acceptRequest'])->name('job-taker.accept-request');
+Route::get('/job-taker/accepted-work-request/{id}', [WorkerTransactionController::class, 'show'])->name('job-taker.accepted-work-request');
+
+
+
+
 
 Route::post('/send-otp', [RegisteredUserController::class, 'sendOtp'])->name('send.otp');
 
@@ -39,7 +75,7 @@ Route::resource('requesttt', RequestController::class);
 
 Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
-    $requesterId = Auth::id();
+    $requesterId = FacadesAuth::id();
     $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId)
         ->whereNull('deleted_at')
         ->latest()
@@ -103,7 +139,7 @@ Route::prefix('joinWorker')->name('worker.register.')->group(function () {
 
 Route::get('/job-taker/beranda', function () {
     //get five latest open requests and deleted_at is null
-    $workerId = Auth::id();
+    $workerId = FacadesAuth::id();
 
     $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
         ->whereNull('deleted_at')
@@ -138,6 +174,7 @@ Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])-
 Route::get('/', function () {
     return view('landing');
 });
+
 
 Route::get('/hubungi/{requestId}', [ChatController::class, 'startChat'])->name('chat.start');
 Route::post('/tawar/{requestId}', [ChatController::class, 'startOffer'])->name('chat.offer');

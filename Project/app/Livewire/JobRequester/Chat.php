@@ -112,7 +112,8 @@ class Chat extends Component
 
         if ($response === 'accepted') {
             $offer->request->update(['price' => $offer->amount]);
-            Request::hireAndFinalize($offer->request, $offer->worker);
+            $transaction = Request::hireAndFinalize($offer->request, $offer->worker);
+            return redirect()->route('request.ongoing', ['transactionId' => $transaction->id]);
         }
 
         $this->loadActiveOffer();
