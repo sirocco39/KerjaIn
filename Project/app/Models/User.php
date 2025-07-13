@@ -45,21 +45,21 @@ class User extends Authenticatable
     protected $casts = [
         'is_worker' => 'boolean',
         'is_blocked' => 'boolean',
-        'saldokerjain' => 'decimal:2',   
+        'saldokerjain' => 'decimal:2',
     ];
 
     public function scopeNonAdmin($query)
-    {   
+    {
         return $query->where('role', 'user');
     }
 
     public function scopeWorker($query)
-    {   
+    {
         return $query->where('is_worker', true);
     }
 
     public function scopeNonWorker($query)
-    {   
+    {
         return $query->where('is_worker', false)->where('role', 'user');
     }
 
@@ -117,5 +117,9 @@ class User extends Authenticatable
     public function offers() : HasMany
     {
         return $this->hasMany(Offer::class, 'worker_id');
+    }
+        public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }

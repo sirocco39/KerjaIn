@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             CompletionProofSeeder::class,
             ReviewSeeder::class,
             ReportSeeder::class,
+            DummyTransactionSeeder::class,
         ]);
     }
 }

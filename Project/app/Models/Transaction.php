@@ -72,4 +72,22 @@ class Transaction extends Model
 
         return $number;
     }
+
+    public function getStatusTextAttribute()
+    {
+        switch ($this->status) {
+            case 'accepted':
+                return 'Diterima';
+            case 'in progress':
+                return 'Dikerjain';
+            case 'completed':
+                return 'Selesai';
+            case 'cancelled':
+                return 'Dibatalin';
+            case 'submitted':
+                return 'Ditinjau';
+            default:
+                return ucfirst($this->status); // Fallback to capitalized status
+        }
+    }
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PusherController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\WorkerTransactionController;
+use App\Http\Controllers\TakerTransactionController;
 use App\Models\Transaction;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -22,6 +23,7 @@ use App\Livewire\jobTaker\JobTakerChatRoom;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
 use App\Models\ChatRoom;
 use Illuminate\Http\Request;
+use App\Http\Controllers\InvoiceController;
 
 // Route on-going-work-request
 Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing');
@@ -112,9 +114,10 @@ Route::get('/edit/{request:slug}', function (WorkRequest $request) {
     return view('edit', ['workRequest' => $request]);
 });
 
-Route::get('/job-req/riwayat', function () {
-    return view('Job_Requester.dummy-job_req-riwayat');
-});
+Route::get('/job-req/riwayat', [TransactionController::class, 'index'])->name('orders.index');
+
+Route::get('/generate-invoice/{transaction}', [InvoiceController::class, 'generateInvoice'])
+    ->name('generate.invoice');
 
 Route::get('/job_taker', function () {
     return view('Job_Taker.dummy-job_taker-landingpage');
@@ -165,9 +168,7 @@ Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
 Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
 
-Route::get('/job-taker/riwayat', function () {
-    return view('Job_Taker.dummy-job_taker-riwayat');
-});
+Route::get('/job-taker/riwayat', [WorkerTransactionController::class, 'index'])->name('orders.index');
 
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');

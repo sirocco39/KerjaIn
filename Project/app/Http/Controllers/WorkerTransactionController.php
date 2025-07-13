@@ -8,36 +8,81 @@ use App\Models\CompletionProof;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use App\Models\Request as JobRequest;
+use App\Models\Request as JobRequest; // Alias Request to JobRequest
 use App\Models\Report;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
-
-
-
-
 class WorkerTransactionController extends Controller
 {
+    public function index()
+    {
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        $transactions = Transaction::withTrashed()
+            ->with(['request.requester', 'worker']) // Eager load request and its requester
+            ->where(function ($query) use ($userId) {
+                $query->where('requester_id', $userId)
+                    ->orWhere('worker_id', $userId);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Add a 'status_text' attribute to each transaction for display logic
+        $transactions->each(function ($transaction) {
+            switch ($transaction->status) {
+                case 'accepted':
+                    $transaction->status_text = 'Diterima';
+                    break;
+                case 'in progress':
+                    $transaction->status_text = 'Dikerjain';
+                    break;
+                case 'submitted':
+                    $transaction->status_text = 'Ditinjau';
+                    break;
+                case 'completed':
+                    $transaction->status_text = 'Selesai';
+                    break;
+                case 'cancelled':
+                    $transaction->status_text = 'Dibatalin';
+                    break;
+                default:
+                    $transaction->status_text = ucfirst($transaction->status); // Fallback for other statuses
+                    break;
+            }
+        });
+
+        // Prepare data for different tabs based on your string statuses
+        $allOrders = $transactions;
+        $pendingOrders = $transactions->filter(function ($transaction) {
+            return in_array($transaction->status, ['accepted', 'in progress', 'submitted']);
+        });
+        $completedOrders = $transactions->filter(function ($transaction) {
+            return $transaction->status === 'completed';
+        });
+        $cancelledOrders = $transactions->filter(function ($transaction) {
+            return $transaction->status === 'cancelled';
+        });
+
+        // Render the specified Blade view
+        return view('Job_Taker.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
+    }
 
     public function show($id)
     {
-        // Ambil data transaction berdasarkan ID
         $transaction = Transaction::findOrFail($id);
 
         $request = JobRequest::findOrFail($transaction->request_id);
 
-        // Ambil pekerja yang melakukan pekerjaan berdasarkan relasi
-        $worker = $transaction->worker; // Pastikan relasi sudah ada di model Transaction
+        $worker = $transaction->worker;
 
-        // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
         $room = \App\Models\ChatRoom::where('request_id', $request->id)
             ->where('worker_id', $worker->id)
             ->first();
 
-        // Jika tidak ditemukan, kamu bisa buat baru (opsional)
         if (!$room) {
             $room = \App\Models\ChatRoom::create([
                 'request_id'   => $request->id,
@@ -46,7 +91,6 @@ class WorkerTransactionController extends Controller
             ]);
         }
 
-        // Kirim ke view
         return view('Job_Taker.accepted-work-request', compact(
             'transaction',
             'request',
@@ -54,18 +98,14 @@ class WorkerTransactionController extends Controller
             'completionProof',
             'room'
         ));
-
-        // Kirim ke view
-        // return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
     }
 
     public function startWork($id, Request $request)
     {
         $transaction = Transaction::findOrFail($id);
 
-        // Update status menjadi in_progress
         $transaction->status = 'in progress';
-        $transaction->start_work = Carbon::now(); // Set waktu mulai kerja
+        $transaction->start_work = Carbon::now();
         $transaction->save();
 
         return back()->with('success', 'Pekerjaan dimulai.');
@@ -100,41 +140,45 @@ class WorkerTransactionController extends Controller
         ]);
     }
 
-
     public function markComplete(Transaction $transaction)
     {
         // Update status transaction menjadi 'submitted'
-        $transaction->status = 'submitted';
+        $transaction->status = 'submitted'; // This will be 'completed' when the client accepts
         $transaction->save();
 
-        // Update submitted_at pada completion_proofs yang terkait
-        $completionProof = CompletionProof::where('transaction_id', $transaction->id)->first();
+        // The completion_proof submitted_at should ideally be set when the worker submits the proof.
+        // If this method is called by the worker, it might be redundant.
+        // If this method is called when the CLIENT marks it complete, then setting `finish_work` here is fine.
+        // For now, let's assume this is the worker marking it complete and submitting.
+        // If the `markComplete` function is only for client-side confirmation, then `submitted_at` should not be here.
+        // I'll leave it as is based on the original code, but it's something to clarify.
 
+        $completionProof = CompletionProof::where('transaction_id', $transaction->id)->first();
         if ($completionProof) {
-            $completionProof->submitted_at = Carbon::now();
+            $completionProof->submitted_at = Carbon::now(); // This should be when proof is uploaded/submitted
             $completionProof->save();
         }
 
-        // Ambil data yang dibutuhkan untuk pop-up rating
-        $job = Request::find($transaction->job->request_id);
-        $requester = $transaction->job->requester;
+        // Get the related JobRequest and Requester for the rating pop-up
+        $jobRequest = $transaction->request; // Access directly via the request relationship
+        $requester = $jobRequest->requester; // Access requester via the jobRequest relationship
 
         // Generate nomor pesanan
-        $orderNumber = '#' . Str::random(12);
+        $orderNumber = '#' . Str::random(12); // This order number generation might be better handled when the transaction is created
 
         // Kirim data ke view via session flash
         return back()->with([
             'show_rating_modal' => true,
             'rating_data' => [
-                'title' => $job->title,
-                'order_number' => $orderNumber,
-                'client_name' => $requester->first_name . ' ' . $requester->last_name,
-                'location' => $job->location,
-                'order_date' => $job->start_time->format('Y-m-d'),
-                'completion_date' => $job->end_time->format('Y-m-d'),
-                'start_time' => $job->start_time->format('H.i'),
-                'end_time' => $job->end_time->format('H.i'),
-                'price' => $job->price,
+                'title' => $jobRequest->title ?? '-',
+                'order_number' => $orderNumber, // Consider getting this from the transaction if it's persistent
+                'client_name' => ($requester->first_name ?? '') . ' ' . ($requester->last_name ?? ''),
+                'location' => $jobRequest->location ?? '-',
+                'order_date' => $jobRequest->start_time ? Carbon::parse($jobRequest->start_time)->format('Y-m-d') : '-',
+                'completion_date' => $jobRequest->end_time ? Carbon::parse($jobRequest->end_time)->format('Y-m-d') : '-',
+                'start_time' => $jobRequest->start_time ? Carbon::parse($jobRequest->start_time)->format('H.i') : '-',
+                'end_time' => $jobRequest->end_time ? Carbon::parse($jobRequest->end_time)->format('H.i') : '-',
+                'price' => $jobRequest->price ?? 0,
             ],
         ]);
     }
@@ -146,23 +190,20 @@ class WorkerTransactionController extends Controller
             'note' => 'nullable|string|max:500',
         ]);
 
-        // Simpan foto ke storage
         $path = $request->file('photo')->store('report_photos', 'public');
         $photoUrl = Storage::url($path);
 
-        // Simpan ke tabel reports
         Report::create([
             'transaction_id' => $transaction->id,
             'reporter_id' => Auth::id(),
-            'reported_id' => $transaction->request->user_id, // requester sebagai reported
+            'reported_id' => $transaction->request->requester_id, // Use requester_id from the request
             'reasons' => $request->note ?? '-',
             'photo_url' => $photoUrl,
             'status' => 'submitted',
         ]);
 
-        // Update status transaction
-        $transaction->status = 'submitted';
-        $transaction->finish_work = Carbon::now(); // Set waktu selesai kerja
+        $transaction->status = 'submitted'; // This is redundant if already set in markComplete, or if this is a separate "report" action
+        $transaction->finish_work = Carbon::now();
         $transaction->save();
 
         return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');
@@ -201,9 +242,9 @@ class WorkerTransactionController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-        public function store(Request $request)
-    {
 
+    public function store(Request $request)
+    {
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
             'reviewer_id' => 'required|exists:users,id',
@@ -212,7 +253,8 @@ class WorkerTransactionController extends Controller
             'comment' => 'required|string',
         ]);
 
-        $ratingGiven = $validated['rating'] ?? 5;
+        // Assuming $validated['rating'] is meant to be $request->rating here
+        $ratingGiven = $request->rating ?? 5; // Use $request->rating directly
 
         Review::create([
             'transaction_id' => $request->transaction_id,
@@ -224,9 +266,7 @@ class WorkerTransactionController extends Controller
 
         $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
 
-        // 3. Update ke tabel users
         User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
-
 
         return response()->json(['success' => true]);
     }
