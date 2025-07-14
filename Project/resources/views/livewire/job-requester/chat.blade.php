@@ -14,7 +14,6 @@
             /* Placeholder color */
         }
 
-        /* [MODIFIKASI] Ukuran dan warna dot disesuaikan, margin dihapus */
         .status-dot {
             width: 20px;
             height: 20px;
@@ -58,7 +57,7 @@
         }
 
         .chat-bubble-receiver {
-            background-color: #0d6efd;
+            background-color: #0d6efd
             color: white;
             border-bottom-right-radius: 0.25rem;
         }
@@ -97,26 +96,154 @@
             color: white;
         }
 
-        /* ... CSS Anda yang lain ... */
+        #confirmAcceptOfferModal .modal-header,
+        #confirmAcceptOfferModal .modal-body,
+        #confirmAcceptOfferModal .modal-footer {
+            background-color: #fefefe;
+            /* Berikan background putih solid untuk semua bagian */
+        }
 
-        /* Aturan CSS yang sudah ada untuk modal */
-        #confirmAcceptOfferModal .modal-content {
-            background-color: transparent;
-            border: none;
-            box-shadow: none;
+        #confirmAcceptOfferModal {
+            /* Hapus `height: max-content;` dan `display: flex !important; align-items: center; justify-content: center;` dari sini */
+            /* Biarkan Bootstrap mengelola display dan pemusatan backdrop secara default */
+            /* Anda mungkin hanya ingin menjaga padding jika modal bisa sangat lebar */
+            padding: 1rem;
+            /* Opsional: Jika Anda ingin padding di sekitar modal saat layar kecil */
+        }
+
+        #confirmAcceptOfferModal .modal-dialog {
+            /* Biarkan modal-dialog-centered yang menangani pemusatan */
+            /* Hapus `align-items: center;` yang mungkin berlebihan di sini */
             height: auto;
-            /* <-- TAMBAHKAN BARIS INI */
+            min-height: auto;
+            /* Ini penting, biarkan seperti ini */
+            /* background-color: white !important; */
+        }
+
+        #confirmAcceptOfferModal .modal-content {
+            /* background-color: white; */
+            /* UBAH: dari transparent ke white, agar ada latar belakang solid */
+            border: none;
+            /* Tetap none sesuai keinginan Anda */
+            /* box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); */
+            /* Tambahkan shadow standar Bootstrap jika ingin */
+            border-radius: 0.5rem;
+            /* Tambahkan border-radius standar Bootstrap jika ingin */
+            height: auto;
+            /* Biarkan auto */
+            max-height: 90vh;
+            /* Batasi tinggi maksimum jika kontennya sangat panjang */
+            overflow-y: auto;
+            /* Scroll jika konten melebihi max-height */
+            /* Penting: Pastikan tidak ada `margin-top` atau `padding-top` yang berlebihan di sini */
+            margin-top: 0;
+            /* Pastikan tidak ada margin atas berlebihan yang mendorong ke bawah */
+            padding-top: 0;
+            /* Pastikan tidak ada padding atas berlebihan */
+        }
+
+        /* --- Custom CSS for Responsive Behavior --- */
+        /* For small screens (mobile-first), hide one panel based on Livewire state */
+        @media (max-width: 991.98px) {
+
+            /* Corresponds to Bootstrap's 'lg' breakpoint */
+            .chat-list-col {
+                width: 100%;
+                max-width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .chat-main-col {
+                width: 100%;
+                max-width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .chat-list-col.d-lg-block.d-none-mobile-chat {
+                display: none !important;
+            }
+
+            .chat-main-col.d-lg-block.d-none-mobile-list {
+                display: none !important;
+            }
+
+            .chat-list-col.d-block-mobile-list {
+                display: block !important;
+            }
+
+            .chat-main-col.d-block-mobile-chat {
+                display: block !important;
+            }
+
+            .h-100-mobile {
+                height: 100vh;
+            }
+        }
+
+        /* --- Perbaikan untuk Desktop --- */
+        @media (min-width: 992px) {
+
+            .chat-list-col,
+            .chat-main-col {
+                display: flex !important;
+            }
+        }
+
+        /* --- CSS Baru untuk Layout Tinggi Penuh (HEADER DI LUAR container-fluid) --- */
+        .chat-app-height {
+            height: calc(100vh - 64px);
+            /* SESUAIKAN DENGAN TINGGI NAVBAR/HEADER ANDA */
+            /* Ini akan membuat container-fluid setinggi viewport dikurangi tinggi navbar */
+        }
+
+        /* --- Memastikan kolom-kolom mengisi tinggi ini --- */
+        .chat-list-col,
+        .chat-main-col {
+            height: 100%;
+            /* Agar mengisi 100% dari .chat-app-height (induknya) */
+            /* Pastikan parent (.row) memiliki tinggi yang tepat, yaitu h-100 dari chat-app-height */
+        }
+
+        /* --- CSS untuk Area Scrollable pada List Chat --- */
+        .chat-list-scroll-area {
+            /* flex-grow: 1; Ini dipindahkan ke parent .chat-list-col yang sudah d-flex flex-column */
+            height: 100%;
+            /* Mengisi sisa tinggi kolomnya setelah dikurangi padding. */
+            overflow-y: auto;
+            /* Aktifkan scroll vertikal jika konten melebihi max-height */
+            padding-right: 15px;
+            /* Beri padding untuk scrollbar agar tidak menutupi konten */
+            box-sizing: border-box;
+            /* Pastikan padding dihitung dalam lebar/tinggi */
+        }
+
+        /* --- CSS untuk Area Scrollable pada Body Chat (Pesan) --- */
+        .chat-messages-scroll-area {
+            flex-grow: 1;
+            /* Biarkan dia mengisi sisa ruang yang tersedia di kolom */
+            overflow-y: auto;
+            /* Aktifkan scroll vertikal */
+            padding-right: 15px;
+            /* Padding untuk scrollbar */
+            box-sizing: border-box;
+            /* Tidak perlu max-height absolut di sini karena flex-grow:1 sudah menangani tinggi relatif */
         }
     </style>
 
-    <div class="container-fluid vh-100">
+    {{-- UBAH INI: class vh-100-mobile h-100 menjadi chat-app-height --}}
+    <div class="container-fluid chat-app-height">
         <div class="row h-100">
 
-            {{-- Kolom Kiri: Daftar Request & Worker (TETAP SAMA) --}}
-            <div class="col-lg-5 border-end bg-light">
-                <div class="p-3">
+            {{-- Kolom Kiri: Daftar Request & Worker --}}
+            <div
+                class="col-lg-5 border-end bg-light d-flex flex-column h-100 chat-list-col
+                @if ($showChatPanel) d-none @else d-block @endif ">
+                {{-- Modifikasi di sini: hapus flex-grow-1 dari `chat-list-scroll-area` --}}
+                {{-- .chat-list-col sudah d-flex flex-column h-100, jadi `p-3` dan `chat-list-scroll-area` akan mengisi ruang --}}
+                <div class="p-3 chat-list-scroll-area">
                     @forelse ($requestsWithChats as $request)
-                        <x-job-requester.card :$request :expandedRequestId="$expandedRequestId" :selectedChatRoomId="$selectedChatRoomId" />
+                        <x-job-requester.card :request="$request" :expandedRequestId="$expandedRequestId" :selectedChatRoomId="$selectedChatRoomId"
+                            wire:key="card-{{ $request->id }}" class="mb-3" />
                     @empty
                         <div class="text-center text-muted mt-5">
                             <i class="bi bi-chat-left-dots fs-1"></i>
@@ -129,11 +256,18 @@
             {{-- =================================================================== --}}
             {{-- =================== KOLOM KANAN (TAMPILAN BARU) =================== --}}
             {{-- =================================================================== --}}
-            <div class="col-lg-7 d-flex flex-column p-3 h-100" wire:poll.3s>
+            <div class="col-lg-7 d-flex flex-column p-3 h-100 chat-main-col
+                @if ($showChatPanel) d-block @else d-none @endif "
+                wire:poll.3s>
                 @if ($chatRoom)
                     <div class="chat-header p-3 d-flex align-items-center gap-3 rounded-top-5">
+                        <button wire:click="backToChatList" class="btn btn-link text-white d-lg-none p-0 me-2">
+                            <i class="bi bi-arrow-left-circle-fill fs-4"></i>
+                        </button>
                         <div class="chat-avatar">
-                            {{-- Anda bisa memasukkan tag <img> di sini jika punya URL avatar --}}
+                            <img src="{{ $chatRoom->worker->profile_picture_url ?? asset('Image/Icon/icon-done.svg') }}"
+                                alt="{{ $chatRoom->worker->first_name }}"
+                                class="w-100 h-100 rounded-circle object-cover">
                         </div>
                         <div class="me-auto">
                             <h5 class="fw-bold mb-0">{{ $chatRoom->worker->first_name ?? '-' }}</h5>
@@ -141,7 +275,7 @@
                     </div>
 
                     {{-- Panel Tawaran --}}
-                    @if ($activeOffer && $activeOffer->status === 'open' && auth()->id() === $activeOffer->requester_id)
+                    @if ($activeOffer && $activeOffer->status === 'open' && auth()->id() === $activeOffer->requester_id && $chatRoom->request->status !== 'closed')
                         <div class="offer-panel d-flex justify-content-between align-items-center border">
                             <div>
                                 <span class="text-muted">Nominal Upah yang Anda Ajukan:</span>
@@ -159,11 +293,10 @@
                         </div>
                     @endif
 
-
                     {{-- Body Chat --}}
                     <div x-data x-ref="chatBody"
                         @scroll-to-bottom.window="$nextTick(() => { $refs.chatBody.scrollTop = $refs.chatBody.scrollHeight; })"
-                        class="flex-grow-1 overflow-auto p-3 chat-body bg-white border" wire:poll.3s>
+                        class="p-3 chat-body bg-white border chat-messages-scroll-area"> {{-- MODIFIKASI INI --}}
 
                         @forelse ($this->messages as $date => $groupedMessages)
                             <div class="text-center my-3">
@@ -181,17 +314,13 @@
                                     <div class="small text-muted mt-1 px-2 d-flex align-items-center">
                                         <span>{{ $msg->created_at->format('H:i') }}</span>
 
-                                        {{-- [MODIFIKASI DIMULAI] --}}
                                         @if ($msg->sender_id === auth()->id())
                                             @if ($msg->read_at)
-                                                {{-- Jika sudah dibaca, centang dua biru (read) --}}
                                                 <i class="bi bi-check-all text-primary ms-1"></i>
                                             @else
-                                                {{-- Jika baru terkirim, centang satu abu-abu (noread) --}}
                                                 <i class="bi bi-check text-muted ms-1"></i>
                                             @endif
                                         @endif
-                                        {{-- [MODIFIKASI SELESAI] --}}
                                     </div>
                                 </div>
                             @endforeach
@@ -223,28 +352,21 @@
             </div>
         </div>
 
-        {{-- Modal Konfirmasi (TETAP SAMA) --}}
-        {{-- Modal Konfirmasi Penerimaan Tawaran (REVISED) --}}
+        {{-- Modal Konfirmasi --}}
         @if ($activeOffer)
             <div class="modal fade" id="confirmAcceptOfferModal" tabindex="-1"
                 aria-labelledby="confirmAcceptOfferModalLabel" aria-hidden="true" wire:ignore.self>
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content border-0 rounded-4">
-
-                        {{-- Header --}}
                         <div class="modal-header border-0 pb-0">
                             <h5 class="modal-title fw-bold" id="confirmAcceptOfferModalLabel">Konfirmasi Penerimaan
                                 Tawaran</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-
-                        {{-- Body --}}
                         <div class="modal-body p-4">
                             <p class="text-center text-muted mb-3">Anda akan menerima tawaran upah dari pekerja. Mohon
                                 periksa kembali detail di bawah ini:</p>
-
-                            {{-- Detail Tawaran --}}
                             <div class="bg-light p-3 rounded-3 mb-4 text-center">
                                 <h6 class="text-muted small fw-normal">JUMLAH TAWARAN</h6>
                                 <h2 class="fw-bolder text-success mb-3">
@@ -253,8 +375,6 @@
                                 <h6 class="text-muted small fw-normal">DARI PEKERJA</h6>
                                 <h5 class="fw-bold mb-0">{{ $activeOffer->worker->first_name }}</h5>
                             </div>
-
-                            {{-- Peringatan --}}
                             <div class="alert alert-warning d-flex align-items-center" role="alert">
                                 <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
                                 <div>
@@ -263,8 +383,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{-- Footer --}}
                         <div class="modal-footer border-0 pt-0">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             <button type="button" class="btn btn-success fw-bold"
@@ -273,7 +391,6 @@
                                 <i class="bi bi-check-circle-fill me-1"></i> Ya, Saya Terima Tawaran
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>

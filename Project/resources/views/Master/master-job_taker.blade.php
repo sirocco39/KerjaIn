@@ -3,7 +3,7 @@
 
 <head>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -163,8 +163,8 @@
                                         src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
                                         class="flag"> Bahasa</a></li>
                             <li><a class="dropdown-item d-flex align-items-center" href="#"><img
-                                        src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag" class="flag">
-                                    English</a></li>
+                                        src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
+                                        class="flag"> English</a></li>
                         </ul>
                     </li>
 
@@ -175,21 +175,35 @@
                             <span class="d-lg-none">Profil</span>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
-                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                    data-bs-toggle="modal" data-bs-target="#loginModal"><img
-                                        src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
-                                        class="navIcon">Masuk</button></li>
-                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                    data-bs-toggle="modal" data-bs-target="#logoutModal"><img
-                                        src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                        class="navIcon">Keluar</button></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="#"><img
-                                        src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                        class="navIcon">Menjadi Mitra</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-1" href="/"><img
-                                        src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
-                                        class="navIcon">Ganti Peran</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
+                            @guest
+                                <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#loginModal"><img
+                                            src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
+                                            class="navIcon">Masuk</button></li>
+                            @endguest
+                            @auth
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                                class="navIcon">
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </li>
+                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-1"
+                                        href="{{ route('job-req.beranda') }}">
+                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                            class="navIcon">
+                                        Ganti Peran
+                                    </a>
+                                </li>
+                            @endauth
                         </ul>
                     </li>
                 </ul>

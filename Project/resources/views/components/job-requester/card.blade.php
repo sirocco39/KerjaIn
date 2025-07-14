@@ -1,6 +1,8 @@
 @props(['request', 'expandedRequestId', 'selectedChatRoomId'])
 
 <style>
+    /* ... (CSS Anda yang sudah ada, tetap sama) ... */
+
     .job-request-card {
         transition: all 0.2s ease-in-out;
         border: 3px solid #dee2e6;
@@ -50,7 +52,6 @@
         border-bottom: none;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
-        /* [PERBAIKAN] Menggunakan margin bawah negatif untuk menutup celah */
         margin-bottom: -2px;
     }
 
@@ -78,6 +79,12 @@
 
     .chat-item-card.active {
         box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+        /* background-color: #0d6efd; */
+        color: white;
+    }
+
+    .chat-item-card.active .text-muted {
+        color: rgba(0, 0, 0, 0.3) !important;
     }
 
     .chat-item-avatar {
@@ -86,6 +93,13 @@
         background-color: #e9ecef;
         border-radius: 50%;
         flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .chat-item-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .chat-item-text {
@@ -93,7 +107,8 @@
     }
 </style>
 
-<div class="card bg-white rounded-5 job-request-card {{ $expandedRequestId === $request->id ? 'is-expanded' : '' }}">
+<div
+    {{ $attributes->merge(['class' => 'card bg-white rounded-5 job-request-card ' . ($expandedRequestId === $request->id ? 'is-expanded' : '')]) }}>
     <div class="card-body p-3">
         {{-- Judul Pekerjaan --}}
         <h5 class="card-title-chat fw-bold mb-2" style="font-size: 20px;">{{ $request->title }}</h5>
@@ -137,9 +152,13 @@
     @if ($expandedRequestId === $request->id)
         <div class="expanded-chats-container rounded-bottom-5">
             @forelse ($request->chatRooms as $room)
-                <div wire:click="selectChat({{ $room->id }})"
+                {{-- MODIFIKASI INI: Gunakan $dispatch untuk mengirim event ke komponen parent --}}
+                <div wire:click="$dispatch('chat-selected', { chatRoomId: {{ $room->id }} })"
                     class="chat-item-card rounded-5 {{ $selectedChatRoomId === $room->id ? 'active' : '' }}">
-                    <div class="chat-item-avatar"></div>
+                    <div class="chat-item-avatar">
+                        <img src="{{ $room->worker->profile_picture_url ?? asset('Image/Icon/icon-done.svg') }}" {{-- INI BAKAL PAKE PROGILE USERS --}}
+                            alt="{{ $room->worker->first_name }}">
+                    </div>
                     <div class="chat-item-text">
                         <h6 class="mb-0 fw-bold">{{ $room->worker->first_name ?? 'Worker' }}</h6>
                         @if ($room->lastMessage)

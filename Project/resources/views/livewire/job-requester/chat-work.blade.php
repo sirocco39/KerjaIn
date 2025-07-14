@@ -1,4 +1,5 @@
 <div class="three gx-3 gy-3 col-12 col-lg-9 mt-3 px-md-1 ps-3 mt-lg-0 order-1 order-lg-1" style="height: 100vh;">
+
     <style>
         .bubble-message {
             padding: 10px 15px;
@@ -45,7 +46,8 @@
             <div class="profile d-flex">
                 <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}" alt="" style="width: 48px; height: 48px;" class="rounded-5">
                 <div class="container-name-status ms-2 d-flex align-items-center">
-                    <div class="name fw-bold">{{ $selectedRoom->worker->first_name . ' ' . $selectedRoom->worker->last_name }}</div>
+                    
+                    <div class="fw-bold">{{ $selectedRoom->worker->first_name . ' ' . $selectedRoom->worker->last_name }}</div>
                 </div>
             </div>
         </div>
@@ -74,7 +76,7 @@
             </div>
             @endforeach
             @empty
-            <div class="text-center text-muted mt-4">Belum ada pesan.</div>
+            <div class="text-center text-muted mt-5">Belum ada pesan.</div>
             @endforelse
         </div>
 
@@ -127,7 +129,7 @@
         }) => {
             // Only scroll if the updated element is our chat container
             // and it belongs to the correct Livewire component
-            if (el.id === 'chatMessages' && component.name === 'job-taker.chat-work') {
+            if (el.id === 'chatMessages' && component.name === 'job-requester.chat-work') {
                 scrollToBottom();
             }
         });
