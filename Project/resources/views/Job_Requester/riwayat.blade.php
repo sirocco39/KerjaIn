@@ -1,3 +1,4 @@
+jobreq.riwayat.blade.php
 @extends('Master.master-job_req')
 
 @section('content')
@@ -38,23 +39,29 @@
                     @forelse ($allOrders as $order)
                         <div class="order-row hoverable-row
                             {{-- Add class for tab filtering based on original status --}}
-                            {{ str_replace(' ', '-', $order->status) }}-tab
-                            {{-- Add no-click class if status_text is NOT 'Selesai' --}}
-                            @if ($order->status_text != 'Selesai') no-click @endif"
-                            {{-- Conditionally add modal trigger attributes --}}
-                            @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
-                                data-bs-target="#completionModal" @endif
+                            {{ str_replace(' ', '-', $order->status) }}-tab"
+                            {{-- Conditionally add modal trigger attributes or redirection attributes --}}
+                            @if ($order->status_text == 'Selesai')
+                                data-bs-toggle="modal"
+                                data-bs-target="#completionModal"
+                            @else
+                                data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}"
+                            @endif
                             data-transaction-id="{{ $order->id }}"
                             data-request-title="{{ $order->request->title ?? '-' }}"
                             data-order-number="{{ $order->order_number ?? '-' }}"
                             data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
                             data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
+                            data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
+                            data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
                             data-request-location="{{ $order->request->location ?? '-' }}"
                             data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
                             data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
                             data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
                             data-start-work="{{ \Carbon\Carbon::parse($order->start_work)->format('H.i') ?? '-' }}"
-                            data-finish-work="{{ \Carbon\Carbon::parse($order->finish_work)->format('H.i') ?? '-' }}">
+                            data-finish-work="{{ \Carbon\Carbon::parse($order->finish_work)->format('H.i') ?? '-' }}"
+                            data-worker-id="{{ $order->worker_id ?? '' }}"
+                            data-order-status-text="{{ $order->status_text }}"> {{-- ADDED THIS LINE to get status_text --}}
                             <div class="row text-center text-sm d-flex justify-content-center align-items-center m-0 p-0"
                                 style="height: 3.5rem">
                                 {{-- Request Title --}}
@@ -105,6 +112,7 @@
         </div>
     </div>
 
+    {{-- Completion Modal --}}
     <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
             <form id="reviewForm" method="POST">
@@ -119,18 +127,16 @@
                         <div class="d-flex flex-column flex-lg-row gap-3">
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
-                                    <div class="text flex-fill">
+                                    <div class="text flex-fill" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="text">
+                                    <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
-                                <div class="d-flex flex-fill">
+                                <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
                                         <p class="fw-medium" id="modalWorkerName"></p>
@@ -140,7 +146,7 @@
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
-                                <div class="d-flex">
+                                <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
                                         <p class="fw-medium" id="modalTransactionCreatedAt"></p>
@@ -148,6 +154,16 @@
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
                                         <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                        <p class="fw-medium" id="modalStartWork"></p>
+                                    </div>
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                        <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
                                 <hr class="my-1 border border-dark">
@@ -207,18 +223,34 @@
         </div>
     </div>
 
+    {{-- Report Modal --}}
     <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <form id="reportForm" method="POST" enctype="multipart/form-data" class="modal-content">
                 @csrf
+                <input type="hidden" name="transaction_id" id="reportTransactionId">
+                <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
+                <input type="hidden" name="reported_id" id="reportReportedId">
+
+
                 <div class="modal-header border-0 justify-content-center">
                     <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
 
-                <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
+                <hr class="mx-auto mb-3"
+                    style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
 
                 <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
                     <div class="row mb-3">
@@ -231,8 +263,8 @@
                             <p class="fw-medium" id="reportModalOrderNumber"></p>
                         </div>
                         <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nama Pekerja</p>
-                            <p class="fw-medium" id="reportModalWorkerName"></p>
+                            <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                            <p class="fw-medium" id="reportModalRequesterName"></p>
                         </div>
                         <div class="col-md-6 col-lg-3">
                             <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
@@ -272,13 +304,13 @@
                                 <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
                             </div>
                         </div>
-                        <input type="file" class="d-none" id="reportImageInput" name="images[]" accept="image/*"
+                        <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
                             multiple>
                     </div>
 
                     <div class="mb-4">
                         <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
-                        <textarea name="note" id="reportNote" class="form-control rounded-4" rows="4"
+                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
                             placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff;"></textarea>
                     </div>
                 </div>
@@ -293,6 +325,7 @@
     <script>
         // Store the transaction ID globally when a row is clicked
         let currentTransactionId = null;
+        let reportedWorkerId = null; // To store the worker ID for the report/review
 
         // JavaScript for image preview in report modal
         const reportImageInput = document.getElementById('reportImageInput');
@@ -326,17 +359,21 @@
         function openReportModal() {
             // Close completionModal
             var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-            completionModal.hide();
+            if (completionModal) {
+                completionModal.hide();
+            }
+
 
             // Populate report modal with data from the clicked row
             const reportModal = new bootstrap.Modal(document.getElementById('reportWorkModal'));
+            // Find the row data based on the stored currentTransactionId
             const rowData = document.querySelector(`.order-row[data-transaction-id="${currentTransactionId}"]`);
 
             if (rowData) {
                 document.getElementById('reportModalRequestTitle').textContent = rowData.dataset.requestTitle;
                 document.getElementById('reportModalOrderNumber').textContent = rowData.dataset.orderNumber;
-                document.getElementById('reportModalWorkerName').textContent =
-                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`;
+                document.getElementById('reportModalRequesterName').textContent =
+                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`; // Show worker name as client for reporting
                 document.getElementById('reportModalRequestLocation').textContent = rowData.dataset.requestLocation;
                 document.getElementById('reportModalTransactionCreatedAt').textContent = rowData.dataset
                     .transactionCreatedAt;
@@ -346,9 +383,13 @@
                 document.getElementById('reportModalStartWork').textContent = rowData.dataset.startWork;
                 document.getElementById('reportModalFinishWork').textContent = rowData.dataset.finishWork;
 
-                // Set the form action for the report
-                document.getElementById('reportForm').action =
-                    `/user/report/${currentTransactionId}`; // Adjust this route as needed based on your web.php
+                // Set hidden inputs for form submission
+                document.getElementById('reportTransactionId').value = currentTransactionId;
+                document.getElementById('reportReportedId').value = reportedWorkerId; // Use the stored worker ID
+
+
+                // Set the form action for the report dynamically
+                document.getElementById('reportForm').action = `/user/submit-report/${currentTransactionId}`;
             }
 
             // Open reportModal after a small delay
@@ -361,14 +402,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const stars = document.querySelectorAll('#completionModal .star-rating');
             const ratingInput = document.getElementById('rating-input');
-            let selectedRating = 0;
+            let selectedRating = 0; // Initialize selected rating
 
             function updateStarDisplay(rating) {
                 stars.forEach(star => {
                     const sVal = parseInt(star.getAttribute('data-value'));
                     if (sVal <= rating) {
-                        star.classList.add(
-                            'star-blue'); // Or 'text-warning' if you prefer Bootstrap's yellow
+                        star.classList.add('star-blue');
                         star.classList.remove('text-secondary');
                     } else {
                         star.classList.remove('star-blue');
@@ -384,7 +424,7 @@
                 });
 
                 star.addEventListener('mouseout', function() {
-                    updateStarDisplay(selectedRating);
+                    updateStarDisplay(selectedRating); // Revert to selected rating on mouseout
                 });
 
                 star.addEventListener('click', function() {
@@ -422,16 +462,29 @@
             fetch(`/reviews/${currentTransactionId}`, { // Use currentTransactionId here
                     method: "POST",
                     headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Ensure CSRF token is correct
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         transaction_id: currentTransactionId, // Pass the dynamic ID
+                        reviewer_id: "{{ auth()->id() }}", // Reviewer is the authenticated user (job requester)
+                        reviewee_id: reportedWorkerId, // Use the stored worker ID
                         rating: rating,
                         comment: comment,
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        // Attempt to parse JSON error, or fall back to status text
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                        }).catch(() => {
+                            // If it's not JSON, throw a generic network error
+                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response.status);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         alert('Review berhasil disimpan!');
@@ -439,89 +492,112 @@
                         completionModal.hide();
                         location.reload(); // Reload to reflect changes
                     } else {
+                        // This else block might be hit if the server returns {success: false, message: '...' }
                         alert('Gagal menyimpan review, coba lagi. ' + (data.message || ''));
                     }
                 })
                 .catch(error => {
                     console.error('Error submitting review:', error);
-                    alert('Terjadi kesalahan saat mengirim review, coba lagi.');
+                    alert('Terjadi kesalahan saat mengirim review, coba lagi.\nDetails: ' + error.message);
                 });
         }
 
-
-        // Global listener for opening the completion modal
-        document.getElementById('completionModal').addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget; // Button that triggered the modal (which is the row itself)
-            const transactionId = button.getAttribute('data-transaction-id');
-
-            // Store the transaction ID for later use in submitReview and openReportModal
-            currentTransactionId = transactionId;
-
-            // Populate the modal fields
-            document.getElementById('modalRequestTitle').textContent = button.getAttribute('data-request-title');
-            document.getElementById('modalOrderNumber').textContent = button.getAttribute('data-order-number');
-            document.getElementById('modalWorkerName').textContent =
-                `${button.getAttribute('data-worker-first-name')} ${button.getAttribute('data-worker-last-name')}`;
-            document.getElementById('modalRequestLocation').textContent = button.getAttribute(
-                'data-request-location');
-            document.getElementById('modalTransactionCreatedAt').textContent = button.getAttribute(
-                'data-transaction-created-at');
-            document.getElementById('modalTransactionUpdatedAt').textContent = button.getAttribute(
-                'data-transaction-updated-at');
-            document.getElementById('modalRequestPrice').textContent = button.getAttribute('data-request-price');
-
-            // Set the form action for review submission
-            document.getElementById('reviewForm').action =
-                `/reviews/${transactionId}`; // This sets the form action directly
-            document.getElementById('reportForm').action =
-                `/user/report/${transactionId}`; // Set for report modal too
-
-            // Set the data-transaction-id on the invoice link within the modal
-            const invoiceLink = document.getElementById('modalInvoiceLink');
-            if (invoiceLink) {
-                invoiceLink.setAttribute('data-transaction-id', transactionId);
-
-                // *** CRITICAL FIX: Attach click listener for invoice link here ***
-                // Remove any existing listener to prevent multiple bindings if modal opens/closes frequently
-                invoiceLink.removeEventListener('click', handleInvoiceLinkClick);
-                // Add the new listener
-                invoiceLink.addEventListener('click', handleInvoiceLinkClick);
-            }
-
-
-            // Reset review form state when opening the modal
-            document.getElementById('rating-input').value = 0;
-            document.getElementById('comment').value = '';
-            document.querySelectorAll('#completionModal .star-rating').forEach(star => {
-                star.classList.remove('star-blue');
-                star.classList.remove('star-green'); // Clear any hover effects
-                star.classList.add('text-secondary');
-            });
-        });
-
-        // *** New function for handling invoice link click to avoid re-creating it multiple times ***
-        function handleInvoiceLinkClick(e) {
-            e.preventDefault(); // Prevent the default link behavior (navigating)
-
-            const transactionId = this.getAttribute('data-transaction-id');
-            if (transactionId) {
-                // Construct the URL for the invoice generation route
-                const invoiceUrl = `/generate-invoice/${transactionId}`; // This matches your web.php route
-
-                // Open the URL in a new tab. This will trigger the download.
-                window.open(invoiceUrl, '_blank');
-            } else {
-                // You might want a more sophisticated notification than alert
-                console.error('Transaction ID not found for invoice generation.');
-                alert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.');
-            }
-        }
-
-
-        // Tab functionality (existing code, ensure it still works with the data attribute changes)
+        // Event listener for clicking on any order row
         document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.tab-button');
             const orderRows = document.querySelectorAll('.order-row');
+
+            orderRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const statusText = this.getAttribute('data-order-status-text');
+                    currentTransactionId = this.getAttribute('data-transaction-id'); // Set global transaction ID
+                    reportedWorkerId = this.getAttribute('data-worker-id'); // Set global worker ID
+
+                    if (statusText === 'Selesai') {
+                        // For completed orders, the modal will be triggered by data-bs-toggle and data-bs-target
+                        // No explicit JS action needed here as Bootstrap handles it.
+                    } else if (['Dikerjain', 'Ditinjau', 'Diterima'].includes(statusText)) {
+                        const redirectUrl = this.getAttribute('data-redirect-url');
+                        if (redirectUrl) {
+                            window.location.href = redirectUrl;
+                        }
+                    }
+                });
+            });
+
+            // Global listener for opening the completion modal (existing code, ensure it still works)
+            document.getElementById('completionModal').addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget; // Button that triggered the modal (which is the row itself)
+                const transactionId = button.getAttribute('data-transaction-id');
+                const workerId = button.getAttribute('data-worker-id'); // Get the worker_id from the row
+
+                // Store the transaction ID and worker ID for later use
+                currentTransactionId = transactionId;
+                reportedWorkerId = workerId; // Set the worker ID for reporting/reviewing
+
+                // Populate the modal fields
+                document.getElementById('modalRequestTitle').textContent = button.getAttribute('data-request-title');
+                document.getElementById('modalOrderNumber').textContent = button.getAttribute('data-order-number');
+                document.getElementById('modalWorkerName').textContent =
+                    `${button.getAttribute('data-worker-first-name')} ${button.getAttribute('data-worker-last-name')}`;
+                document.getElementById('modalRequestLocation').textContent = button.getAttribute(
+                    'data-request-location');
+                document.getElementById('modalTransactionCreatedAt').textContent = button.getAttribute(
+                    'data-transaction-created-at');
+                document.getElementById('modalTransactionUpdatedAt').textContent = button.getAttribute(
+                    'data-transaction-updated-at');
+                document.getElementById('modalRequestPrice').textContent = button.getAttribute('data-request-price');
+                document.getElementById('modalStartWork').textContent = button.getAttribute('data-start-work');
+                document.getElementById('modalFinishWork').textContent = button.getAttribute('data-finish-work');
+
+
+                // Set the form action for review submission
+                document.getElementById('reviewForm').action =
+                    `/reviews/${transactionId}`; // This sets the form action directly
+                document.getElementById('reportForm').action =
+                    `/user/submit-report/${transactionId}`; // Set for report modal too
+
+                // Set the data-transaction-id on the invoice link within the modal
+                const invoiceLink = document.getElementById('modalInvoiceLink');
+                if (invoiceLink) {
+                    invoiceLink.setAttribute('data-transaction-id', transactionId);
+
+                    // IMPORTANT: Ensure old listeners are removed to prevent multiple calls
+                    invoiceLink.removeEventListener('click', handleInvoiceLinkClick);
+                    invoiceLink.addEventListener('click', handleInvoiceLinkClick);
+                }
+
+
+                // Reset review form state when opening the modal
+                document.getElementById('rating-input').value = 0;
+                document.getElementById('comment').value = '';
+                document.querySelectorAll('#completionModal .star-rating').forEach(star => {
+                    star.classList.remove('star-blue');
+                    star.classList.remove('star-green'); // Clear any hover effects
+                    star.classList.add('text-secondary');
+                });
+            });
+
+            // Function for handling invoice link click
+            function handleInvoiceLinkClick(e) {
+                e.preventDefault(); // Prevent the default link behavior (navigating)
+
+                const transactionId = this.getAttribute('data-transaction-id');
+                if (transactionId) {
+                    // Construct the URL for the invoice generation route
+                    const invoiceUrl = `/generate-invoice/${transactionId}`; // This matches your web.php route
+
+                    // Open the URL in a new tab. This will trigger the download.
+                    window.open(invoiceUrl, '_blank');
+                } else {
+                    console.error('Transaction ID not found for invoice generation.');
+                    alert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.');
+                }
+            }
+
+
+            // Tab functionality (existing code, ensure it still works with the data attribute changes)
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const orderRowsForTabs = document.querySelectorAll('.order-row'); // Renamed to avoid conflict
             const noTransactionMessage = document.getElementById('no-transaction-message');
             const orderListContainer = document.getElementById('order-list-container');
 
@@ -529,14 +605,14 @@
                 let hasVisibleOrders = false;
                 let visibleRows = [];
 
-                orderRows.forEach(row => {
+                orderRowsForTabs.forEach(row => {
                     // Extract status directly from the class list
                     const statusClass = Array.from(row.classList).find(cls => cls.endsWith('-tab'));
                     let orderStatus = '';
                     if (statusClass) {
                         orderStatus = statusClass.replace('-tab', '');
                         // Map 'accepted', 'in-progress', 'submitted' to 'pending' for filtering
-                        if (['accepted', 'in-progress', 'submitted'].includes(orderStatus)) {
+                        if (['accepted', 'in-progress', 'submitted', 'dikerjain', 'ditinjau', 'diterima'].includes(orderStatus)) { // Added new statuses here
                             orderStatus = 'pending';
                         }
                     }

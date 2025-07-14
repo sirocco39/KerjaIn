@@ -230,7 +230,7 @@
                 <div class="row-flex">
                     <div class="col-flex align-left">
                         <div class="row-flex">
-                            <p><span class="label">Nama Pembeli:</span></p>
+                            <p><span class="label">Nama Klien:</span></p>
                         </div>
                         <div class="row-flex">
                             <p><span class="value">{{ $transaction->requester->full_name ?? 'N/A' }}</span></p>
