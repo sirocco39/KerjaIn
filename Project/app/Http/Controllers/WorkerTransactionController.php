@@ -143,25 +143,20 @@ class WorkerTransactionController extends Controller
     public function markComplete(Transaction $transaction)
     {
         // Update status transaction menjadi 'submitted'
-        $transaction->status = 'submitted'; // This will be 'completed' when the client accepts
+        $transaction->status = 'submitted';
         $transaction->save();
 
-        // The completion_proof submitted_at should ideally be set when the worker submits the proof.
-        // If this method is called by the worker, it might be redundant.
-        // If this method is called when the CLIENT marks it complete, then setting `finish_work` here is fine.
-        // For now, let's assume this is the worker marking it complete and submitting.
-        // If the `markComplete` function is only for client-side confirmation, then `submitted_at` should not be here.
-        // I'll leave it as is based on the original code, but it's something to clarify.
-
+        // Update submitted_at pada completion_proofs yang terkait
         $completionProof = CompletionProof::where('transaction_id', $transaction->id)->first();
+
         if ($completionProof) {
-            $completionProof->submitted_at = Carbon::now(); // This should be when proof is uploaded/submitted
+            $completionProof->submitted_at = Carbon::now();
             $completionProof->save();
         }
 
-        // Get the related JobRequest and Requester for the rating pop-up
-        $jobRequest = $transaction->request; // Access directly via the request relationship
-        $requester = $jobRequest->requester; // Access requester via the jobRequest relationship
+        // Ambil data yang dibutuhkan untuk pop-up rating
+        $job = Request::find($transaction->job->request_id);
+        $requester = $transaction->job->requester;
 
         // Kirim data ke view via session flash
         return back()->with([
