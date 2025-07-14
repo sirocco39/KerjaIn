@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use App\Models\Transaction;
-use App\Models\Request as JobRequest;
+use App\Models\Request as JobRequest; // Alias Request to JobRequest to avoid conflict with Illuminate\Http\Request
 use Illuminate\Support\Carbon;
-use Illuminate\Http\Request as HttpRequest;
-use App\Models\Request;
+use Illuminate\Http\Request as HttpRequest; // Alias Request to HttpRequest
+use App\Models\Request; // This might be redundant if using JobRequest alias, consider removing if not needed for other methods
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,27 +16,30 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        //
         // Get the authenticated user's ID
         $userId = Auth::id();
 
-        $transactions = Transaction::withTrashed() // ADDED: This will include soft-deleted records
+        // Fetch all orders where the authenticated user is the REQUIESTER
+        // Remove the 'orWhere('worker_id', $userId)' condition
+        $transactions = Transaction::withTrashed()
             ->with(['request', 'requester', 'worker'])
-            ->where(function ($query) use ($userId) {
-                $query->where('requester_id', $userId)
-                    ->orWhere('worker_id', $userId);
-            })
-            ->orderBy('created_at', 'desc') // Order by creation date
+            ->where('requester_id', $userId) // THIS IS THE KEY CHANGE: Filter by requester_id only
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Prepare data for different tabs based on your string statuses
+        // The Blade view is already using 'status_text' which is derived from 'status'
         $allOrders = $transactions;
+
         $pendingOrders = $transactions->filter(function ($transaction) {
+            // These statuses map to 'Diterima', 'Dikerjain', 'Ditinjau' in your Blade logic
             return in_array($transaction->status, ['accepted', 'in progress', 'submitted']);
         });
+
         $completedOrders = $transactions->filter(function ($transaction) {
             return $transaction->status === 'completed';
         });
+
         $cancelledOrders = $transactions->filter(function ($transaction) {
             return $transaction->status === 'cancelled';
         });
@@ -44,6 +47,8 @@ class TransactionController extends Controller
         // Render the specified Blade view
         return view('Job_Requester.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
     }
+
+    // ... (rest of your controller methods remain unchanged) ...
 
     public function show(string $id)
     {

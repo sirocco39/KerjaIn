@@ -23,10 +23,7 @@ class WorkerTransactionController extends Controller
 
         $transactions = Transaction::withTrashed()
             ->with(['request.requester', 'worker']) // Eager load request and its requester
-            ->where(function ($query) use ($userId) {
-                $query->where('requester_id', $userId)
-                    ->orWhere('worker_id', $userId);
-            })
+            ->where('worker_id', $userId) // THIS IS THE KEY CHANGE: Filter by requester_id only
             ->orderBy('created_at', 'desc')
             ->get();
 
