@@ -4,6 +4,7 @@
         align-items: center;
         gap: 8px;
     }
+
     .label-tersedia {
         background-color: #103F91;
         color: white;
@@ -13,13 +14,17 @@
         height: 25px;
         width: 35%;
     }
-    .detaila{
+
+    .detaila {
         font-size: 14px;
     }
+
     /* Pastikan card memiliki shadow yang seragam jika diinginkan */
     .job-card-wrapper .card {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Contoh shadow lembut */
-        border: 1px solid #e0e0e0; /* Contoh border tunggal tipis */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Contoh shadow lembut */
+        border: 1px solid #e0e0e0;
+        /* Contoh border tunggal tipis */
     }
 
     @media (max-width: 992px) {
@@ -64,11 +69,9 @@
         <h5 class="card-title-chat fw-bold f" style="font-size: 20px;">Bangun Candi dengan Patung Iwangg Hahh</h5>
         <div class="row my-3">
             <div class="col-md-6 mb-1 icon-text">
-                <img class="ms-2" src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Address">
+                <img class="ms-2" src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Date">
                 <small class="text-muted">Tanggal</small><br>
                 <strong class="detaila">19 Mei 2025</strong>
-                <div>
-                </div>
             </div>
             <div class="col-md-6 mb-1 icon-text">
                 <img class="ms-2" src="{{ asset('Image/Icon/icon-location-fill.svg') }}" alt="Icon Address">
@@ -78,16 +81,16 @@
                 </div>
             </div>
             <div class="col-md-6 mb-1 icon-text">
-                <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Address">
+                <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Clock">
                 <small class="text-muted">Jam</small><br>
                 <strong style="margin-left: 20px">14.00 - 16.00</strong>
                 <div>
                 </div>
             </div>
             <div class="col-md-6 mb-1 icon-text">
-                <img class="ms-2" src="{{ asset('Image/Icon/icon-stackMoney.svg') }}" alt="Icon Address">
+                <img class="ms-2" src="{{ asset('Image/Icon/icon-stackMoney.svg') }}" alt="Icon Money">
                 <small class="text-muted">Upah</small><br>
-                <strong style="margin-left:5px;" >Rp150.000</strong>
+                <strong style="margin-left:5px;">Rp150.000</strong>
                 <div>
                 </div>
             </div>

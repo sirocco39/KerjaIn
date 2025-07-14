@@ -163,50 +163,21 @@ class WorkerTransactionController extends Controller
         $jobRequest = $transaction->request; // Access directly via the request relationship
         $requester = $jobRequest->requester; // Access requester via the jobRequest relationship
 
-        // Generate nomor pesanan
-        $orderNumber = '#' . Str::random(12); // This order number generation might be better handled when the transaction is created
-
         // Kirim data ke view via session flash
         return back()->with([
             'show_rating_modal' => true,
             'rating_data' => [
-                'title' => $jobRequest->title ?? '-',
-                'order_number' => $orderNumber, // Consider getting this from the transaction if it's persistent
-                'client_name' => ($requester->first_name ?? '') . ' ' . ($requester->last_name ?? ''),
-                'location' => $jobRequest->location ?? '-',
-                'order_date' => $jobRequest->start_time ? Carbon::parse($jobRequest->start_time)->format('Y-m-d') : '-',
-                'completion_date' => $jobRequest->end_time ? Carbon::parse($jobRequest->end_time)->format('Y-m-d') : '-',
-                'start_time' => $jobRequest->start_time ? Carbon::parse($jobRequest->start_time)->format('H.i') : '-',
-                'end_time' => $jobRequest->end_time ? Carbon::parse($jobRequest->end_time)->format('H.i') : '-',
-                'price' => $jobRequest->price ?? 0,
+                'title' => $job->title,
+                'order_number' => $transaction->order_number,
+                'client_name' => $requester->first_name . ' ' . $requester->last_name,
+                'location' => $job->location,
+                'order_date' => $job->start_time->format('Y-m-d'),
+                'completion_date' => $job->end_time->format('Y-m-d'),
+                'start_time' => $job->start_time->format('H.i'),
+                'end_time' => $job->end_time->format('H.i'),
+                'price' => $job->price,
             ],
         ]);
-    }
-
-    public function finishWork(Request $request, Transaction $transaction)
-    {
-        $request->validate([
-            'photo' => 'required|image|max:2048',
-            'note' => 'nullable|string|max:500',
-        ]);
-
-        $path = $request->file('photo')->store('report_photos', 'public');
-        $photoUrl = Storage::url($path);
-
-        Report::create([
-            'transaction_id' => $transaction->id,
-            'reporter_id' => Auth::id(),
-            'reported_id' => $transaction->request->requester_id, // Use requester_id from the request
-            'reasons' => $request->note ?? '-',
-            'photo_url' => $photoUrl,
-            'status' => 'submitted',
-        ]);
-
-        $transaction->status = 'submitted'; // This is redundant if already set in markComplete, or if this is a separate "report" action
-        $transaction->finish_work = Carbon::now();
-        $transaction->save();
-
-        return back()->with('success', 'Pekerjaan berhasil diselesaikan dan laporan telah dikirim.');
     }
 
     public function storeReport(Request $request)
