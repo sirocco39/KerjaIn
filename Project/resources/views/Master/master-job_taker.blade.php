@@ -11,7 +11,7 @@
     <link rel="icon" href="{{ asset('Image/Icon/Icon Kerjain.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -70,32 +70,32 @@
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @guest
-                                <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#loginModal"><img
-                                            src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
-                                            class="navIcon">Masuk</button></li>
+                            <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
+                                    data-bs-toggle="modal" data-bs-target="#loginModal"><img
+                                        src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
+                                        class="navIcon">Masuk</button></li>
                             @endguest
                             @auth
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                            onclick="event.preventDefault(); this.closest('form').submit();">
-                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                                class="navIcon">
-                                            Keluar
-                                        </button>
-                                    </form>
-                                </li>
-                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-1"
-                                        href="{{ route('job-req.beranda') }}">
-                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
                                             class="navIcon">
-                                        Ganti Peran
-                                    </a>
-                                </li>
+                                        Keluar
+                                    </button>
+                                </form>
+                            </li>
+                            {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('job-req.beranda') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                        class="navIcon">
+                                    Ganti Peran
+                                </a>
+                            </li>
                             @endauth
                         </ul>
                     </li>
@@ -109,6 +109,7 @@
 
     {{-- Main Section --}}
     <main class="main-content">
+        @stack('scripts')
         @yield('content')
     </main>
     {{-- End Main Section --}}

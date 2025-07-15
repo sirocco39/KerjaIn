@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MonthlyReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerRegistrationController;
 use App\Http\Controllers\browseWorkRequestController;
@@ -189,6 +190,10 @@ Route::get(('/job-req/pesan'), function () {
 Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
 Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
 
-Route::get('/test', function() {
+Route::get('/test', function () {
     return view('Job_Taker.job_taker-pesanSon');
 });
+
+Route::get('/job-taker/monthly-report', [MonthlyReportController::class, 'index'])->name('monthly.report');
+Route::get('/job-taker/monthly-report/download-pdf', [MonthlyReportController::class, 'downloadReportPdf'])->name('monthly.report.download.pdf');
+Route::view('/job-taker/pdf', 'Job_Taker.pdf.report-pdf')->name('pdf');
