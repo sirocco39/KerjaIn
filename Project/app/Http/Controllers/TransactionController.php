@@ -7,7 +7,6 @@ use App\Models\Transaction;
 use App\Models\Request as JobRequest; // Alias Request to JobRequest to avoid conflict with Illuminate\Http\Request
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request as HttpRequest; // Alias Request to HttpRequest
-// use App\Models\Request; // This might be redundant if using JobRequest alias, consider removing if not needed for other methods
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,27 +19,31 @@ class TransactionController extends Controller
         $userId = Auth::id();
 
         // Fetch all orders where the authenticated user is the REQUIESTER
-        // Remove the 'orWhere('worker_id', $userId)' condition
+        // Eager load the 'userReview' relationship
         $transactions = Transaction::withTrashed()
-            ->with(['request', 'requester', 'worker'])
-            ->where('requester_id', $userId) // THIS IS THE KEY CHANGE: Filter by requester_id only
+            ->with(['request', 'requester', 'worker', 'userReview']) // Eager load the NEW userReview relationship
+            ->where('requester_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Prepare data for different tabs based on your string statuses
-        // The Blade view is already using 'status_text' which is derived from 'status'
-        $allOrders = $transactions;
+        // Attach a flag to each order indicating if a review exists and load the review data
+        $allOrders = $transactions->map(function ($order) {
+            // Check if the specific userReview exists for this order
+            $order->has_review = $order->userReview()->exists();
+            $order->user_review = $order->userReview; // Get the actual userReview object (will be null if no review)
+            return $order;
+        });
 
-        $pendingOrders = $transactions->filter(function ($transaction) {
-            // These statuses map to 'Diterima', 'Dikerjain', 'Ditinjau' in your Blade logic
+        // Prepare data for different tabs based on your string statuses
+        $pendingOrders = $allOrders->filter(function ($transaction) {
             return in_array($transaction->status, ['accepted', 'in progress', 'submitted']);
         });
 
-        $completedOrders = $transactions->filter(function ($transaction) {
+        $completedOrders = $allOrders->filter(function ($transaction) {
             return $transaction->status === 'completed';
         });
 
-        $cancelledOrders = $transactions->filter(function ($transaction) {
+        $cancelledOrders = $allOrders->filter(function ($transaction) {
             return $transaction->status === 'cancelled';
         });
 

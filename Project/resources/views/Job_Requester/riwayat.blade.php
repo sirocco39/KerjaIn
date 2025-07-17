@@ -25,10 +25,14 @@
             <div class="tabs-dropdown-wrapper md:hidden w-full mb-4">
                 <select id="tab-select"
                     class="form-select w-full border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500">
-                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>All Order ({{ $allOrders->count() }})</option>
-                    <option value="pending" @if (request('tab') == 'pending') selected @endif>Pending ({{ $pendingOrders->count() }})</option>
-                    <option value="completed" @if (request('tab') == 'completed') selected @endif>Completed ({{ $completedOrders->count() }})</option>
-                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>Cancelled ({{ $cancelledOrders->count() }})</option>
+                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>All Order
+                        ({{ $allOrders->count() }})</option>
+                    <option value="pending" @if (request('tab') == 'pending') selected @endif>Pending
+                        ({{ $pendingOrders->count() }})</option>
+                    <option value="completed" @if (request('tab') == 'completed') selected @endif>Completed
+                        ({{ $completedOrders->count() }})</option>
+                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>Cancelled
+                        ({{ $cancelledOrders->count() }})</option>
                 </select>
             </div>
         </div>
@@ -36,8 +40,7 @@
         {{-- Main order list display area --}}
         <div class="w-full bg-white rounded-lg">
             {{-- Table header row for order details --}}
-            <div
-                class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
+            <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
                 style="height: 4rem;">
                 <div class="col m-0 p-0">Judul</div>
                 <div class="col m-0 p-0">Status</div>
@@ -49,7 +52,7 @@
             <hr class="mx-auto border-2 opacity-100 my-0 p-0" style="width: 98%; border-color: #294287;">
 
             {{-- Loop to display individual order rows --}}
-            <div id="order-list-container">
+            <div id="order-list-container" class="order-list-fade-in">
                 @forelse ($allOrders as $order)
                     <div class="order-row hoverable-row
                         {{ str_replace(' ', '-', $order->status) }}-tab"
@@ -59,10 +62,8 @@
                             data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
-                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}"
-                        @endif
-                        data-transaction-id="{{ $order->id }}"
-                        data-request-title="{{ $order->request->title ?? '-' }}"
+                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}" @endif
+                        data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
                         data-order-number="{{ $order->order_number ?? '-' }}"
                         data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
                         data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
@@ -74,28 +75,34 @@
                         data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
                         data-start-work="{{ \Carbon\Carbon::parse($order->start_work)->format('H.i') ?? '-' }}"
                         data-finish-work="{{ \Carbon\Carbon::parse($order->finish_work)->format('H.i') ?? '-' }}"
-                        data-worker-id="{{ $order->worker_id ?? '' }}"
-                        data-order-status-text="{{ $order->status_text }}">
+                        data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
+                        data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
+                        @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
+                            data-user-comment="{{ $order->user_review->comment }}" @endif>
                         {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
-                        <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0" style="min-height: 3.5rem;">
+                        <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
+                            style="min-height: 3.5rem;">
                             <div class="col m-0 p-0 text-xxs"> {{ $order->request->title ?? '-' }}</div>
                             <div class="col m-0 p-0">
                                 <span class="badge rounded-pill text-xxs"
                                     style="
-                                    padding: .5em .9em;
-                                    font-size: 0.85em;
-                                    @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
-                                        color: #333;
-                                    @elseif($order->status_text == 'Dikerjain' || $order->status_text == 'Diterima' || $order->status_text == 'Ditinjau')
-                                        background-color: #294287;
-                                        color: #FFF;
-                                    @elseif($order->status_text == 'Dibatalin')
-                                        background-color: #E63C3C;
-                                        color: #FFF;
-                                    @else
-                                        background-color: #6c757d;
-                                        color: #FFF; @endif
-                                    ">
+                                        padding: .5em .9em;
+                                        font-size: 0.85em;
+                                        @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
+                                            color: #333;
+                                        @elseif ($order->status_text == 'Dikerjain')
+                                            background-color: #309FFF;
+                                            color: #FFF;
+                                        @elseif($order->status_text == 'Diterima' || $order->status_text == 'Ditinjau')
+                                            background-color: #294287;
+                                            color: #FFF;
+                                        @elseif($order->status_text == 'Dibatalin')
+                                            background-color: #E63C3C;
+                                            color: #FFF;
+                                        @else
+                                            background-color: #6c757d;
+                                            color: #FFF; @endif
+                                        ">
                                     {{ $order->status_text ?? '-' }}
                                 </span>
                             </div>
@@ -202,27 +209,18 @@
 
                             {{-- Section for user review and report --}}
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                                <h4 class="fw-semibold mt-3 mb-1">Kasih penilaian, yuk!</h4>
-                                {{-- Star rating input for review --}}
-                                <div class="text-center mt-0 mb-3 w-100">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <i class="bi bi-star-fill text-secondary star-rating fs-2"
-                                            data-value="{{ $i }}"></i>
-                                    @endfor
-                                    <input type="hidden" name="rating" id="rating-input" value="0">
-                                </div>
+                                {{-- The heading will now be dynamic --}}
+                                <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading"></h4>
 
-                                {{-- Comment input for review --}}
-                                <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                    <label for="comment" class="form-label text-start">Komentar</label>
-                                    <textarea name="comment" id="comment" class="form-control" rows="3"
-                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+                                {{-- Container for existing review or review form --}}
+                                <div id="review-section-container" class="w-100">
+                                    {{-- This content will be dynamically populated by JavaScript --}}
                                 </div>
 
                                 {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
                                     <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                        onclick="submitReview()">Kirim</button>
+                                        onclick="submitReview()" id="submitReviewButton">Kirim</button>
                                     <div class="m-1 text-center">Atau</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
                                         onclick="openReportModal()">Laporkan masalah</button>
@@ -235,7 +233,7 @@
         </div>
     </div>
 
-    {{-- Report Work Modal --}}
+    {{-- Report Work Modal (no changes needed for this part's HTML) --}}
     <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
@@ -332,7 +330,8 @@
 
                 {{-- Report submission button --}}
                 <div class="modal-footer border-0 d-flex justify-content-end">
-                    <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim Laporan</button>
+                    <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
+                        Laporan</button>
                 </div>
             </form>
         </div>
@@ -341,7 +340,7 @@
     <script>
         // Global variables for managing transaction and worker IDs across modals
         let currentTransactionId = null;
-        let reportedWorkerId = null; // Renamed from reportedRequesterId for requester's view
+        let reportedWorkerId = null;
 
         // --- Image Preview Logic for Report Modal ---
         const reportImageInput = document.getElementById('reportImageInput');
@@ -411,52 +410,21 @@
         }
 
         // --- Star Rating Functionality for Review Modal ---
-        document.addEventListener('DOMContentLoaded', function() {
-            const stars = document.querySelectorAll('#completionModal .star-rating');
-            const ratingInput = document.getElementById('rating-input');
-            let selectedRating = 0; // Local variable for selected rating
-
-            // Updates the visual fill of the stars
-            function updateStarDisplay(rating) {
-                stars.forEach(star => {
-                    const sVal = parseInt(star.getAttribute('data-value'));
-                    if (sVal <= rating) {
-                        star.classList.add('star-blue');
-                        star.classList.remove('text-secondary');
-                    } else {
-                        star.classList.remove('star-blue');
-                        star.classList.add('text-secondary');
-                    }
-                });
-            }
-
-            // Add event listeners for star interactions (hover, click)
+        // Updates the visual fill of the stars
+        function updateStarDisplay(rating) {
+            const stars = document.querySelectorAll('#review-section-container .star-rating');
             stars.forEach(star => {
-                star.addEventListener('mouseover', function() {
-                    const val = parseInt(this.getAttribute('data-value'));
-                    updateStarDisplay(val);
-                });
-
-                star.addEventListener('mouseout', function() {
-                    updateStarDisplay(selectedRating);
-                });
-
-                star.addEventListener('click', function() {
-                    selectedRating = parseInt(this.getAttribute('data-value'));
-                    ratingInput.value = selectedRating;
-                    updateStarDisplay(selectedRating);
-                });
+                const sVal = parseInt(star.getAttribute('data-value'));
+                if (sVal <= rating) {
+                    star.classList.add('star-blue');
+                    star.classList.remove('text-secondary');
+                } else {
+                    star.classList.remove('star-blue');
+                    star.classList.add('text-secondary');
+                }
             });
+        }
 
-            // Reset review form state when the completion modal is hidden
-            const completionModalElement = document.getElementById('completionModal');
-            completionModalElement.addEventListener('hidden.bs.modal', function() {
-                selectedRating = 0;
-                ratingInput.value = 0;
-                document.getElementById('comment').value = '';
-                updateStarDisplay(0); // Reset stars visually
-            });
-        });
 
         // --- Function to Submit Review via AJAX ---
         function submitReview() {
@@ -494,7 +462,8 @@
                         return response.json().then(errorData => {
                             throw new Error(errorData.message || 'Server error: ' + response.statusText);
                         }).catch(() => {
-                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response.status);
+                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response
+                                .status);
                         });
                     }
                     return response.json();
@@ -552,7 +521,8 @@
                         return response.json().then(errorData => {
                             throw new Error(errorData.message || 'Server error: ' + response.statusText);
                         }).catch(() => {
-                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response.status);
+                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response
+                                .status);
                         });
                     }
                     return response.json();
@@ -568,9 +538,90 @@
                 });
         }
 
-        // --- Event Listeners for Order Rows and Modal Population ---
+        // Handles click event for generating and downloading invoice
+        function handleInvoiceLinkClick(e) {
+            e.preventDefault();
+            const transactionId = this.getAttribute('data-transaction-id');
+            if (transactionId) {
+                const invoiceUrl = `/generate-invoice/${transactionId}`;
+                window.open(invoiceUrl, '_blank');
+            } else {
+                console.error('Transaction ID not found for invoice generation.');
+                alert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.');
+            }
+        }
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const orderRows = document.querySelectorAll('.order-row');
+            const submitReviewButton = document.getElementById('submitReviewButton');
+            const reviewSectionContainer = document.getElementById('review-section-container');
+            const reviewSectionHeading = document.getElementById('reviewSectionHeading');
+
+
+            let selectedRating = 0; // Local variable for selected rating within current modal view
+
+            // Function to render the review form
+            function renderReviewForm() {
+                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!'; // Set heading for new review
+                reviewSectionContainer.innerHTML = `
+                    <div class="text-center mt-0 mb-3 w-100">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
+                        @endfor
+                        <input type="hidden" name="rating" id="rating-input" value="0">
+                    </div>
+                    <div class="ps-3 flex-fill d-flex flex-column w-100">
+                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="3"
+                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+                    </div>
+                `;
+                // Re-attach star rating event listeners for newly rendered stars
+                const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
+                const newRatingInput = document.getElementById('rating-input');
+                newStars.forEach(star => {
+                    star.addEventListener('mouseover', function() {
+                        const val = parseInt(this.getAttribute('data-value'));
+                        updateStarDisplay(val);
+                    });
+                    star.addEventListener('mouseout', function() {
+                        updateStarDisplay(selectedRating); // Use selectedRating from the outer scope
+                    });
+                    star.addEventListener('click', function() {
+                        selectedRating = parseInt(this.getAttribute('data-value'));
+                        newRatingInput.value = selectedRating;
+                        updateStarDisplay(selectedRating);
+                    });
+                });
+                if (submitReviewButton) {
+                    submitReviewButton.style.display = 'block'; // Show submit button
+                }
+            }
+
+            // Function to render the existing review display
+            function renderExistingReview(rating, comment) {
+                reviewSectionHeading.textContent = 'Ini penilaianmu'; // Set heading for existing review
+                let starHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starHtml += `<i class="bi bi-star-fill fs-2 ${i <= rating ? 'star-blue' : 'text-secondary'} star-animate"></i>`;
+                }
+
+                reviewSectionContainer.innerHTML = `
+                    <div class="text-center mt-0 mb-3 w-100">
+                        ${starHtml}
+                    </div>
+                    <div class="ps-3 flex-fill d-flex flex-column w-100">
+                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <textarea id="comment" class="form-control" rows="3" disabled
+                            style="border-color:#8a8a8a;">${comment}</textarea>
+                    </div>
+                `;
+                if (submitReviewButton) {
+                    submitReviewButton.style.display = 'none'; // Hide submit button
+                }
+            }
+
 
             // Add click listener to each order row to handle redirection or modal display
             orderRows.forEach(row => {
@@ -579,35 +630,56 @@
 
                     const transactionId = this.getAttribute('data-transaction-id');
                     const orderStatusText = this.getAttribute('data-order-status-text');
+                    const hasReview = this.getAttribute('data-has-review') === 'true';
+                    const userRating = this.getAttribute('data-user-rating');
+                    const userComment = this.getAttribute('data-user-comment');
+
 
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
-                    reportedWorkerId = this.getAttribute('data-worker-id'); // Set the worker ID from the row
+                    reportedWorkerId = this.getAttribute(
+                        'data-worker-id'); // Set the worker ID from the row
 
                     if (orderStatusText === 'Selesai') {
                         // For 'Selesai' status, open the completion modal
-                        const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+                        const completionModal = new bootstrap.Modal(document.getElementById(
+                            'completionModal'));
                         completionModal.show();
 
                         // Populate the completion modal with data
-                        document.getElementById('modalRequestTitle').textContent = this.dataset.requestTitle;
-                        document.getElementById('modalOrderNumber').textContent = this.dataset.orderNumber;
+                        document.getElementById('modalRequestTitle').textContent = this.dataset
+                            .requestTitle;
+                        document.getElementById('modalOrderNumber').textContent = this.dataset
+                            .orderNumber;
                         document.getElementById('modalWorkerName').textContent =
                             `${this.dataset.workerFirstName} ${this.dataset.workerLastName}`;
-                        document.getElementById('modalRequestLocation').textContent = this.dataset.requestLocation;
-                        document.getElementById('modalTransactionCreatedAt').textContent = this.dataset
+                        document.getElementById('modalRequestLocation').textContent = this.dataset
+                            .requestLocation;
+                        document.getElementById('modalTransactionCreatedAt').textContent = this
+                            .dataset
                             .transactionCreatedAt;
-                        document.getElementById('modalTransactionUpdatedAt').textContent = this.dataset
+                        document.getElementById('modalTransactionUpdatedAt').textContent = this
+                            .dataset
                             .transactionUpdatedAt;
-                        document.getElementById('modalRequestPrice').textContent = this.dataset.requestPrice;
-                        document.getElementById('modalStartWork').textContent = this.dataset.startWork;
-                        document.getElementById('modalFinishWork').textContent = this.dataset.finishWork;
+                        document.getElementById('modalRequestPrice').textContent = this.dataset
+                            .requestPrice;
+                        document.getElementById('modalStartWork').textContent = this.dataset
+                            .startWork;
+                        document.getElementById('modalFinishWork').textContent = this.dataset
+                            .finishWork;
 
                         // Set form actions dynamically for the completion modal
                         document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
-                        // The report form action in the completion modal should still point to the user's report route
-                        // document.getElementById('reportForm').action = `/user/submit-report/${transactionId}`;
-                        // Note: The report form in this modal is not directly submitted via this action, but via openReportModal()
+
+                        // Conditional rendering of review section
+                        if (hasReview) {
+                            renderExistingReview(userRating, userComment);
+                            selectedRating = parseInt(
+                                userRating); // Set selectedRating to existing review
+                        } else {
+                            renderReviewForm();
+                            selectedRating = 0; // Reset selectedRating for new review
+                        }
 
                         // Setup invoice link
                         const invoiceLink = document.getElementById('modalInvoiceLink');
@@ -617,43 +689,31 @@
                             invoiceLink.addEventListener('click', handleInvoiceLinkClick);
                         }
 
-                        // Reset review form fields when modal opens
-                        document.getElementById('rating-input').value = 0;
-                        document.getElementById('comment').value = '';
-                        document.querySelectorAll('#completionModal .star-rating').forEach(star => {
-                            star.classList.remove('star-blue', 'star-green');
-                            star.classList.add('text-secondary');
-                        });
 
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) { // 'Dibatalin' removed from here
+                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
+                            orderStatusText)) { // 'Dibatalin' removed from here
                         // For these specific statuses, redirect to the ongoing request page
                         window.location.href = `/job-req/on-going-work-request/${transactionId}`;
                     } else {
                         // For 'Dibatalin' and any other unhandled statuses, do nothing on click
-                        console.log('Clicked on a row with status:', orderStatusText, 'No specific action defined.');
+                        console.log('Clicked on a row with status:', orderStatusText,
+                            'No specific action defined.');
                     }
                 });
             });
 
             // Attach submitReport to the "Kirim Laporan" button
-            const submitReportButton = document.getElementById('submitReportButton');
-            if (submitReportButton) {
-                submitReportButton.addEventListener('click', submitReport);
+            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
+            if (submitReportButtonForReportModal) {
+                submitReportButtonForReportModal.addEventListener('click', submitReport);
             }
 
-
-            // Handles click event for generating and downloading invoice
-            function handleInvoiceLinkClick(e) {
-                e.preventDefault();
-                const transactionId = this.getAttribute('data-transaction-id');
-                if (transactionId) {
-                    const invoiceUrl = `/generate-invoice/${transactionId}`;
-                    window.open(invoiceUrl, '_blank');
-                } else {
-                    console.error('Transaction ID not found for invoice generation.');
-                    alert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.');
-                }
-            }
+            // Reset review form state when the completion modal is hidden
+            const completionModalElement = document.getElementById('completionModal');
+            completionModalElement.addEventListener('hidden.bs.modal', function() {
+                selectedRating = 0; // Reset selected rating
+                // The HTML content of reviewSectionContainer is rebuilt on modal open, so no need to clear its elements here.
+            });
 
 
             // --- Tab and Dropdown Filtering Functionality ---
@@ -667,6 +727,12 @@
             function updateTabContent(selectedTab) {
                 let hasVisibleOrders = false;
                 let visibleRows = [];
+
+                // Remove existing fade-in class to re-trigger animation
+                orderListContainer.classList.remove('order-list-fade-in');
+                void orderListContainer.offsetWidth; // Trigger reflow
+                orderListContainer.classList.add('order-list-fade-in');
+
 
                 orderRowsForTabs.forEach(row => {
                     // Extract status from the badge text content
@@ -746,7 +812,8 @@
             }
 
             // Initial load of tab content based on current screen size
-            if (window.innerWidth < 720 && tabSelect) { // Changed breakpoint from 750px to 720px for consistency with CSS
+            if (window.innerWidth < 720 &&
+                tabSelect) { // Changed breakpoint from 750px to 720px for consistency with CSS
                 updateTabContent(tabSelect.value);
             } else if (document.querySelector('.tab-button.active')) {
                 updateTabContent(document.querySelector('.tab-button.active').dataset.tab);
@@ -755,14 +822,15 @@
             // === FIX FOR PERSISTENT OVERLAY ===
             // Listen for any Bootstrap modal to be hidden and manually remove any remaining backdrops.
             document.querySelectorAll('.modal').forEach(modalElement => {
-                modalElement.addEventListener('hidden.bs.modal', function () {
+                modalElement.addEventListener('hidden.bs.modal', function() {
                     const backdrops = document.querySelectorAll('.modal-backdrop');
                     backdrops.forEach(backdrop => backdrop.remove());
 
                     // Also ensure body scrolling is re-enabled, as it sometimes gets stuck
                     document.body.classList.remove('modal-open');
                     document.body.style.overflow = '';
-                    document.body.style.paddingRight = ''; // Clear any padding added by Bootstrap for scrollbar
+                    document.body.style.paddingRight =
+                        ''; // Clear any padding added by Bootstrap for scrollbar
                 });
             });
             // === END FIX ===
@@ -773,6 +841,8 @@
         /* --- Star Rating Styles --- */
         .star-rating {
             cursor: pointer;
+            /* Added transition for smoother fill */
+            transition: color 0.2s ease-in-out;
         }
 
         .star-blue {
@@ -822,18 +892,23 @@
             padding-top: calc(0.5rem - 8px);
             padding-bottom: calc(0.5rem - 2px);
             margin-bottom: -4px;
+            /* Added transition for smoother tab change */
+            transition: all 0.3s ease-in-out;
         }
 
         /* --- Order List Row Hover Effect --- */
         .hoverable-row {
             cursor: pointer;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            /* Added transform */
             border-radius: 0.25rem;
         }
 
         .hoverable-row:hover {
             background-color: #f8f9fa;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.175);
+            transform: translateY(-2px);
+            /* Slight lift on hover */
         }
 
         /* --- Status Badge Styling --- */
@@ -849,6 +924,46 @@
         .order-row .col {
             word-break: break-word;
             white-space: normal;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Apply fade-in to the order list container when content changes/loads */
+        .order-list-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Apply scale-in to modals */
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        .modal.fade.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
         }
 
         /* --- Responsive Adjustments for Mobile (max-width: 720px) --- */
@@ -887,6 +1002,7 @@
 
         /* --- Responsive Adjustments for Small Screens (max-width: 550px) --- */
         @media (max-width: 550px) {
+
             .tableHeader .col,
             .order-row .col {
                 font-size: 0.5rem !important;
@@ -902,12 +1018,14 @@
 
         /* --- Specific Adjustments for Very Small Screens (max-width: 450px) --- */
         @media (max-width: 450px) {
+
             .tableHeader .col,
             .order-row .col {
                 font-size: 0.45rem !important;
                 padding: 0 0.4rem !important;
                 white-space: normal !important;
             }
+
             .order-row .badge {
                 font-size: 0.4rem !important;
             }

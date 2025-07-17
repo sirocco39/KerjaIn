@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\Request as JobRequest; // Alias Request to JobRequest
 use App\Models\Report;
-use App\Models\Review;
+use App\Models\Review; // Make sure this is imported
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,17 +18,19 @@ class WorkerTransactionController extends Controller
 {
     public function index()
     {
-        // Get the authenticated user's ID
+        // Get the authenticated user's ID (this is the worker)
         $userId = Auth::id();
 
+        // Fetch all orders where the authenticated user is the WORKER
+        // Eager load request, its requester, and the reviewAboutWorker relationship
         $transactions = Transaction::withTrashed()
-            ->with(['request.requester', 'worker']) // Eager load request and its requester
-            ->where('worker_id', $userId) // THIS IS THE KEY CHANGE: Filter by worker_id only
+            ->with(['request.requester', 'worker', 'reviewAboutWorker']) // Load the specific review for the worker
+            ->where('worker_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Add a 'status_text' attribute to each transaction for display logic
-        $transactions->each(function ($transaction) {
+        // Add a 'status_text' attribute and review-related flags/data to each transaction
+        $allOrders = $transactions->map(function ($transaction) use ($userId) {
             switch ($transaction->status) {
                 case 'accepted':
                     $transaction->status_text = 'Diterima';
@@ -49,17 +51,23 @@ class WorkerTransactionController extends Controller
                     $transaction->status_text = ucfirst($transaction->status); // Fallback for other statuses
                     break;
             }
+
+            // Check if there's a review *about this worker* for this transaction
+            // Use the relation name 'reviewAboutWorker'
+            $transaction->has_review = $transaction->reviewAboutWorker()->exists();
+            $transaction->received_review = $transaction->reviewAboutWorker; // Get the review object itself
+
+            return $transaction;
         });
 
         // Prepare data for different tabs based on your string statuses
-        $allOrders = $transactions;
-        $pendingOrders = $transactions->filter(function ($transaction) {
+        $pendingOrders = $allOrders->filter(function ($transaction) {
             return in_array($transaction->status, ['accepted', 'in progress', 'submitted']);
         });
-        $completedOrders = $transactions->filter(function ($transaction) {
+        $completedOrders = $allOrders->filter(function ($transaction) {
             return $transaction->status === 'completed';
         });
-        $cancelledOrders = $transactions->filter(function ($transaction) {
+        $cancelledOrders = $allOrders->filter(function ($transaction) {
             return $transaction->status === 'cancelled';
         });
 
