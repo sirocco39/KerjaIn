@@ -7,7 +7,7 @@ use App\Models\Transaction;
 use App\Models\Request as JobRequest; // Alias Request to JobRequest to avoid conflict with Illuminate\Http\Request
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request as HttpRequest; // Alias Request to HttpRequest
-use App\Models\Request; // This might be redundant if using JobRequest alias, consider removing if not needed for other methods
+// use App\Models\Request; // This might be redundant if using JobRequest alias, consider removing if not needed for other methods
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -95,31 +95,31 @@ class TransactionController extends Controller
         $transaction->status = 'cancelled';
         $transaction->save(); // Pastikan status transaction tersimpan
 
-        // Jika status request bukan closed, beri info bahwa request tetap ada
-        return back()->with('info', 'Pekerjaan dibatalkan dan request status diubah menjadi closed.');
+        // If the request status should also be updated when cancelled by requester
+        // Assuming there's a status on the Request model too
+        if ($transaction->request) {
+            $transaction->request->status = 'cancelled'; // Or 'closed' if you prefer
+            $transaction->request->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pekerjaan dibatalkan.',
+            'redirect_url' => route('orders.index') // Redirect back to history or specific page
+        ]);
     }
-
-    // public function submitCompletion(HttpRequest $request, Transaction $transaction)
-    // {
-    //     $validated = $request->validate([
-    //         'rating' => 'required|integer|min:1|max:5',
-    //         'comment' => 'nullable|string|max:500',
-    //     ]);
-
-    //     $transaction->status = 'completed';
-    //     $transaction->rating = $validated['rating'];
-    //     $transaction->comment = $validated['comment'];
-    //     $transaction->completed_at = now();
-    //     $transaction->save();
-
-    //     return back()->with('success', 'Pekerjaan berhasil ditandai selesai dan rating serta komentar telah terkirim.');
-    // }
 
     public function markComplete(Transaction $transaction)
     {
         if (in_array($transaction->status, ['in progress', 'submitted'])) {
             $transaction->status = 'completed';
             $transaction->save();
+
+            // Update the associated request status if needed
+            if ($transaction->request) {
+                $transaction->request->status = 'completed'; // Or 'closed'
+                $transaction->request->save();
+            }
         }
 
         return response()->json([
@@ -127,6 +127,7 @@ class TransactionController extends Controller
             'message' => 'Pekerjaan berhasil ditandai selesai!'
         ]);
     }
+
     public function submitReport(HttpRequest $request)
     {
         $request->validate([
@@ -155,12 +156,10 @@ class TransactionController extends Controller
                 'status' => 'Not Reviewed',
             ]);
 
-            return back()->with('success', 'Laporan berhasil dikirim.');
+            return response()->json(['success' => true, 'message' => 'Laporan berhasil dikirim.']);
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
-
-        return back()->with('success', 'Laporan berhasil dikirim.');
     }
 
     public function showAcceptedWork($transactionId)

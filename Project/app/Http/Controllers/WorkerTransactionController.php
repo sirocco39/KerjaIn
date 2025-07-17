@@ -23,7 +23,7 @@ class WorkerTransactionController extends Controller
 
         $transactions = Transaction::withTrashed()
             ->with(['request.requester', 'worker']) // Eager load request and its requester
-            ->where('worker_id', $userId) // THIS IS THE KEY CHANGE: Filter by requester_id only
+            ->where('worker_id', $userId) // THIS IS THE KEY CHANGE: Filter by worker_id only
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -129,6 +129,7 @@ class WorkerTransactionController extends Controller
         }
 
         $transaction->status = 'submitted';
+        $transaction->finish_work = Carbon::now(); // Set finish_work when proof is uploaded
         $transaction->save();
 
         return response()->json([
@@ -139,38 +140,21 @@ class WorkerTransactionController extends Controller
 
     public function markComplete(Transaction $transaction)
     {
-        // Update status transaction menjadi 'submitted'
-        $transaction->status = 'submitted';
-        $transaction->save();
-
-        // Update submitted_at pada completion_proofs yang terkait
-        $completionProof = CompletionProof::where('transaction_id', $transaction->id)->first();
-
-        if ($completionProof) {
-            $completionProof->submitted_at = Carbon::now();
-            $completionProof->save();
+        // This method seems to be for worker marking complete, but the requester actually finalizes.
+        // Based on the `on-going-work-request.blade.php` (requester side), the requester calls `markComplete`.
+        // This method might be redundant or named incorrectly if it's strictly for worker actions.
+        // Assuming for now it's still intended for worker to mark as 'submitted'
+        if ($transaction->status === 'in progress') {
+            $transaction->status = 'submitted';
+            $transaction->save();
         }
 
-        // Ambil data yang dibutuhkan untuk pop-up rating
-        $job = Request::find($transaction->job->request_id);
-        $requester = $transaction->job->requester;
-
-        // Kirim data ke view via session flash
-        return back()->with([
-            'show_rating_modal' => true,
-            'rating_data' => [
-                'title' => $job->title,
-                'order_number' => $transaction->order_number,
-                'client_name' => $requester->first_name . ' ' . $requester->last_name,
-                'location' => $job->location,
-                'order_date' => $job->start_time->format('Y-m-d'),
-                'completion_date' => $job->end_time->format('Y-m-d'),
-                'start_time' => $job->start_time->format('H.i'),
-                'end_time' => $job->end_time->format('H.i'),
-                'price' => $job->price,
-            ],
+        return response()->json([
+            'success' => true,
+            'message' => 'Pekerjaan ditandai sebagai ditinjau.'
         ]);
     }
+
 
     public function storeReport(Request $request)
     {
@@ -200,9 +184,9 @@ class WorkerTransactionController extends Controller
                 'status' => 'Not Reviewed',
             ]);
 
-            return back()->with('success', 'Laporan berhasil dikirim.');
+            return response()->json(['success' => true, 'message' => 'Laporan berhasil dikirim.']);
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
     }
 
@@ -216,7 +200,6 @@ class WorkerTransactionController extends Controller
             'comment' => 'required|string',
         ]);
 
-        // Assuming $validated['rating'] is meant to be $request->rating here
         $ratingGiven = $request->rating ?? 5; // Use $request->rating directly
 
         Review::create([

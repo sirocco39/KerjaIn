@@ -82,7 +82,7 @@
                                         @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
                                             color: #333;
                                         @elseif(in_array($order->status_text, ['Dikerjain', 'Diterima', 'Ditinjau']))
-                                            background-color: #309FFF;
+                                            background-color: #294287;
                                             color: #FFF;
                                         @elseif($order->status_text == 'Dibatalin')
                                             background-color: #E63C3C;
@@ -186,7 +186,7 @@
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
-                                                    fill="#309FFF" />
+                                                    fill="#294287" />
                                             </svg>
                                             <div class="ms-2 fw-medium fs-5">Invoice</div>
                                         </a>
@@ -310,8 +310,8 @@
                         <label class="form-label fw-semibold">Upload Bukti (gambar):</label>
                         <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                             <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
-                                style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
+                                style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
                             </div>
                         </div>
                         <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
@@ -328,7 +328,7 @@
 
                 {{-- Report submission button --}}
                 <div class="modal-footer border-0 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-danger px-4 py-2">Kirim Laporan</button>
+                    <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim Laporan</button>
                 </div>
             </form>
         </div>
@@ -346,8 +346,8 @@
         reportImageInput.addEventListener('change', function(event) {
             reportImagePreviewContainer.innerHTML = `
                 <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
-                    style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                    <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
+                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
                 </div>
             `;
             Array.from(event.target.files).forEach(file => {
@@ -396,7 +396,7 @@
                 document.getElementById('reportTransactionId').value = currentTransactionId;
                 document.getElementById('reportReportedId').value = reportedRequesterId; // Use the stored requester ID
 
-                document.getElementById('reportForm').action = `/job-taker/submit-report/${currentTransactionId}`; // Adjust route for job taker
+                document.getElementById('reportForm').action = `/worker/submit-report/${currentTransactionId}`; // Corrected route for job taker
             }
 
             // Show the report modal after a brief delay
@@ -511,6 +511,59 @@
                 });
         }
 
+        // --- Function to Submit Report via AJAX ---
+        function submitReport(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const form = document.getElementById('reportForm');
+            if (!form) {
+                console.error('reportForm not found!');
+                return;
+            }
+            const formData = new FormData(form);
+
+            // Client-side validation for report reasons
+            const reasons = document.getElementById('reportNote').value.trim();
+            if (!reasons) {
+                alert('Harap isi keluh kesah Anda terlebih dahulu.');
+                return;
+            }
+            // Client-side validation for photos
+            if (reportImageInput.files.length === 0) {
+                alert("Silakan upload minimal satu foto bukti laporan.");
+                return;
+            }
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json' // Explicitly request JSON response
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Attempt to parse JSON error from server, or throw general error
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                        }).catch(() => {
+                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response.status);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    alert(data.message);
+                    location.reload(); // Reload page to reflect changes
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message);
+                });
+        }
+
         // --- Event Listeners for Order Rows and Modal Population ---
         document.addEventListener('DOMContentLoaded', function() {
             const orderRows = document.querySelectorAll('.order-row');
@@ -518,95 +571,72 @@
             // Add click listener to each order row to handle redirection or modal display
             orderRows.forEach(row => {
                 row.addEventListener('click', function(event) {
-                    // Prevent default behavior (e.g., if there's an `<a>` tag inside)
                     event.preventDefault();
 
-                    // Check if the row should trigger the modal (completed status)
-                    if (this.hasAttribute('data-bs-toggle') && this.getAttribute(
-                            'data-bs-toggle') === 'modal') {
-                        // Let Bootstrap handle the modal opening for 'Selesai' status
-                        console.log('Detected data-bs-toggle="modal". Letting Bootstrap handle modal.');
-                        return;
-                    }
+                    const transactionId = this.getAttribute('data-transaction-id');
+                    const orderStatusText = this.getAttribute('data-order-status-text');
 
-                    // Get the transaction ID for navigation
-                    const idToPass = this.getAttribute('data-transaction-id');
-                    const statusTextElement = this.querySelector('.badge');
-                    const statusText = statusTextElement ? statusTextElement.textContent.trim() : '';
+                    // Set global variables for use in modals
+                    currentTransactionId = transactionId;
+                    reportedRequesterId = this.getAttribute('data-requester-id'); // Set the requester ID from the row
 
-                    console.log('--- Order Row Clicked (Using Transaction ID for Navigation) ---');
-                    console.log('Status Text:', statusText);
-                    console.log('ID to Pass (Transaction ID):', idToPass);
-                    console.log('-------------------------------------------');
+                    if (orderStatusText === 'Selesai') {
+                        // For 'Selesai' status, open the completion modal
+                        const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+                        completionModal.show();
 
+                        // Populate the completion modal with data
+                        document.getElementById('modalRequestTitle').textContent = this.dataset.requestTitle;
+                        document.getElementById('modalOrderNumber').textContent = this.dataset.orderNumber;
+                        document.getElementById('modalWorkerName').textContent =
+                            `${this.dataset.requesterFirstName} ${this.dataset.requesterLastName}`; // Display requester's name
+                        document.getElementById('modalRequestLocation').textContent = this.dataset.requestLocation;
+                        document.getElementById('modalTransactionCreatedAt').textContent = this.dataset
+                            .transactionCreatedAt;
+                        document.getElementById('modalTransactionUpdatedAt').textContent = this.dataset
+                            .transactionUpdatedAt;
+                        document.getElementById('modalRequestPrice').textContent = this.dataset.requestPrice;
+                        document.getElementById('modalStartWork').textContent = this.dataset.startWork;
+                        document.getElementById('modalFinishWork').textContent = this.dataset.finishWork;
 
-                    if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(statusText) && idToPass &&
-                        idToPass !== '') {
-                        // Ensure idToPass is a valid number before navigating
-                        if (!isNaN(idToPass) && parseInt(idToPass) > 0) {
-                            window.location.href = `/job-taker/accepted-work-request/${idToPass}`;
-                        } else {
-                            console.error('Invalid Transaction ID for navigation:', idToPass);
-                            alert('Terjadi kesalahan: ID transaksi tidak valid untuk order ini.');
+                        // Set form actions dynamically for the completion modal
+                        document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
+                        // The report form action in the completion modal should still point to the worker's report route
+                        // document.getElementById('reportForm').action = `/job-taker/submit-report/${transactionId}`;
+                        // Note: The report form in this modal is not directly submitted via this action, but via openReportModal()
+
+                        // Setup invoice link
+                        const invoiceLink = document.getElementById('modalInvoiceLink');
+                        if (invoiceLink) {
+                            invoiceLink.setAttribute('data-transaction-id', transactionId);
+                            invoiceLink.removeEventListener('click', handleInvoiceLinkClick);
+                            invoiceLink.addEventListener('click', handleInvoiceLinkClick);
                         }
-                    } else if (idToPass === '' || !idToPass) {
-                        console.warn(
-                            'Transaction ID is missing or empty for this row. Cannot navigate.', {
-                                status: statusText
-                            });
-                        alert('Informasi transaksi tidak lengkap untuk order ini.');
+
+                        // Reset review form fields when modal opens
+                        document.getElementById('rating-input').value = 0;
+                        document.getElementById('comment').value = '';
+                        document.querySelectorAll('#completionModal .star-rating').forEach(star => {
+                            star.classList.remove('star-blue', 'star-green');
+                            star.classList.add('text-secondary');
+                        });
+
+                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) { // 'Dibatalin' removed from here
+                        // For these specific statuses, redirect to the accepted work request page for job takers
+                        window.location.href = `/job-taker/accepted-work-request/${transactionId}`;
                     } else {
-                        console.log(
-                            'Clicked on a non-pending or unhandled status row (not opening modal):',
-                            statusText);
+                        // For 'Dibatalin' and any other unhandled statuses, do nothing on click
+                        console.log('Clicked on a row with status:', orderStatusText, 'No specific action defined.');
                     }
                 });
             });
 
+            // Attach submitReport to the "Kirim Laporan" button
+            const submitReportButton = document.getElementById('submitReportButton');
+            if (submitReportButton) {
+                submitReportButton.addEventListener('click', submitReport);
+            }
 
-            // Populate completion modal with data when it is about to be shown
-            document.getElementById('completionModal').addEventListener('show.bs.modal', function(event) {
-                const button = event.relatedTarget;
-                const transactionId = button.getAttribute('data-transaction-id');
-                const requesterId = button.getAttribute('data-requester-id'); // Get the requester_id from the row
-
-                currentTransactionId = transactionId;
-                reportedRequesterId = requesterId; // Set the requester ID for reporting/reviewing
-
-                document.getElementById('modalRequestTitle').textContent = button.getAttribute('data-request-title');
-                document.getElementById('modalOrderNumber').textContent = button.getAttribute('data-order-number');
-                document.getElementById('modalWorkerName').textContent =
-                    `${button.getAttribute('data-requester-first-name')} ${button.getAttribute('data-requester-last-name')}`; // Display requester's name
-                document.getElementById('modalRequestLocation').textContent = button.getAttribute(
-                    'data-request-location');
-                document.getElementById('modalTransactionCreatedAt').textContent = button.getAttribute(
-                    'data-transaction-created-at');
-                document.getElementById('modalTransactionUpdatedAt').textContent = button.getAttribute(
-                    'data-transaction-updated-at');
-                document.getElementById('modalRequestPrice').textContent = button.getAttribute('data-request-price');
-                document.getElementById('modalStartWork').textContent = button.getAttribute('data-start-work');
-                document.getElementById('modalFinishWork').textContent = button.getAttribute('data-finish-work');
-
-                // Set form actions dynamically based on transaction ID
-                document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
-                document.getElementById('reportForm').action = `/job-taker/submit-report/${transactionId}`; // Corrected route
-
-                // Setup invoice link
-                const invoiceLink = document.getElementById('modalInvoiceLink');
-                if (invoiceLink) {
-                    invoiceLink.setAttribute('data-transaction-id', transactionId);
-                    invoiceLink.removeEventListener('click', handleInvoiceLinkClick);
-                    invoiceLink.addEventListener('click', handleInvoiceLinkClick);
-                }
-
-                // Reset review form fields when modal opens
-                document.getElementById('rating-input').value = 0;
-                document.getElementById('comment').value = '';
-                document.querySelectorAll('#completionModal .star-rating').forEach(star => {
-                    star.classList.remove('star-blue', 'star-green');
-                    star.classList.add('text-secondary');
-                });
-            });
 
             // Handles click event for generating and downloading invoice
             function handleInvoiceLinkClick(e) {
@@ -717,6 +747,21 @@
             } else if (document.querySelector('.tab-button.active')) {
                 updateTabContent(document.querySelector('.tab-button.active').dataset.tab);
             }
+
+            // === FIX FOR PERSISTENT OVERLAY ===
+            // Listen for any Bootstrap modal to be hidden and manually remove any remaining backdrops.
+            document.querySelectorAll('.modal').forEach(modalElement => {
+                modalElement.addEventListener('hidden.bs.modal', function () {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+
+                    // Also ensure body scrolling is re-enabled, as it sometimes gets stuck
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = ''; // Clear any padding added by Bootstrap for scrollbar
+                });
+            });
+            // === END FIX ===
         });
     </script>
     <style>
