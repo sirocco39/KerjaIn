@@ -1,27 +1,34 @@
 <?php
 
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\WorkerRegistrationController;
-use App\Http\Controllers\browseWorkRequestController;
-use App\Http\Controllers\RequestController;
-use App\Models\Request as WorkRequest;
+use App\Models\ChatRoom;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+use App\Livewire\JobTaker\Chat;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\SocialController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Models\Request as WorkRequest;
+use App\Http\Controllers\ChatController;
+use Illuminate\Container\Attributes\Auth;
 use App\Http\Controllers\PusherController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\WorkerTransactionController;
-use App\Models\Transaction;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\JobTakerRequestController;
-use App\Livewire\JobTaker\Chat;
+use App\Http\Controllers\RequestController;
 use App\Livewire\jobTaker\JobTakerChatRoom;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Auth\SocialController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\JobTakerRequestController;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use App\Http\Controllers\browseWorkRequestController;
+use App\Http\Controllers\WorkerTransactionController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\VerificationController;
+use App\Http\Controllers\WorkerRegistrationController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Admin\AdminTransactionController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
-use App\Models\ChatRoom;
-use Illuminate\Http\Request;
 
 // Route on-going-work-request
 Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing');
@@ -189,6 +196,36 @@ Route::get(('/job-req/pesan'), function () {
 Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
 Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
 
-Route::get('/test', function() {
+Route::get('/test', function () {
     return view('Job_Taker.job_taker-pesanSon');
 });
+
+
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/verifikasi/{status?}', [VerificationController::class, 'index'])->name('admin.verifications.index');
+Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->name('admin.verifications.show');
+Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
+Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
+
+// Manajemen Pengguna (admin.users.*)
+Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+Route::get('/users/{id}', [UserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
+// Tambahkan rute lain seperti edit, update, delete jika diperlukan
+
+// Manajemen Laporan (admin.reports.*)
+Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+Route::get('/reports/{id}/show', [ReportController::class, 'show'])->name('admin.reports.show'); // Contoh detail laporan
+// Anda mungkin ingin rute untuk mengubah status laporan (e.g., 'reviewed')
+
+// Manajemen Transaksi (admin.transactions.*)
+Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('admin.transactions.index');
+Route::get('/transactions/{id}/show', [AdminTransactionController::class, 'show'])->name('admin.transactions.show'); // Contoh detail transaksi
+
+// Notifikasi (admin.notifications.*)
+Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+// Mungkin ada rute untuk menandai notifikasi sebagai sudah dibaca, atau menghapus
+
+// Pengaturan (admin.settings)
+Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');
+// Jika ada form pengaturan yang bisa di-update
+Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
