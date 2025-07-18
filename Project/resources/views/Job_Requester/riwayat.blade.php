@@ -2,10 +2,12 @@
 
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
+        {{-- Page Title --}}
         <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">Riwayat Pemesanan
         </h1>
+
         <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
-            {{-- Desktop tab navigation --}}
+            {{-- Desktop Tab Navigation --}}
             <div class="tabs-wrapper hidden md:flex">
                 <div class="col tab-button active" data-tab="all">
                     All Order ({{ $allOrders->count() }})
@@ -21,7 +23,7 @@
                 </div>
             </div>
 
-            {{-- Mobile dropdown for tab selection --}}
+            {{-- Mobile Dropdown for Tab Selection --}}
             <div class="tabs-dropdown-wrapper md:hidden w-full mb-4">
                 <select id="tab-select"
                     class="form-select w-full border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500">
@@ -37,9 +39,9 @@
             </div>
         </div>
 
-        {{-- Main order list display area --}}
+        {{-- Main Order List Display Area --}}
         <div class="w-full bg-white rounded-lg">
-            {{-- Table header row for order details --}}
+            {{-- Table Header Row for Order Details --}}
             <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
                 style="height: 4rem;">
                 <div class="col m-0 p-0">Judul</div>
@@ -51,14 +53,13 @@
             </div>
             <hr class="mx-auto border-2 opacity-100 my-0 p-0" style="width: 98%; border-color: #294287;">
 
-            {{-- Loop to display individual order rows --}}
+            {{-- Loop to Display Individual Order Rows --}}
             <div id="order-list-container" class="order-list-fade-in">
                 @forelse ($allOrders as $order)
                     <div class="order-row hoverable-row
                         {{ str_replace(' ', '-', $order->status) }}-tab"
                         {{-- Determine whether to open modal or redirect based on status and user role --}}
-                        @if ($order->status_text == 'Selesai')
-                            data-bs-toggle="modal"
+                        @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
                             data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
@@ -78,7 +79,7 @@
                         data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
                         data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
                         @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
-                            data-user-comment="{{ $order->user_review->comment }}" @endif>
+                                data-user-comment="{{ $order->user_review->comment }}" @endif>
                         {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
                         <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
                             style="min-height: 3.5rem;">
@@ -207,7 +208,7 @@
 
                             <div class="vr d-none d-lg-block mx-3"></div>
 
-                            {{-- Section for user review and report --}}
+                            {{-- Section for User Review and Report --}}
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
                                 {{-- The heading will now be dynamic --}}
                                 <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading"></h4>
@@ -233,7 +234,7 @@
         </div>
     </div>
 
-    {{-- Report Work Modal (no changes needed for this part's HTML) --}}
+    {{-- Report Work Modal --}}
     <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
@@ -347,12 +348,13 @@
         const reportImagePreviewContainer = document.getElementById('reportImagePreviewContainer');
 
         reportImageInput.addEventListener('change', function(event) {
+            // Reset with the add button
             reportImagePreviewContainer.innerHTML = `
                 <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
                     style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
                 </div>
-            `; // Reset with the add button
+            `;
             Array.from(event.target.files).forEach(file => {
                 if (!file.type.startsWith('image/')) return;
                 const reader = new FileReader();
@@ -384,7 +386,8 @@
             if (rowData) {
                 document.getElementById('reportModalRequestTitle').textContent = rowData.dataset.requestTitle;
                 document.getElementById('reportModalOrderNumber').textContent = rowData.dataset.orderNumber;
-                document.getElementById('reportModalRequesterName').textContent = // Populating worker name
+                // Populating worker name
+                document.getElementById('reportModalRequesterName').textContent =
                     `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`;
                 document.getElementById('reportModalRequestLocation').textContent = rowData.dataset.requestLocation;
                 document.getElementById('reportModalTransactionCreatedAt').textContent = rowData.dataset
@@ -586,7 +589,8 @@
                         updateStarDisplay(val);
                     });
                     star.addEventListener('mouseout', function() {
-                        updateStarDisplay(selectedRating); // Use selectedRating from the outer scope
+                        updateStarDisplay(
+                            selectedRating); // Use selectedRating from the outer scope
                     });
                     star.addEventListener('click', function() {
                         selectedRating = parseInt(this.getAttribute('data-value'));
@@ -604,7 +608,8 @@
                 reviewSectionHeading.textContent = 'Ini penilaianmu'; // Set heading for existing review
                 let starHtml = '';
                 for (let i = 1; i <= 5; i++) {
-                    starHtml += `<i class="bi bi-star-fill fs-2 ${i <= rating ? 'star-blue' : 'text-secondary'} star-animate"></i>`;
+                    starHtml +=
+                        `<i class="bi bi-star-fill fs-2 ${i <= rating ? 'star-blue' : 'text-secondary'} star-animate"></i>`;
                 }
 
                 reviewSectionContainer.innerHTML = `
@@ -637,8 +642,8 @@
 
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
-                    reportedWorkerId = this.getAttribute(
-                        'data-worker-id'); // Set the worker ID from the row
+                    // Set the worker ID from the row
+                    reportedWorkerId = this.getAttribute('data-worker-id');
 
                     if (orderStatusText === 'Selesai') {
                         // For 'Selesai' status, open the completion modal
@@ -674,8 +679,8 @@
                         // Conditional rendering of review section
                         if (hasReview) {
                             renderExistingReview(userRating, userComment);
-                            selectedRating = parseInt(
-                                userRating); // Set selectedRating to existing review
+                            // Set selectedRating to existing review
+                            selectedRating = parseInt(userRating);
                         } else {
                             renderReviewForm();
                             selectedRating = 0; // Reset selectedRating for new review
@@ -691,7 +696,7 @@
 
 
                     } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
-                            orderStatusText)) { // 'Dibatalin' removed from here
+                            orderStatusText)) {
                         // For these specific statuses, redirect to the ongoing request page
                         window.location.href = `/job-req/on-going-work-request/${transactionId}`;
                     } else {
@@ -800,7 +805,8 @@
                 });
 
                 // Initialize dropdown border style on page load
-                if (window.innerWidth < 720) { // Changed breakpoint from 750px to 720px for consistency with CSS
+                // Changed breakpoint from 750px to 720px for consistency with CSS
+                if (window.innerWidth < 768) {
                     if (tabSelect.value === 'all' || !tabSelect.value) {
                         tabSelect.style.borderColor = '#bfff00';
                         tabSelect.style.borderWidth = '2px';
@@ -812,8 +818,8 @@
             }
 
             // Initial load of tab content based on current screen size
-            if (window.innerWidth < 720 &&
-                tabSelect) { // Changed breakpoint from 750px to 720px for consistency with CSS
+            // Changed breakpoint from 750px to 720px for consistency with CSS
+            if (window.innerWidth < 768 && tabSelect) {
                 updateTabContent(tabSelect.value);
             } else if (document.querySelector('.tab-button.active')) {
                 updateTabContent(document.querySelector('.tab-button.active').dataset.tab);
@@ -829,19 +835,17 @@
                     // Also ensure body scrolling is re-enabled, as it sometimes gets stuck
                     document.body.classList.remove('modal-open');
                     document.body.style.overflow = '';
-                    document.body.style.paddingRight =
-                        ''; // Clear any padding added by Bootstrap for scrollbar
+                    // Clear any padding added by Bootstrap for scrollbar
+                    document.body.style.paddingRight = '';
                 });
             });
             // === END FIX ===
-
         });
     </script>
     <style>
-        /* --- Star Rating Styles --- */
+        /* Star Rating Styles */
         .star-rating {
             cursor: pointer;
-            /* Added transition for smoother fill */
             transition: color 0.2s ease-in-out;
         }
 
@@ -849,7 +853,7 @@
             color: gold !important;
         }
 
-        /* --- Tab Navigation Styles --- */
+        /* Tab Navigation Styles */
         .tabs-wrapper {
             height: 3.5rem;
             border-radius: 1.5rem;
@@ -873,6 +877,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 16px;
+            padding: 0.5rem 1rem;
         }
 
         .tab-button:hover {
@@ -892,15 +898,13 @@
             padding-top: calc(0.5rem - 8px);
             padding-bottom: calc(0.5rem - 2px);
             margin-bottom: -4px;
-            /* Added transition for smoother tab change */
             transition: all 0.3s ease-in-out;
         }
 
-        /* --- Order List Row Hover Effect --- */
+        /* Order List Row Hover Effect */
         .hoverable-row {
             cursor: pointer;
             transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-            /* Added transform */
             border-radius: 0.25rem;
         }
 
@@ -908,25 +912,34 @@
             background-color: #f8f9fa;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.175);
             transform: translateY(-2px);
-            /* Slight lift on hover */
         }
 
-        /* --- Status Badge Styling --- */
+        /* Status Badge Styling */
         .status-badge {
             border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: 12px;
             font-weight: 500;
             display: inline-block;
         }
 
-        /* --- Global Table Cell Styling for Text Wrapping --- */
+        /* Global Table Cell Styling for Text Wrapping */
         .tableHeader .col,
         .order-row .col {
             word-break: break-word;
             white-space: normal;
         }
 
-        /* --- Animations --- */
+        /* Table header font size */
+        .tableHeader .col {
+            font-size: 14px;
+        }
+
+        /* Order row default font size */
+        .order-row .col {
+            font-size: 14px;
+        }
+
+        /* Animations */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -949,7 +962,7 @@
             }
         }
 
-        /* Apply fade-in to the order list container when content changes/loads */
+        /* Apply fade-in to the order list container */
         .order-list-fade-in {
             animation: fadeIn 0.5s ease-out;
         }
@@ -966,8 +979,8 @@
             opacity: 1;
         }
 
-        /* --- Responsive Adjustments for Mobile (max-width: 720px) --- */
-        @media (max-width: 720px) {
+        /* Responsive Adjustments for Mobile (max-width: 767px) */
+        @media (max-width: 767px) {
             .tabs-wrapper {
                 display: none !important;
             }
@@ -983,62 +996,164 @@
 
             .tableHeader .col,
             .order-row .col {
-                font-size: 0.6rem !important;
-                padding-left: 0.1rem;
-                padding-right: 0.1rem;
+                font-size: 12px !important;
+                padding-left: 0.3rem;
+                padding-right: 0.3rem;
                 white-space: normal !important;
             }
 
             .order-row .badge {
-                font-size: 0.55rem !important;
+                font-size: 12px !important;
                 padding: .2em .4em !important;
             }
 
             .order-row .col.m-0.p-0 {
                 margin: 0 !important;
-                padding: 0 !important;
+            }
+
+            .modal-body p {
+                font-size: 14px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 16px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 20px !important;
+            }
+
+            .modal-body label {
+                font-size: 14px !important;
+            }
+
+            .modal-body textarea {
+                font-size: 14px !important;
+            }
+
+            .modal-footer button {
+                font-size: 14px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 18px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 16px !important;
+            }
+
+            .star-rating {
+                font-size: 28px !important;
             }
         }
 
-        /* --- Responsive Adjustments for Small Screens (max-width: 550px) --- */
-        @media (max-width: 550px) {
+        /* Specific Adjustments for Smaller Screens (max-width: 500px) */
+        @media (max-width: 500px) {
 
             .tableHeader .col,
             .order-row .col {
-                font-size: 0.5rem !important;
-                padding: 0 0.2rem !important;
-                white-space: normal !important;
+                padding-left: 0.6rem !important;
+                padding-right: 0.6rem !important;
             }
 
             .order-row .badge {
-                font-size: 0.45rem !important;
-                padding: .15em .3em !important;
+                font-size: 10px !important;
             }
         }
 
-        /* --- Specific Adjustments for Very Small Screens (max-width: 450px) --- */
-        @media (max-width: 450px) {
+        /* Specific Adjustments for Very Small Screens (max-width: 433px) */
+        @media (max-width: 440px) {
 
             .tableHeader .col,
             .order-row .col {
-                font-size: 0.45rem !important;
-                padding: 0 0.4rem !important;
-                white-space: normal !important;
+                font-size: 11px !important;
+                /* Slightly smaller font size */
+                padding-left: 0.4rem !important;
+                /* Adjust padding if needed */
+                padding-right: 0.4rem !important;
+                /* Adjust padding if needed */
             }
 
             .order-row .badge {
-                font-size: 0.4rem !important;
+                font-size: 9px !important;
+                /* Slightly smaller badge font size */
+            }
+
+            /* You might also need to adjust modal font sizes if they become too large */
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
             }
         }
 
-        /* --- Desktop Specific Styles (min-width: 720px) --- */
-        @media (min-width: 720px) {
+        /* Desktop Specific Styles (min-width: 768px) */
+        @media (min-width: 768px) {
             .tabs-wrapper {
                 display: flex !important;
             }
 
             .tabs-dropdown-wrapper {
                 display: none !important;
+            }
+
+            .tableHeader .col {
+                font-size: 16px;
+            }
+
+            .order-row .col {
+                font-size: 14px;
+            }
+
+            .order-row .badge {
+                font-size: 14px;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 16px;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 18px;
+            }
+
+            .modal-header h5 {
+                font-size: 24px;
+            }
+
+            #reviewSectionHeading {
+                font-size: 22px;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 18px;
+            }
+
+            .star-rating {
+                font-size: 32px;
             }
         }
     </style>
