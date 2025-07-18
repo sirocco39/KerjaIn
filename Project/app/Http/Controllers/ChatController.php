@@ -67,4 +67,19 @@ class ChatController extends Controller
 
         return redirect()->route('chat-work.job-taker', ['selectedRoomId' => $room->id]);
     }
+
+    public function startChatWorkReq(int $requestId) // nama beda dengan Illuminate\Http\Request
+    {
+        $workerId = Auth::id();
+        // Cek apakah chatroom sudah ada
+        $room = ChatRoom::firstOrCreate([
+            'request_id' => $requestId,
+            'worker_id' => $workerId,
+        ], [
+            'requester_id' => Request::find($requestId)->requester_id, // Ambil requester_id dari model Request
+        ]);
+
+
+        return redirect()->route('chat-work.job-requester', ['selectedRoomId' => $room->id]);
+    }
 }

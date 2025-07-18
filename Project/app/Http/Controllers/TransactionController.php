@@ -25,9 +25,21 @@ class TransactionController extends Controller
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
 
-        // Kirim data ke view
-        
-        return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
+
+        $room = \App\Models\ChatRoom::where('request_id', $request->id)
+            ->where('worker_id', $worker->id)
+            ->first();
+
+        // Jika tidak ditemukan, kamu bisa buat baru (opsional)
+        if (!$room) {
+            $room = \App\Models\ChatRoom::create([
+                'request_id'   => $request->id,
+                'requester_id' => $request->requester_id,
+                'worker_id'    => $worker->id,
+            ]);
+        }
+
+        return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room'));
     }
 
 

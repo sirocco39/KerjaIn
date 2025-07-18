@@ -169,6 +169,11 @@ Route::get('/job-taker/riwayat', function () {
     return view('Job_Taker.dummy-job_taker-riwayat');
 });
 
+// Route monthly-report
+Route::get('/job-taker/monthly-report', function () {
+    return view('Job_Taker.monthly-report');
+})->name('job-taker.monthly-report');
+
 Route::get('/navbar-job_taker', function () {
     return view('Master.master-job_taker');
 });

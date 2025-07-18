@@ -76,6 +76,6 @@ class ChatWork extends Component
 
     public function render()
     {
-        return view('livewire.job-taker.chat-work');
+        return view('livewire.job-requester.chat-work');
     }
 }

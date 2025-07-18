@@ -1,0 +1,194 @@
+.banner-section { /* Gunakan class spesifik */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 150px; /* Tambahkan padding bawah untuk ruang konten */
+  color: white;
+  overflow: hidden; /* Bisa memotong dot yang keluar container */
+  background-color: #294287; 
+  background-size: cover;
+  position: relative;
+  height: 150px;
+}
+
+.btn-daftar {
+  background-color: #309FFF;
+  color: white;
+  font-family: 'Manrope', sans-serif;
+  border-radius: 0.5rem;
+  padding: 8px 10px;
+  margin-right: 30px;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.btn-daftar:hover {
+  background-color: #D3FA0D;
+  color: black;
+}
+
+.btn-pekerja {
+  background-color: #D3FA0D;
+  color: black;
+  font-family: 'Manrope', sans-serif;
+  border-radius: 0.5rem;
+  padding: 8px 10px;
+  transition: 0.3s;
+  text-decoration: none;
+}
+
+.btn-pekerja:hover {
+  background-color: #309FFF;
+  color: white;
+}
+
+.garis-tengah {
+  width: 120px; /* Panjang garis */
+  height: 4px; /* Tebal garis */
+  background-color: white; /* Warna garis */
+  margin-top: 30px;
+  margin-bottom: 50px;
+  border-radius: 2px;
+}
+
+/* Style untuk dots */
+.color-dots {
+  height: 100%;
+}
+
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  animation: float 3s ease-in-out infinite;
+  opacity: 0.80;
+}
+
+.dot-1 {
+  width: 750px;
+  height: 750px;
+  background-color: #309FFF;
+  bottom: -100%;
+  right: -200%;
+  margin-left: 50%;
+  opacity: 0.60;
+}
+
+.dot-2 {
+  width: 100px;
+  height: 100px;
+  background-color: #4D00FF;
+  bottom: 220px;
+  right: 340%;
+  animation-delay: 0.5s;
+  opacity: 0.60;
+}
+
+.dot-3 {
+  width: 500px;
+  height: 500px;
+  background-color: #D3FA0D;
+  top: -100%;
+  left: -100%;
+  animation-delay: 1.5s;
+}
+
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 15px 20px;
+    gap: 15px;
+    min-width: 180px;
+}
+.stat-number {
+    background: #e7ff63;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+}
+.stat-label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+.stat-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 40px;
+    background: #f8f9fa;
+}
+
+body {
+    background: #f4f5fb;
+    padding: 30px;
+}
+.card-custom {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+.table thead th {
+    background: #e7ff63;
+    text-align: center;
+}
+.review-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+.review-item:last-child {
+    border-bottom: none;
+}
+.review-text {
+    font-size: 14px;
+}
+.reviews-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Default (mobile-first) */
+.custom-translate {
+  transform: translate(20px, 5px);
+  position: relative;
+  z-index: 3;
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .custom-translate {
+    transform: translate(60px, 5px);
+  }
+}
+
+/* Desktop */
+@media (min-width: 992px) {
+  .custom-translate {
+    transform: translate(110px, 5px);
+  }
+}
