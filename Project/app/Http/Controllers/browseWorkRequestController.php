@@ -21,7 +21,7 @@ class browseWorkRequestController extends Controller
         // Start with all open requests
         $query = WorkRequest::where('status', 'open')
                             ->where('requester_id', '!=', Auth::id()) // Exclude requests made by the current user
-                            ->where('end_time', '>', now()) // Only show requests that haven't passed their end time
+                            ->where('start_time', '>', now()) // Only show requests that haven't passed their end time
                             ->with('requester')
                             ->orderBy('created_at', 'desc'); // Order by newest first
 
