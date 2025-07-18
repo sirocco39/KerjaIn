@@ -14,6 +14,7 @@ class Transaction extends Model
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
     use HasFactory, SoftDeletes;
     protected $fillable = [
+        'order_number',
         'request_id',
         'requester_id',
         'worker_id',
@@ -27,6 +28,8 @@ class Transaction extends Model
     protected $casts = [
         'accepted_at' => 'datetime',
         'price' => 'decimal:2',
+        'start_work' => 'datetime',
+        'finish_work' => 'datetime',
     ];
     public function request(): BelongsTo
     {

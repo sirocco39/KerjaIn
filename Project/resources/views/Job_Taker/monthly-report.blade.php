@@ -9,7 +9,7 @@
         <!-- Konten Teks -->
         <div class="text-content custom-translate mb-5" style= "margin-left: 10px; margin-top: 40px;">
             <h1 style="font-weight: bold;">
-                Hai <span style="color: #D3FA0D;">IwanJelek</span>, ini Rekap Hebatmu di Bulan Mei 2025!
+                Hai <span style="color: #D3FA0D;">{{ $worker->first_name . ' ' . $worker->last_name}}</span>, ini Rekap Hebatmu di Bulan {{ $reportPeriod }}
             </h1>
         </div>
         
@@ -29,8 +29,13 @@
             margin-left: 10px; margin-top: 20px;">
             <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="" class="rounded-circle" style="width: 60px; height: 60px;">
             <div class="d-flex flex-column ms-2">
-                <span style="font-size: 16px; font-weight: bold; color: white;">Iwan Jelek</span>
+                <span style="font-size: 16px; font-weight: bold; color: white;">{{ $worker->first_name . ' ' . $worker->last_name}}</span>
                 <span style="font-size: 14px; color: #dfe6e9;">Pekerja</span>
+                <span style="font-size: 14px; color: #dfe6e9;">Status Verifikasi: 
+                    <span class="font-semibold {{ $verificationStatus == 'Terverifikasi' ? 'text-green-600' : 'text-yellow-600' }}">
+                    {{ $verificationStatus }}
+                    </span>
+                </span>
             </div>
         </div>
 
@@ -40,167 +45,279 @@
 </div>
 </section>
 
-    <h1 style="margin-left: 120px; margin-top: 20px; font-size: 25px; font-weight: bold;">Aktivitas Saya</h1>
+<div class="mt-2">
+    <label for="reportMonth" style="margin-left: 60px; margin-top: 20px; font-size: 25px; font-weight: bold;">Aktivitas Saya</label>
+    <select id="reportMonth" name="reportMonth"
+                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                onchange="this.form.submit()" style="margin-left: 10px">
+                {{-- Loop untuk generate opsi bulan --}}
+                @foreach ($availableMonths as $monthOption)
+                <option value="{{ $monthOption['value'] }}"
+                    {{ $monthOption['value'] == request('report_month', \Carbon\Carbon::now()->format('Y-m')) ? 'selected' : '' }}>
+                    {{ $monthOption['label'] }}
+                </option>
+                @endforeach
+        </select>
+</div>  
+        <form id="reportForm" action="{{ route('monthly.report') }}" method="GET" class="hidden">
+            <input type="hidden" name="report_month" id="hiddenReportMonth">
+        </form>
 
-    <div class="stat-container" style="margin-right: 30px; background-color: white" >
+    <div class="stat-container" style="background-color: white" >
+        
         <div class="stat-card">
-            <div class="stat-number">20</div>
+            <div class="stat-number">{{ $totalJobsCompleted }}</div>
             <p class="stat-label">Total pekerjaan diselesaikan</p>
         </div>
         <div class="stat-card">
-            <div class="stat-number">20</div>
+            <div class="stat-number">{{ number_format($totalHoursWorked, 1) }}</div>
             <p class="stat-label">Total jam kerja</p>
         </div>
         <div class="stat-card">
-            <div class="stat-number">20</div>
+            <div class="stat-number">Rp {{ number_format($totalEarnings, 0, ',', '.') }}</div>
             <p class="stat-label">Total pendapatan</p>
         </div>
         <div class="stat-card">
-            <div class="stat-number">20</div>
+            <div class="stat-number">⭐ {{ $averageRating }} / 5</div>
             <p class="stat-label">Rating rata-rata</p>
         </div>
         <div class="stat-card">
-            <div class="stat-number">20</div>
+            <div class="stat-number">{{ $distinctClients }}</div>
             <p class="stat-label">Total Klien berbeda</p>
         </div>
     </div>
 
-<div class="card-custom" style="margin-left: 120px; margin-top: 20px; margin-right: 120px">
+<div class="card-custom" style="margin-left: 60px; margin-top: 20px; margin-right: 60px">
         <h5>Pekerjaan</h5>
+        @if ($jobHistory->isEmpty())
+            <p class="text-gray-600">Belum ada pekerjaan yang diselesaikan bulan ini. Mari mulai bekerja! 💪</p>
+        @else
         <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Pekerjaan</th>
-                        <th>Lokasi</th>
-                        <th>Klien</th>
-                        <th>Durasi</th>
-                        <th>Upah</th>
-                        <th>Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Klien</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durasi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upah</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
-                    <tr>
-                        <td>2 Mei 2025</td>
-                        <td>Jemput anak</td>
-                        <td>Bogor</td>
-                        <td>Bapak Wilson</td>
-                        <td>1 jam</td>
-                        <td>Rp 15.000</td>
-                        <td>Selesai</td>
-                    </tr>
+                    @foreach ($jobHistory as $transaction)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->updated_at->format('d M Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->request->title ?? 'N/A' }}</td> {{-- Assuming 'job_title' on Request --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->request->location ?? 'N/A' }}</td> {{-- Assuming 'location' on Request --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->requester->first_name . ' ' . $transaction->requester->last_name ?? 'N/A' }}</td> {{-- Assuming 'name' on Requester (User) --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                @php
+                                $durationMinutes = 0;
+                                if ($transaction->start_work && $transaction->finish_work) {
+                                $durationMinutes = $transaction->start_work->diffInMinutes($transaction->finish_work);
+                                }
+                                @endphp
+                                {{ $durationMinutes > 0 ? number_format($durationMinutes / 60, 1) . ' jam' : 'N/A' }}
+
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {{ number_format($transaction->request->price ?? 0, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    {{ ucfirst($transaction->status) }}
+                                </span>
+                            </td>
+                        </tr>
+                        @endforeach
                 </tbody>
             </table>
         </div>
     </div>
+   @endif
 
-    <div class="row g-3">
-        <div class="col-md-5" style="margin-left: 120px; margin-top: 20px;">
-            <div class="card-custom">
-                <h5>Pendapatan</h5>
-                
-                <canvas id="revenue-chart-canvas" height="600" style="height: 300px; display: block; width: 485px;" width="970" class="chartjs-render-monitor"></canvas>
-            </div>
+    <div class="row g-3 ">
+
+    {{-- 4. Grafik Aktivitas / Pendapatan --}}
+    <div class="col-md-6" style="margin-top: 20px; margin-left: 60px;">
+        <div class="card-custom h-100">
+        <h5>Pendapatan</h5>
+        <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+            <canvas id="earningsChart"
+                data-chart-labels='{!! $chartLabels !!}'
+                data-chart-earnings='{!! $chartEarningsData !!}'
+                data-chart-jobs='{!! $chartJobsCompletedData ?? ' []' !!}'>
+            </canvas>
         </div>
+        </div>
+    </div>
+
+    {{-- Skrip untuk Chart.js --}}
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // PERBAIKAN UTAMA DI SINI:
+            // Dapatkan elemen canvas itu sendiri, BUKAN hanya konteksnya, untuk mengakses dataset.
+            const chartElement = document.getElementById('earningsChart');
+
+            // Pastikan elemen chart ditemukan sebelum mencoba mengakses dataset
+            if (chartElement) {
+                const ctx = chartElement.getContext('2d');
+
+                // Ambil data dari dataset elemen canvas
+                const labels = JSON.parse(chartElement.dataset.chartLabels);
+                console.log(labels); // Ini akan menampilkan array labels di console browser Anda
+                const earningsData = JSON.parse(chartElement.dataset.chartEarnings);
+                const jobsCompletedData = JSON.parse(chartElement.dataset.chartJobs);
+
+                new Chart(ctx, {
+                    type: 'line', // Jenis grafik: 'line', 'bar', 'pie', dll.
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                                label: 'Pendapatan Harian (IDR)', // Ubah label sesuai dengan data harian
+                                data: earningsData,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true,
+                            },
+                            { // Tambahkan dataset untuk Pekerjaan Selesai
+                                label: 'Pekerjaan Selesai',
+                                data: jobsCompletedData,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: false, // Biasanya tidak diisi untuk jumlah
+                                yAxisID: 'yJobs', // ID sumbu Y terpisah jika diperlukan
+                                hidden: true // Sembunyikan secara default jika Anda ingin fokus pada pendapatan
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { // Sumbu Y untuk Pendapatan
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Pendapatan (IDR)'
+                                },
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return 'Rp ' + value.toLocaleString('id-ID');
+                                    }
+                                }
+                            },
+                            yJobs: { // Sumbu Y opsional untuk Pekerjaan Selesai (jika skalanya sangat berbeda)
+                                type: 'linear',
+                                display: true,
+                                position: 'right', // Tampilkan di sisi kanan
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah Pekerjaan'
+                                },
+                                grid: {
+                                    drawOnChartArea: false, // Jangan gambar grid untuk sumbu ini
+                                },
+                                // Hanya tampilkan sumbu ini jika dataset jobsCompletedData tidak kosong
+                                min: 0, // Pastikan dimulai dari 0
+                                max: Math.max(...jobsCompletedData) + 1 // Sesuaikan maks sedikit di atas nilai tertinggi
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Tanggal' // Ubah label sumbu X menjadi 'Tanggal'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            // Format berdasarkan dataset mana yang sedang di-hover
+                                            if (context.dataset.label === 'Pendapatan Harian (IDR)') {
+                                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                            } else if (context.dataset.label === 'Pekerjaan Selesai') {
+                                                label += context.parsed.y + ' Pekerjaan';
+                                            } else {
+                                                label += context.parsed.y;
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error('Elemen canvas dengan ID "earningsChart" tidak ditemukan.');
+            }
+        });
+    </script>
+    @endpush
+
         <div class="col-md-5" style="margin-top: 20px; margin-left: 10px;">
-            <div class="card-custom">
+            <div class="card-custom h-100">
                 <h5>Ulasan</h5>
                 <div class="reviews-container">
-                    <div class="review-item">
-                        <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="Profile" class="rounded-circle" style="width: 60px; height: 60px;">
-                        <div>
-                            <strong>Bapak Wilson</strong><br>
-                            <small>Pekerja</small><br>
-                            ⭐⭐⭐⭐⭐
-                            <p class="review-text">“Bapak ini baik sekali, sangat membantu, ramah sehingga saya memberikan bintang lima kemudian dia juga sanggup membangunkan toto yang tertidur lelap.”</p>
-                        </div>
-                    </div>
-                    <div class="review-item">
-                        <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="Profile" class="rounded-circle" style="width: 60px; height: 60px;">
-                        <div>
-                            <strong>Bapak Wilson</strong><br>
-                            <small>Pekerja</small><br>
-                            ⭐⭐⭐⭐⭐
-                            <p class="review-text">“Bapak ini baik sekali, sangat membantu, ramah sehingga saya memberikan bintang lima kemudian dia juga sanggup membangunkan toto yang tertidur lelap.”</p>
-                        </div>
-                    </div>
-                                        <div class="review-item">
-                        <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="Profile" class="rounded-circle" style="width: 60px; height: 60px;">
-                        <div>
-                            <strong>Bapak Wilson</strong><br>
-                            <small>Pekerja</small><br>
-                            ⭐⭐⭐⭐⭐
-                            <p class="review-text">“Bapak ini baik sekali, sangat membantu, ramah sehingga saya memberikan bintang lima kemudian dia juga sanggup membangunkan toto yang tertidur lelap.”</p>
-                        </div>
-                    </div>
+                    @if ($clientReviews->isEmpty())
+                        <p class="text-gray-600">Belum ada ulasan bulan ini. Tetap semangat mengumpulkan bintang! ✨</p>
+                    @else
+                        @foreach ($clientReviews as $review)
+                            <div class="review-item d-flex align-items-start mb-3">
+                                <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png"
+                                    alt="Profile"
+                                    class="rounded-circle"
+                                    style="width: 60px; height: 60px; margin-right: 10px;">
+                                <div>
+                                    <strong>{{ $review->reviewer->first_name . ' '. $review->reviewer->last_name ?? 'Klien Anonim' }}</strong><br>
+                                    <small>Pekerja</small><br>
+                                    {{ str_repeat('⭐', $review->rating) }}
+                                    <p class="review-text">"{{ $review->comment }}"</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
-<div class="card-custom" style="margin-left: 120px; margin-top: 20px; margin-right: 120px">
+<div class="card-custom" style="margin-left: 60px; margin-top: 20px; margin-right: 60px">
         <h5>Laporan Bulanan</h5>
 
         <div class="content" style="text-align:center;">
             <p>Max 120 MB, PNG, JPEG</p>
             <i class="fas fa-download download-icon"></i><br>
-            <button type="button" class="btn btn-primary btn-sm">Download</button>
+            <a href="{{ route('monthly.report.download.pdf', ['report_month' => app('request')->input('report_month', \Carbon\Carbon::now()->format('Y-m'))]) }}"
+                class="">
+                <button type="button" class="btn btn-primary btn-sm">Download</button>
+            </a>
         </div>
 </div>   
+
+<script>
+    document.getElementById('reportMonth').addEventListener('change', function() {
+        document.getElementById('hiddenReportMonth').value = this.value;
+        document.getElementById('reportForm').submit();
+    });
+</script>
+
+
 
 @endsection

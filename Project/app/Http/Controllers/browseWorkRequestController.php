@@ -6,6 +6,7 @@ use App\Models\Request as WorkRequest; // Alias Request to WorkRequest to avoid 
 use Illuminate\Http\Request;
 use Carbon\Carbon; // For date and time formatting
 use Illuminate\Database\Eloquent\Builder; // Import Builder for type hinting
+use Illuminate\Support\Facades\Auth;
 
 class browseWorkRequestController extends Controller
 {
@@ -19,6 +20,7 @@ class browseWorkRequestController extends Controller
     {
         // Start with all open requests
         $query = WorkRequest::where('status', 'open')
+                            ->where('requester_id', '!=', Auth::id()) // Exclude requests made by the current user
                             ->where('end_time', '>', now()) // Only show requests that haven't passed their end time
                             ->with('requester')
                             ->orderBy('created_at', 'desc'); // Order by newest first

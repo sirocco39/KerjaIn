@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MonthlyReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WorkerRegistrationController;
 use App\Http\Controllers\browseWorkRequestController;
@@ -35,19 +36,11 @@ Route::post('/worker/start-work/{id}', [WorkerTransactionController::class, 'sta
 
 Route::post('/worker/upload-proof/{transaction}', [WorkerTransactionController::class, 'uploadProof'])->name('worker.uploadProof');
 
-Route::post('/worker/mark-complete/{transaction}', [WorkerTransactionController::class, 'markComplete'])->name('worker.markComplete');
-
-Route::post('/worker/finish-work/{transaction}', [WorkerTransactionController::class, 'finishWork'])->name('worker.finishWork');
-
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-
-Route::post('/reports', [WorkerTransactionController::class, 'storeReport'])->name('reports.store');
 
 Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'storeReport'])->name('worker.submitReport');
 
 Route::post('/reviews', [WorkerTransactionController::class, 'store'])->name('reviews.store');
-
-Route::post('/transaction/submit-completion/{transaction}', [TransactionController::class, 'submitCompletion'])->name('transaction.submitCompletion');
 
 Route::post('/transaction/{transaction}/mark-complete', [TransactionController::class, 'markComplete'])->name('transaction.markComplete');
 
@@ -84,16 +77,14 @@ Route::resource('requesttt', RequestController::class);
 Route::get('/job-req/beranda', function () {
     //get five latest open requests and deleted_at is null
     $requesterId = FacadesAuth::id();
-
-    $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId);
     $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId)
         ->whereNull('deleted_at')
         ->latest()
         ->take(6) // Sementara ganti 6, kalo dah kelar ganti 5
-        ->with('transactions')
+        ->with('transaction')
         ->get();
     return view('Job_Requester.beranda', compact('fiveLatestRequests'));
-});
+})->name('job-req.beranda');
 
 Route::get('/job-req/tawarkan-kerja', function () {
     return view('Job_Requester.postwork');
@@ -205,9 +196,11 @@ Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hir
 Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
 
 Route::get('/test', function () {
-    return view('test');
+    return view('Job_Taker.job_taker-pesanSon');
 });
 
-Route::get('/livetest', function () {
-    return view('livetest');
-});
+Route::get('/job-taker/monthly-report', [MonthlyReportController::class, 'index'])->name('monthly.report');
+Route::get('/job-taker/monthly-report/download-pdf', [MonthlyReportController::class, 'downloadReportPdf'])->name('monthly.report.download.pdf');
+Route::view('/job-taker/pdf', 'Job_Taker.pdf.report-pdf')->name('pdf');
+
+Route::view('/job-taker/monthly-report-f', 'Job_Taker.monthly-report')->name('monthly.report-f');

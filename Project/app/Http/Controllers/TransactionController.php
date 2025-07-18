@@ -2,15 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\Request as JobRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request as HttpRequest;
 use App\Models\Request;
-
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
+    public function show(string $id)
+    {
+        //get the request by slug
+        $workRequest = Transaction::where('id', $id)->with('requester', 'request')->firstOrFail();
+        // If the request is not found, it will throw a 404 error
+        // Return the view with the request data
+        if (!$workRequest || $workRequest->deleted_at) {
+            abort(404, 'Request not found or has been deleted.');
+        }
+
+        return response()->json($workRequest);
+    }
+
     public function showOngoing($transactionId)
     {
         // Ambil data transaction berdasarkan ID
@@ -21,23 +35,14 @@ class TransactionController extends Controller
 
         // Ambil pekerja yang melakukan pekerjaan berdasarkan relasi
         $worker = $transaction->worker; // Pastikan relasi sudah ada di model Transaction
-
-        // Ambil completion proof terkait
-        $completionProof = $transaction->completionProof;
-
-
         $room = \App\Models\ChatRoom::where('request_id', $request->id)
             ->where('worker_id', $worker->id)
             ->first();
 
-        // Jika tidak ditemukan, kamu bisa buat baru (opsional)
-        if (!$room) {
-            $room = \App\Models\ChatRoom::create([
-                'request_id'   => $request->id,
-                'requester_id' => $request->requester_id,
-                'worker_id'    => $worker->id,
-            ]);
-        }
+        // Ambil completion proof terkait
+        $completionProof = $transaction->completionProof;
+
+        // Kirim data ke view
 
         return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room'));
     }
@@ -56,70 +61,74 @@ class TransactionController extends Controller
         return back()->with('info', 'Pekerjaan dibatalkan dan request status diubah menjadi closed.');
     }
 
-    public function submitCompletion(HttpRequest $request, Transaction $transaction)
-    {
-        $validated = $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:500',
-        ]);
+    // public function submitCompletion(HttpRequest $request, Transaction $transaction)
+    // {
+    //     $validated = $request->validate([
+    //         'rating' => 'required|integer|min:1|max:5',
+    //         'comment' => 'nullable|string|max:500',
+    //     ]);
 
-        $transaction->status = 'completed';
-        $transaction->rating = $validated['rating'];
-        $transaction->comment = $validated['comment'];
-        $transaction->completed_at = now();
-        $transaction->save();
+    //     $transaction->status = 'completed';
+    //     $transaction->rating = $validated['rating'];
+    //     $transaction->comment = $validated['comment'];
+    //     $transaction->completed_at = now();
+    //     $transaction->save();
 
-        return back()->with('success', 'Pekerjaan berhasil ditandai selesai dan rating serta komentar telah terkirim.');
-    }
+    //     return back()->with('success', 'Pekerjaan berhasil ditandai selesai dan rating serta komentar telah terkirim.');
+    // }
 
     public function markComplete(Transaction $transaction)
     {
-        // Cek agar hanya transaksi in progress atau submitted yang bisa ditandai selesai
         if (in_array($transaction->status, ['in progress', 'submitted'])) {
             $transaction->status = 'completed';
             $transaction->save();
-
-            return back()->with('success', 'Pekerjaan berhasil ditandai selesai.');
         }
 
-        return back()->with('error', 'Transaksi tidak dapat ditandai selesai.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Pekerjaan berhasil ditandai selesai!'
+        ]);
     }
-    public function submitReport(Request $request, Transaction $transaction)
-{
-    $validated = $request->validate([
-        'note' => 'required|string|max:1000',
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+    public function submitReport(HttpRequest $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,id',
+            'reporter_id' => 'required|exists:users,id',
+            'reported_id' => 'required|exists:users,id',
+            'reasons' => 'required|string',
+            'photo' => 'required|array',
+            'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    // Simpan report ke tabel reports
-    $report = $transaction->reports()->create([
-        'worker_id' => $transaction->worker_id,
-        'note' => $validated['note'],
-    ]);
+        try {
+            $photoUrls = [];
 
-    // Simpan foto-foto ke storage dan database jika ada
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $image) {
-            $path = $image->store('reports', 'public');
+            foreach ($request->file('photo') as $file) {
+                $path = $file->store('report_photos', 'public');
+                $photoUrls[] = Storage::url($path);
+            }
 
-            $report->images()->create([
-                'path' => $path,
+            Report::create([
+                'transaction_id' => $request->transaction_id,
+                'reporter_id' => $request->reporter_id,
+                'reported_id' => $request->reported_id,
+                'reasons' => $request->reasons,
+                'photo_url' => json_encode($photoUrls),
+                'status' => 'Not Reviewed',
             ]);
+
+            return back()->with('success', 'Laporan berhasil dikirim.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-    return back()->with('success', 'Laporan berhasil dikirim.');
-}
-
-public function showAcceptedWork($transactionId)
-{
-    $transaction = Transaction::findOrFail($transactionId);
-    $request = $transaction->request;
-    $worker = $transaction->worker;
-    $completionProof = $transaction->completionProof ?? null;
-
-    return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
-}
-
-
+    public function showAcceptedWork($transactionId)
+    {
+        $transaction = Transaction::findOrFail($transactionId);
+        $request = $transaction->request;
+        $worker = $transaction->worker;
+        $completionProof = $transaction->completionProof ?? null;
+        return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
+    }
 }
