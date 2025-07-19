@@ -206,7 +206,7 @@ Route::get('/admin/verifikasi/{status?}', [VerificationController::class, 'index
 Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->name('admin.verifications.show');
 Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
 Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
-
+Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
 // Manajemen Pengguna (admin.users.*)
 Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
 Route::get('/users/{id}', [UserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
