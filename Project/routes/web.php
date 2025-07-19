@@ -77,7 +77,7 @@ Route::get('/request/{request:slug}', fn (WorkRequest $request) => view('request
 Route::get('/edit/{request:slug}', fn (WorkRequest $request) => view('edit', ['workRequest' => $request]));
 
 // =======================
-// JOB TAKER PAGES
+// JOB TAKER PAGES  
 // =======================
 Route::get('/job_taker', fn () => view('job-taker.dummy-job_taker-landingpage'));
 Route::get('/job-taker/beranda', function () {
