@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +14,12 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        return view('auth.login');
+        // Flash a session variable to indicate that the login modal should be shown
+        session()->flash('loginModal', true);
+        // Redirect to the landing page using its named route
+        return redirect()->route('landing');
     }
 
     /**
@@ -53,11 +55,12 @@ class AuthenticatedSessionController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Login berhasil!',
-                'redirect_url' => url('/')
+                'redirect_url' => route('job-req.beranda') // Changed redirect URL for JSON response
             ]);
         }
 
-        return redirect('/')->with('success', 'Login berhasil! Selamat datang di aplikasi kami.');
+        // Changed redirect URL for traditional web response
+        return redirect()->route('job-req.beranda')->with('success', 'Login berhasil! Selamat datang di aplikasi kami.');
     }
 
 
