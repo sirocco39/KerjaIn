@@ -44,7 +44,8 @@
             {{-- Table Header Row for Order Details --}}
             <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
                 style="height: 4rem;">
-                <div class="col m-0 p-0">Judul</div>
+                {{-- Added ps-3 for left padding on the header column --}}
+                <div class="col m-0 p-0 text-start ps-3">Judul</div>
                 <div class="col m-0 p-0">Status</div>
                 <div class="col m-0 p-0">Tanggal Selesai</div>
                 <div class="col m-0 p-0">Pekerja</div>
@@ -83,9 +84,11 @@
                         {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
                         <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
                             style="min-height: 3.5rem;">
-                            <div class="col m-0 p-0 text-xxs"> {{ $order->request->title ?? '-' }}</div>
+                            {{-- Added ps-3 for left padding on the title column, and added 'title-col' class for specific responsive styling --}}
+                            <div class="col m-0 p-0 text-xxs text-start ps-3 title-col"> {{ $order->request->title ?? '-' }}</div>
                             <div class="col m-0 p-0">
-                                <span class="badge rounded-pill text-xxs"
+                                {{-- Added status-badge-fixed for fixed width --}}
+                                <span class="badge rounded-pill text-xxs status-badge-fixed"
                                     style="
                                         padding: .5em .9em;
                                         font-size: 0.85em;
@@ -386,9 +389,9 @@
             if (rowData) {
                 document.getElementById('reportModalRequestTitle').textContent = rowData.dataset.requestTitle;
                 document.getElementById('reportModalOrderNumber').textContent = rowData.dataset.orderNumber;
-                // Populating worker name
+                // Populating worker name (Requester is reporting a Worker)
                 document.getElementById('reportModalRequesterName').textContent =
-                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`;
+                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`; // Corrected: Use worker's name for requester modal
                 document.getElementById('reportModalRequestLocation').textContent = rowData.dataset.requestLocation;
                 document.getElementById('reportModalTransactionCreatedAt').textContent = rowData.dataset
                     .transactionCreatedAt;
@@ -642,7 +645,7 @@
 
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
-                    // Set the worker ID from the row
+                    // Set the worker ID from the row for the requester to review/report
                     reportedWorkerId = this.getAttribute('data-worker-id');
 
                     if (orderStatusText === 'Selesai') {
@@ -805,7 +808,6 @@
                 });
 
                 // Initialize dropdown border style on page load
-                // Changed breakpoint from 750px to 720px for consistency with CSS
                 if (window.innerWidth < 768) {
                     if (tabSelect.value === 'all' || !tabSelect.value) {
                         tabSelect.style.borderColor = '#bfff00';
@@ -818,7 +820,6 @@
             }
 
             // Initial load of tab content based on current screen size
-            // Changed breakpoint from 750px to 720px for consistency with CSS
             if (window.innerWidth < 768 && tabSelect) {
                 updateTabContent(tabSelect.value);
             } else if (document.querySelector('.tab-button.active')) {
@@ -922,6 +923,15 @@
             display: inline-block;
         }
 
+        /* Fixed width for status badge */
+        .status-badge-fixed {
+            min-width: 90px; /* Adjust this value as needed based on your longest status text */
+            text-align: center;
+            display: inline-flex; /* Use flexbox to center content vertically and horizontally */
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Global Table Cell Styling for Text Wrapping */
         .tableHeader .col,
         .order-row .col {
@@ -997,14 +1007,28 @@
             .tableHeader .col,
             .order-row .col {
                 font-size: 12px !important;
-                padding-left: 0.3rem;
+                padding-left: 0.3rem; /* Default small padding */
                 padding-right: 0.3rem;
                 white-space: normal !important;
+            }
+
+            /* Adjusted padding for the Judul column header on mobile */
+            .tableHeader .col:first-child {
+                padding-left: 0.8rem !important;
+            }
+
+            /* Adjusted padding for the Judul column in order rows on mobile */
+            .order-row .title-col {
+                padding-left: 0.8rem !important;
             }
 
             .order-row .badge {
                 font-size: 12px !important;
                 padding: .2em .4em !important;
+            }
+
+            .order-row .status-badge-fixed {
+                min-width: 70px !important; /* Smaller width for mobile */
             }
 
             .order-row .col.m-0.p-0 {
@@ -1057,8 +1081,22 @@
                 padding-right: 0.6rem !important;
             }
 
+            /* Further adjust padding for the Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 0.6rem !important;
+            }
+
+            /* Further adjust padding for the Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 0.6rem !important;
+            }
+
             .order-row .badge {
                 font-size: 10px !important;
+            }
+
+            .order-row .status-badge-fixed {
+                min-width: 60px !important; /* Even smaller width for very small screens */
             }
         }
 
@@ -1073,6 +1111,16 @@
                 /* Adjust padding if needed */
                 padding-right: 0.4rem !important;
                 /* Adjust padding if needed */
+            }
+
+            /* Even further adjust padding for the Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 0.4rem !important;
+            }
+
+            /* Even further adjust padding for the Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 0.4rem !important;
             }
 
             .order-row .badge {
@@ -1122,8 +1170,18 @@
                 font-size: 16px;
             }
 
+            /* Default padding for desktop Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+            }
+
             .order-row .col {
                 font-size: 14px;
+            }
+
+            /* Default padding for desktop Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
             }
 
             .order-row .badge {

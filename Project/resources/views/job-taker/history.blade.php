@@ -44,7 +44,8 @@
                 {{-- Table Header Row --}}
                 <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
                     style="height: 4rem;">
-                    <div class="col m-0 p-0">Judul</div>
+                    {{-- Added 'ps-3' to the header column for consistency --}}
+                    <div class="col m-0 p-0 ps-3 text-start">Judul</div>
                     <div class="col m-0 p-0">Status</div>
                     <div class="col m-0 p-0">Tanggal Selesai</div>
                     <div class="col m-0 p-0">Klien</div>
@@ -81,9 +82,10 @@
                                 data-user-comment="{{ $order->received_review->comment }}" @endif>
                             <div class="row text-center text-sm d-flex justify-content-center align-items-center m-0 p-0"
                                 style="min-height: 3.5rem;">
-                                <div class="col m-0 p-0 text-xxs"> {{ $order->request->title ?? '-' }}</div>
+                                {{-- Added ps-3 for left padding on the title column --}}
+                                <div class="col m-0 p-0 text-xxs text-start ps-3 title-col"> {{ $order->request->title ?? '-' }}</div>
                                 <div class="col m-0 p-0">
-                                    <span class="badge rounded-pill text-xxs"
+                                    <span class="badge rounded-pill text-xxs status-badge-fixed"
                                         style="
                                         padding: .5em .9em;
                                         font-size: 14px;
@@ -870,6 +872,15 @@
             display: inline-block;
         }
 
+        /* Fixed width for status badge */
+        .status-badge-fixed {
+            min-width: 90px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Global Table Cell Styling for Text Wrapping */
         .tableHeader .col,
         .order-row .col {
@@ -950,9 +961,23 @@
                 white-space: normal !important;
             }
 
+            /* Adjust padding for the Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 0.8rem !important; /* Adjusted for mobile header */
+            }
+
+            /* Adjust padding for the Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 0.8rem !important; /* Adjusted for mobile rows */
+            }
+
             .order-row .badge {
                 font-size: 12px !important;
                 padding: .2em .4em !important;
+            }
+
+            .order-row .status-badge-fixed {
+                min-width: 70px !important;
             }
 
             .order-row .col.m-0.p-0 {
@@ -1005,8 +1030,22 @@
                 padding-right: 0.6rem !important;
             }
 
+            /* Further adjust padding for the Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 0.6rem !important;
+            }
+
+            /* Further adjust padding for the Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 0.6rem !important;
+            }
+
             .order-row .badge {
                 font-size: 10px !important;
+            }
+
+            .order-row .status-badge-fixed {
+                min-width: 60px !important;
             }
         }
 
@@ -1021,6 +1060,16 @@
                 /* Adjust padding if needed */
                 padding-right: 0.4rem !important;
                 /* Adjust padding if needed */
+            }
+
+            /* Even further adjust padding for the Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 0.4rem !important;
+            }
+
+            /* Even further adjust padding for the Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 0.4rem !important;
             }
 
             .order-row .badge {
@@ -1070,9 +1119,19 @@
                 font-size: 16px;
             }
 
+            /* Default padding for desktop Judul column header */
+            .tableHeader .col:first-child {
+                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+            }
+
             .order-row .col {
                 font-size: 14px;
             }
+            /* Default padding for desktop Judul column in order rows */
+            .order-row .title-col {
+                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+            }
+
 
             .order-row .badge {
                 font-size: 14px;
