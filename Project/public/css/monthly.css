@@ -167,6 +167,30 @@ body {
     overflow-y: auto;
 }
 
+.stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    padding: 15px 10px;
+    transition: box-shadow 0.2s;
+    height: 100%;
+}
+
+.stat-number {
+    background: #d3fa0d;
+    display: inline-block;
+    padding: 12px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.stat-label {
+    margin-top: 8px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }

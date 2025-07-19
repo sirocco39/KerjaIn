@@ -67,29 +67,47 @@
             <input type="hidden" name="report_month" id="hiddenReportMonth">
         </form>
 
-    <div class="stat-container" style="background-color: white" >
-        
-        <div class="stat-card">
-            <div class="stat-number">{{ $totalJobsCompleted }}</div>
-            <p class="stat-label">Total pekerjaan diselesaikan</p>
+<div class="container mt-4">
+    <div class="row g-3 justify-content-center">
+
+        <div class="col-6 col-md-3 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ $totalJobsCompleted }}</div>
+                <p class="stat-label">Total pekerjaan diselesaikan</p>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ number_format($totalHoursWorked, 1) }}</div>
-            <p class="stat-label">Total jam kerja</p>
+
+        <div class="col-6 col-md-3 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ number_format($totalHoursWorked, 1) }}</div>
+                <p class="stat-label">Total jam kerja</p>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number">Rp {{ number_format($totalEarnings, 0, ',', '.') }}</div>
-            <p class="stat-label">Total pendapatan</p>
+
+        <div class="col-6 col-md-3 col-lg-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">Rp {{ number_format($totalEarnings, 0, ',', '.') }}</div>
+                <p class="stat-label">Total pendapatan</p>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number">⭐ {{ $averageRating }} / 5</div>
-            <p class="stat-label">Rating rata-rata</p>
+
+        <div class="col-6 col-md-3 col-lg-3">
+            <div class="stat-card text-center">
+                <div class="stat-number">⭐ {{ $averageRating }} / 5</div>
+                <p class="stat-label">Rating rata-rata</p>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ $distinctClients }}</div>
-            <p class="stat-label">Total Klien berbeda</p>
+
+        <div class="col-6 col-md-3 col-lg-2">
+            <div class="stat-card text-center">
+                <div class="stat-number">{{ $distinctClients }}</div>
+                <p class="stat-label">Total Klien berbeda</p>
+            </div>
         </div>
+
     </div>
+</div>
+
 
 <div class="card-custom" style="margin-left: 60px; margin-top: 20px; margin-right: 60px">
         <h5>Pekerjaan</h5>
@@ -302,7 +320,7 @@
         </div>
     </div>
 
-<div class="card-custom" style="margin-left: 60px; margin-top: 20px; margin-right: 60px">
+<div class="card-custom" style="margin-left: 60px; margin-right: 60px">
         <h5>Laporan Bulanan</h5>
 
         <div class="content" style="text-align:center;">
