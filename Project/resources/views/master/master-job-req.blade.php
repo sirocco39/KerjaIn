@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
+
         .popup-error-card {
             position: absolute;
             top: calc(100% + 0.25rem);

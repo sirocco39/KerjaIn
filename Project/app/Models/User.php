@@ -52,17 +52,17 @@ class User extends Authenticatable
     ];
 
     public function scopeNonAdmin($query)
-    {   
+    {
         return $query->where('role', 'user');
     }
 
     public function scopeWorker($query)
-    {   
+    {
         return $query->where('is_worker', true);
     }
 
     public function scopeNonWorker($query)
-    {   
+    {
         return $query->where('is_worker', false)->where('role', 'user');
     }
 
@@ -128,5 +128,9 @@ class User extends Authenticatable
     public function walletTransactions() : HasMany
     {
         return $this->hasMany(WalletTransaction::class, 'user_id');
+    }
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }
