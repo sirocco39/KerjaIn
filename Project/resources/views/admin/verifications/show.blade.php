@@ -404,7 +404,7 @@
 
                 if (query.length > 2) { // Mulai mencari setelah 2 karakter
                     searchTimeout = setTimeout(() => {
-                        fetch(`{{ route('admin.verifications.search-ajax') }}?query=${query}`)
+                        fetch(`{{ route('admin.verifications.show.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
                                 searchResults.innerHTML = ''; // Bersihkan hasil sebelumnya
