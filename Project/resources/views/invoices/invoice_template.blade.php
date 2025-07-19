@@ -95,7 +95,7 @@
         .invoice-title {
             font-size: 20pt;
             font-weight: bold;
-            color: #333333;
+            color: #294287; /* Changed color to #309FFF as requested */
             margin-bottom: 20pt;
             text-align: center;
         }

@@ -72,7 +72,7 @@ class WorkerTransactionController extends Controller
         });
 
         // Render the specified Blade view
-        return view('job-taker.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
+        return view('job-taker.history', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
     }
 
     public function show($id)
