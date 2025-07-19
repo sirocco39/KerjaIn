@@ -3,96 +3,33 @@
 
 <head>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>KerjaIn</title>
     <link rel="icon" href="{{ asset('Image/Icon/Icon Kerjain.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
-    <style>
-        .popup-error-card {
-            position: absolute;
-            top: calc(100% + 0.25rem);
-            /* below input */
-            left: 0;
-            width: 100%;
-            z-index: 10;
-            background-color: #fff;
-            border: 1px solid #dc3545;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            color: #dc3545;
-            font-size: 0.875rem;
-        }
-
-        .popup-error-card ul {
-            margin: 0;
-            padding-left: 1.25rem;
-        }
-
-        .d-none {
-            display: none !important;
-        }
-
-        @media (max-width: 480px) {
-            .otp-container {
-                flex-direction: column;
-                align-items: stretch;
-                /* make both items full width */
-            }
-
-            .otp-container input,
-            .otp-container button {
-                width: 100%;
-            }
-
-            .otp-container button {
-                margin-top: 0.1rem;
-                /* add some space between input and button */
-            }
-
-            .bottom-column {
-                margin-top: 1rem;
-            }
-
-            .loginEmailErrorDiv,
-            .loginPasswordErrorDiv {
-                margin-top: 0.5rem;
-            }
-        }
-    </style>
-
-
+    <link rel="stylesheet" href="{{ asset('css/monthly.css') }}">
     <!-- Manrope dan Inter Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
-
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <!-- FontAwesome Icon -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 
 <body>
     {{-- Navbar Section --}}
     <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
-            <a class="navbar-brand" href="/job-req/beranda">
+            <a class="navbar-brand" href="/job_taker">
                 <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain"
                     id="logoNavbar">
             </a>
@@ -104,50 +41,19 @@
 
             <div class="collapse navbar-collapse" id="navbarCollapseFull">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
-                        <li class="nav-item">
-                            @auth
-                                <a class="nav-link {{ request()->is('job-req/beranda') ? 'active' : '' }}"
-                                    href="/job-req/beranda">Beranda</a>
-                            @else
-                                <a class="nav-link" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#loginModal">Beranda</a>
-                            @endauth
-                        </li>
-                        <li class="nav-item">
-                            @auth
-                                <a class="nav-link {{ request()->is('job-req/tawarkan-kerja') ? 'active' : '' }}"
-                                    href="/job-req/tawarkan-kerja">Tawarkan Kerja</a>
-                            @else
-                                <a class="nav-link" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#loginModal">Tawarkan Kerja</a>
-                            @endauth
-                        </li>
-                        <li class="nav-item">
-                            @auth
-                                <a class="nav-link {{ request()->is('job-req/pesan') ? 'active' : '' }}"
-                                    href="/job-req/pesan">Pesan</a>
-                            @else
-                                <a class="nav-link" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#loginModal">Pesan</a>
-                            @endauth
-                        </li>
-                        <li class="nav-item">
-                            @auth
-                                <a class="nav-link {{ request()->is('job-req/riwayat') ? 'active' : '' }}"
-                                    href="/job-req/riwayat">Riwayat</a>
-                            @else
-                                <a class="nav-link" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#loginModal">Riwayat</a>
-                            @endauth
-                        </li>
-                    </ul>
-
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}"
+                            href="/job-taker/beranda">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
+                            href="/job-taker/cari-kerja">Cari Kerja</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/pesan') ? 'active' : '' }}"
+                            href="/job-taker/pesan">Pesan</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/riwayat') ? 'active' : '' }}"
+                            href="/job-taker/riwayat">Riwayat</a></li>
                 </ul>
 
                 <hr class="d-lg-none my-2">
 
-                <ul class="navbar-nav ms-auto mb-lg-0 d-flex align-items-lg-center">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
                     <!-- Dropdown Bahasa -->
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
@@ -156,7 +62,7 @@
                             <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
-                        <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
+                        <ul class="dropdown-menu" aria-labelledby="dropdownLang">
                             <li><a class="dropdown-item d-flex align-items-center" href="#"><img
                                         src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
                                         class="flag"> Bahasa</a></li>
@@ -175,16 +81,35 @@
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @guest
-                                <li>
-                                    <button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#loginModal">
-                                        <img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
-                                            class="navIcon">
-                                        Masuk
-                                    </button>
-                                </li>
+                                <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#loginModal"><img
+                                            src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
+                                            class="navIcon">Masuk</button></li>
                             @endguest
-                            @auth <li>
+                            @auth
+                                <li>
+                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        href="{{ route('balance.job-taker') }}">
+                                        {{-- Sisi Kiri: Ikon dan Teks --}}
+                                        <div class="d-flex align-items-center gap-2">
+                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
+                                            <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
+                                                class="navIcon">
+                                            <span>Saldo</span>
+                                        </div>
+                                        {{-- Sisi Kanan: Jumlah Saldo --}}
+                                        <span class="ms-auto fw-bold">
+                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                            {{-- Fungsi number_format untuk format Rupiah --}}
+                                            Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
@@ -195,31 +120,20 @@
                                         </button>
                                     </form>
                                 </li>
-                                @if (auth()->user()->is_worker)
-                                    {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-1"
-                                            href="{{ route('job-taker.beranda') }}">
-                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                                alt="Icon Ganti Peran" class="navIcon">
-                                            Ganti Peran
-                                        </a>
-                                    </li>
-                                @else
-                                    {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-1"
-                                            href="{{ route('worker.register.step1') }}">
-                                            <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                                class="navIcon">
-                                            Menjadi Mitra
-                                        </a>
-                                    </li>
-                                @endif
+                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-1"
+                                        href="{{ route('job-req.beranda') }}">
+                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                            class="navIcon">
+                                        Ganti Peran
+                                    </a>
+                                </li>
                             @endauth
                         </ul>
                     </li>
                 </ul>
+
             </div>
         </div>
     </nav>
@@ -237,7 +151,7 @@
     <footer class="container-fluid pembatas-x footer">
         <div class="row d-flex flex-wrap justify-content-between align-items-start" id="foot-content">
             <div class="col-md-12 col-lg-3 foot-content-detail" id="foot-1">
-                <a class="navbar-brand" href="/">
+                <a class="navbar-brand" href="/job_taker">
                     <img src="{{ asset('Image/Logo/Logo Kerjain - DarkBackground.png') }}" alt="Logo Kerjain"
                         id="logoNavbar-footer">
                 </a>
@@ -250,68 +164,28 @@
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-2">
                 <h4>Fitur</h4>
                 <div class="list-group gap-2">
-                    @auth
-                        <a href="/job-req/beranda" class="foot-list">Beranda</a>
-                    @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Beranda</a>
-                    @endauth
-
-
-                    @auth
-                        <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
-                    @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
-                            Kerja</a>
-                    @endauth
-
-
-                    @auth
-                        <a href="/job-req/pesan" class="foot-list">Pesan</a>
-                    @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Pesan</a>
-                    @endauth
-
-
-                    @auth
-                        <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
-                    @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Riwayat</a>
-                    @endauth
+                    <a href="/job-taker/beranda" class="foot-list">Beranda</a>
+                    <a href="/job-taker/cari-kerja" class="foot-list">Cari Kerja</a>
+                    <a href="/job-taker/pesan" class="foot-list">Pesan</a>
+                    <a href="/job-taker/riwayat" class="foot-list">Riwayat</a>
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-3">
                 <h4>Penawaran</h4>
                 <div class="list-group gap-2">
-                    @auth
-                        <a href="#" class="foot-list">Acara</a>
-                        <a href="#" class="foot-list">Promo</a>
-                    @else
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Acara</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Promo</a>
-                    @endauth
+                    <a href="#" class="foot-list">Acara</a>
+                    <a href="#" class="foot-list">Promo</a>
+                    <a href="#" class="foot-list">Ajukan Percobaan</a>
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-4">
                 <h4>Bantuan</h4>
                 <div class="list-group gap-2">
-                    @auth
-                        <a href="#" class="foot-list">Akun</a>
-                        <a href="#" class="foot-list">Laporkan</a>
-                        <a href="#" class="foot-list">Saran</a>
-                    @else
-                        <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Laporkan</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Saran</a>
-                    @endauth
+                    <a href="#" class="foot-list">Akun</a>
+                    <a href="#" class="foot-list">Laporkan</a>
+                    <a href="#" class="foot-list">Saran</a>
                 </div>
             </div>
 
@@ -976,6 +850,9 @@
             }, 1000);
         }
     </script>
+
+    <!-- AdminLTE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 </body>
 
 </html>
