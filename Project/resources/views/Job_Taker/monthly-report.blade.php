@@ -3,12 +3,12 @@
 @section('content')
     <!-- Banner Section -->
     <section class="banner-section">
-    <div class="container-fluid p-0">
-        <div class="d-flex flex-wrap flex-lg-nowrap position-relative" style="min-height: 500px;">
+    <div class="container-fluid p-0 position-relative">
+        <div class="d-flex flex-column flex-md-row align-items-start p-1" style="min-height: 500px;">
 
         <!-- Konten Teks -->
-        <div class="text-content custom-translate mb-5" style= "margin-left: 10px; margin-top: 40px;">
-            <h1 style="font-weight: bold;">
+        <div class="text-content custom-translate mb-5" style= "margin-top: 15px;">
+            <h1 class="display-6 display-md-3 display-lg-2" style="font-weight: bold;">
                 Hai <span style="color: #D3FA0D;">{{ $worker->first_name . ' ' . $worker->last_name}}</span>, ini Rekap Hebatmu di Bulan {{ $reportPeriod }}
             </h1>
         </div>
@@ -21,12 +21,16 @@
         </div>
         
         <!-- Create user avatar with name in line with avatar -->
-        <div class="d-flex align-items-center" style="
-            position: absolute;
+        <div class="d-flex align-items-center mb-4 mb-md-0" style="
+            position: static;
+            align-self: flex-start;
+            margin-top: 20px;
+            margin-left: 20px;
             top: 20px;
             right: 20px;
-            z-index: 2;
-            margin-left: 10px; margin-top: 20px;">
+            padding: 12px;
+            z-index: 3;
+            ">
             <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="" class="rounded-circle" style="width: 60px; height: 60px;">
             <div class="d-flex flex-column ms-2">
                 <span style="font-size: 16px; font-weight: bold; color: white;">{{ $worker->first_name . ' ' . $worker->last_name}}</span>
@@ -136,13 +140,13 @@
     </div>
    @endif
 
-    <div class="row g-3 ">
+    <div class="row g-4 mb-5" style="padding-top: 3%">
 
     {{-- 4. Grafik Aktivitas / Pendapatan --}}
-    <div class="col-md-6" style="margin-top: 20px; margin-left: 60px;">
-        <div class="card-custom h-100">
-        <h5>Pendapatan</h5>
-        <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+    <div class="col-md-6 mt-3" style="padding-left: 5%">
+        <div class="card-custom h-100" style="max-height: 400px; overflow: hidden;">
+        <h5 class="p-3 mb-0">Pendapatan</h5>
+        <div class="chart-container" style="position: relative; height: calc(100% - 60px); width: 100%;">
             <canvas id="earningsChart"
                 data-chart-labels='{!! $chartLabels !!}'
                 data-chart-earnings='{!! $chartEarningsData !!}'
@@ -271,10 +275,10 @@
     </script>
     @endpush
 
-        <div class="col-md-5" style="margin-top: 20px; margin-left: 10px;">
-            <div class="card-custom h-100">
-                <h5>Ulasan</h5>
-                <div class="reviews-container">
+        <div class="col-md-6 mt-3" style="padding-right: 5%">
+            <div class="card-custom h-100" style="max-height: 400px; overflow-y: auto;">
+                <h5 class="p-3">Ulasan</h5>
+                <div class="reviews-container px-3 pb-3">
                     @if ($clientReviews->isEmpty())
                         <p class="text-gray-600">Belum ada ulasan bulan ini. Tetap semangat mengumpulkan bintang! ✨</p>
                     @else
