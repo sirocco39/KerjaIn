@@ -591,7 +591,7 @@
                 let starHtml = '';
                 for (let i = 1; i <= 5; i++) {
                     starHtml +=
-                        `<i class="bi bi-star-fill" style="font-size: 32px;" ${i <= rating ? 'class="star-blue"' : 'class="text-secondary"'} star-animate"></i>`;
+                        `<i class="bi bi-star-fill ${i <= rating ? 'star-blue' : 'text-secondary'}" style="font-size: 32px;"></i>`;
                 }
 
                 reviewSectionContainer.innerHTML = `
