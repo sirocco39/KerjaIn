@@ -64,7 +64,7 @@ class DummyTransactionSeeder extends Seeder
                 'password' => bcrypt('@Super645!'), // Hashed password
                 'role' => 'user', // Assuming 'user' is a valid role from your schema
                 'phone_number' => '081234567890', // Example phone number
-                'saldokerjain' => 100000.00, // Example balance
+                'balance' => 100000.00, // Example balance
                 'is_worker' => true, // Can also act as a worker
                 'rating' => 4.8,
                 'job_done' => 10,
@@ -85,7 +85,7 @@ class DummyTransactionSeeder extends Seeder
                 'password' => bcrypt('password'), // A common test password, securely hashed
                 'role' => 'user', // Assuming 'user' is a valid role
                 'phone_number' => '089876543210', // Example phone number
-                'saldokerjain' => 300000.00, // Example balance
+                'balance' => 300000.00, // Example balance
                 'is_worker' => true,
                 'rating' => 4.5,
                 'job_done' => 5,
@@ -106,7 +106,7 @@ class DummyTransactionSeeder extends Seeder
                 'password' => bcrypt('password123'),
                 'role' => 'user',
                 'phone_number' => '087654321098',
-                'saldokerjain' => 75000.00,
+                'balance' => 75000.00,
                 'is_worker' => true,
                 'rating' => 4.2,
                 'job_done' => 3,
@@ -127,7 +127,7 @@ class DummyTransactionSeeder extends Seeder
                 'password' => bcrypt('securepass'),
                 'role' => 'user',
                 'phone_number' => '081122334455',
-                'saldokerjain' => 150000.00,
+                'balance' => 150000.00,
                 'is_worker' => true,
                 'rating' => 4.9,
                 'job_done' => 8,
@@ -154,6 +154,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Dummy Service Request ' . Str::random(5)), // Ensure slug is unique
                 'created_at' => Carbon::now()->subDays(15),
                 'updated_at' => Carbon::now()->subDays(15),
+                'final_price' => 200000.00, // Price is on the request table
             ]
         );
 
@@ -170,6 +171,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Another Dummy Service Request ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(10),
+                'final_price' => 150000.00,
             ]
         );
 
@@ -186,6 +188,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Urgent Task Needed ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(7),
                 'updated_at' => Carbon::now()->subDays(7),
+                'final_price' => 300000.00,
             ]
         );
 
@@ -202,6 +205,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Quick Fix Job ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(3),
                 'updated_at' => Carbon::now()->subDays(3),
+                'final_price' => 50000.00,
             ]
         );
 
@@ -218,6 +222,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Maintenance Service Request ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(10),
+                'final_price' => 120000.00,
             ]
         );
 
@@ -234,6 +239,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Software Development Project ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(25),
                 'updated_at' => Carbon::now()->subDays(25),
+                'final_price' => 500000.00,
             ]
         );
 
@@ -250,6 +256,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Graphic Design Task ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(5),
                 'updated_at' => Carbon::now()->subDays(5),
+                'final_price' => 80000.00,
             ]
         );
 
