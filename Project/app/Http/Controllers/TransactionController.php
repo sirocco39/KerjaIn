@@ -50,7 +50,7 @@ class TransactionController extends Controller
         });
 
         // Render the specified Blade view
-        return view('job-requester.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
+        return view('job-requester.history', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
     }
 
     // ... (rest of your controller methods remain unchanged) ...
