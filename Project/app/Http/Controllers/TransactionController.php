@@ -4,14 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use App\Models\Transaction;
-use App\Models\Request as JobRequest;
+use App\Models\Request as JobRequest; // Alias Request to JobRequest to avoid conflict with Illuminate\Http\Request
 use Illuminate\Support\Carbon;
-use Illuminate\Http\Request as HttpRequest;
-use App\Models\Request;
+use Illuminate\Http\Request as HttpRequest; // Alias Request to HttpRequest
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+
 
 class TransactionController extends Controller
 {
+    public function index()
+    {
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch all orders where the authenticated user is the REQUIESTER
+        // Eager load the 'userReview' relationship
+        $transactions = Transaction::withTrashed()
+            ->with(['request', 'requester', 'worker', 'userReview']) // Eager load the NEW userReview relationship
+            ->where('requester_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Attach a flag to each order indicating if a review exists and load the review data
+        $allOrders = $transactions->map(function ($order) {
+            // Check if the specific userReview exists for this order
+            $order->has_review = $order->userReview()->exists();
+            $order->user_review = $order->userReview; // Get the actual userReview object (will be null if no review)
+            return $order;
+        });
+
+        // Prepare data for different tabs based on your string statuses
+        $pendingOrders = $allOrders->filter(function ($transaction) {
+            return in_array($transaction->status, ['accepted', 'in progress', 'submitted']);
+        });
+
+        $completedOrders = $allOrders->filter(function ($transaction) {
+            return $transaction->status === 'completed';
+        });
+
+        $cancelledOrders = $allOrders->filter(function ($transaction) {
+            return $transaction->status === 'cancelled';
+        });
+
+        // Render the specified Blade view
+        return view('Job_Requester.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
+    }
+
+    // ... (rest of your controller methods remain unchanged) ...
+
     public function show(string $id)
     {
         //get the request by slug
@@ -57,31 +98,31 @@ class TransactionController extends Controller
         $transaction->status = 'cancelled';
         $transaction->save(); // Pastikan status transaction tersimpan
 
-        // Jika status request bukan closed, beri info bahwa request tetap ada
-        return back()->with('info', 'Pekerjaan dibatalkan dan request status diubah menjadi closed.');
+        // If the request status should also be updated when cancelled by requester
+        // Assuming there's a status on the Request model too
+        if ($transaction->request) {
+            $transaction->request->status = 'cancelled'; // Or 'closed' if you prefer
+            $transaction->request->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pekerjaan dibatalkan.',
+            'redirect_url' => route('orders.index') // Redirect back to history or specific page
+        ]);
     }
-
-    // public function submitCompletion(HttpRequest $request, Transaction $transaction)
-    // {
-    //     $validated = $request->validate([
-    //         'rating' => 'required|integer|min:1|max:5',
-    //         'comment' => 'nullable|string|max:500',
-    //     ]);
-
-    //     $transaction->status = 'completed';
-    //     $transaction->rating = $validated['rating'];
-    //     $transaction->comment = $validated['comment'];
-    //     $transaction->completed_at = now();
-    //     $transaction->save();
-
-    //     return back()->with('success', 'Pekerjaan berhasil ditandai selesai dan rating serta komentar telah terkirim.');
-    // }
 
     public function markComplete(Transaction $transaction)
     {
         if (in_array($transaction->status, ['in progress', 'submitted'])) {
             $transaction->status = 'completed';
             $transaction->save();
+
+            // Update the associated request status if needed
+            if ($transaction->request) {
+                $transaction->request->status = 'completed'; // Or 'closed'
+                $transaction->request->save();
+            }
         }
 
         return response()->json([
@@ -89,6 +130,7 @@ class TransactionController extends Controller
             'message' => 'Pekerjaan berhasil ditandai selesai!'
         ]);
     }
+
     public function submitReport(HttpRequest $request)
     {
         $request->validate([
@@ -117,9 +159,9 @@ class TransactionController extends Controller
                 'status' => 'Not Reviewed',
             ]);
 
-            return back()->with('success', 'Laporan berhasil dikirim.');
+            return response()->json(['success' => true, 'message' => 'Laporan berhasil dikirim.']);
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
     }
 

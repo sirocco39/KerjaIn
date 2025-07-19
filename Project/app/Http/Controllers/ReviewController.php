@@ -12,8 +12,8 @@ class ReviewController extends Controller
 {
     public function store(Request $request)
     {
-
-        $request->validate([
+        // Validate the incoming request data
+        $validated = $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
             'reviewer_id' => 'required|exists:users,id',
             'reviewee_id' => 'required|exists:users,id',
@@ -21,22 +21,23 @@ class ReviewController extends Controller
             'comment' => 'required|string',
         ]);
 
-        $ratingGiven = $validated['rating'] ?? 5;
+        // Directly use the validated rating
+        $ratingGiven = $validated['rating'];
 
+        // Create the review record
         Review::create([
-            'transaction_id' => $request->transaction_id,
-            'reviewer_id' => $request->reviewer_id,
-            'reviewee_id' => $request->reviewee_id,
-            'rating' => $request->rating,
-            'comment' => $request->comment,
+            'transaction_id' => $validated['transaction_id'],
+            'reviewer_id' => $validated['reviewer_id'],
+            'reviewee_id' => $validated['reviewee_id'],
+            'rating' => $ratingGiven, // Use $ratingGiven from validated data
+            'comment' => $validated['comment'],
         ]);
 
-        $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
+        // Calculate the average rating for the reviewee and update the User model
+        $averageRating = Review::where('reviewee_id', $validated['reviewee_id'])->avg('rating');
+        User::where('id', $validated['reviewee_id'])->update(['rating' => $averageRating]);
 
-        // 3. Update ke tabel users
-        User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
-
-
+        // Return a JSON success response
         return response()->json(['success' => true]);
     }
 }
