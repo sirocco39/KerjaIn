@@ -210,6 +210,8 @@ Route::get('/navbar-job_req', fn () => view('Master.master-job_req'));
 // =======================
 Route::resource('request', RequestController::class);
 
+
+
 Route::get('/job-taker/monthly-report', [MonthlyReportController::class, 'index'])->name('monthly.report');
 Route::get('/job-taker/monthly-report/download-pdf', [MonthlyReportController::class, 'downloadReportPdf'])->name('monthly.report.download.pdf');
 Route::view('/job-taker/pdf', 'Job_Taker.pdf.report-pdf')->name('pdf');

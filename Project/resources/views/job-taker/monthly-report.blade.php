@@ -1,4 +1,4 @@
-@extends('Master.master-job_taker')
+@extends('Master.master-job-taker')
 
 @section('content')
     <!-- Banner Section -->

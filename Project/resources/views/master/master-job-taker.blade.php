@@ -142,6 +142,7 @@
 
     {{-- Main Section --}}
     <main class="main-content">
+        @stack('scripts')
         @yield('content')
     </main>
     {{-- End Main Section --}}

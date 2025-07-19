@@ -193,7 +193,7 @@ class MonthlyReportController extends Controller
 
         ];
 
-        return view('Job_Taker.monthly-report', $data);
+        return view('job-taker.monthly-report', $data);
     }
 
     public function downloadReportPdf(Request $request)
@@ -259,7 +259,7 @@ class MonthlyReportController extends Controller
         ];
 
         // Muat view Blade ke Dompdf dan buat PDF
-        $pdf = Pdf::loadView('Job_Taker.pdf.report-pdf', $data);
+        $pdf = Pdf::loadView('job-taker.pdf.report-pdf', $data);
 
         // Unduh PDF dengan nama file yang sesuai
         return $pdf->download('laporan-bulanan-' . $worker->name . '-' . $parsedSelectedMonth->format('Y-m') . '.pdf');
