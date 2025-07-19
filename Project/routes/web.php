@@ -216,7 +216,8 @@ Route::get('/users/reported-list', [UserController::class, 'reportedUsers'])->na
 
 // Manajemen Laporan (admin.reports.*)
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
-Route::get('/reports/{id}/show', [ReportController::class, 'show'])->name('admin.reports.show'); // Contoh detail laporan
+Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
+
 // Anda mungkin ingin rute untuk mengubah status laporan (e.g., 'reviewed')
 
 // Manajemen Transaksi (admin.transactions.*)
