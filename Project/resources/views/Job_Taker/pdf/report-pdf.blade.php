@@ -49,7 +49,7 @@
     <h2>Periode: {{ $reportPeriod }}</h2>
 
     <div class="summary-box">
-        <div><strong>Nama Pekerja:</strong> {{ $worker->name }}</div>
+        <div><strong>Nama Pekerja:</strong> {{ $worker->first_name . ' ' . $worker->last_name}}</div>
         <div><strong>Total Pekerjaan Selesai:</strong> {{ $totalJobsCompleted }}</div>
         <div><strong>Total Pendapatan:</strong> Rp {{ number_format($totalEarnings, 0, ',', '.') }}</div>
         <div><strong>Rating Rata-rata:</strong> {{ $averageRating }} / 5.0</div>
