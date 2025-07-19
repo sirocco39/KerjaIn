@@ -49,7 +49,18 @@ class DummyTransactionSeeder extends Seeder
             })->orWhereHas('worker', function ($q) use ($dummyEmails) {
                 $q->whereIn('email', $dummyEmails);
             });
-        })->forceDelete(); // Use forceDelete if soft deletes are enabled but you want to truly remove
+        })->forceDelete();
+
+        // Delete chat rooms linked to dummy requests/users (Crucial step for cleanup)
+        ChatRoom::where(function ($query) use ($dummyEmails, $dummyRequestTitles) {
+            $query->whereHas('requester', function ($q) use ($dummyEmails) {
+                $q->whereIn('email', $dummyEmails);
+            })->orWhereHas('worker', function ($q) use ($dummyEmails) {
+                $q->whereIn('email', $dummyEmails);
+            })->orWhereHas('request', function ($q) use ($dummyRequestTitles) {
+                $q->whereIn('title', $dummyRequestTitles);
+            });
+        })->forceDelete();
 
         // Delete dummy requests
         JobRequest::whereIn('title', $dummyRequestTitles)->forceDelete();
@@ -78,6 +89,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user', // Assuming 'user' is a valid role from your schema
                 'phone_number' => '081234567890', // Example phone number
                 'balance' => 9999999.00, // Example balance
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true, // Can also act as a worker
                 'rating' => 4.8,
                 'job_done' => 10,
@@ -99,6 +111,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user', // Assuming 'user' is a valid role
                 'phone_number' => '089876543210', // Example phone number
                 'balance' => 300000.00, // Example balance
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true,
                 'rating' => 4.5,
                 'job_done' => 5,
@@ -120,6 +133,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user',
                 'phone_number' => '087654321098',
                 'balance' => 75000.00,
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true,
                 'rating' => 4.2,
                 'job_done' => 3,
@@ -141,6 +155,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user',
                 'phone_number' => '081122334455',
                 'balance' => 150000.00,
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true,
                 'rating' => 4.9,
                 'job_done' => 8,
@@ -404,6 +419,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(1),
                 'updated_at' => Carbon::now(),
+                'start_work' => Carbon::now()->subHours(12)->setTime(9,0), // Example: started today, submitted today
+                'finish_work' => Carbon::now()->subHours(1)->setTime(16,0),
             ],
 
             // Transactions demonstrating requester (Hansen) as a worker
@@ -468,6 +485,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(11),
                 'updated_at' => Carbon::now()->subDays(1),
+                'start_work' => Carbon::now()->subDays(4)->setTime(9, 0),
+                'finish_work' => Carbon::now()->subDays(1)->setTime(17, 0),
             ],
             [
                 'request_id' => $jobRequest3->id, // Using an existing request
@@ -481,7 +500,7 @@ class DummyTransactionSeeder extends Seeder
             [
                 'request_id' => $jobRequest6->id, // Using an existing request
                 'requester_id' => $requester->id, // Hansen requests
-                'worker_id' => $worker->id,       // Dummy Worker works
+                'worker_id' => $worker->id,        // Dummy Worker works
                 'status' => 'completed',
                 'start_work' => Carbon::now()->subDays(42)->addHours(13),
                 'finish_work' => Carbon::now()->subDays(42)->addHours(16),

@@ -16,7 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-    <!-- CSS -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
@@ -77,14 +76,12 @@
     </style>
 
 
-    <!-- Manrope dan Inter Font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
 
-    <!-- FontAwesome Icon -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 
@@ -149,7 +146,6 @@
                 <hr class="d-lg-none my-2">
 
                 <ul class="navbar-nav ms-auto mb-lg-0 d-flex align-items-lg-center">
-                    <!-- Dropdown Bahasa -->
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
                             <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
@@ -167,7 +163,6 @@
                         </ul>
                     </li>
 
-                    <!-- Dropdown Profile -->
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
                             <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
@@ -369,7 +364,6 @@
                 </div>
                 <form id="login-form" method="POST" action="{{ route('login') }}" style="padding: 30px">
                     @csrf
-                    <!-- Login Email -->
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                         <label for="email-login" class="form-label">Email</label>
                         <input id="email-login" class="form-control is-invalid" type="email" name="email"
@@ -377,7 +371,6 @@
                         <div id="Loginemail-error" class="popup-error-card d-none"></div>
                     </div>
 
-                    <!-- Login Password -->
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                         <label for="password-login" class="form-label">Kata Sandi</label>
                         <input id="password-login" class="form-control is-invalid" type="password" name="password"
@@ -385,7 +378,6 @@
                         <div id="Loginpassword-error" class="popup-error-card d-none"></div>
                     </div>
 
-                    <!-- Remember Me & Lupa Password -->
                     <div class="d-flex justify-content-between mb-4">
                         <div class="form-check">
                             <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
@@ -396,10 +388,8 @@
                         @endif
                     </div>
 
-                    <!-- Tombol Login -->
                     <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Masuk</button>
 
-                    <!-- Footer -->
                     <div class="text-center">
                         <p class="mb-2">Belum punya akun?
                             <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
@@ -431,9 +421,7 @@
                 <form method="POST" action="{{ route('register') }}" style="padding: 30px">
                     @csrf
                     <div class="row">
-                        <!-- Left Column -->
                         <div class="col-md-6 mb-4">
-                            <!-- Nama Depan input -->
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="first_name">Nama Depan</label>
                                 <input type="text" id="first_name" class="form-control is-invalid"
@@ -441,7 +429,6 @@
                                 <div id="first_name-error" class="popup-error-card d-none"></div>
                             </div>
 
-                            <!-- Nama Belakang input -->
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="last_name">Nama Belakang</label>
                                 <input type="text" id="last_name" class="form-control is-invalid"
@@ -449,7 +436,6 @@
                                 <div id="last_name-error" class="popup-error-card d-none"></div>
                             </div>
 
-                            <!-- Register Email input -->
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="email-register">Email</label>
                                 <input class="form-control is-invalid" id="email-register" type="email"
@@ -458,9 +444,7 @@
                             </div>
                         </div>
 
-                        <!-- Right Column -->
                         <div class="col-md-6 mb-4">
-                            <!-- Password input -->
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="password">Kata Sandi</label>
                                 <input id="password" class="form-control is-invalid" type="password"
@@ -468,7 +452,6 @@
                                 <div id="password-error" class="popup-error-card d-none"></div>
                             </div>
 
-                            <!-- Konfirmasi Password input -->
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="password_confirmation">Konfirmasi Kata Sandi</label>
                                 <input class="form-control is-invalid" id="password_confirmation" type="password"
@@ -476,7 +459,6 @@
                                 <div id="confirm_password-error" class="popup-error-card d-none"></div>
                             </div>
 
-                            <!-- OTP -->
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="otp">Kode OTP</label>
                                 <div class="d-flex align-items-center gap-2 otp-container">
@@ -496,18 +478,14 @@
 
                         </div>
 
-                        <!-- Bottom Column -->
                         <div class="col-12 bottom-column">
-                            <div class="relative h-5"> <!-- fixed height container -->
-                                <div id="otp-message" class="absolute inset-0 text-sm hidden text-center mb-2"
+                            <div class="relative h-5"> <div id="otp-message" class="absolute inset-0 text-sm hidden text-center mb-2"
                                     style="color: #16a34a;">
                                 </div>
                             </div>
 
-                            <!-- Submit button -->
                             <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Daftar</button>
 
-                            <!-- Daftar buttons -->
                             <div class="text-center">
                                 <p>Atau daftar dengan:</p>
                                 <a href="{{ route('auth-google-redirect') }}" class="btn btn-link btn-floating mx-1">
@@ -999,6 +977,16 @@
                 }
             }, 1000);
         }
+    </script>
+
+    {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('loginModal'))
+                var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            @endif
+        });
     </script>
 </body>
 

@@ -73,11 +73,16 @@ class TransactionController extends Controller
         // Ambil data transaction berdasarkan ID
         $transaction = Transaction::findOrFail($transactionId);
 
+        // Authorization check: only the requester of the transaction can view this page
+        if (Auth::id() !== $transaction->requester_id) {
+            abort(403, 'Unauthorized access.');
+        }
+
         // Ambil data request yang berhubungan dengan transaction
         $request = JobRequest::findOrFail($transaction->request_id);
 
         // Ambil pekerja yang melakukan pekerjaan berdasarkan relasi
-        $worker = $transaction->worker; // Pastikan relasi sudah ada di model Transaction
+        $worker = $transaction->worker;
         $room = \App\Models\ChatRoom::where('request_id', $request->id)
             ->where('worker_id', $worker->id)
             ->first();
@@ -86,7 +91,6 @@ class TransactionController extends Controller
         $completionProof = $transaction->completionProof;
 
         // Kirim data ke view
-
         return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room'));
     }
 
