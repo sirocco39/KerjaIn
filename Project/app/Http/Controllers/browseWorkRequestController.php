@@ -8,7 +8,7 @@ use Carbon\Carbon; // For date and time formatting
 use Illuminate\Database\Eloquent\Builder; // Import Builder for type hinting
 use Illuminate\Support\Facades\Auth;
 
-class browseWorkRequestController extends Controller
+class BrowseWorkRequestController extends Controller
 {
     /**
      * Display a listing of open work requests.
@@ -32,7 +32,7 @@ class browseWorkRequestController extends Controller
         $workRequests = $query->paginate(10); // Adjust items per page as needed
 
         // Pass the work requests to the view
-        return view('Job_Taker.job_taker-carikerja', compact('workRequests'));
+        return view('job-taker.browse-work', compact('workRequests'));
     }
 
     /**

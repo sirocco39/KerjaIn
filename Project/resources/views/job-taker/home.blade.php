@@ -1,4 +1,4 @@
-@extends('Master.master-job_taker')
+@extends('master.master-job-taker')
 
 @section('content')
     <div class="header-wrap" id="header-beranda-job_taker">
@@ -107,7 +107,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-dollar.svg') }}" alt="Icon Money">
                                     </div>
-                                    <span>Rp{{ number_format($r->request->price, 2, ',', '.') }}</span>
+                                    <span>Rp{{ number_format($r->request->final_price, 2, ',', '.') }}</span>
                                 </li>
                             </ul>
 
@@ -317,7 +317,7 @@
                         });
                         modalTime.textContent =
                             `${startDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${endDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
-                        modalPrice.textContent = parseFloat(requests.price || 0).toLocaleString(
+                        modalPrice.textContent = parseFloat(requests.final_price || 0).toLocaleString(
                             'id-ID', {
                                 minimumFractionDigits: 2
                             });

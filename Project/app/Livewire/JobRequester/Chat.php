@@ -111,7 +111,7 @@ class Chat extends Component
         $offer->update(['status' => $response]);
 
         if ($response === 'accepted') {
-            $offer->request->update(['price' => $offer->amount]);
+            $offer->request->update(['final_price' => $offer->amount]);
             $transaction = Request::hireAndFinalize($offer->request, $offer->worker);
             return redirect()->route('request.ongoing', ['transactionId' => $transaction->id]);
         }

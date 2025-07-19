@@ -1,4 +1,4 @@
-@extends('Master.master-job_req')
+@extends('master.master-job-req')
 
 @section('content')
     @php
@@ -10,7 +10,7 @@
         $end = new DateTime($end_time);
         $interval = $start->diff($end);
 
-        $amount = $request->price;
+        $amount = $request->final_price;
         $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
 
         $alamat = $request->alamat;
@@ -336,7 +336,7 @@
                                         style="width:50%;">
                                         <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
                                         <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
-                                            {{ number_format($request->price, 2, ',', '.') }}</p>
+                                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
                                     </div>
                                     <div class="text d-flex justify-content-end align-items-center" style="width:50%;">
                                         <a href="#"
@@ -574,7 +574,7 @@
                     <div class="d-flex justify-content-between mb-4">
                         <p class="text-black-50 fw-semibold mb-0">Total</p>
                         <p class="fw-medium fs-5 mb-0">Rp
-                            {{ number_format($request->price, 2, ',', '.') }}</p>
+                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
                     </div>
 
                     <!-- Upload Bukti -->

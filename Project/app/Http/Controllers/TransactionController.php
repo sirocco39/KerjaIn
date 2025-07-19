@@ -44,7 +44,7 @@ class TransactionController extends Controller
 
         // Kirim data ke view
 
-        return view('Job_Requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room'));
+        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room'));
     }
 
 
@@ -129,6 +129,6 @@ class TransactionController extends Controller
         $request = $transaction->request;
         $worker = $transaction->worker;
         $completionProof = $transaction->completionProof ?? null;
-        return view('Job_Taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
+        return view('job-taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
     }
 }

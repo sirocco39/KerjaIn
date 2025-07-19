@@ -26,7 +26,7 @@ class RequestController extends Controller
             ->take(5)
             ->get();
         // $fiveLatestRequests = Request::latest()->where() take(5)->get();
-        return view('Job_Requester.beranda', compact('fiveLatestRequests'));
+        return view('job-requester.home', compact('fiveLatestRequests'));
     }
 
     /**
@@ -35,7 +35,7 @@ class RequestController extends Controller
     public function create()
     {
         // Show the form for creating a new request
-        return view('Job_Requester.postwork');
+        return view('job-requester.post-work');
     }
 
     /**
@@ -74,6 +74,7 @@ class RequestController extends Controller
         $workRequest->slug = Str::slug($workRequest->title);
         $workRequest->description = $request->workDetailLabel;
         $workRequest->price = $request->workPriceLabel;
+        $workRequest->final_price = $request->workPriceLabel;
         $workRequest->location = $request->workAddressLabel;
         $workRequest->start_time = $startDatetime;
         $workRequest->end_time = $endDatetime;
@@ -119,7 +120,7 @@ class RequestController extends Controller
         }
 
         // Return the edit view with the request data
-        return view('Job_Requester.edit', compact('workRequest'));
+        return view('job-requester.edit', compact('workRequest'));
     }
 
     /**
@@ -143,6 +144,7 @@ class RequestController extends Controller
         $workRequest->slug = Str::slug($workRequest->title);
         $workRequest->description = $request->workDetailLabel;
         $workRequest->price = $request->workPriceLabel;
+        $workRequest->final_price = $request->workPriceLabel;
         $workRequest->location = $request->workAddressLabel;
         $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}:00");
         $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}:00");
@@ -185,7 +187,7 @@ class RequestController extends Controller
     public function showOngoing($id)
     {
         $request = JobRequest::findOrFail($id);
-        return view('Job_Requester.on-going-work-request', compact('request'));
+        return view('job-requester.on-going-work-request', compact('request'));
     }
 
     public function acceptRequest(RequestModel $request) // <-- PERUBAHAN DI SINI
@@ -210,7 +212,7 @@ class RequestController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
-            'redirect_url' => route('job-taker.beranda')
+            'redirect_url' => route('job-taker.home')
         ]);
     }
 }

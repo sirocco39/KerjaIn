@@ -19,11 +19,13 @@ public function definition(): array
     {
     $startTime = Carbon::now()->addDays(rand(0, 7))->addHours(rand(0, 23))->addMinutes(rand(0, 59));
     $endTime = (clone $startTime)->addHours(rand(1, 6))->addMinutes(rand(0, 59));
+    $price = $this->faker->randomFloat(2, 10000, 500000);
         return [
             'title' => $this->faker->sentence(4),
             'slug' => $this->faker->slug(),
             'description' => $this->faker->paragraph(),
-            'price' => $this->faker->randomFloat(2, 10000, 500000),
+            'price' => $price,
+            'final_price' => $price, // Assuming final price is the same as initial price
             'location' => $this->faker->address(),
             'status' => fake()->randomElement(['open', 'closed']),
             'start_time' => $startTime,

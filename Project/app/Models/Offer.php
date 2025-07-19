@@ -38,9 +38,4 @@ class Offer extends Model
     {
         return $this->belongsTo(User::class, 'worker_id');
     }
-    public function payment() : HasOne
-    {
-        return $this->HasOne(Payment::class);
-    }
-    
 }

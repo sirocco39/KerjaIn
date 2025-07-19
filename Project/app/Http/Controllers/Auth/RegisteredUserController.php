@@ -24,7 +24,7 @@ class RegisteredUserController extends Controller
 
     public function create(): View
     {
-        return view('Master.master-job_req', [
+        return view('master.master-job-req', [
             'otpCooldown' => (int) self::OTP_COOLDOWN_SECONDS
         ]);
     }

@@ -47,7 +47,7 @@ class WorkerTransactionController extends Controller
         }
 
         // Kirim ke view
-        return view('Job_Taker.accepted-work-request', compact(
+        return view('job-taker.accepted-work-request', compact(
             'transaction',
             'request',
             'worker',
@@ -131,7 +131,7 @@ class WorkerTransactionController extends Controller
                 'completion_date' => $job->end_time->format('Y-m-d'),
                 'start_time' => $job->start_time->format('H.i'),
                 'end_time' => $job->end_time->format('H.i'),
-                'price' => $job->price,
+                'price' => $job->final_price,
             ],
         ]);
     }

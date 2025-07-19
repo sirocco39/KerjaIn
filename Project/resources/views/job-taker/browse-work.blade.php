@@ -1,4 +1,4 @@
-    @extends('Master.master-job_taker')
+@extends('master.master-job-taker')
 
     @section('content')
         <x-search></x-search>

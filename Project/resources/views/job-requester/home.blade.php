@@ -1,4 +1,4 @@
-@extends('Master.master-job_req')
+@extends('master.master-job-req')
 
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y d-flex flex-column gap-3" id="greetings-section">
@@ -67,7 +67,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-dollar.svg') }}" alt="Icon Money">
                                     </div>
-                                    <span>Rp{{ number_format($r->price, 2, ',', '.') }}</span>
+                                    <span>Rp{{ number_format($r->final_price, 2, ',', '.') }}</span>
                                 </li>
                             </ul>
 
@@ -272,7 +272,7 @@
                         });
                         modalTime.textContent =
                             `${startDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${endDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
-                        modalPrice.textContent = parseFloat(data.price || 0).toLocaleString('id-ID', {
+                        modalPrice.textContent = parseFloat(data.final_price || 0).toLocaleString('id-ID', {
                             minimumFractionDigits: 2
                         });
                         modalDescription.textContent = data.description || '-';

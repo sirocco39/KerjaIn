@@ -1,4 +1,4 @@
-@extends('Master.master-job_req')
+@extends('master.master-job-req')
 @section('content')
 <main>
     <h1>Judul : {{ $workRequest->title }}</h1>
