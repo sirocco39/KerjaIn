@@ -210,6 +210,8 @@ Route::post('verifications/{id}/reject', [VerificationController::class, 'reject
 // Manajemen Pengguna (admin.users.*)
 Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
 Route::get('/users/{id}', [UserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
+Route::get('/users/blocked-list', [UserController::class, 'blockedUsers'])->name('admin.users.blocked-list');
+Route::get('/users/reported-list', [UserController::class, 'reportedUsers'])->name('admin.users.reported-list');
 // Tambahkan rute lain seperti edit, update, delete jika diperlukan
 
 // Manajemen Laporan (admin.reports.*)

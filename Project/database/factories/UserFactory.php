@@ -2,9 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -36,15 +37,21 @@ class UserFactory extends Factory
             'job_done' => 0,
             'is_blocked' => false,
             'bank_acc_num' => null,
+            'last_activity' => $this->faker->optional(0.8, null) // 80% chance to have a recent activity, 20% to be null
+                ->dateTimeBetween('-1 week', 'now'), // Activity within the last week
+
         ];
     }
 
-    public function admin(){
+    public function admin()
+    {
         return $this->state([
             'role' => 'admin',
             'rating' => 0,
             'job_done' => 0,
             'is_worker' => false,
+            'last_activity' => Carbon::now(), // Admins are usually active recently
+
         ]);
     }
 
@@ -55,6 +62,8 @@ class UserFactory extends Factory
             'is_worker' => true,
             'job_done' => $this->faker->numberBetween(1, 100),
             'bank_acc_num' => $this->faker->numerify('##########'),
+            'last_activity' => $this->faker->dateTimeBetween('-3 days', 'now'), // Workers are often active
+
         ]);
     }
 
@@ -64,6 +73,9 @@ class UserFactory extends Factory
             'role' => 'user',
             'is_worker' => false,
             'job_done' => 0,
+            'last_activity' => $this->faker->optional(0.5, null) // Non-workers might be less active or null
+                ->dateTimeBetween('-2 weeks', 'now'),
+
         ]);
     }
 }
