@@ -27,7 +27,7 @@ class WorkerRegistrationController extends Controller
         }
         // Ambil data dari session jika ada, untuk mengisi ulang form
         $data = Session::get('worker_registration.step1', []);
-        return view('joinWorker.join', compact('data'));
+        return view('join-worker.join', compact('data'));
     }
 
     public function store1(Request $request)
@@ -90,7 +90,7 @@ class WorkerRegistrationController extends Controller
         if (!Session::has('worker_registration.step1')) {
             return redirect()->route('worker.register.step1')->with('error', 'Silakan lengkapi Data Pribadi terlebih dahulu.');
         }
-        return view('joinWorker.join2');
+        return view('join-worker.join2');
     }
 
     public function store2(Request $request)
@@ -127,7 +127,7 @@ class WorkerRegistrationController extends Controller
             $step3Data
         );
 
-        return view('joinWorker.join3', compact('allData', 'step3Data'));
+        return view('join-worker.join3', compact('allData', 'step3Data'));
     }
 
     private function storeFile(Request $request, string $inputName, string $basePath, int $userId): ?string
@@ -236,11 +236,11 @@ class WorkerRegistrationController extends Controller
 
     public function showSuccessPage()
     {
-        return view('joinWorker.success');
+        return view('join-worker.success');
     }
 
     public function showPendingPage()
     {
-        return view('joinWorker.pending');
+        return view('join-worker.pending');
     }
 }
