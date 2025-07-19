@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\Request as JobRequest; // Alias Request to JobRequest to avoid conflict with Illuminate\Http\Request
+use App\Models\WalletTransaction;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request as HttpRequest; // Alias Request to HttpRequest
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -97,6 +99,21 @@ class TransactionController extends Controller
         // Ubah status transaction menjadi cancelled
         $transaction->status = 'cancelled';
         $transaction->save(); // Pastikan status transaction tersimpan
+        $requester = $transaction->requester;
+        $payment = $transaction->request->payment;
+        $refundAmount = $payment->amount;
+
+        // 5. Proses pengembalian dana (refund) ke requester
+        $requester->balance += $refundAmount;
+        $requester->locked_balance -= $refundAmount;
+        $requester->save();
+
+        WalletTransaction::create([
+            'user_id' => $requester->id,
+            'amount' => $refundAmount,
+            'type' => 'credit',
+            'description' => 'Pengembalian dana dari pembatalan pekerjaan: ' . $transaction->request->title,
+        ]);
 
         // If the request status should also be updated when cancelled by requester
         // Assuming there's a status on the Request model too
@@ -105,11 +122,7 @@ class TransactionController extends Controller
             $transaction->request->save();
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pekerjaan dibatalkan.',
-            'redirect_url' => route('orders.index') // Redirect back to history or specific page
-        ]);
+        return back()->with('info', 'Pekerjaan dibatalkan dan request status diubah menjadi closed.');
     }
 
     public function markComplete(Transaction $transaction)
@@ -120,11 +133,47 @@ class TransactionController extends Controller
 
             // Update the associated request status if needed
             if ($transaction->request) {
-                $transaction->request->status = 'completed'; // Or 'closed'
+                $transaction->request->status = 'closed'; // Or 'closed'
                 $transaction->request->save();
             }
         }
+        DB::transaction(function () use ($transaction) {
+            // 3. Ambil semua data yang dibutuhkan
+            $workRequest = $transaction->request;
+            $requester = $transaction->requester;
+            $worker = $transaction->worker;
+            $payment = $workRequest->payment;
+            $payoutAmount = $payment->amount; // Jumlah yang akan dibayarkan
 
+            // 4. Proses pelepasan dana (payout)
+            // a. Kurangi saldo tertahan milik Requester
+            $requester->locked_balance -= $payoutAmount;
+            $requester->save();
+
+            // b. Tambah saldo aktif milik Worker
+            $worker->balance += $payoutAmount;
+            $worker->save();
+
+            // 5. Catat riwayat transaksi untuk kedua belah pihak
+            // a. Catatan untuk Requester (uang keluar dari escrow)
+            WalletTransaction::create([
+                'user_id' => $requester->id,
+                'amount' => $payoutAmount,
+                'type' => 'debit',
+                'description' => 'Pelepasan dana untuk pekerjaan: ' . $workRequest->title,
+            ]);
+
+            // b. Catatan untuk Worker (uang masuk)
+            WalletTransaction::create([
+                'user_id' => $worker->id,
+                'amount' => $payoutAmount,
+                'type' => 'credit',
+                'description' => 'Pembayaran diterima dari pekerjaan: ' . $workRequest->title,
+            ]);
+
+            // 6. Update status di semua tabel terkait
+            $payment->update(['status' => 'released_to_worker']);
+        });
         return response()->json([
             'success' => true,
             'message' => 'Pekerjaan berhasil ditandai selesai!'

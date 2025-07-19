@@ -7,7 +7,7 @@
                 <h2 class="fw-bold mb-2">Buat tawaran kerja</h2>
                 <p class="mb-4">Yuk, mulai! Isi detail pekerjaan agar mitra kami bisa segera membantumu.</p>
 
-                <form action="{{ route('requesttt.store') }}" method="post" id="create-work-form">
+                <form action="{{ route('request.store') }}" method="post" id="create-work-form">
                     @csrf
                     {{-- Judul Pekerjaan --}}
                     <div class="mb-3">

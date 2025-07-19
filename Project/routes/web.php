@@ -176,4 +176,4 @@ Route::get('/navbar-job_req', fn () => view('Master.master-job_req'));
 // =======================
 // RESOURCE ROUTES
 // =======================
-Route::resource('requesttt', RequestController::class);
+Route::resource('request', RequestController::class);

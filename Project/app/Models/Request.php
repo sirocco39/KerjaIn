@@ -46,9 +46,9 @@ class Request extends Model
     {
         return $this->hasOne(Transaction::class, 'request_id');
     }
-    public function payments(): HasMany
+    public function payment(): HasOne
     {
-        return $this->hasMany(Payment::class, 'request_id');
+        return $this->hasOne(Payment::class, 'request_id');
     }
     public function chatRooms(): HasMany
     {

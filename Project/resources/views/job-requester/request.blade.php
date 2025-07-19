@@ -19,8 +19,8 @@
         <p>Selesai: {{ $workRequest->end_time }} pukul {{ $workRequest->end_time }}</p>
         <!-- other details -->
         <a href="/job-req/beranda"><button>Kembali ke Beranda</button></a>
-        <a href="{{ route('requesttt.edit',  $workRequest->slug) }}"><button>Sunting</button></a>
-        <form action="{{ route('requesttt.destroy', $workRequest->slug) }}" method="POST">
+        <a href="{{ route('request.edit',  $workRequest->slug) }}"><button>Sunting</button></a>
+        <form action="{{ route('request.destroy', $workRequest->slug) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit">Batal Ajukan</button>

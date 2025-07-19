@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChatRoom;
+use App\Models\Payment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Request as JobRequest;
 
 use App\Models\Request as RequestModel; // Avoid conflict with the Request facade
 use App\Models\User;
+use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RequestController extends Controller
 {
@@ -69,6 +72,12 @@ class RequestController extends Controller
             ])->withInput();
         }
 
+        $user = User::find(Auth::id());
+        $jobCost = $request->workPriceLabel;
+        $user->balance -= $jobCost;
+        $user->locked_balance += $jobCost;
+        $user->save();
+
         //from handling post
         $workRequest->title = $request->workTitleLabel;
         $workRequest->slug = Str::slug($workRequest->title);
@@ -79,10 +88,21 @@ class RequestController extends Controller
         $workRequest->start_time = $startDatetime;
         $workRequest->end_time = $endDatetime;
 
-        //created:
-        $workRequest->created_at = date("Y-m-d h:i:sa", time());
+        WalletTransaction::create([
+            'user_id' => $user->id,
+            'amount' => $jobCost,
+            'type' => 'credit',
+            'description' => 'Membuat tawaran pekerjaan dengan judul: ' . $workRequest->title,
+        ]);
+
+        // d. Buat catatan di tabel payments untuk escrow
 
         $result = $workRequest->save();
+        Payment::create([
+            'request_id' => $workRequest->id,
+            'amount' => $jobCost,
+            'status' => 'holding',
+        ]);
         if ($result) {
             return redirect()->to('/job-req/beranda');
         } else {
@@ -173,16 +193,53 @@ class RequestController extends Controller
      */
     public function destroy(string $slug)
     {
-        $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
-        $workRequest->deleted_at = date("Y-m-d h:i:sa", time());
-        $workRequest->status = 'closed'; // Optionally set status to deleted
-        $workRequest->chatRooms()->update(['is_open' => false]);
-        $result = $workRequest->save();
-        if ($result) {
-            return redirect()->to('/job-req/beranda');
-        } else {
-            return back()->withErrors(['error' => 'Failed to delete request.']);
+        // Lakukan semua operasi dalam satu transaksi yang aman
+        try {
+            DB::transaction(function () use ($slug) {
+                $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
+
+                // 1. Otorisasi: Pastikan yang menghapus adalah pemilik request
+                if (Auth::id() !== $workRequest->requester_id) {
+                    abort(403, 'Unauthorized action.'); // Hentikan jika bukan pemilik
+                }
+
+                // 2. Validasi: Jangan biarkan request dihapus jika sudah ada offer diterima atau sedang berjalan
+                // Anda bisa sesuaikan logika ini sesuai kebutuhan
+                if ($workRequest->status !== 'open') {
+                    throw new \Exception('Pekerjaan yang sedang berjalan atau sudah selesai tidak dapat dibatalkan.');
+                }
+
+                // 3. Ambil data yang dibutuhkan untuk proses refund
+                $user = $workRequest->requester; // Ambil user melalui relasi
+                $refundAmount = $workRequest->price; // Dana yang di-lock adalah harga awal
+
+                // 4. Proses pengembalian dana (refund)
+                $user->balance += $refundAmount;
+                $user->locked_balance -= $refundAmount;
+                $user->save();
+
+                // 5. Catat transaksi refund di riwayat wallet
+                WalletTransaction::create([
+                    'user_id' => $user->id,
+                    'amount' => $refundAmount,
+                    'type' => 'credit',
+                    'description' => 'Pengembalian dana dari pembatalan pekerjaan: ' . $workRequest->title,
+                ]);
+
+                // 6. Update status terkait
+                $workRequest->payment->update(['status' => 'refunded_to_requester']); // Update status escrow
+                $workRequest->chatRooms()->update(['is_open' => false]); // Tutup chat room
+
+                // 7. Hapus request (Soft Delete cara Laravel)
+                $workRequest->delete();
+            });
+        } catch (\Exception $e) {
+            // Jika ada error di tengah jalan, kembalikan pesan error
+            return back()->with('error', $e->getMessage());
         }
+
+        // 8. Jika semua berhasil, redirect dengan pesan sukses
+        return redirect()->route('job-req.beranda')->with('success', 'Pekerjaan berhasil dibatalkan dan dana telah dikembalikan.');
     }
     public function showOngoing($id)
     {

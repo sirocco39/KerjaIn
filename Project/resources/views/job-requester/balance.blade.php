@@ -32,7 +32,7 @@
                                     <div class="d-flex align-items-center">
                                         {{-- Ikon berdasarkan tipe transaksi --}}
                                         <div class="me-3">
-                                            @if ($transaction->type == 'credit')
+                                            @if ($transaction->type == 'debit')
                                                 <i class="fas fa-arrow-down-circle fa-2x text-success"></i>
                                             @else
                                                 <i class="fas fa-arrow-up-circle fa-2x text-danger"></i>
@@ -45,8 +45,8 @@
                                         </div>
                                     </div>
                                     <div class="text-end">
-                                        <h5 class="fw-bold mb-0 {{ $transaction->type == 'credit' ? 'text-success' : '' }}">
-                                            {{ $transaction->type == 'credit' ? '+' : '-' }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
+                                        <h5 class="fw-bold mb-0 {{ $transaction->type == 'debit' ? 'text-success' : 'text-danger' }}">
+                                            {{ $transaction->type == 'credit' ? '-' : '+' }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
                                         </h5>
                                     </div>
                                 </div>

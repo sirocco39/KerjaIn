@@ -40,7 +40,7 @@ class WebhookController extends Controller
                     WalletTransaction::create([
                         'user_id' => $order->user_id,
                         'amount' => $order->amount,
-                        'type' => 'credit',
+                        'type' => 'debit',
                         'description' => 'Top up via Xendit (' . $payload['payment_channel'] . ')',
                     ]);
                 });

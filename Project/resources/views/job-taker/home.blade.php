@@ -137,21 +137,6 @@
                                     data-slug="{{ $r->id }}">DETAIL</a>
                             </div>
                         </div>
-                        {{-- <div class="dropdown text-end">
-                            <button class="btn btn-light border-0" type="button" id="dropdownMenuButton{{ $loop->index }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $loop->index }}">
-                                <li><a class="dropdown-item" href="{{ route('requesttt.edit', $r->slug) }}">Edit</a></li>
-                                <li>
-                                    <form action="{{ route('requesttt.destroy', $r->slug) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="dropdown-item text-danger" type="submit">Delete</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div> --}}
                     @endforeach
                 @endif
             </div>

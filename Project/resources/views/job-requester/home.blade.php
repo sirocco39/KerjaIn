@@ -99,25 +99,10 @@
                                 @endif
                                 <a class="detail-req-button" data-bs-toggle="modal" data-bs-target="#detailModal"
                                     data-slug="{{ $r->slug }}"
-                                    data-edit-url="{{ route('requesttt.edit', $r->slug) }}"
-                                    data-delete-url="{{ route('requesttt.destroy', $r->slug) }}">DETAIL</a>
+                                    data-edit-url="{{ route('request.edit', $r->slug) }}"
+                                    data-delete-url="{{ route('request.destroy', $r->slug) }}">DETAIL</a>
                             </div>
                         </div>
-                        {{-- <div class="dropdown text-end">
-                            <button class="btn btn-light border-0" type="button" id="dropdownMenuButton{{ $loop->index }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $loop->index }}">
-                                <li><a class="dropdown-item" href="{{ route('requesttt.edit', $r->slug) }}">Edit</a></li>
-                                <li>
-                                    <form action="{{ route('requesttt.destroy', $r->slug) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="dropdown-item text-danger" type="submit">Delete</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div> --}}
                     @endforeach
                 @endif
             </div>
@@ -252,7 +237,7 @@
                 modalStatus.innerHTML = '<p class="mb-0">Memuat status...</p>';
 
                 // Fetch data pekerjaan berdasarkan slug
-                fetch(`/requesttt/${slug}`)
+                fetch(`/request/${slug}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Gagal memuat data pekerjaan');

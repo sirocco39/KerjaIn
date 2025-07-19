@@ -7,7 +7,7 @@
                 <h2 class="fw-bold mb-2">Sunting tawaran kerja</h2>
                 <p class="mb-4">Yuk, mulai! Sunting detail pekerjaan agar mitra kami bisa segera membantumu.</p>
 
-                <form action="{{ route('requesttt.update', $workRequest->slug) }}" method="POST">
+                <form action="{{ route('request.update', $workRequest->slug) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <!-- Judul Pekerjaan -->
