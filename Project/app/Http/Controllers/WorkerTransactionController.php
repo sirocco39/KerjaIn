@@ -79,6 +79,11 @@ class WorkerTransactionController extends Controller
     {
         $transaction = Transaction::findOrFail($id);
 
+        // Authorization check: only the worker of the transaction can view this page
+        if (Auth::id() !== $transaction->worker_id) {
+            abort(403, 'Unauthorized access.');
+        }
+
         $request = JobRequest::findOrFail($transaction->request_id);
 
         $worker = $transaction->worker;

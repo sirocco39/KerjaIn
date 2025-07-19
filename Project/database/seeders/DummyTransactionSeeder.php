@@ -7,9 +7,10 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use App\Models\User; // Assuming User model exists
-use App\Models\Request as JobRequest; // Alias Request model to avoid conflict with Illuminate\Http\Request
-use App\Models\Transaction; // Assuming Transaction model exists
+use App\Models\User;
+use App\Models\Request as JobRequest;
+use App\Models\Transaction;
+use App\Models\ChatRoom; // Import ChatRoom model
 
 class DummyTransactionSeeder extends Seeder
 {
@@ -45,7 +46,18 @@ class DummyTransactionSeeder extends Seeder
             })->orWhereHas('worker', function ($q) use ($dummyEmails) {
                 $q->whereIn('email', $dummyEmails);
             });
-        })->forceDelete(); // Use forceDelete if soft deletes are enabled but you want to truly remove
+        })->forceDelete();
+
+        // Delete chat rooms linked to dummy requests/users (Crucial step for cleanup)
+        ChatRoom::where(function ($query) use ($dummyEmails, $dummyRequestTitles) {
+            $query->whereHas('requester', function ($q) use ($dummyEmails) {
+                $q->whereIn('email', $dummyEmails);
+            })->orWhereHas('worker', function ($q) use ($dummyEmails) {
+                $q->whereIn('email', $dummyEmails);
+            })->orWhereHas('request', function ($q) use ($dummyRequestTitles) {
+                $q->whereIn('title', $dummyRequestTitles);
+            });
+        })->forceDelete();
 
         // Delete dummy requests
         JobRequest::whereIn('title', $dummyRequestTitles)->forceDelete();
@@ -65,6 +77,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user', // Assuming 'user' is a valid role from your schema
                 'phone_number' => '081234567890', // Example phone number
                 'balance' => 9999999.00, // Example balance
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true, // Can also act as a worker
                 'rating' => 4.8,
                 'job_done' => 10,
@@ -86,6 +99,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user', // Assuming 'user' is a valid role
                 'phone_number' => '089876543210', // Example phone number
                 'balance' => 300000.00, // Example balance
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true,
                 'rating' => 4.5,
                 'job_done' => 5,
@@ -107,6 +121,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user',
                 'phone_number' => '087654321098',
                 'balance' => 75000.00,
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true,
                 'rating' => 4.2,
                 'job_done' => 3,
@@ -128,6 +143,7 @@ class DummyTransactionSeeder extends Seeder
                 'role' => 'user',
                 'phone_number' => '081122334455',
                 'balance' => 150000.00,
+                'locked_balance' => 0.00, // Initialize locked_balance
                 'is_worker' => true,
                 'rating' => 4.9,
                 'job_done' => 8,
@@ -154,7 +170,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Dummy Service Request ' . Str::random(5)), // Ensure slug is unique
                 'created_at' => Carbon::now()->subDays(15),
                 'updated_at' => Carbon::now()->subDays(15),
-                'final_price'=> 200000.00,
+                'final_price' => 200000.00,
             ]
         );
 
@@ -171,7 +187,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Another Dummy Service Request ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(10),
-                'final_price'=> 150000.00,
+                'final_price' => 150000.00,
             ]
         );
 
@@ -188,7 +204,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Urgent Task Needed ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(7),
                 'updated_at' => Carbon::now()->subDays(7),
-                'final_price'=> 300000.00,
+                'final_price' => 300000.00,
             ]
         );
 
@@ -205,7 +221,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Quick Fix Job ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(3),
                 'updated_at' => Carbon::now()->subDays(3),
-                'final_price'=> 50000.00,
+                'final_price' => 50000.00,
             ]
         );
 
@@ -222,7 +238,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Maintenance Service Request ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(10),
-                'final_price'=> 120000.00,
+                'final_price' => 120000.00,
             ]
         );
 
@@ -239,7 +255,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Software Development Project ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(25),
                 'updated_at' => Carbon::now()->subDays(25),
-                'final_price'=> 500000.00,
+                'final_price' => 500000.00,
             ]
         );
 
@@ -256,7 +272,7 @@ class DummyTransactionSeeder extends Seeder
                 'slug' => Str::slug('Graphic Design Task ' . Str::random(5)),
                 'created_at' => Carbon::now()->subDays(5),
                 'updated_at' => Carbon::now()->subDays(5),
-                'final_price'=> 80000.00,
+                'final_price' => 80000.00,
             ]
         );
 
@@ -271,6 +287,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(6),
                 'updated_at' => Carbon::now()->subDays(5),
+                'start_work' => Carbon::now()->subDays(5)->setTime(9, 0), // Add start_work
+                'finish_work' => Carbon::now()->subDays(5)->setTime(17, 0), // Add finish_work
             ],
             [
                 'request_id' => $jobRequest1->id,
@@ -280,6 +298,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(4),
                 'updated_at' => Carbon::now()->subDays(3),
+                'start_work' => Carbon::now()->subDays(3)->setTime(10, 0),
+                'finish_work' => null, // Not finished yet
             ],
             [
                 'request_id' => $jobRequest1->id,
@@ -289,6 +309,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(3),
                 'updated_at' => Carbon::now()->subDays(2),
+                'start_work' => Carbon::now()->subDays(2)->setTime(8, 0),
+                'finish_work' => Carbon::now()->subDays(2)->setTime(16, 0),
             ],
             [
                 'request_id' => $jobRequest1->id,
@@ -298,6 +320,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(11),
                 'updated_at' => Carbon::now()->subDays(1), // Completed recently
+                'start_work' => Carbon::now()->subDays(10)->setTime(9, 0),
+                'finish_work' => Carbon::now()->subDays(1)->setTime(18, 0),
             ],
             [
                 'request_id' => $jobRequest1->id,
@@ -307,6 +331,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(8),
                 'updated_at' => Carbon::now()->subDays(2), // Cancelled recently
+                'start_work' => null, // Not applicable for cancelled before start
+                'finish_work' => null,
             ],
 
             // Transactions for requester2 (Alice) as requester, worker2 (Bob) as worker
@@ -318,6 +344,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(7),
                 'updated_at' => Carbon::now()->subDays(6),
+                'start_work' => Carbon::now()->subDays(6)->setTime(9, 0),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest2->id,
@@ -327,6 +355,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(5),
                 'updated_at' => Carbon::now()->subDays(4),
+                'start_work' => Carbon::now()->subDays(4)->setTime(10, 0),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest2->id,
@@ -336,6 +366,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(9),
                 'updated_at' => Carbon::now()->subDays(3),
+                'start_work' => Carbon::now()->subDays(8)->setTime(11, 0),
+                'finish_work' => Carbon::now()->subDays(3)->setTime(15, 0),
             ],
             [
                 'request_id' => $jobRequest2->id,
@@ -345,6 +377,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(5),
+                'start_work' => null,
+                'finish_work' => null,
             ],
 
             // Transactions where requester (Hansen) is the requester, worker2 (Bob) is the worker
@@ -356,6 +390,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(4),
                 'updated_at' => Carbon::now()->subDays(3),
+                'start_work' => Carbon::now()->subDays(3)->setTime(9, 30),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest3->id,
@@ -365,6 +401,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(6),
                 'updated_at' => Carbon::now()->subDays(2),
+                'start_work' => Carbon::now()->subDays(5)->setTime(10, 0),
+                'finish_work' => Carbon::now()->subDays(2)->setTime(14, 0),
             ],
 
             // Transactions where requester2 (Alice) is the requester, worker (Dummy Worker) is the worker
@@ -376,6 +414,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(2),
                 'updated_at' => Carbon::now()->subDays(1),
+                'start_work' => Carbon::now()->subDays(1)->setTime(8, 0),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest4->id,
@@ -385,6 +425,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(1),
                 'updated_at' => Carbon::now(),
+                'start_work' => Carbon::now()->subHours(12)->setTime(9,0), // Example: started today, submitted today
+                'finish_work' => Carbon::now()->subHours(1)->setTime(16,0),
             ],
 
             // Transactions demonstrating requester (Hansen) as a worker
@@ -396,6 +438,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(8),
                 'updated_at' => Carbon::now()->subDays(7),
+                'start_work' => Carbon::now()->subDays(7)->setTime(13, 0),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest5->id,
@@ -405,6 +449,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(6),
+                'start_work' => Carbon::now()->subDays(9)->setTime(9, 0),
+                'finish_work' => Carbon::now()->subDays(6)->setTime(17, 0),
             ],
 
             // Transactions demonstrating worker (Dummy Worker) as a requester
@@ -416,6 +462,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(18),
                 'updated_at' => Carbon::now()->subDays(10),
+                'start_work' => Carbon::now()->subDays(15)->setTime(10, 0),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest6->id,
@@ -425,6 +473,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(16),
                 'updated_at' => Carbon::now()->subDays(8),
+                'start_work' => Carbon::now()->subDays(12)->setTime(9, 0),
+                'finish_work' => Carbon::now()->subDays(8)->setTime(17, 0),
             ],
 
             // More varied statuses and combinations
@@ -436,6 +486,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(3),
                 'updated_at' => Carbon::now()->subDays(2),
+                'start_work' => Carbon::now()->subDays(2)->setTime(14, 0),
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest7->id,
@@ -445,6 +497,8 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(5),
                 'updated_at' => Carbon::now()->subDays(1),
+                'start_work' => Carbon::now()->subDays(4)->setTime(9, 0),
+                'finish_work' => Carbon::now()->subDays(1)->setTime(17, 0),
             ],
             [
                 'request_id' => $jobRequest3->id, // Using an existing request
@@ -454,22 +508,40 @@ class DummyTransactionSeeder extends Seeder
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(9),
                 'updated_at' => Carbon::now()->subDays(7),
+                'start_work' => null,
+                'finish_work' => null,
             ],
             [
                 'request_id' => $jobRequest6->id, // Using an existing request
                 'requester_id' => $requester->id, // Hansen requests
-                'worker_id' => $worker->id,       // Dummy Worker works
+                'worker_id' => $worker->id,        // Dummy Worker works
                 'status' => 'completed',
                 'order_number' => 'ORD-' . Str::upper(Str::random(8)),
                 'created_at' => Carbon::now()->subDays(22),
                 'updated_at' => Carbon::now()->subDays(18),
+                'start_work' => Carbon::now()->subDays(20)->setTime(8, 30),
+                'finish_work' => Carbon::now()->subDays(18)->setTime(16, 0),
             ],
         ];
 
         foreach ($transactionsData as $data) {
-            Transaction::firstOrCreate(
+            $transaction = Transaction::firstOrCreate(
                 ['order_number' => $data['order_number']], // Unique key for firstOrCreate
                 $data
+            );
+
+            // Ensure a chat room exists for this specific transaction's requester and worker
+            ChatRoom::firstOrCreate(
+                [
+                    'request_id' => $transaction->request_id,
+                    'requester_id' => $transaction->requester_id,
+                    'worker_id' => $transaction->worker_id,
+                ],
+                [
+                    'is_open' => !in_array($transaction->status, ['completed', 'cancelled']), // Open unless completed/cancelled
+                    'created_at' => $transaction->created_at,
+                    'updated_at' => $transaction->updated_at,
+                ]
             );
         }
     }
