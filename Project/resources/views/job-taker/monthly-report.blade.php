@@ -324,7 +324,7 @@
         <h5>Laporan Bulanan</h5>
 
         <div class="content" style="text-align:center;">
-            <p>Max 120 MB, PNG, JPEG</p>
+            <p>Download Laporan Bulanan Anda!</p>
             <i class="fas fa-download download-icon"></i><br>
             <a href="{{ route('monthly.report.download.pdf', ['report_month' => app('request')->input('report_month', \Carbon\Carbon::now()->format('Y-m'))]) }}"
                 class="">
