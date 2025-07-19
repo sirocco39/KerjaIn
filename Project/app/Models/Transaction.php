@@ -28,6 +28,9 @@ class Transaction extends Model
     ];
     protected $casts = [
         'accepted_at' => 'datetime',
+        'price' => 'decimal:2',
+        'start_work' => 'datetime',
+        'finish_work' => 'datetime',
     ];
 
     // Existing relationships
