@@ -74,7 +74,7 @@
             @foreach($jobHistory as $index => $transaction)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $transaction->requester->first_name . ' ' .  $transaction->requester->last_name ?? 'N/A' }}</td>
+                <td>{{ $transaction->request->requester->first_name . ' ' .  $transaction->request->requester->last_name ?? 'N/A' }}</td>
                 <td>{{ $transaction->request->title ?? 'N/A' }}</td>
                 <td>{{ \Carbon\Carbon::parse($transaction->finish_work)->translatedFormat('d F Y H:i') }}</td>
                 <td>

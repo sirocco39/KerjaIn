@@ -36,7 +36,7 @@ class MonthlyReportDataSeeder extends Seeder
             'phone_number' => '081234567890',
             'role' => 'user',
             'is_worker' => true,
-            'saldokerjain' => 500000.00,
+            'balance' => 500000.00,
             'rating' => 4.5, // Initial rating
             'job_done' => 10, // Initial jobs done
             'bank_acc_num' => '1234567890',
@@ -52,7 +52,7 @@ class MonthlyReportDataSeeder extends Seeder
             'phone_number' => '087654321098',
             'role' => 'user',
             'is_worker' => false,
-            'saldokerjain' => 1000000.00,
+            'balance' => 1000000.00,
             'rating' => 0,
             'job_done' => 0,
             'bank_acc_num' => null,
@@ -68,7 +68,7 @@ class MonthlyReportDataSeeder extends Seeder
             'phone_number' => '081122334455',
             'role' => 'user',
             'is_worker' => false,
-            'saldokerjain' => 750000.00,
+            'balance' => 750000.00,
             'rating' => 0,
             'job_done' => 0,
             'bank_acc_num' => null,
@@ -83,6 +83,7 @@ class MonthlyReportDataSeeder extends Seeder
             'title' => 'Bersihkan Rumah Saya',
             'description' => 'Membutuhkan bantuan untuk membersihkan seluruh rumah, termasuk menyapu, mengepel, membersihkan kamar mandi, dan dapur.',
             'price' => 150000.00,
+            'final_price' => 150000.00, // Assuming no negotiation
             'location' => 'Jalan Merdeka No. 10, Jakarta Pusat',
             'status' => 'closed', // This will be completed
             'start_time' => Carbon::now()->subDays(5)->startOfDay(),
@@ -95,6 +96,8 @@ class MonthlyReportDataSeeder extends Seeder
             'title' => 'Perbaiki Keran Bocor',
             'description' => 'Ada keran bocor di dapur, perlu diperbaiki segera.',
             'price' => 75000.00,
+                        'final_price' => 150000.00, // Assuming no negotiation
+
             'location' => 'Jalan Sudirman No. 25, Bandung',
             'status' => 'closed', // This will be completed
             'start_time' => Carbon::now()->subDays(10)->startOfDay(),
@@ -107,6 +110,8 @@ class MonthlyReportDataSeeder extends Seeder
             'title' => 'Pijat Relaksasi',
             'description' => 'Membutuhkan jasa pijat relaksasi selama 2 jam di rumah.',
             'price' => 200000.00,
+                        'final_price' => 150000.00, // Assuming no negotiation
+
             'location' => 'Jalan Gatot Subroto No. 5, Surabaya',
             'status' => 'open', // Example of an open request
             'start_time' => Carbon::now()->addDays(2)->startOfDay(),

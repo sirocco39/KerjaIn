@@ -118,23 +118,23 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pekerjaan</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Klien</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durasi</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upah</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Tanggal</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Pekerjaan</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Lokasi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Klien</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Durasi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Upah</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style="text-align: center">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($jobHistory as $transaction)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->updated_at->format('d M Y') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->request->title ?? 'N/A' }}</td> {{-- Assuming 'job_title' on Request --}}
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->request->location ?? 'N/A' }}</td> {{-- Assuming 'location' on Request --}}
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $transaction->requester->first_name . ' ' . $transaction->requester->last_name ?? 'N/A' }}</td> {{-- Assuming 'name' on Requester (User) --}}
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">{{ $transaction->updated_at->format('d M Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">{{ $transaction->request->title ?? 'N/A' }}</td> {{-- Assuming 'job_title' on Request --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">{{ $transaction->request->location ?? 'N/A' }}</td> {{-- Assuming 'location' on Request --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">{{ $transaction->request->requester->first_name . ' ' . $transaction->request->requester->last_name ?? 'N/A' }}</td> {{-- Assuming 'name' on Requester (User) --}}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">
                                 @php
                                 $durationMinutes = 0;
                                 if ($transaction->start_work && $transaction->finish_work) {
@@ -144,8 +144,8 @@
                                 {{ $durationMinutes > 0 ? number_format($durationMinutes / 60, 1) . ' jam' : 'N/A' }}
 
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp {{ number_format($transaction->request->price ?? 0, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">Rp {{ number_format($transaction->request->price ?? 0, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                     {{ ucfirst($transaction->status) }}
                                 </span>
@@ -308,7 +308,7 @@
                                     style="width: 60px; height: 60px; margin-right: 10px;">
                                 <div>
                                     <strong>{{ $review->reviewer->first_name . ' '. $review->reviewer->last_name ?? 'Klien Anonim' }}</strong><br>
-                                    <small>Pekerja</small><br>
+                                    <small>Klien</small><br>
                                     {{ str_repeat('⭐', $review->rating) }}
                                     <p class="review-text">"{{ $review->comment }}"</p>
                                 </div>

@@ -20,8 +20,8 @@ class MonthlyReportController extends Controller
     {
         // --- 1. Get Worker Information ---
         // Get the ID of the authenticated user
-        // $workerId = Auth::id(); // Use Auth::id() for actual authenticated user
-        $workerId = 33; // For testing with a fixed ID, uncomment if needed
+        $workerId = Auth::id(); // Use Auth::id() for actual authenticated user
+        // $workerId = 33; // For testing with a fixed ID, uncomment if needed
 
         $worker = User::find($workerId); // Assuming User is your "worker" profile
 
@@ -63,7 +63,6 @@ class MonthlyReportController extends Controller
         $endOfMonth = $parsedSelectedMonth->copy()->endOfMonth();
 
         // --- 3. Fetch Data for Monthly Report ---
-
         // Fetch completed transactions for the authenticated worker within the selected month.
         // We filter by 'finish_work' as it indicates when the job was completed.
         $completedTransactions = Transaction::where('worker_id', $worker->id)
@@ -72,9 +71,9 @@ class MonthlyReportController extends Controller
             ->with('request') // Eager load the related Request (Job) model
             ->get();
 
+            // dd($completedTransactions);
         // A. Summary Statistics
         $totalJobsCompleted = $completedTransactions->count();
-
         // Calculate total hours worked from start_work and finish_work
         // Ensure start_work and finish_work are cast to 'datetime' in the Transaction model
         $totalHoursWorked = $completedTransactions->sum(function ($transaction) {
@@ -111,11 +110,11 @@ class MonthlyReportController extends Controller
             ->get();
 
         // C. Reviews from Clients for the selected month's completed transactions
-        $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
-            ->with('reviewer')
-            ->latest()
-            ->get();
-
+$clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
+->where('reviewee_id', $worker->id) // Filter reviews for the worker
+    ->with('reviewer')
+    ->latest()
+    ->get();
         // D. Gamification / Achievements (Placeholder - implement your logic)
         $achievements = [
             'Top Worker of the Month' => ($totalJobsCompleted >= 20 && $averageRating >= 4.9),
@@ -154,7 +153,7 @@ class MonthlyReportController extends Controller
             // Filter transaksi untuk hari ini
             $transactionsForDay = $completedTransactions->filter(function ($transaction) use ($currentDateLoop) {
                 // Pastikan 'finish_work' adalah instance Carbon untuk menggunakan isSameDay
-                return $transaction->finish_work instanceof Carbon && $transaction->finish_work->isSameDay($currentDateLoop);
+                return $transaction->updated_at instanceof Carbon && $transaction->updated_at->isSameDay($currentDateLoop);
             });
 
             // Hitung pendapatan untuk hari ini
@@ -202,8 +201,8 @@ class MonthlyReportController extends Controller
         // agar laporan PDF memiliki data yang akurat untuk periode yang dipilih.
 
         // 1. Dapatkan informasi Worker (sama seperti di index)
-        // $workerId = Auth::id();
-        $workerId = 33; // For testing
+        $workerId = Auth::id();
+        // $workerId = 33; // For testing
         $worker = User::find($workerId);
 
         if (!$worker) {
@@ -242,11 +241,11 @@ class MonthlyReportController extends Controller
             ->orderBy('finish_work', 'desc')
             ->get();
 
-        $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
-            ->with('reviewer')
-            ->latest()
-            ->get();
-
+$clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
+->where('reviewee_id', $worker->id) // Filter reviews for the worker
+    ->with('reviewer')
+    ->latest()
+    ->get();
         // Siapkan data untuk view PDF
         $data = [
             'worker' => $worker,
