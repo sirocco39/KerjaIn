@@ -21,7 +21,6 @@ class Transaction extends Model
         'requester_id',
         'worker_id',
         'status',
-        'price',
         'accepted_at',
     ];
     protected $attributes = [
@@ -29,7 +28,6 @@ class Transaction extends Model
     ];
     protected $casts = [
         'accepted_at' => 'datetime',
-        'price' => 'decimal:2',
     ];
 
     // Existing relationships

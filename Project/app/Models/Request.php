@@ -21,6 +21,7 @@ class Request extends Model
         'slug',
         'description',
         'price',
+        'final_price', // Added final_price to fillable
         'location',
         'requester_id',
         'status',
@@ -32,6 +33,7 @@ class Request extends Model
     ];
     protected $casts = [
         'price' => 'decimal:2',
+        'final_price' => 'decimal:2',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];
@@ -44,9 +46,9 @@ class Request extends Model
     {
         return $this->hasOne(Transaction::class, 'request_id');
     }
-    public function payments(): HasMany
+    public function payment(): HasOne
     {
-        return $this->hasMany(Payment::class, 'request_id');
+        return $this->hasOne(Payment::class, 'request_id');
     }
     public function chatRooms(): HasMany
     {

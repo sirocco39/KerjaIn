@@ -1,52 +1,92 @@
-@extends('Master.master-job_req')
+@extends('master.master-job-taker')
 
 @section('content')
-    <div class="container-fluid pembatas-x pembatas-y d-flex flex-column gap-3" id="greetings-section">
-        @auth
-            <h1 class="fw-bold mb-0">Halo, {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h1>
-        @else
-            <h1 class="fw-bold mb-0">Halo, Nama Pengguna</h1>
-        @endauth
-        <p class="mb-0">
-            Selamat datang! Di sini tempat terbaik untuk menemukan mitra kerja yang siap membantu. <br>
-            Mulailah dengan membuat permintaan pekerjaan pertamamu.
-        </p>
-        <a href="/job-req/tawarkan-kerja" class="button-switch">
-            Buat Lowongan Baru
-        </a>
+    <div class="header-wrap" id="header-beranda-job_taker">
+        <div class="container-fluid pembatas-x">
+            @auth
+                <h1 class="fw-bold mb-1">Halo, {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h1>
+            @else
+                <h1 class="fw-bold mb-1">Halo, Nama Pengguna</h1>
+            @endauth
+            <p class="mb-0">
+                Setiap langkah kecil menuju tujuan adalah kemajuan yang berharga.
+            </p>
+        </div>
+        <x-search></x-search>
+    </div>
+
+
+    <div class="container-fluid pembatas-x pembatas-y d-flex flex-column gap-4">
+        <h3 class="fw-bold mb-0">Ringkasan Pengalaman Anda</h3>
+
+        <div class="container-fluid d-flex row p-0 m-0 align-items-center justify-content-center" id="shortDetail">
+            <div class="col d-flex flex-column align-items-center p-0">
+                <h4 class="fw-bold title-detail m-0 mb-2">Lama Bekerja</h4>
+                @auth
+                    <p class="mb-0 text-p"><b class="bold-point">{{ floor(auth()->user()->created_at->diffInYears(now())) }}</b>
+                        Tahun</p>
+                @else
+                    <p class="mb-0 text-p"><b class="bold-point">0</b> Tahun</p>
+                @endauth
+            </div>
+
+            <div class="col d-flex flex-column align-items-center p-0" id="detail-tengah">
+                <h4 class="fw-bold title-detail m-0 mb-2">Pekerjaan Selesai</h4>
+                @auth
+                    <p class="mb-0 text-p"><b class="bold-point">{{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }}</b> Pekerjaan</p>
+                @else
+                    <p class="mb-0 text-p"><b class="bold-point">0</b> Pekerjaan</p>
+                @endauth
+            </div>
+
+            <div class="col d-flex flex-column align-items-center p-0">
+                <h4 class="fw-bold title-detail m-0 mb-2">Rating Rata-rata</h4>
+                <p class="mb-0"></p>
+                @auth
+                    <p class="mb-0 text-p"><b class="bold-point">{{ auth()->user()->rating }}</b></p>
+                @else
+                    <p class="mb-0 text-p"><b class="bold-point">0</b></p>
+                @endauth
+            </div>
+        </div>
     </div>
 
     <div class="container-fluid pembatas-x pembatas-b d-flex flex-column gap-4">
-        <h3 class="fw-bold mb-0">Tawaran Pekerjaan Saya Baru-baru Ini</h3>
+        <h3 class="fw-bold mb-0">Pekerjaan yang Sedang Anda Ambil</h3>
+
         <div class="d-flex">
             <div class="col-12 col-xl-8 d-flex flex-column gap-4 beranda-req-kiri">
-                @if ($fiveLatestRequests->isEmpty())
-                    <p>Anda belum pernah menawarkan pekerjaan!</p>
+                @if ($fiveLatestTransaction->isEmpty())
+                    <p>Anda belum pernah mengambil pekerjaan!</p>
                 @else
-                    @foreach ($fiveLatestRequests as $r)
-                        @php
-                            $hasTransaction = $r->transaction ? 'true' : 'false';
-                        @endphp
+                    @foreach ($fiveLatestTransaction as $r)
+                        {{-- Tambahkan atribut data-url dengan route tujuan --}}
                         <div class="work-request p-4 d-flex flex-column"
-                            data-url="{{ $r->transaction && $r->transaction->status !== 'cancelled' ? route('request.ongoing', ['transactionId' => $r->transaction->id]) : '' }}"
-                            data-has-transaction="{{ $r->transaction ? 'true' : 'false' }}">
+                            data-url="{{ $r->status !== 'cancelled' ? route('job-taker.accepted-work-request', ['id' => $r->id]) : '' }}">
                             <?php
-                            $startdatetime = strtotime($r->start_time);
-                            $enddatetime = strtotime($r->end_time);
+                            $startdatetime = strtotime($r->request->start_time);
+                            $enddatetime = strtotime($r->request->end_time);
                             $startdate = date('d M Y', $startdatetime);
                             $starttime = date('H.i', $startdatetime);
                             $enddate = date('d M Y', $enddatetime);
                             $endtime = date('H.i', $enddatetime);
                             ?>
 
-                            <h4 class="fw-bold mb-1">{{ $r->title }}</h4>
+                            <h4 class="fw-bold mb-1">{{ $r->request->title }}</h4>
 
                             <ul class="job-req-card-details d-flex justify-content-between mt-1 flex-column flex-md-row">
+                                <li class="col-12 col-md-2 gap-2 me-2">
+                                    <div class="icon-wrapper-beranda align-items-center align-items-md-start">
+                                        <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                                    </div>
+                                    <span>Kak {{ $r->requester->first_name }}</span>
+                                </li>
+
                                 <li class="col-12 col-md-3 col-lg-4 gap-2 me-2">
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
                                     </div>
-                                    <span>{{ $r->location }}</span>
+                                    <span>{{ $r->request->location }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
@@ -67,64 +107,43 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-dollar.svg') }}" alt="Icon Money">
                                     </div>
-                                    <span>Rp{{ number_format($r->price, 2, ',', '.') }}</span>
+                                    <span>Rp{{ number_format($r->request->final_price, 2, ',', '.') }}</span>
                                 </li>
                             </ul>
 
                             <div class="details-bottom-segment d-flex justify-content-between mt-2">
-                                @if ($r->status == 'open')
-                                    <div class="status">
-                                        <p class="mb-0">Menunggu Mitra</p>
-                                    </div>
-                                @elseif ($r->transaction->status == 'accepted')
+                                @if ($r->status == 'accepted')
                                     <div class="status">
                                         <p class="mb-0">Diterima</p>
                                     </div>
-                                @elseif($r->transaction->status == 'in progress' )
+                                @elseif($r->status == 'in progress')
                                     <div class="status" style="background-color: #309FFF">
                                         <p class="mb-0">Dikerjain</p>
                                     </div>
-                                @elseif($r->transaction->status == 'submitted')
+                                @elseif($r->status == 'submitted')
                                     <div class="status">
                                         <p class="mb-0">Ditinjau</p>
                                     </div>
-                                @elseif($r->transaction->status == 'completed')
+                                @elseif($r->status == 'completed')
                                     <div class="status" style="background-color:#E8FA0D; color: #294287;">
                                         <p class="mb-0">Selesai</p>
                                     </div>
-                                @elseif($r->transaction->status == 'cancelled')
+                                @elseif($r->status == 'cancelled')
                                     <div class="status" style="background-color: #B02A37">
                                         <p class="mb-0">Dibatalin</p>
                                     </div>
                                 @endif
                                 <a class="detail-req-button" data-bs-toggle="modal" data-bs-target="#detailModal"
-                                    data-slug="{{ $r->slug }}"
-                                    data-edit-url="{{ route('requesttt.edit', $r->slug) }}"
-                                    data-delete-url="{{ route('requesttt.destroy', $r->slug) }}">DETAIL</a>
+                                    data-slug="{{ $r->id }}">DETAIL</a>
                             </div>
                         </div>
-                        {{-- <div class="dropdown text-end">
-                            <button class="btn btn-light border-0" type="button" id="dropdownMenuButton{{ $loop->index }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $loop->index }}">
-                                <li><a class="dropdown-item" href="{{ route('requesttt.edit', $r->slug) }}">Edit</a></li>
-                                <li>
-                                    <form action="{{ route('requesttt.destroy', $r->slug) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="dropdown-item text-danger" type="submit">Delete</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div> --}}
                     @endforeach
                 @endif
             </div>
 
-            <div class="col beranda-req-kanan d-xl-flex align-items-center justify-content-end">
-                <img class="d-lg-flex" src="{{ asset('Image/orang/ilus-beranda.svg') }}" alt="People Give Money"
-                    id="ilus-beranda">
+            <div class="col beranda-req-kanan d-none d-xl-flex align-items-center justify-content-end">
+                <img class="d-none d-xl-flex" src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}"
+                    alt="People Give Money" id="ilus-beranda">
             </div>
         </div>
     </div>
@@ -140,6 +159,13 @@
                 <div id="modal-content-container" class="p-3">
                     <h1 class="fw-bold mb-3" id="modal-detail-title">Nama Lowongan Kerja</h1>
                     <ul class="job-card-details">
+                        <li class="gap-2">
+                            <div class="icon-wrapper">
+                                <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
+                            </div>
+                            <span>Kak <span id="modal-detail-profile"></span></span>
+                        </li>
+
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-address.svg') }}" alt="Icon Address">
@@ -176,11 +202,11 @@
                     <h5 class="detail-status fw-bold d-flex mt-3">Status:</h5>
                     <p class="mb-3" id="modal-detail-status"></p>
 
-                    <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
+                    {{-- <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
                         <a id="button-action-1"></a>
                         <a id="button-action-2"></a>
                         <a id="button-action-3"></a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -211,7 +237,6 @@
             </div>
         </div>
     </div>
-
     {{-- End Pop Up Detail --}}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -220,27 +245,27 @@
 
             // Elemen-elemen dalam modal detail
             const modalTitle = document.getElementById('modal-detail-title');
+            const modalProfile = document.getElementById('modal-detail-profile');
             const modalLocation = document.getElementById('modal-detail-location');
             const modalDate = document.getElementById('modal-detail-date');
             const modalTime = document.getElementById('modal-detail-time');
             const modalPrice = document.getElementById('modal-detail-price-value');
             const modalDescription = document.getElementById('modal-detail-description-text');
             const modalStatus = document.getElementById('modal-detail-status');
-            const buttonAction1 = document.getElementById('button-action-1');
-            const buttonAction2 = document.getElementById('button-action-2');
-            const buttonAction3 = document.getElementById('button-action-3');
-            const deleteForm = document.getElementById('delete-request-form');
+            // const buttonAction1 = document.getElementById('button-action-1');
+            // const buttonAction2 = document.getElementById('button-action-2');
+            // const buttonAction3 = document.getElementById('button-action-3');
 
 
             modal.addEventListener('show.bs.modal', function(event) {
                 // Tombol yang memicu modal
                 const button = event.relatedTarget;
                 const slug = button.getAttribute('data-slug');
-                const editUrl = button.getAttribute('data-edit-url'); // Ambil URL edit dari tombol
-                const deleteUrl = button.getAttribute('data-delete-url');
+                console.log("Slug:", slug);
 
                 // Reset isi modal untuk menghindari tampilan data lama
                 modalTitle.textContent = 'Loading...';
+                modalProfile.textContent = '-'
                 modalLocation.textContent = '-';
                 modalDate.textContent = '-';
                 modalTime.textContent = '-';
@@ -252,7 +277,7 @@
                 modalStatus.innerHTML = '<p class="mb-0">Memuat status...</p>';
 
                 // Fetch data pekerjaan berdasarkan slug
-                fetch(`/requesttt/${slug}`)
+                fetch(`/job-taker/beranda/${slug}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Gagal memuat data pekerjaan');
@@ -260,11 +285,16 @@
                         return response.json();
                     })
                     .then(data => {
-                        const startDatetime = new Date(data.start_time);
-                        const endDatetime = new Date(data.end_time);
+                        console.log(data);
+                        const requests = data.request;
+                        const requester = data.requester;
 
-                        modalTitle.textContent = data.title || '-';
-                        modalLocation.textContent = data.location || '-';
+                        const startDatetime = new Date(requests.start_time);
+                        const endDatetime = new Date(requests.end_time);
+
+                        modalTitle.textContent = requests.title || '-';
+                        modalLocation.textContent = requests.location || '-';
+                        modalProfile.textContent = requester.first_name || '-'
                         modalDate.textContent = startDatetime.toLocaleDateString('id-ID', {
                             day: '2-digit',
                             month: 'short',
@@ -272,26 +302,40 @@
                         });
                         modalTime.textContent =
                             `${startDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${endDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
-                        modalPrice.textContent = parseFloat(data.price || 0).toLocaleString('id-ID', {
-                            minimumFractionDigits: 2
-                        });
-                        modalDescription.textContent = data.description || '-';
+                        modalPrice.textContent = parseFloat(requests.final_price || 0).toLocaleString(
+                            'id-ID', {
+                                minimumFractionDigits: 2
+                            });
+                        modalDescription.textContent = requests.description || '-';
 
                         // Tentukan status berdasarkan data
-                        if (data.status === 'open') {
-                            modalStatus.innerHTML = `<p class="mb-0">Menunggu Mitra</p>`;
-                            buttonAction1.innerHTML =
-                                `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="${editUrl}">Sunting</a>`;
-                            buttonAction2.innerHTML =
-                                `<a class="details-button-item btn-hapus-modal text-decoration-none" data-bs-target="#deleteConfirmation" data-bs-toggle="modal" id="button-action-2">Hapus</a>`
-                            deleteForm.setAttribute('action', deleteUrl);
-                        } else if (data.status === 'closed') {
-                            const transaction = data.transaction;
-                            const statusText = getStatusText(transaction?.status);
-                            modalStatus.innerHTML = `<p class="mb-0">${statusText}</p>`;
-                        } else {
-                            modalStatus.innerHTML = `<p class="mb-0">Status Tidak Diketahui</p>`;
-                        }
+                        const statusText = getStatusText(data.status);
+
+                        // if (statusText === 'Diterima') {
+                        //     buttonAction1.innerHTML =
+                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Kerjain</a>`
+                        //     buttonAction2.innerHTML =
+                        //         `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
+                        //     buttonAction3.innerHTML =
+                        //         `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Batalin</a>`
+                        // } else if (statusText === 'Dikerjain') {
+                        //     buttonAction1.innerHTML =
+                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Selesai</a>`
+                        //     buttonAction2.innerHTML =
+                        //         `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
+                        // } else if (statusText === 'Ditinjau') {
+                        //     buttonAction1.innerHTML =
+                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
+                        //     buttonAction2.innerHTML =
+                        //         `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
+                        //     buttonAction3.innerHTML =
+                        //         `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporin</a>`
+                        // } else if (statusText === 'Selesai') {
+                        //     buttonAction1.innerHTML =
+                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
+                        // }
+
+                        modalStatus.innerHTML = `<p class="mb-0">${statusText}</p>`;
 
                         // Perbarui tombol kembali
                         const kembaliButton = document.getElementById('kembali-button-section');
@@ -335,43 +379,32 @@
                         return '-';
                 }
             }
-
-            // Mendapatkan semua elemen dengan kelas 'work-request'
-            document.querySelectorAll('.work-request').forEach(card => {
-                card.addEventListener('click', function(event) {
-
-                    // Baca penanda apakah request ini punya transaksi atau tidak.
-                    const hasTransaction = this.dataset.hasTransaction === 'true';
-
-                    if (hasTransaction) {
-                        // ---> KONDISI 1: Request PUNYA transaksi (mode navigasi aktif)
-
-                        // Cek apakah yang diklik adalah tombol DETAIL itu sendiri atau ikon di dalamnya.
-                        if (event.target.closest('.detail-req-button')) {
-                            // Jika ya, jangan lakukan apa-apa.
-                            // Biarkan Bootstrap yang bekerja membuka modal.
-                            return;
-                        } else {
-                            // Jika yang diklik adalah area lain di kartu, baru pindah halaman.
-                            const url = this.dataset.url;
-                            if (url) {
-                                window.location.href = url;
-                            }
-                        }
-
-                    } else {
-                        // ---> KONDISI 2: Request TIDAK punya transaksi (mode pop-up)
-
-                        // Pakai logika lama: seluruh kartu akan membuka modal.
-                        // Cari tombol detail di dalam kartu ini dan klik secara programmatic.
-                        const detailButton = this.querySelector('.detail-req-button');
-                        if (detailButton) {
-                            detailButton.click();
-                        }
-                    }
+            document.querySelectorAll('.detail-req-button').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    // MENCEGAH event 'click' menyebar ke parent (card).
+                    // Jadi, saat tombol ini diklik, navigasi halaman tidak akan terjadi.
+                    event.stopPropagation();
                 });
             });
 
+            // 2. Logika untuk CARD (Pindah halaman)
+            document.querySelectorAll('.work-request').forEach(card => {
+                card.addEventListener('click', function() {
+                    // Hapus kelas 'choosed' dari semua card lain
+                    document.querySelectorAll('.work-request').forEach(otherCard => {
+                        otherCard.classList.remove('choosed');
+                    });
+                    // Tambah kelas 'choosed' ke card yang diklik
+                    this.classList.add('choosed');
+
+                    // Arahkan browser ke URL yang ada di atribut 'data-url'
+                    const url = this.dataset.url;
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
+            });
+            // Mendapatkan semua elemen dengan kelas 'work-request'
         });
     </script>
 @endsection

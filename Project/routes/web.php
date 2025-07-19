@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Auth as FacadesAuth;
 use App\Models\Request as WorkRequest;
 use App\Models\Transaction;
 use App\Http\Controllers\{
+    BalanceController,
+    TopUpController,
+    WebhookController,
     TransactionController,
     WorkerRegistrationController,
     BrowseWorkRequestController,
@@ -55,18 +58,18 @@ Route::get('/job-req/beranda', function () {
     $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId)
         ->whereNull('deleted_at')
         ->latest()
-        ->take(6)
+        ->take(5)
         ->with('transaction')
         ->get();
-    return view('Job_Requester.beranda', compact('fiveLatestRequests'));
+    return view('job-requester.home', compact('fiveLatestRequests'));
 })->name('job-req.beranda');
 
-Route::get('/job-req/tawarkan-kerja', fn () => view('Job_Requester.postwork'));
+Route::get('/job-req/tawarkan-kerja', fn () => view('job-requester.post-work'));
 Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
 Route::post('/postwork', [RequestController::class, 'add']);
 
 Route::get('/job-req/riwayat', [TransactionController::class, 'index'])->name('orders.index');
-Route::get('/job-req/pesan', fn () => view('Job_Requester.pesan'))->name('jobrequester.chat');
+Route::get('/job-req/pesan', fn () => view('job-requester.chat'))->name('jobrequester.chat');
 Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing');
 
 // Job Requester Request Detail Routes
@@ -76,7 +79,7 @@ Route::get('/edit/{request:slug}', fn (WorkRequest $request) => view('edit', ['w
 // =======================
 // JOB TAKER PAGES
 // =======================
-Route::get('/job_taker', fn () => view('Job_Taker.dummy-job_taker-landingpage'));
+Route::get('/job_taker', fn () => view('job-taker.dummy-job_taker-landingpage'));
 Route::get('/job-taker/beranda', function () {
     $workerId = FacadesAuth::id();
     $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
@@ -85,16 +88,14 @@ Route::get('/job-taker/beranda', function () {
         ->take(5)
         ->with('requester', 'request')
         ->get();
-    return view('Job_Taker.job_taker-beranda', compact('fiveLatestTransaction'));
-})->name('job-taker.beranda');
+    return view('job-taker.home', compact('fiveLatestTransaction'));
+})->name('job-taker.home');
 Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
 Route::get('/job-taker/riwayat', [WorkerTransactionController::class, 'index'])->name('orders.index');
-Route::get('/job-taker/pesan/{selectedRoomId?}', fn ($selectedRoomId = null) => view('Job_Taker.pesan', ['chatRoomId' => $selectedRoomId]))->name('chat.job-taker');
+Route::get('/job-taker/pesan/{selectedRoomId?}', fn ($selectedRoomId = null) => view('job-taker.chat', ['chatRoomId' => $selectedRoomId]))->name('chat.job-taker');
 Route::get('/job-taker/cari-kerja', [BrowseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
 Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
-
-Route::get('/test', fn () => view('Job_Taker.job_taker-pesanSon'));
 
 // =======================
 // JOB TAKER REQUEST ACTIONS
@@ -127,6 +128,21 @@ Route::post('/tawar/{requestId}', [ChatController::class, 'startOffer'])->name('
 Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
 Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
 
+Route::get('/job-req/top-up', [TopUpController::class, 'index'])->name('top-up.job-req');
+Route::get('/job-taker/top-up', [TopUpController::class, 'index'])->name('top-up.job-taker');
+
+// Memproses form dan membuat invoice Xendit
+Route::post('/topup', [TopUpController::class, 'createInvoice'])->name('topup.create');
+
+// Endpoint untuk menerima webhook dari Xendit
+Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
+
+Route::get('/job-req/wallet', [BalanceController::class, 'index'])->name('balance.job-req');
+Route::get('/job-taker/wallet', [BalanceController::class, 'index'])->name('balance.job-taker');
+
+Route::get('/wallet/balance', [BalanceController::class, 'getCurrentBalance'])->name('balance.get');
+
+Route::get('/topup/status/{external_id}', [TopUpController::class, 'checkStatus'])->name('topup.status');
 // =======================
 // INVOICE
 // =======================
@@ -160,4 +176,4 @@ Route::get('/navbar-job_req', fn () => view('Master.master-job_req'));
 // =======================
 // RESOURCE ROUTES
 // =======================
-Route::resource('requesttt', RequestController::class);
+Route::resource('request', RequestController::class);

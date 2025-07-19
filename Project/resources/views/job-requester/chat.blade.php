@@ -1,4 +1,4 @@
-@extends('Master.master-job_req')
+@extends('master.master-job-req')
 
 @section('content')
 <div class="container-fluid">

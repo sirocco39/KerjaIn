@@ -72,7 +72,7 @@ class WorkerTransactionController extends Controller
         });
 
         // Render the specified Blade view
-        return view('Job_Taker.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
+        return view('job-taker.riwayat', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
     }
 
     public function show($id)
@@ -96,7 +96,8 @@ class WorkerTransactionController extends Controller
             ]);
         }
 
-        return view('Job_Taker.accepted-work-request', compact(
+        // Kirim ke view
+        return view('job-taker.accepted-work-request', compact(
             'transaction',
             'request',
             'worker',
@@ -157,9 +158,24 @@ class WorkerTransactionController extends Controller
             $transaction->save();
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pekerjaan ditandai sebagai ditinjau.'
+        // Ambil data yang dibutuhkan untuk pop-up rating
+        $job = Request::find($transaction->job->request_id);
+        $requester = $transaction->job->requester;
+
+        // Kirim data ke view via session flash
+        return back()->with([
+            'show_rating_modal' => true,
+            'rating_data' => [
+                'title' => $job->title,
+                'order_number' => $transaction->order_number,
+                'client_name' => $requester->first_name . ' ' . $requester->last_name,
+                'location' => $job->location,
+                'order_date' => $job->start_time->format('Y-m-d'),
+                'completion_date' => $job->end_time->format('Y-m-d'),
+                'start_time' => $job->start_time->format('H.i'),
+                'end_time' => $job->end_time->format('H.i'),
+                'price' => $job->final_price,
+            ],
         ]);
     }
 

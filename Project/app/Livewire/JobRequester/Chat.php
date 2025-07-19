@@ -6,9 +6,11 @@ use App\Models\ChatMessage;
 use App\Models\ChatRoom;
 use App\Models\Offer;
 use App\Models\Request;
+use App\Models\WalletTransaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\Attributes\On; // Penting: import atribut On
 
@@ -111,7 +113,56 @@ class Chat extends Component
         $offer->update(['status' => $response]);
 
         if ($response === 'accepted') {
-            $offer->request->update(['price' => $offer->amount]);
+            DB::transaction(function () use ($offer) {
+                $workRequest = $offer->request;
+                $requester = $workRequest->requester;
+                $originalPrice = $workRequest->price; // Harga awal yang di-lock
+                $newPrice = $offer->amount;         // Harga baru dari offer
+
+                // Hitung selisih harga
+                $priceDifference = $newPrice - $originalPrice;
+
+                // --- Skenario 1: Harga Penawaran LEBIH TINGGI ---
+                if ($priceDifference > 0) {
+                    // Cek apakah saldo requester cukup untuk menutupi selisih
+                    if ($requester->balance < $priceDifference) {
+                        // Jika tidak cukup, batalkan transaksi dan lempar error
+                        throw new \Exception('Saldo Anda tidak cukup untuk menerima penawaran ini. Silakan isi saldo terlebih dahulu.');
+                    }
+
+                    // Kurangi saldo aktif, tambahkan ke saldo tertahan
+                    $requester->balance -= $priceDifference;
+                    $requester->locked_balance += $priceDifference;
+                    $requester->save();
+
+                    // Catat transaksi penyesuaian di riwayat wallet
+                    WalletTransaction::create([
+                        'user_id' => $requester->id,
+                        'amount' => $priceDifference,
+                        'type' => 'credit',
+                        'description' => 'Penyesuaian dana ditahan untuk pekerjaan: ' . $workRequest->title,
+                    ]);
+                }
+
+                // --- Skenario 2: Harga Penawaran LEBIH RENDAH ---
+                else if ($priceDifference < 0) {
+                    $refundAmount = abs($priceDifference); // Ambil nilai absolut untuk refund
+
+                    // Kembalikan selisih dana ke saldo aktif
+                    $requester->balance += $refundAmount;
+                    $requester->locked_balance -= $refundAmount;
+                    $requester->save();
+
+                    // Catat transaksi refund parsial di riwayat wallet
+                    WalletTransaction::create([
+                        'user_id' => $requester->id,
+                        'amount' => $refundAmount,
+                        'type' => 'debit',
+                        'description' => 'Pengembalian dana sebagian untuk pekerjaan: ' . $workRequest->title,
+                    ]);
+                }
+            });
+            $offer->request->update(['final_price' => $offer->amount]);
             $transaction = Request::hireAndFinalize($offer->request, $offer->worker);
             return redirect()->route('request.ongoing', ['transactionId' => $transaction->id]);
         }

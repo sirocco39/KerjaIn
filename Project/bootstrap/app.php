@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+          $middleware->validateCsrfTokens(except: [
+            'webhooks/xendit', // <-- Masukkan path URL Anda di sini
+            // 'stripe/*',
+        ]);
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {

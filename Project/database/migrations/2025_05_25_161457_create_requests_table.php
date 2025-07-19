@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('title', 256);
             $table->text('description');
             $table->decimal('price', 10, 2);
+            $table->decimal('final_price', 10, 2);
             $table->string('location', 512);
             $table->enum('status', ['open', 'closed']);
             $table->dateTime('start_time');
