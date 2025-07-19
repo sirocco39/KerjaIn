@@ -1,4 +1,4 @@
-@extends('master.master-job_req')
+@extends('master.master-job-req')
 
 @section('content')
 {{-- Link ke Tailwind CSS sudah dihapus, diasumsikan Bootstrap sudah ada di master layout --}}

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class RequestController extends Controller
 {
@@ -271,5 +272,35 @@ class RequestController extends Controller
             'message' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
             'redirect_url' => route('job-taker.home')
         ]);
+    }
+    public function validateRequest(Request $request)
+    {
+        // Salin aturan validasi dari Form Request atau method store Anda ke sini
+        $validator = Validator::make($request->all(), [
+            'workTitleLabel'     => 'required|string|max:255',
+            'workDetailLabel'    => 'required|string',
+            'workAddressLabel'   => 'required|string|max:255',
+            'workStartDateLabel' => 'required|date',
+            'workStartTimeLabel' => 'required',
+            'workEndDateLabel'   => 'required|date|after_or_equal:workStartDateLabel',
+            'workEndTimeLabel'   => 'required',
+            'workPriceLabel'     => 'required|numeric|min:5000',
+        ]);
+
+        // Cek jika ada kombinasi tanggal & waktu yang tidak valid
+        $validator->after(function ($validator) use ($request) {
+            $startDateTime = $request->workStartDateLabel . ' ' . $request->workStartTimeLabel;
+            $endDateTime = $request->workEndDateLabel . ' ' . $request->workEndTimeLabel;
+            if (strtotime($endDateTime) <= strtotime($startDateTime)) {
+                $validator->errors()->add('datetime', 'Waktu selesai harus setelah waktu mulai.');
+            }
+        });
+
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

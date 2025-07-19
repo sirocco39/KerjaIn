@@ -1,4 +1,4 @@
-@extends('master.master-job_req')
+@extends('master.master-job-req')
 @section('content')
     <x-join-worker.join-template :step="2">
         <div class = "row justify-content-center">

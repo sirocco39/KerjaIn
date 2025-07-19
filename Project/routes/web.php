@@ -177,3 +177,4 @@ Route::get('/navbar-job_req', fn () => view('Master.master-job_req'));
 // RESOURCE ROUTES
 // =======================
 Route::resource('request', RequestController::class);
+Route::post('/request/validate', [RequestController::class, 'validateRequest'])->name('request.validate'); // TAMBAHKAN INI
