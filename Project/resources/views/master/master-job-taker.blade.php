@@ -41,22 +41,38 @@
 
                 <hr class="d-lg-none my-2">
 
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
-                    <!-- Dropdown Bahasa -->
+                <ul class="navbar-nav ms-auto mb-lg-0 d-flex align-items-lg-center">
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
-                            <span>Bahasa</span>
+
+                            {{-- Logika untuk menampilkan bendera & teks dinamis --}}
+                            @if (App::getLocale() == 'id')
+                                <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
+                                <span>Bahasa</span>
+                            @elseif (App::getLocale() == 'en')
+                                <img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="Language" id="langFlag">
+                                <span>English</span>
+                            @endif
+
                             <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
-                        <ul class="dropdown-menu" aria-labelledby="dropdownLang">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
-                                        src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
-                                        class="flag"> Bahasa</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
-                                        src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
-                                        class="flag"> English</a></li>
+
+                        <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('language.switch', 'id') }}">
+                                    <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
+                                        class="flag"> Bahasa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('language.switch', 'en') }}">
+                                    <img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
+                                        class="flag"> English
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -67,48 +83,37 @@
                             <span class="d-lg-none">Profil</span>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
-                            @guest
-                                <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#loginModal"><img
-                                            src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
-                                            class="navIcon">Masuk</button></li>
-                            @endguest
+                        <ul class="dropdown-menu dropdown-menu-end m-0 dropdown-profile-custom"
+                            aria-labelledby="dropdownProfile">
                             @auth
+                                {{-- Item Saldo --}}
                                 <li>
-                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                    <a class="dropdown-item d-flex align-items-center"
-                                        href="{{ route('balance.job-taker') }}">
-                                        {{-- Sisi Kiri: Ikon dan Teks --}}
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                        href="{{ route('balance.job-req') }}">
                                         <div class="d-flex align-items-center gap-2">
-                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
                                             <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
                                                 class="navIcon">
                                             <span>Saldo</span>
                                         </div>
-                                        {{-- Sisi Kanan: Jumlah Saldo --}}
-                                        <span class="ms-auto fw-bold">
-                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                            {{-- Fungsi number_format untuk format Rupiah --}}
+                                        <span class="fw-bold me-3">
                                             Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
                                         </span>
                                     </a>
                                 </li>
+
+                                <hr class="dropdown-divider my-1">
+
+                                {{-- Item Keluar --}}
                                 <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
                                         @csrf
-                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
                                             <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
                                                 class="navIcon">
                                             Keluar
                                         </button>
                                     </form>
                                 </li>
-                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center gap-1"
                                         href="{{ route('job-req.beranda') }}">
@@ -361,6 +366,29 @@
         </div>
     </div>
     {{-- End Pop Up Register --}}
+    <style>
+        .dropdown-profile-custom {
+            min-width: 250px;
+            /* Lebar minimum agar tidak sempit */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Ini adalah perbaikan utamanya */
+        .dropdown-profile-custom .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            /* Tambah padding kanan-kiri */
+            font-weight: 500;
+        }
+
+        .dropdown-profile-custom .navIcon {
+            width: 20px;
+            /* Pastikan ukuran ikon seragam */
+        }
+    </style>
 
     <script>
         const loginEmailInput = document.getElementById('email-login');

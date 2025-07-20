@@ -32,7 +32,7 @@ class BalanceController extends Controller
         // Gunakan paginate untuk membatasi jumlah data per halaman
         $walletTransactions = $user->walletTransactions()
             ->latest()
-            ->paginate(15); // Tampilkan 15 transaksi per halaman
+            ->paginate(5); // Tampilkan 15 transaksi per halaman
         return view($viewPath, compact('user', 'walletTransactions'));
     }
     public function getCurrentBalance()

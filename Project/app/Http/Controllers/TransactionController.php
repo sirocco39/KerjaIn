@@ -115,8 +115,8 @@ class TransactionController extends Controller
         WalletTransaction::create([
             'user_id' => $requester->id,
             'amount' => $refundAmount,
-            'type' => 'credit',
-            'description' => 'Pengembalian dana dari pembatalan pekerjaan: ' . $transaction->request->title,
+            'type' => 'debit',
+            'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $transaction->request->title,
         ]);
 
         // If the request status should also be updated when cancelled by requester
@@ -159,19 +159,12 @@ class TransactionController extends Controller
             $worker->save();
 
             // 5. Catat riwayat transaksi untuk kedua belah pihak
-            // a. Catatan untuk Requester (uang keluar dari escrow)
-            WalletTransaction::create([
-                'user_id' => $requester->id,
-                'amount' => $payoutAmount,
-                'type' => 'debit',
-                'description' => 'Pelepasan dana untuk pekerjaan: ' . $workRequest->title,
-            ]);
-
+            // a. Catatan untuk Requester (uang keluar)
             // b. Catatan untuk Worker (uang masuk)
             WalletTransaction::create([
                 'user_id' => $worker->id,
                 'amount' => $payoutAmount,
-                'type' => 'credit',
+                'type' => 'debit',
                 'description' => 'Pembayaran diterima dari pekerjaan: ' . $workRequest->title,
             ]);
 

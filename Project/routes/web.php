@@ -21,7 +21,8 @@ use App\Http\Controllers\{
     PusherController,
     ChatController,
     JobTakerRequestController,
-    InvoiceController
+    InvoiceController,
+    LocalizationController
 };
 use App\Livewire\JobTaker\Chat;
 use App\Livewire\jobTaker\JobTakerChatRoom;
@@ -170,8 +171,9 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     // =======================
     // MISC / NAVBAR (AUTHENTICATED)
     // =======================
-    Route::get('/navbar-job_taker', fn () => view('Master.master-job_taker'));
-    Route::get('/navbar-job_req', fn () => view('Master.master-job_req'));
+    Route::get('/navbar-job_taker', fn () => view('master.master-job_taker'));
+    Route::get('/navbar-job_req', fn () => view('master.master-job_req'));
+    Route::get('switch-language/{locale}', [LocalizationController::class, 'switch'])->name('language.switch');
 
     // =======================
     // RESOURCE ROUTES (AUTHENTICATED)
@@ -183,3 +185,8 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
 
 // Endpoint untuk menerima webhook dari Xendit (DO NOT ADD AUTH HERE, as Xendit's server sends this)
 Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
+// =======================
+// RESOURCE ROUTES
+// =======================
+Route::resource('request', RequestController::class);
+Route::post('/request/validate', [RequestController::class, 'validateRequest'])->name('request.validate');
