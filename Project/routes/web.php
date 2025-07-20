@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\MonthlyReportController;
+use App\Models\Request as WorkRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
-use App\Models\Request as WorkRequest;
 use App\Models\Transaction;
 use App\Http\Controllers\{
     BalanceController,
@@ -32,7 +33,7 @@ use App\Models\ChatRoom;
 // =======================
 // LANDING PAGE
 // =======================
-Route::get('/', fn () => view('landing'))->name('landing'); // Added .name('landing') here
+Route::get('/', fn() => view('landing'))->name('landing'); // Added .name('landing') here
 
 // =======================
 // AUTH ROUTES
@@ -68,22 +69,22 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
         return view('job-requester.home', compact('fiveLatestRequests'));
     })->name('job-req.beranda');
 
-    Route::get('/job-req/tawarkan-kerja', fn () => view('job-requester.post-work'));
+    Route::get('/job-req/tawarkan-kerja', fn() => view('job-requester.post-work'));
     Route::post('/job-req/tawarkan-kerja', [RequestController::class, 'add']);
     Route::post('/postwork', [RequestController::class, 'add']);
 
     Route::get('/job-req/riwayat', [TransactionController::class, 'index'])->name('orders.index');
-    Route::get('/job-req/pesan', fn () => view('job-requester.chat'))->name('jobrequester.chat');
+    Route::get('/job-req/pesan', fn() => view('job-requester.chat'))->name('jobrequester.chat');
     Route::get('/job-req/on-going-work-request/{transactionId}', [TransactionController::class, 'showOngoing'])->name('request.ongoing'); // This route is now protected
 
     // Job Requester Request Detail Routes
-    Route::get('/request/{request:slug}', fn (WorkRequest $request) => view('request', ['workRequest' => $request]));
-    Route::get('/edit/{request:slug}', fn (WorkRequest $request) => view('edit', ['workRequest' => $request]));
+    Route::get('/request/{request:slug}', fn(WorkRequest $request) => view('request', ['workRequest' => $request]));
+    Route::get('/edit/{request:slug}', fn(WorkRequest $request) => view('edit', ['workRequest' => $request]));
 
     // =======================
     // JOB TAKER PAGES (AUTHENTICATED)
     // =======================
-    Route::get('/job_taker', fn () => view('job-taker.dummy-job_taker-landingpage'));
+    Route::get('/job_taker', fn() => view('job-taker.dummy-job_taker-landingpage'));
     Route::get('/job-taker/beranda', function () {
         $workerId = FacadesAuth::id();
         $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
@@ -97,8 +98,20 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
     Route::get('/job-taker/riwayat', [WorkerTransactionController::class, 'index'])->name('orders.index');
-    Route::get('/job-taker/pesan/{selectedRoomId?}', fn ($selectedRoomId = null) => view('job-taker.chat', ['chatRoomId' => $selectedRoomId]))->name('chat.job-taker');
+    Route::get('/job-taker/pesan/{selectedRoomId?}', fn($selectedRoomId = null) => view('job-taker.chat', ['chatRoomId' => $selectedRoomId]))->name('chat.job-taker');
     Route::get('/job-taker/cari-kerja', [BrowseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
+
+    Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
+
+
+    Route::get('/job-taker/monthly-report', [MonthlyReportController::class, 'index'])->name('monthly.report');
+    Route::get('/job-taker/monthly-report/download-pdf', [MonthlyReportController::class, 'downloadReportPdf'])->name('monthly.report.download.pdf');
+    Route::view('/job-taker/pdf', 'Job_Taker.pdf.report-pdf')->name('pdf');
+    Route::get('/navbar-job_taker', function () {
+        return view('Master.master-job_taker');
+    });
+    // Route::get('/browseWorkRequest', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
+
     Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
 
     // =======================
@@ -152,18 +165,27 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     // =======================
     // WORKER REGISTRATION FLOW (AUTHENTICATED)
     // =======================
-    Route::get('/joinworker', fn () => redirect()->route('worker.register.step1'));
+    Route::get('/joinworker', fn() => redirect()->route('worker.register.step1'));
 
+    // Grup route untuk pendaftaran pekerja tanpa autentikasi
     Route::prefix('joinWorker')->name('worker.register.')->group(function () {
+        // Langkah 1: Data Pribadi (Form GET, Proses POST)
+        // URL: /joinWorker/join
         Route::get('/join', [WorkerRegistrationController::class, 'createStep1'])->name('step1');
-        Route::post('/join', [WorkerRegistrationController::class, 'store1'])->name('store1');
+        Route::post('/join', [WorkerRegistrationController::class, 'store1'])->name('store1'); // <-- KEMBALIKAN KE 'store1'
 
+        // Langkah 2: Detail Kontrak (Form GET, Proses POST)
+        // URL: /joinWorker/join2
         Route::get('/join2', [WorkerRegistrationController::class, 'createStep2'])->name('step2');
         Route::post('/join2', [WorkerRegistrationController::class, 'store2'])->name('store2');
 
+        // Langkah 3: Verifikasi / Upload Dokumen / Finalisasi (Form GET, Proses POST)
+        // URL: /joinWorker/join3
         Route::get('/join3', [WorkerRegistrationController::class, 'createStep3'])->name('step3');
         Route::post('/join3', [WorkerRegistrationController::class, 'finalizeRegistration'])->name('finalize');
 
+        // Halaman Sukses
+        // URL: /joinWorker/success
         Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
         Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
     });
@@ -171,9 +193,15 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     // =======================
     // MISC / NAVBAR (AUTHENTICATED)
     // =======================
-    Route::get('/navbar-job_taker', fn () => view('master.master-job_taker'));
-    Route::get('/navbar-job_req', fn () => view('master.master-job_req'));
+    Route::get('/navbar-job_taker', fn() => view('master.master-job_taker'));
+    Route::get('/navbar-job_req', fn() => view('master.master-job_req'));
     Route::get('switch-language/{locale}', [LocalizationController::class, 'switch'])->name('language.switch');
+
+    // =======================
+    // RESOURCE ROUTES
+    // =======================
+    Route::resource('request', RequestController::class);
+
 
     // =======================
     // RESOURCE ROUTES (AUTHENTICATED)

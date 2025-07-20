@@ -32,8 +32,7 @@
         }
 
         .header-outside-box img {
-            width: 90pt;
-            height: 30pt;
+            width: 100pt;
             margin-bottom: 3pt;
         }
 

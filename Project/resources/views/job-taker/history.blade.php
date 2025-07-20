@@ -2,8 +2,17 @@
 
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
+    <div class="flex items-center space-x-4">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">Riwayat Pemesanan
         </h1>
+    <a href="{{ route('monthly.report') }}" 
+    class="btn btn-primary btn-lg mb-3 text-white"
+    style="text-decoration: none;">
+        Laporan Bulanan
+    </a>
+
+
+    </div>
         <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
             {{-- Desktop Tab Navigation --}}
             <div class="tabs-wrapper hidden md:flex">
