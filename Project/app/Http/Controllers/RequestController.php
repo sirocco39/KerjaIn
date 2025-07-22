@@ -106,9 +106,11 @@ class RequestController extends Controller
             'status' => 'holding',
         ]);
         if ($result) {
-            return redirect()->to('/job-req/beranda');
+            // Changed to custom alert
+            return redirect()->to('/job-req/beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
         } else {
-            return "request error";
+            // Changed to custom alert
+            return back()->with('custom_error_alert', 'Terjadi kesalahan saat membuat permintaan pekerjaan.');
         }
     }
 
@@ -162,6 +164,11 @@ class RequestController extends Controller
                 // 3. Validasi Status: Jangan izinkan edit jika pekerjaan sudah tidak 'open'
                 if ($workRequest->status !== 'open') {
                     throw new \Exception('Pekerjaan yang sudah berjalan tidak dapat diubah.');
+                }
+
+                // Add check for past end_time
+                if ($workRequest->end_time && $workRequest->end_time < Carbon::now()) {
+                    throw new \Exception('Pekerjaan ini sudah melewati batas waktu dan tidak dapat diubah.');
                 }
 
                 // 4. Logika Penyesuaian Saldo
@@ -221,11 +228,12 @@ class RequestController extends Controller
                 $workRequest->payment->update(['amount' => $newPrice]);
             });
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage())->withInput();
+            // Changed to custom alert
+            return back()->with('custom_error_alert', $e->getMessage())->withInput();
         }
 
         // 7. Redirect jika berhasil
-        return redirect()->route('job-req.beranda')->with('success', 'Pekerjaan berhasil diperbarui!');
+        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
     }
     /**
      * Remove the specified resource from storage.
@@ -239,7 +247,8 @@ class RequestController extends Controller
 
                 // 1. Otorisasi: Pastikan yang menghapus adalah pemilik request
                 if (Auth::id() !== $workRequest->requester_id) {
-                    abort(403, 'Unauthorized action.'); // Hentikan jika bukan pemilik
+                    // Changed to custom alert
+                    return back()->with('custom_error_alert', 'Anda tidak berwenang untuk membatalkan pekerjaan ini.');
                 }
 
                 // 2. Validasi: Jangan biarkan request dihapus jika sudah ada offer diterima atau sedang berjalan
@@ -271,15 +280,22 @@ class RequestController extends Controller
 
                 // 7. Hapus request (Soft Delete cara Laravel)
                 $workRequest->delete();
+
+                // Pass refund amount to session for display in custom alert
+                session()->flash('refund_amount', $refundAmount);
             });
         } catch (\Exception $e) {
-            // Jika ada error di tengah jalan, kembalikan pesan error
-            return back()->with('error', $e->getMessage());
+            // Changed to custom alert
+            return back()->with('custom_error_alert', $e->getMessage());
         }
 
         // 8. Jika semua berhasil, redirect dengan pesan sukses
-        return redirect()->route('job-req.beranda')->with('success', 'Pekerjaan berhasil dibatalkan dan dana telah dikembalikan.');
+        // Changed to custom alert, using the flashed refund_amount
+        $refundAmount = session('refund_amount', 0); // Get the flashed amount, default to 0
+        $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
+        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
     }
+    
     public function showOngoing($id)
     {
         $request = JobRequest::findOrFail($id);

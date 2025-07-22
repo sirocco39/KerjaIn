@@ -75,7 +75,8 @@ class TransactionController extends Controller
 
         // Authorization check: only the requester of the transaction can view this page
         if (Auth::id() !== $transaction->requester_id) {
-            abort(403, 'Unauthorized access.');
+            // Changed to custom alert
+            return redirect()->route('job-req.beranda')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
         }
 
         // Ambil data request yang berhubungan dengan transaction
@@ -126,7 +127,9 @@ class TransactionController extends Controller
             $transaction->request->save();
         }
 
-        return back()->with('info', 'Pekerjaan dibatalkan dan request status diubah menjadi closed.');
+        // Changed to custom alert
+        $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
+        return back()->with('custom_info_alert', 'Pekerjaan dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
     }
 
     public function markComplete(Transaction $transaction)

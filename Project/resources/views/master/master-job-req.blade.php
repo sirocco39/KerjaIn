@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -14,7 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -75,6 +75,62 @@
                 margin-top: 0.5rem;
             }
         }
+
+        /* Custom Alert Styles for Top-Middle Positioning and Consistent Look */
+        #custom-alert-container {
+            position: fixed;
+            top: 20px; /* Adjust as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050; /* Ensure it's above other elements */
+            width: 100%;
+            max-width: 380px; /* Adjust max-width for a good size */
+            padding: 0 15px; /* Padding on sides for smaller screens */
+            box-sizing: border-box;
+            pointer-events: none; /* Add this to prevent blocking clicks when not active */
+        }
+
+        #custom-alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Soft shadow */
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            color: white; /* Default text color, overridden by type classes */
+        }
+
+        #custom-alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Specific alert type styles */
+        .alert-success-bg {
+            background-color: #28a745; /* Bootstrap success green */
+            color: white;
+        }
+        .alert-error-bg {
+            background-color: #dc3545; /* Bootstrap danger red */
+            color: white;
+        }
+        .alert-info-bg {
+            background-color: #17a2b8; /* Bootstrap info blue */
+            color: white;
+        }
+
+        #custom-alert-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: inherit; /* Inherit color from parent */
+            line-height: 1;
+            padding: 0;
+        }
     </style>
 
 
@@ -89,6 +145,13 @@
 
 
 <body>
+    <!-- Custom Alert Container (Non-Modal) -->
+    <div id="custom-alert-container">
+        <div id="custom-alert">
+            <span id="custom-alert-message"></span>
+        </div>
+    </div>
+
     {{-- Navbar Section --}}
     <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
@@ -147,38 +210,21 @@
 
                 <hr class="d-lg-none my-2">
 
-                <ul class="navbar-nav ms-auto mb-lg-0 d-flex align-items-lg-center">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
-
-                            {{-- Logika untuk menampilkan bendera & teks dinamis --}}
-                            @if (App::getLocale() == 'id')
-                                <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
-                                <span>Bahasa</span>
-                            @elseif (App::getLocale() == 'en')
-                                <img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="Language" id="langFlag">
-                                <span>English</span>
-                            @endif
-
+                            <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
+                            <span>Bahasa</span>
                             <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
-
                         <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="{{ route('language.switch', 'id') }}">
-                                    <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
-                                        class="flag"> Bahasa
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="{{ route('language.switch', 'en') }}">
-                                    <img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
-                                        class="flag"> English
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                                            src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
+                                            class="flag"> Bahasa</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                                            src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
+                                            class="flag"> English</a></li>
                         </ul>
                     </li>
 
@@ -188,42 +234,56 @@
                             <span class="d-lg-none">Profil</span>
                         </a>
 
-                        <ul class="dropdown-menu dropdown-menu-end m-0 dropdown-profile-custom"
-                            aria-labelledby="dropdownProfile">
-                            @auth
-                                {{-- Item Saldo --}}
+                        <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
+                            @guest
                                 <li>
-                                    <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                    <button type="button" class="dropdown-item d-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#loginModal">
+                                        <img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
+                                            class="navIcon">
+                                        Masuk
+                                    </button>
+                                </li>
+                            @endguest
+                            @auth
+
+                                <li>
+                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                    <a class="dropdown-item d-flex align-items-center"
                                         href="{{ route('balance.job-req') }}">
+                                        {{-- Sisi Kiri: Ikon dan Teks --}}
                                         <div class="d-flex align-items-center gap-2">
+                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
                                             <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
                                                 class="navIcon">
                                             <span>Saldo</span>
                                         </div>
-                                        <span class="fw-bold me-3">
+                                        {{-- Sisi Kanan: Jumlah Saldo --}}
+                                        <span class="ms-auto fw-bold">
+                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                            {{-- Fungsi number_format untuk format Rupiah --}}
                                             Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
                                         </span>
                                     </a>
                                 </li>
-
-                                <hr class="dropdown-divider my-1">
-
-                                {{-- Item Keluar --}}
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
                                             <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
                                                 class="navIcon">
                                             Keluar
                                         </button>
                                     </form>
                                 </li>
-
-                                {{-- Item Ganti Peran / Menjadi Mitra --}}
                                 @if (auth()->user()->is_worker)
+                                    {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
                                             href="{{ route('job-taker.home') }}">
                                             <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
                                                 alt="Icon Ganti Peran" class="navIcon">
@@ -231,8 +291,9 @@
                                         </a>
                                     </li>
                                 @else
+                                    {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-2"
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
                                             href="{{ route('worker.register.step1') }}">
                                             <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
                                                 class="navIcon">
@@ -531,7 +592,7 @@
         }
     </style>
 
-    <script>
+    <script defer>
         const loginEmailInput = document.getElementById('email-login');
         const loginEmailErrorDiv = document.getElementById('Loginemail-error');
         const loginPasswordInput = document.getElementById('password-login');
@@ -706,7 +767,7 @@
 
             } catch (error) {
                 console.error('Login error:', error);
-                alert('Terjadi kesalahan saat login.');
+                showCustomAlert('Terjadi kesalahan saat login.', 'error');
             }
         });
 
@@ -1006,15 +1067,75 @@
                 }
             }, 1000);
         }
+
+        function showCustomAlert(message, type = 'info', duration = 3000) {
+            const alertContainer = document.getElementById('custom-alert-container');
+            const customAlert = document.getElementById('custom-alert');
+            const alertMessageSpan = document.getElementById('custom-alert-message');
+            const alertCloseButton = document.getElementById('custom-alert-close');
+
+            // Clear previous classes and reset state
+            customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'show');
+            customAlert.style.display = 'none'; // Hide it initially for transition
+
+            // Set message and type-specific background
+            alertMessageSpan.textContent = message;
+            if (type === 'success') {
+                customAlert.classList.add('alert-success-bg');
+            } else if (type === 'error') {
+                customAlert.classList.add('alert-error-bg');
+            } else if (type === 'info') {
+                customAlert.classList.add('alert-info-bg');
+            }
+
+            // Show the alert with a slight delay for CSS transition to work
+            alertContainer.style.pointerEvents = 'auto'; // Make container clickable when visible
+            customAlert.style.display = 'flex'; // Make it visible
+            setTimeout(() => {
+                customAlert.classList.add('show');
+            }, 10); // Small delay
+
+            // Set timeout to hide the alert
+            setTimeout(() => {
+                customAlert.classList.remove('show');
+                setTimeout(() => {
+                    customAlert.style.display = 'none';
+                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
+                }, 300); // Match CSS transition duration
+            }, duration);
+
+            // Close button functionality
+            alertCloseButton.onclick = () => {
+                customAlert.classList.remove('show');
+                setTimeout(() => {
+                    customAlert.style.display = 'none';
+                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
+                }, 300); // Match CSS transition duration
+            };
+        }
     </script>
 
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
-    <script>
+    <script defer>
         document.addEventListener('DOMContentLoaded', function() {
-            @if (session('loginModal'))
-                var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
-            @endif
+            // Check for flash messages from Laravel
+            const successMessage = "{{ session('custom_success_alert') }}";
+            const errorMessage = "{{ session('custom_error_alert') }}";
+            const infoMessage = "{{ session('custom_info_alert') }}";
+
+            if (successMessage) {
+                console.log('Flash message detected: Success -', successMessage);
+                showCustomAlert(successMessage, 'success');
+            } else if (errorMessage) {
+                console.log('Flash message detected: Error -', errorMessage);
+                showCustomAlert(errorMessage, 'error');
+            } else if (infoMessage) {
+                console.log('Flash message detected: Info -', infoMessage);
+                showCustomAlert(infoMessage, 'info');
+            }
+
+            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
+            window.showCustomAlert = showCustomAlert;
         });
     </script>
 </body>

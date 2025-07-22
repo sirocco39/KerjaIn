@@ -26,7 +26,8 @@ class JobTakerRequestController extends Controller
             ]);
         } else {
             // Handle jika terjadi kesalahan saat membuat transaction
-            return back()->with('error', 'Terjadi kesalahan saat menerima pekerjaan.');
+            // Changed to custom alert
+            return back()->with('custom_error_alert', 'Terjadi kesalahan saat menerima pekerjaan.');
         }
     }
 }

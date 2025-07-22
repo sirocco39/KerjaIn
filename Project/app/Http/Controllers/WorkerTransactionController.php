@@ -81,7 +81,8 @@ class WorkerTransactionController extends Controller
 
         // Authorization check: only the worker of the transaction can view this page
         if (Auth::id() !== $transaction->worker_id) {
-            abort(403, 'Unauthorized access.');
+            // Changed to custom alert
+            return redirect()->route('job-taker.home')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
         }
 
         $request = JobRequest::findOrFail($transaction->request_id);
@@ -119,7 +120,8 @@ class WorkerTransactionController extends Controller
         $transaction->start_work = Carbon::now();
         $transaction->save();
 
-        return back()->with('success', 'Pekerjaan dimulai.');
+        // Changed to custom alert
+        return back()->with('custom_success_alert', 'Pekerjaan dimulai.');
     }
 
     public function uploadProof(Request $request, Transaction $transaction)
@@ -146,10 +148,8 @@ class WorkerTransactionController extends Controller
         $transaction->finish_work = Carbon::now(); // Set finish_work when proof is uploaded
         $transaction->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Bukti pekerjaan berhasil diupload.'
-        ]);
+        // Changed from JSON response to redirect with custom alert
+        return back()->with('custom_success_alert', 'Bukti pekerjaan berhasil diupload. Pekerjaan Anda sekarang dalam status ditinjau.');
     }
 
     public function markComplete(Transaction $transaction)
@@ -164,8 +164,8 @@ class WorkerTransactionController extends Controller
         }
 
         // Ambil data yang dibutuhkan untuk pop-up rating
-        $job = Request::find($transaction->job->request_id);
-        $requester = $transaction->job->requester;
+        $job = JobRequest::find($transaction->request_id); // Corrected to use JobRequest alias
+        $requester = $transaction->requester; // Corrected to use requester relation
 
         // Kirim data ke view via session flash
         return back()->with([
@@ -213,9 +213,11 @@ class WorkerTransactionController extends Controller
                 'status' => 'Not Reviewed',
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Laporan berhasil dikirim.']);
+            // Changed from JSON response to redirect with custom alert
+            return back()->with('custom_success_alert', 'Laporan berhasil dikirim dan akan segera ditinjau.');
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+            // Changed from JSON response to redirect with custom alert
+            return back()->with('custom_error_alert', 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage());
         }
     }
 
@@ -243,6 +245,7 @@ class WorkerTransactionController extends Controller
 
         User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
 
-        return response()->json(['success' => true]);
+        // Changed from JSON response to redirect with custom alert
+        return back()->with('custom_success_alert', 'Ulasan Anda berhasil disimpan!');
     }
 }

@@ -37,7 +37,7 @@ class ReviewController extends Controller
         $averageRating = Review::where('reviewee_id', $validated['reviewee_id'])->avg('rating');
         User::where('id', $validated['reviewee_id'])->update(['rating' => $averageRating]);
 
-        // Return a JSON success response
-        return response()->json(['success' => true]);
+        // Changed from JSON response to redirect with custom alert
+        return back()->with('custom_success_alert', 'Ulasan Anda berhasil disimpan!');
     }
 }

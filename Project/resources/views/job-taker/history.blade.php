@@ -5,7 +5,7 @@
     <div class="flex items-center space-x-4">
         <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">Riwayat Pemesanan
         </h1>
-    <a href="{{ route('monthly.report') }}" 
+    <a href="{{ route('monthly.report') }}"
     class="btn btn-primary btn-lg mb-3 text-white"
     style="text-decoration: none;">
         Laporan Bulanan
@@ -17,16 +17,16 @@
             {{-- Desktop Tab Navigation --}}
             <div class="tabs-wrapper hidden md:flex">
                 <div class="col tab-button active" data-tab="all">
-                    All Order ({{ $allOrders->count() }})
+                    Semua Transaksi ({{ $allOrders->count() }})
                 </div>
                 <div class="col tab-button" data-tab="pending">
-                    Pending ({{ $pendingOrders->count() }})
+                    Berlangsung ({{ $pendingOrders->count() }})
                 </div>
                 <div class="col tab-button" data-tab="completed">
-                    Completed ({{ $completedOrders->count() }})
+                    Selesai ({{ $completedOrders->count() }})
                 </div>
                 <div class="col tab-button" data-tab="cancelled">
-                    Cancelled ({{ $cancelledOrders->count() }})
+                    Dibatalin ({{ $cancelledOrders->count() }})
                 </div>
             </div>
 
@@ -34,13 +34,13 @@
             <div class="tabs-dropdown-wrapper md:hidden w-full mb-4">
                 <select id="tab-select"
                     class="form-select w-full border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500">
-                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>All Order
+                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>Semua Transaksi
                         ({{ $allOrders->count() }})</option>
-                    <option value="pending" @if (request('tab') == 'pending') selected @endif>Pending
+                    <option value="pending" @if (request('tab') == 'pending') selected @endif>Berlangsung
                         ({{ $pendingOrders->count() }})</option>
-                    <option value="completed" @if (request('tab') == 'completed') selected @endif>Completed
+                    <option value="completed" @if (request('tab') == 'completed') selected @endif>Selesai
                         ({{ $completedOrders->count() }})</option>
-                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>Cancelled
+                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>Dibatalin
                         ({{ $cancelledOrders->count() }})</option>
                 </select>
             </div>
@@ -59,7 +59,7 @@
                     <div class="col m-0 p-0">Tanggal Selesai</div>
                     <div class="col m-0 p-0">Klien</div>
                     <div class="col m-0 p-0">Lokasi</div>
-                    <div class="col m-0 p-0">Harga</div>
+                    <div class="col m-0 p-0">Upah</div>
                 </div>
                 <hr class="mx-auto border-2 opacity-100 my-0 p-0" style="width: 98%; border-color: #294287;">
                 {{-- Order Rows Loop --}}

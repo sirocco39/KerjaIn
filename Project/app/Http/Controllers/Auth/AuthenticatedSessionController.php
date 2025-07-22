@@ -43,9 +43,8 @@ class AuthenticatedSessionController extends Controller
                 ], 422);
             }
 
-            return back()->withErrors([
-                'password' => 'Email atau kata sandi salah.',
-            ])->onlyInput('email');
+            // Changed to custom alert
+            return back()->with('custom_error_alert', 'Email atau kata sandi salah.')->onlyInput('email');
         }
 
 
@@ -59,8 +58,8 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        // Changed redirect URL for traditional web response
-        return redirect()->route('job-req.beranda')->with('success', 'Login berhasil! Selamat datang di aplikasi kami.');
+        // Changed to custom alert
+        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Login berhasil! Selamat datang di aplikasi kami.');
     }
 
 
@@ -75,6 +74,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Changed to custom alert
+        return redirect('/')->with('custom_info_alert', 'Anda telah berhasil keluar.');
     }
 }

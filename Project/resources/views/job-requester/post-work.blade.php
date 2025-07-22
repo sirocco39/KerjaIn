@@ -38,13 +38,14 @@
                             <div class="d-flex gap-2">
                                 <div class="flex-fill">
                                     <input type="date" class="form-control rounded-3" name="workStartDateLabel"
-                                        value="{{ old('workStartDateLabel') }}">
+                                        value="{{ old('workStartDateLabel') }}" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                                     <div class="text-danger small mt-1" id="workStartDateLabel-error"></div>
                                 </div>
                                 <div class="flex-fill">
                                     <input type="time" class="form-control rounded-3" name="workStartTimeLabel"
                                         value="{{ old('workStartTimeLabel') }}">
                                     <div class="text-danger small mt-1" id="workStartTimeLabel-error"></div>
+                                    <div class="text-danger small mt-1" id="workStartTimeLabel-past-error"></div> <!-- NEW ERROR DIV -->
                                 </div>
                             </div>
                         </div>
@@ -60,6 +61,7 @@
                                     <input type="time" class="form-control rounded-3" name="workEndTimeLabel"
                                         value="{{ old('workEndTimeLabel') }}">
                                     <div class="text-danger small mt-1" id="workEndTimeLabel-error"></div>
+                                    <div class="text-danger small mt-1" id="workEndTimeLabel-past-error"></div> <!-- NEW ERROR DIV -->
                                 </div>
                             </div>
                         </div>
@@ -141,6 +143,16 @@
             const modalConfirmBtn = document.getElementById('modal-confirm-button');
             const modalTopupBtn = document.getElementById('modal-topup-button');
 
+            // Date and Time inputs
+            const workStartDateInput = document.querySelector('input[name="workStartDateLabel"]');
+            const workEndDateInput = document.querySelector('input[name="workEndDateLabel"]');
+            const workStartTimeInput = document.querySelector('input[name="workStartTimeLabel"]');
+            const workEndTimeInput = document.querySelector('input[name="workEndTimeLabel"]');
+            const datetimeErrorDiv = document.getElementById('datetime-error');
+            const workStartTimeLabelPastErrorDiv = document.getElementById('workStartTimeLabel-past-error'); // NEW
+            const workEndTimeLabelPastErrorDiv = document.getElementById('workEndTimeLabel-past-error'); // NEW
+
+
             const userBalance = parseFloat('{{ auth()->check() ? auth()->user()->balance : 0 }}');
 
             const formatRupiah = (number) => {
@@ -151,13 +163,134 @@
                 }).format(number);
             };
 
+            function getFormattedCurrentTime() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+
+            function getFormattedCurrentDate() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            function validateDateTimeCombination() {
+                // Clear ALL client-side specific date/time errors before re-validating
+                datetimeErrorDiv.textContent = '';
+                workStartTimeLabelPastErrorDiv.textContent = '';
+                workEndTimeLabelPastErrorDiv.textContent = '';
+
+                const startDateValue = workStartDateInput.value;
+                const startTimeValue = workStartTimeInput.value;
+                const endDateValue = workEndDateInput.value;
+                const endTimeValue = workEndTimeInput.value;
+
+                // If any date/time field is empty, return true to allow server-side 'required' validation to handle it.
+                // This prevents the 'datetime' error from appearing if the user just hasn't filled all fields yet.
+                if (!startDateValue || !startTimeValue || !endDateValue || !endTimeValue) {
+                    return true;
+                }
+
+                const startDateTime = new Date(`${startDateValue}T${startTimeValue}:00`);
+                const endDateTime = new Date(`${endDateValue}T${endTimeValue}:00`);
+                const todayString = getFormattedCurrentDate();
+                const currentTimeString = getFormattedCurrentTime();
+
+                let isValid = true;
+
+                // 1. Start time cannot be in the past if the start date is today
+                if (startDateValue === todayString && startTimeValue < currentTimeString) {
+                    workStartTimeLabelPastErrorDiv.textContent = 'Waktu mulai tidak boleh di masa lalu.';
+                    isValid = false;
+                }
+
+                // 2. End time cannot be in the past if the end date is today AND different from start date
+                // This prevents showing a "past time" error if the primary issue is "end before start" on the same day.
+                if (endDateValue === todayString && startTimeValue && endTimeValue < currentTimeString && startDateValue !== todayString) {
+                    workEndTimeLabelPastErrorDiv.textContent = 'Waktu selesai tidak boleh di masa lalu.';
+                    isValid = false;
+                }
+
+                // 3. End date/time must be strictly after start date/time (the main combined check)
+                // This covers cases where end time is before start time on the same day, or end date is before start date.
+                if (endDateTime <= startDateTime) {
+                    datetimeErrorDiv.textContent = 'Waktu selesai pekerjaan harus setelah waktu mulai.';
+                    isValid = false;
+                }
+
+                return isValid; // All client-side date/time validations passed
+            }
+
+            function updateDateTimeConstraints() {
+                const today = getFormattedCurrentDate();
+                const currentTime = getFormattedCurrentTime();
+
+                // Clear all client-side specific date/time errors before updating constraints and re-validating
+                datetimeErrorDiv.textContent = '';
+                workStartTimeLabelPastErrorDiv.textContent = '';
+                workEndTimeLabelPastErrorDiv.textContent = '';
+
+                // Set min for end date: cannot be before start date
+                if (workStartDateInput.value) {
+                    workEndDateInput.min = workStartDateInput.value;
+                } else {
+                    workEndDateInput.min = today; // If start date is not set, min for end date is today
+                }
+
+                // If end date is set and is earlier than start date, reset it to start date
+                if (workEndDateInput.value && workStartDateInput.value && workEndDateInput.value < workStartDateInput.value) {
+                    workEndDateInput.value = workStartDateInput.value;
+                }
+
+                // Dynamic min for start time
+                if (workStartDateInput.value === today) {
+                    workStartTimeInput.min = currentTime;
+                } else {
+                    workStartTimeInput.min = ''; // No minimum time for future dates
+                }
+
+                // Dynamic min for end time
+                if (workEndDateInput.value === today) {
+                    if (workStartDateInput.value === today && workStartTimeInput.value) {
+                        // If both start and end are today, end time must be after start time
+                        workEndTimeInput.min = workStartTimeInput.value;
+                    } else {
+                        // If only end date is today (and start date is a past day), end time can be current time
+                        workEndTimeInput.min = currentTime;
+                    }
+                } else {
+                    workEndTimeInput.min = ''; // No minimum time for future dates
+                }
+
+                validateDateTimeCombination(); // Re-validate on constraint changes
+            }
+
+            // Add event listeners
+            workStartDateInput.addEventListener('change', updateDateTimeConstraints);
+            workEndDateInput.addEventListener('change', updateDateTimeConstraints);
+            workStartTimeInput.addEventListener('change', updateDateTimeConstraints);
+            workEndTimeInput.addEventListener('change', updateDateTimeConstraints);
+
+            // Initial call to set up constraints on page load
+            updateDateTimeConstraints();
+
+
             showConfirmationBtn.addEventListener('click', function(event) {
                 event.preventDefault(); // Mencegah form submit secara langsung
+
+                // Perform client-side date/time validation first
+                if (!validateDateTimeCombination()) {
+                    return; // Stop if client-side validation fails
+                }
 
                 // Ambil data form
                 let formData = new FormData(form);
 
-                // Hapus pesan error lama
+                // Hapus semua pesan error lama, termasuk yang dari server-side
                 document.querySelectorAll('.text-danger.small').forEach(el => el.textContent = '');
 
                 // Kirim data ke server untuk validasi via AJAX
