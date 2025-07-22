@@ -91,8 +91,12 @@ class TransactionController extends Controller
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
 
+        // NEW: Check if a review already exists from the current requester for this transaction
+        $hasReview = $transaction->userReview()->exists();
+        $userReview = $transaction->userReview; // This will be null if no review exists
+
         // Kirim data ke view
-        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room'));
+        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room', 'hasReview', 'userReview'));
     }
 
 

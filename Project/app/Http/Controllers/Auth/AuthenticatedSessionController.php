@@ -51,15 +51,18 @@ class AuthenticatedSessionController extends Controller
         // Login success
         $request->session()->regenerate();
 
+        // Get the authenticated user's first name
+        $firstName = Auth::user()->first_name ?? 'Pengguna';
+
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Login berhasil!',
+                'message' => "Login berhasil! Selamat datang, {$firstName}!",
                 'redirect_url' => route('job-req.beranda') // Changed redirect URL for JSON response
             ]);
         }
 
         // Changed to custom alert
-        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Login berhasil! Selamat datang di aplikasi kami.');
+        return redirect()->route('job-req.beranda')->with('custom_success_alert', "Login berhasil! Selamat datang, {$firstName}!");
     }
 
 

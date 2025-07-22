@@ -79,15 +79,20 @@
         /* Custom Alert Styles for Top-Middle Positioning and Consistent Look */
         #custom-alert-container {
             position: fixed;
-            top: 20px; /* Adjust as needed */
+            top: 20px;
+            /* Adjust as needed */
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1050; /* Ensure it's above other elements */
+            z-index: 99999;
+            /* Ensure it's above other elements */
             width: 100%;
-            max-width: 380px; /* Adjust max-width for a good size */
-            padding: 0 15px; /* Padding on sides for smaller screens */
+            max-width: 380px;
+            /* Adjust max-width for a good size */
+            padding: 0 15px;
+            /* Padding on sides for smaller screens */
             box-sizing: border-box;
-            pointer-events: none; /* Add this to prevent blocking clicks when not active */
+            pointer-events: none;
+            /* Add this to prevent blocking clicks when not active */
         }
 
         #custom-alert {
@@ -95,12 +100,15 @@
             align-items: center;
             justify-content: space-between;
             padding: 12px 20px;
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Soft shadow */
+            border-radius: 8px;
+            /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            /* Soft shadow */
             opacity: 0;
             transform: translateY(-20px);
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-            color: white; /* Default text color, overridden by type classes */
+            color: white;
+            /* Default text color, overridden by type classes */
         }
 
         #custom-alert.show {
@@ -110,15 +118,20 @@
 
         /* Specific alert type styles */
         .alert-success-bg {
-            background-color: #28a745; /* Bootstrap success green */
+            background-color: #28a745;
+            /* Bootstrap success green */
             color: white;
         }
+
         .alert-error-bg {
-            background-color: #dc3545; /* Bootstrap danger red */
+            background-color: #dc3545;
+            /* Bootstrap danger red */
             color: white;
         }
+
         .alert-info-bg {
-            background-color: #17a2b8; /* Bootstrap info blue */
+            background-color: #17a2b8;
+            /* Bootstrap info blue */
             color: white;
         }
 
@@ -127,7 +140,8 @@
             border: none;
             font-size: 1.2em;
             cursor: pointer;
-            color: inherit; /* Inherit color from parent */
+            color: inherit;
+            /* Inherit color from parent */
             line-height: 1;
             padding: 0;
         }
@@ -149,6 +163,7 @@
     <div id="custom-alert-container">
         <div id="custom-alert">
             <span id="custom-alert-message"></span>
+            <button type="button" id="custom-alert-close" aria-label="Close">&times;</button>
         </div>
     </div>
 
@@ -713,64 +728,69 @@
         const loginModal = document.getElementById('loginModal');
         const loginForm = loginModal.querySelector('form');
 
-        loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        // Removed the async and fetch logic for login form submission.
+        // This will now be a standard form submission, allowing Laravel's
+        // session flashing to work correctly across the redirect.
+        loginForm.addEventListener('submit', function(event) {
+            // No event.preventDefault() here, allowing default form submission
+            // No fetch() call here for successful login.
+            // Laravel's controller will handle the redirect with flashed data.
 
-            // Clear previous server errors
-            loginEmailErrorDiv.classList.add('d-none');
-            loginPasswordErrorDiv.classList.add('d-none');
-            loginEmailInput.classList.remove('is-invalid');
-            loginPasswordInput.classList.remove('is-invalid');
+            // Only handle client-side validation errors for display in the modal
+            // If there are client-side validation errors, prevent default submission
+            // For server-side errors, Laravel will redirect back with errors,
+            // which will be handled by the blade's error display (if any for non-modal)
+            // or by the session flash message logic on the next page.
 
-            const formData = new FormData(loginForm);
+            // Client-side validation for login form
+            let hasClientErrors = false;
 
-            try {
-                const response = await fetch("{{ route('login') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                });
+            // Email validation
+            const emailErrors = [];
+            if (loginEmailInput.value.trim() === '') {
+                emailErrors.push('Email harus diisi.');
+            } else if (!emailRegex.test(loginEmailInput.value.trim())) {
+                emailErrors.push('Silakan masukkan alamat email yang valid.');
+            }
+            if (emailErrors.length > 0) {
+                loginEmailErrorDiv.innerHTML = `<ul class="mb-0">${emailErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                loginEmailErrorDiv.classList.remove('d-none');
+                loginEmailInput.classList.add('is-invalid');
+                hasClientErrors = true;
+            } else {
+                loginEmailErrorDiv.classList.add('d-none');
+                loginEmailInput.classList.remove('is-invalid');
+            }
 
-                const result = await response.json();
+            // Password validation (simplified for client-side, full rules are server-side)
+            const passwordErrors = [];
+            if (loginPasswordInput.value.trim() === '') {
+                passwordErrors.push('Kata sandi harus diisi.');
+            }
+            // You might add basic length check here if desired, but full regex is complex for client-side immediate feedback
+            // else if (!passwordRegex.test(loginPasswordInput.value.trim())) {
+            //     passwordErrors.push('Kata sandi tidak memenuhi kriteria keamanan.');
+            // }
 
-                if (response.ok) {
-                    window.location.href = result.redirect_url ?? '/dashboard';
-                } else {
-                    if (result.errors) {
-                        if (result.errors.email) {
-                            loginEmailErrorDiv.innerHTML = `
-                        <ul class="mb-0">
-                            ${result.errors.email.map(err => `<li>${err}</li>`).join('')}
-                        </ul>
-                    `;
-                            loginEmailErrorDiv.classList.remove('d-none');
-                            loginEmailInput.classList.add('is-invalid');
-                        }
+            if (passwordErrors.length > 0) {
+                loginPasswordErrorDiv.innerHTML = `<ul class="mb-0">${passwordErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                loginPasswordErrorDiv.classList.remove('d-none');
+                loginPasswordInput.classList.add('is-invalid');
+                hasClientErrors = true;
+            } else {
+                loginPasswordErrorDiv.classList.add('d-none');
+                loginPasswordInput.classList.remove('is-invalid');
+            }
 
-                        if (result.errors.password) {
-                            loginPasswordErrorDiv.innerHTML = `
-                        <ul class="mb-0">
-                            ${result.errors.password.map(err => `<li>${err}</li>`).join('')}
-                        </ul>
-                    `;
-                            loginPasswordErrorDiv.classList.remove('d-none');
-                            loginPasswordInput.classList.add('is-invalid');
-                            loginPasswordInput.value = '';
-                            loginEmailInput.value = '';
-                            rememberMeCheckbox.checked = false;
-                        }
-                    }
-                }
 
-            } catch (error) {
-                console.error('Login error:', error);
-                showCustomAlert('Terjadi kesalahan saat login.', 'error');
+            if (hasClientErrors) {
+                event.preventDefault(); // Prevent form submission if client-side errors exist
+            } else {
+                // If no client-side errors, allow form to submit normally.
+                // The Laravel controller will handle authentication and redirection with flash messages.
+                // No need to manually hide modal or redirect here, Laravel will do a full page reload.
             }
         });
-
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1068,6 +1088,7 @@
             }, 1000);
         }
 
+        // Reverted showCustomAlert function to original
         function showCustomAlert(message, type = 'info', duration = 3000) {
             const alertContainer = document.getElementById('custom-alert-container');
             const customAlert = document.getElementById('custom-alert');

@@ -523,7 +523,5 @@ class DummyTransactionSeeder extends Seeder
         $worker->save();
         $requester2->save();
         $worker2->save();
-
-        $this->command->info('Dummy Requests and Transactions seeded successfully!');
     }
 }

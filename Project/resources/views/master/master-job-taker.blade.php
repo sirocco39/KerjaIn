@@ -83,7 +83,7 @@
             /* Adjust as needed */
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1050;
+            z-index: 99999;
             /* Ensure it's above other elements */
             width: 100%;
             max-width: 380px;
@@ -163,6 +163,7 @@
     <div id="custom-alert-container">
         <div id="custom-alert">
             <span id="custom-alert-message"></span>
+            <button type="button" id="custom-alert-close" aria-label="Close">&times;</button>
         </div>
     </div>
 
@@ -194,7 +195,6 @@
                 <hr class="d-lg-none my-2">
 
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
-                    <!-- Dropdown Bahasa -->
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
                             <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
@@ -212,7 +212,6 @@
                         </ul>
                     </li>
 
-                    <!-- Dropdown Profile -->
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
                             <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
@@ -220,12 +219,6 @@
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
-                            @guest
-                                <li><button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#loginModal"><img
-                                            src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
-                                            class="navIcon">Masuk</button></li>
-                            @endguest
                             @auth
                                 <li>
                                     {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
@@ -387,156 +380,6 @@
     </footer>
     {{-- End Footer --}}
 
-
-    {{-- Pop Up Login --}}
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 400px;">
-            <div class="modal-content bg-white rounded" style="box-shadow: none !important; border: none !important;">
-                <div class="modal-header border-0 position relative">
-                    <h1 class="modal-title w-100 text-center mb-0 fs-4">Login</h1>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
-                        aria-label="Tutup"></button>
-                </div>
-                <form id="login-form" method="POST" action="{{ route('login') }}" style="padding: 30px">
-                    @csrf
-                    <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                        <label for="email-login" class="form-label">Email</label>
-                        <input id="email-login" class="form-control is-invalid" type="email" name="email"
-                            autocomplete="new-email" required>
-                        <div id="Loginemail-error" class="popup-error-card d-none"></div>
-                    </div>
-
-                    <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                        <label for="password-login" class="form-label">Kata Sandi</label>
-                        <input id="password-login" class="form-control is-invalid" type="password" name="password"
-                            autocomplete="new-password" required>
-                        <div id="Loginpassword-error" class="popup-error-card d-none"></div>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-4">
-                        <div class="form-check">
-                            <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
-                            <label class="form-check-label">Ingat Saya</label>
-                        </div>
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}">Lupa kata sandi?</a>
-                        @endif
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Masuk</button>
-
-                    <div class="text-center">
-                        <p class="mb-2">Belum punya akun?
-                            <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
-                                data-bs-target="#logoutModal">
-                                Daftar
-                            </button>
-                        </p>
-                        <p class="mb-2">Atau masuk dengan:</p>
-                        <a href="{{ route('auth-google-redirect') }}">
-                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
-                                width="24">
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {{-- End Pop Up Register --}}
-
-    {{-- Pop Up Register --}}
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width: 800px;">
-            <div class="modal-content bg-white rounded" style="box-shadow: none !important; border: none !important;">
-                <div class="modal-header border-0 position-relative d-flex justify-content-center align-items-center">
-                    <h1 class="mb-0 fs-4" style="font-weight: 500">Daftar</h1>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
-                        aria-label="Tutup"></button>
-                </div>
-                <form method="POST" action="{{ route('register') }}" style="padding: 30px">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="first_name">Nama Depan</label>
-                                <input type="text" id="first_name" class="form-control is-invalid"
-                                    name="first_name" required />
-                                <div id="first_name-error" class="popup-error-card d-none"></div>
-                            </div>
-
-                            <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="last_name">Nama Belakang</label>
-                                <input type="text" id="last_name" class="form-control is-invalid"
-                                    name="last_name" required />
-                                <div id="last_name-error" class="popup-error-card d-none"></div>
-                            </div>
-
-                            <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="email-register">Email</label>
-                                <input class="form-control is-invalid" id="email-register" type="email"
-                                    name="email" required autocomplete="email" />
-                                <div id="email-error" class="popup-error-card d-none"></div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-4">
-                            <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="password">Kata Sandi</label>
-                                <input id="password" class="form-control is-invalid" type="password"
-                                    name="password" required />
-                                <div id="password-error" class="popup-error-card d-none"></div>
-                            </div>
-
-                            <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="password_confirmation">Konfirmasi Kata Sandi</label>
-                                <input class="form-control is-invalid" id="password_confirmation" type="password"
-                                    name="password_confirmation" required />
-                                <div id="confirm_password-error" class="popup-error-card d-none"></div>
-                            </div>
-
-                            <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="otp">Kode OTP</label>
-                                <div class="d-flex align-items-center gap-2 otp-container">
-                                    <input id="otp" class="form-control is-invalid" type="text"
-                                        name="otp" maxlength="6" placeholder="Masukkan Kode OTP" required />
-                                    <button type="button" id="send-otp-button"
-                                        class="btn btn-primary send-otp-button"
-                                        onmouseover="this.style.backgroundColor='#D3FA0D'; this.style.color='#000000';"
-                                        onmouseout="this.style.backgroundColor='#309FFF'; this.style.color='white';"
-                                        onfocus="this.style.boxShadow='0 0 0 2px #294287';"
-                                        onblur="this.style.boxShadow='none';" style="max-width: 120px; width: 100%;">
-                                        {{ __('Kirim OTP') }}
-                                    </button>
-                                </div>
-                                <div id="otp-error" class="popup-error-card d-none"></div>
-                            </div>
-
-                        </div>
-
-                        <div class="col-12 bottom-column">
-                            <div class="relative h-5">
-                                <div id="otp-message" class="absolute inset-0 text-sm hidden text-center mb-2"
-                                    style="color: #16a34a;">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Daftar</button>
-
-                            <div class="text-center">
-                                <p>Atau daftar dengan:</p>
-                                <a href="{{ route('auth-google-redirect') }}" class="btn btn-link btn-floating mx-1">
-                                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
-                                        style="width: 24px; height: 24px;">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-    {{-- End Pop Up Register --}}
     <style>
         .dropdown-profile-custom {
             min-width: 250px;
@@ -562,292 +405,8 @@
     </style>
 
     <script defer>
-        const loginEmailInput = document.getElementById('email-login');
-        const loginEmailErrorDiv = document.getElementById('Loginemail-error');
-        const loginPasswordInput = document.getElementById('password-login');
-        const loginPasswordErrorDiv = document.getElementById('Loginpassword-error');
-        const emailInput = document.getElementById('email-register');
-        const emailErrorDiv = document.getElementById('email-error');
-        const passwordInput = document.getElementById('password');
-        const passwordErrorDiv = document.getElementById('password-error');
-        const firstNameInput = document.getElementById('first_name');
-        const firstNameErrorDiv = document.getElementById('first_name-error');
-        const lastNameInput = document.getElementById('last_name');
-        const lastNameErrorDiv = document.getElementById('last_name-error');
-        const confirmPasswordInput = document.getElementById('password_confirmation');
-        const confirmPasswordErrorDiv = document.getElementById('confirm_password-error');
-        const otpInput = document.getElementById('otp');
-        const otpErrorDiv = document.getElementById('otp-error');
-        const rememberMeCheckbox = document.getElementById('remember_me');
-
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,16}$/;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        // === Login Email ===
-        loginEmailInput.addEventListener('blur', function() {
-            loginEmailInput.classList.remove('is-invalid');
-            loginEmailErrorDiv.classList.add('d-none');
-        });
-
-        loginEmailInput.addEventListener('input', function() {
-            const errors = [];
-
-            if (loginEmailInput.value.trim() === '') {
-                errors.push('Email harus diisi.');
-            } else if (!emailRegex.test(loginEmailInput.value.trim())) {
-                errors.push('Silakan masukkan alamat email yang valid.');
-            }
-
-            if (errors.length > 0) {
-                loginEmailErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                loginEmailErrorDiv.classList.remove('d-none');
-                loginEmailInput.classList.add('is-invalid');
-            } else {
-                loginEmailErrorDiv.innerHTML = '';
-                loginEmailErrorDiv.classList.add('d-none');
-                loginEmailInput.classList.remove('is-invalid');
-            }
-        });
-
-        // === Register Password ===
-        const rules = {
-            length: {
-                test: value => value.length >= 8 && value.length <= 16,
-                message: 'Minimal 8 dan maksimal 16 karakter.',
-            },
-            lowercase: {
-                test: value => /[a-z]/.test(value),
-                message: 'Mengandung huruf kecil (a–z).',
-            },
-            uppercase: {
-                test: value => /[A-Z]/.test(value),
-                message: 'Mengandung huruf besar (A–Z).',
-            },
-            digit: {
-                test: value => /\d/.test(value),
-                message: 'Mengandung angka (0–9).',
-            },
-            special: {
-                test: value => /[\W_]/.test(value),
-                message: 'Mengandung karakter spesial (contoh: !@#%).',
-            },
-            noSpaces: {
-                test: value => /^\S+$/.test(value),
-                message: 'Tidak boleh mengandung spasi.',
-            }
-        };
-
-        passwordInput.addEventListener('blur', function() {
-            passwordInput.classList.remove('is-invalid');
-            passwordErrorDiv.classList.add('d-none');
-        });
-
-        passwordInput.addEventListener('input', function() {
-            const value = passwordInput.value.trim();
-            let errors = [];
-
-            if (value === '') {
-                passwordErrorDiv.innerHTML = 'Password harus diisi.';
-                passwordErrorDiv.classList.remove('d-none');
-                passwordInput.classList.add('is-invalid');
-                return;
-            }
-
-            for (const key in rules) {
-                if (!rules[key].test(value)) {
-                    errors.push(rules[key].message);
-                }
-            }
-
-            if (errors.length > 0) {
-                passwordErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                passwordErrorDiv.classList.remove('d-none');
-                passwordInput.classList.add('is-invalid');
-            } else {
-                passwordErrorDiv.innerHTML = '';
-                passwordErrorDiv.classList.add('d-none');
-                passwordInput.classList.remove('is-invalid');
-            }
-        });
-
-
-        // === Nama Depan ===
-
-        firstNameInput.addEventListener('blur', function() {
-            firstNameInput.classList.remove('is-invalid');
-            firstNameErrorDiv.classList.add('d-none');
-        });
-
-        firstNameInput.addEventListener('input', function() {
-            const errors = [];
-
-            if (firstNameInput.value.trim() === '') {
-                errors.push('Nama depan diperlukan.');
-            }
-
-            if (errors.length > 0) {
-                firstNameErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                firstNameErrorDiv.classList.remove('d-none');
-                firstNameInput.classList.add('is-invalid');
-            } else {
-                firstNameErrorDiv.innerHTML = '';
-                firstNameErrorDiv.classList.add('d-none');
-                firstNameInput.classList.remove('is-invalid');
-            }
-        });
-
-        // === Nama Belakang ===
-
-        lastNameInput.addEventListener('blur', function() {
-            lastNameInput.classList.remove('is-invalid');
-            lastNameErrorDiv.classList.add('d-none');
-        });
-
-        lastNameInput.addEventListener('input', function() {
-            const errors = [];
-
-            if (lastNameInput.value.trim() === '') {
-                errors.push('Nama belakang diperlukan.');
-            }
-
-            if (errors.length > 0) {
-                lastNameErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                lastNameErrorDiv.classList.remove('d-none');
-                lastNameInput.classList.add('is-invalid');
-            } else {
-                lastNameErrorDiv.innerHTML = '';
-                lastNameErrorDiv.classList.add('d-none');
-                lastNameInput.classList.remove('is-invalid');
-            }
-        });
-
-        // === Konfirmasi Password ===
-        confirmPasswordInput.addEventListener('blur', function() {
-            confirmPasswordInput.classList.remove('is-invalid');
-            confirmPasswordErrorDiv.classList.add('d-none');
-        });
-        confirmPasswordInput.addEventListener('input', function() {
-        const originalPassword = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-        const errors = [];
-
-        if (confirmPassword === '') {
-            errors.push('Konfirmasi kata sandi harus diisi.');
-        } else if (confirmPassword !== originalPassword) {
-            errors.push('Kata sandi tidak cocok.');
-        }
-
-        if (errors.length > 0) {
-            confirmPasswordErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-            confirmPasswordErrorDiv.classList.remove('d-none');
-            confirmPasswordInput.classList.add('is-invalid');
-        } else {
-            confirmPasswordErrorDiv.innerHTML = '';
-            confirmPasswordErrorDiv.classList.add('d-none');
-            confirmPasswordInput.classList.remove('is-invalid');
-        }
-        });
-
-        });
-
-        const otpMessage = document.getElementById('otp-message');
-        let countdownInterval = null; // Store interval to clear it
-
-        const sendButton = document.getElementById('send-otp-button');
-        sendButton.addEventListener('click', function() {
-            const email = document.getElementById('email-register').value.trim();
-            if (!email) {
-                return;
-            } else if (emailInput.classList.contains('is-invalid')) {
-                return;
-            }
-
-            sendButton.disabled = true;
-            sendButton.textContent = 'Mengirim...';
-
-            fetch("{{ route('send.otp') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({
-                        email: email
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) throw response;
-                    return response.json();
-                })
-                .then(data => {
-                    showOtpMessage(data.message, true);
-                    startCountdown(
-                        {{ \App\Http\Controllers\Auth\RegisteredUserController::OTP_COOLDOWN_SECONDS }});
-                })
-                .catch(async (error) => {
-                    otpMessage.classList.add('!success');
-                    let message = 'Terjadi kesalahan saat mengirim OTP.';
-                    if (error.json) {
-                        const errJson = await error.json();
-                        message = errJson.message || message;
-                    }
-                    showOtpMessage(message, false);
-                    sendButton.disabled = false;
-                    sendButton.textContent = 'Kirim OTP';
-                });
-        });
-
-        function showOtpMessage(message, success) {
-            otpMessage.textContent = message;
-            otpMessage.classList.remove('hidden');
-            otpMessage.style.color = success ? '#16a34a' : '#dc2626';
-        }
-
-        function startCountdown(seconds) {
-            if (countdownInterval) {
-                clearInterval(countdownInterval); // Clear previous interval if any
-            }
-
-            let remaining = seconds;
-            sendButton.disabled = true;
-            sendButton.textContent = `Tunggu ${remaining} dtk`;
-
-            countdownInterval = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(countdownInterval);
-                    sendButton.disabled = false;
-                    sendButton.textContent = 'Kirim OTP';
-                } else {
-                    sendButton.textContent = `Tunggu ${remaining} dtk`;
-                }
-            }, 1000);
-        }
-
-        function showCustomAlert(message, type = 'info', duration = 3000) {
+        // Custom Alert function (copied from master-job-req.blade.php's original)
+        window.showCustomAlert = function(message, type = 'info', duration = 3000) {
             const alertContainer = document.getElementById('custom-alert-container');
             const customAlert = document.getElementById('custom-alert');
             const alertMessageSpan = document.getElementById('custom-alert-message');
@@ -879,7 +438,8 @@
                 customAlert.classList.remove('show');
                 setTimeout(() => {
                     customAlert.style.display = 'none';
-                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
+                    alertContainer.style.pointerEvents =
+                    'none'; // Make container unclickable when hidden
                 }, 300); // Match CSS transition duration
             }, duration);
 
@@ -891,7 +451,7 @@
                     alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
                 }, 300); // Match CSS transition duration
             };
-        }
+        };
     </script>
 
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
@@ -904,17 +464,15 @@
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                showCustomAlert(successMessage, 'success');
+                window.showCustomAlert(successMessage, 'success');
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
-                showCustomAlert(errorMessage, 'error');
+                window.showCustomAlert(errorMessage, 'error');
             } else if (infoMessage) {
                 console.log('Flash message detected: Info -', infoMessage);
-                showCustomAlert(infoMessage, 'info');
+                window.showCustomAlert(infoMessage, 'info');
             }
 
-            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
-            window.showCustomAlert = showCustomAlert;
         });
     </script>
 </body>

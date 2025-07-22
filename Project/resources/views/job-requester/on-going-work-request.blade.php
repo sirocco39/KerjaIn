@@ -72,9 +72,6 @@
                                         <path
                                             d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
                                             fill="#133E87" />
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M7.875 2.625C8.10706 2.625 8.32962 2.71719 8.49372 2.88128C8.65781 3.04538 8.75 3.26794 8.75 3.5V5.25H19.25V3.5C19.25 3.26794 19.3422 3.04538 19.5063 2.88128C19.6704 2.71719 19.8929 2.625 20.125 2.625C20.3571 2.625 20.5796 2.71719 20.7437 2.88128C20.9078 3.04538 21 3.26794 21 3.5V5.25H21.875C22.8033 5.25 23.6935 5.61875 24.3499 6.27513C25.0063 6.9315 25.375 7.82174 25.375 8.75V21.875C25.375 22.8033 25.0063 23.6935 24.3499 24.3499C23.6935 25.0063 22.8033 25.375 21.875 25.375H6.125C5.19674 25.375 4.3065 25.0063 3.65013 24.3499C2.99375 23.6935 2.625 22.8033 2.625 21.875V8.75C2.625 7.82174 2.99375 6.9315 3.65013 6.27513C4.3065 5.61875 5.19674 5.25 6.125 5.25H7V3.5C7 3.26794 7.09219 3.04538 7.25628 2.88128C7.42038 2.71719 7.64294 2.625 7.875 2.625ZM23.625 13.125C23.625 12.6609 23.4406 12.2158 23.1124 11.8876C22.7842 11.5594 22.3391 11.375 21.875 11.375H6.125C5.66087 11.375 5.21575 11.5594 4.88756 11.8876C4.55937 12.2158 4.375 12.6609 4.375 13.125V21.875C4.375 22.3391 4.55937 22.7842 4.88756 23.1124C5.21575 23.4406 5.66087 23.625 6.125 23.625H21.875C22.3391 23.625 22.7842 23.4406 23.1124 23.1124C23.4406 22.7842 23.625 22.3391 23.625 21.875V13.125Z"
-                                            fill="#133E87" />
                                     </svg>
 
                                     <div class="p-2">Tanggal</div>
@@ -347,7 +344,6 @@
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
                                                     fill="#309FFF" />
                                             </svg>
-                                            <div class="ms-2 fw-medium fs-5">Invoice</div>
                                         </a>
                                     </div>
                                 </div>
@@ -357,25 +353,40 @@
 
                             <!-- Rating + Comment -->
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                                <h4 class="fw-semibold mt-3 mb-1">Kasih penilaian, yuk!</h4>
+                                <h4 class="fw-semibold mt-3 mb-1">
+                                    @if ($hasReview)
+                                        Ini penilaianmu
+                                    @else
+                                        Kasih penilaian, yuk!
+                                    @endif
+                                </h4>
                                 <div class="text-center mt-0 mb-3 w-100">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <i class="bi bi-star-fill text-secondary star-rating fs-2"
-                                            data-value="{{ $i }}"></i>
-                                    @endfor
-                                    <input type="hidden" name="rating" id="rating-input" value="0">
+                                    @if ($hasReview)
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="bi bi-star-fill {{ $i <= $userReview->rating ? 'star-blue' : 'text-secondary' }} fs-2"></i>
+                                        @endfor
+                                    @else
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="bi bi-star-fill text-secondary star-rating fs-2"
+                                                data-value="{{ $i }}"></i>
+                                        @endfor
+                                        <input type="hidden" name="rating" id="rating-input" value="0">
+                                    @endif
                                 </div>
 
                                 <div class="ps-3 flex-fill d-flex flex-column w-100">
                                     <label for="comment" class="form-label text-start">Komentar</label>
                                     <textarea name="note" id="comment" class="form-control" rows="3"
-                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"
+                                        @if ($hasReview) disabled @endif>{{ $hasReview ? $userReview->comment : old('note') }}</textarea>
                                 </div>
 
                                 <div class="d-flex flex-column mt-3 justify-content-center">
-                                    <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                        onclick="submitReview()">Kirim</button>
-                                    <div class="m-1 text-center">Atau</div>
+                                    @if (!$hasReview)
+                                        <button type="button" class="btn btn-primary fw-medium rounded-3"
+                                            onclick="submitReview()">Kirim</button>
+                                        <div class="m-1 text-center">Atau</div>
+                                    @endif
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
                                         onclick="openReportModal()">Laporkan masalah</button>
                                 </div>
@@ -663,13 +674,15 @@
 
         function submitReview() {
             const comment = document.getElementById('comment').value.trim();
+            const ratingInput = document.getElementById('rating-input'); // Get the input
+            const selectedRating = parseInt(ratingInput.value); // Get its value
 
-            if (selectedRating == 0) {
-                alert('Silakan pilih rating terlebih dahulu.');
+            if (selectedRating === 0) {
+                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
                 return;
             }
-            if (comment == '') {
-                alert('Silakan isi komentar.');
+            if (comment === '') {
+                window.showCustomAlert('Silakan isi komentar.', 'error');
                 return;
             }
 
@@ -688,18 +701,43 @@
                         comment: comment,
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        // If response is not OK, try to parse JSON error and throw it
+                        return response.json().then(errorData => {
+                            throw errorData; // Throw the error data object
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        alert('Review berhasil disimpan!');
-                        location.reload();
+                        window.showCustomAlert(data.message, 'success');
+                        var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                        if (completionModal) completionModal.hide();
+                        // Page reload will be handled by the 'hidden.bs.modal' listener added in point 1.
                     } else {
-                        alert('Gagal menyimpan review, coba lagi.');
+                        let errorMessage = data.message || 'Gagal menyimpan review, coba lagi.';
+                        if (data.errors) {
+                            for (const key in data.errors) {
+                                if (data.errors.hasOwnProperty(key)) {
+                                    data.errors[key].forEach(msg => {
+                                        errorMessage += `\n- ${msg}`;
+                                    });
+                                }
+                            }
+                        }
+                        window.showCustomAlert(errorMessage, 'error');
                     }
                 })
                 .catch(error => {
                     console.error(error);
-                    alert('Terjadi kesalahan, coba lagi.');
+                    // Check if it's a network error or an error thrown from `.then` (which might contain server errors)
+                    if (error.message) {
+                         window.showCustomAlert('Terjadi kesalahan: ' + error.message, 'error');
+                    } else {
+                        window.showCustomAlert('Terjadi kesalahan, coba lagi.', 'error');
+                    }
                 });
         }
 
@@ -816,20 +854,26 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                const confirmModal = bootstrap.Modal.getInstance(document
-                                    .getElementById('completeJobModal'));
+                                window.showCustomAlert(data.message, "success"); // Show success alert
+                                const confirmModal = bootstrap.Modal.getInstance(document.getElementById('completeJobModal'));
                                 if (confirmModal) confirmModal.hide();
 
-                                const completionModal = new bootstrap.Modal(document.getElementById(
-                                    'completionModal'));
+                                const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
                                 completionModal.show();
+
+                                // Add event listener to reload page after completionModal is hidden
+                                document.getElementById('completionModal').addEventListener('hidden.bs.modal', function() {
+                                    location.reload();
+                                }, {
+                                    once: true
+                                }); // Use { once: true } to ensure it only runs once
                             } else {
-                                alert(data.message || 'Terjadi kesalahan.');
+                                window.showCustomAlert(data.message || 'Terjadi kesalahan.', "error"); // Use custom alert for errors too
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Terjadi kesalahan. Silakan coba lagi.');
+                            window.showCustomAlert('Terjadi kesalahan. Silakan coba lagi.', "error"); // Use custom alert for errors
                         })
                         .finally(() => {
                             this.disabled = false;
