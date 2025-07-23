@@ -295,7 +295,7 @@ class RequestController extends Controller
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
         return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
     }
-    
+
     public function showOngoing($id)
     {
         $request = JobRequest::findOrFail($id);

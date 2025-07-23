@@ -118,6 +118,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // Changed to custom alert, including the user's first name
-        return redirect('/job-req/beranda')->with('custom_success_alert', "Daftar berhasil! Selamat datang, {$user->first_name}!");
+        return redirect('/job-req/beranda')->with('custom_info_alert', "Daftar berhasil! Selamat datang, {$user->first_name}!");
     }
 }
+

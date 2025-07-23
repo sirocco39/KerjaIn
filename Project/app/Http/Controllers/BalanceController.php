@@ -23,7 +23,8 @@ class BalanceController extends Controller
 
             // Jika tidak keduanya, arahkan ke halaman lain atau tampilkan error
         } else {
-            abort(404, 'Halaman tidak ditemukan');
+            // Changed to custom alert
+            return redirect()->route('landing')->with('custom_error_alert', 'Halaman tidak ditemukan.');
         }
 
         $user = User::find(Auth::id());

@@ -235,11 +235,11 @@
 
                         <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
                             <li><a class="dropdown-item d-flex align-items-center" href="#"><img
-                                            src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
-                                            class="flag"> Bahasa</a></li>
+                                        src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
+                                        class="flag"> Bahasa</a></li>
                             <li><a class="dropdown-item d-flex align-items-center" href="#"><img
-                                            src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
-                                            class="flag"> English</a></li>
+                                        src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
+                                        class="flag"> English</a></li>
                         </ul>
                     </li>
 
@@ -569,6 +569,12 @@
                             <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Daftar</button>
 
                             <div class="text-center">
+                                <p class="mb-2">Sudah punya akun?
+                                    <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
+                                        data-bs-target="#loginModal">
+                                        Masuk
+                                    </button>
+                                </p>
                                 <p>Atau daftar dengan:</p>
                                 <a href="{{ route('auth-google-redirect') }}" class="btn btn-link btn-floating mx-1">
                                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
@@ -753,7 +759,8 @@
                 emailErrors.push('Silakan masukkan alamat email yang valid.');
             }
             if (emailErrors.length > 0) {
-                loginEmailErrorDiv.innerHTML = `<ul class="mb-0">${emailErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                loginEmailErrorDiv.innerHTML =
+                    `<ul class="mb-0">${emailErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
                 loginEmailErrorDiv.classList.remove('d-none');
                 loginEmailInput.classList.add('is-invalid');
                 hasClientErrors = true;
@@ -773,7 +780,8 @@
             // }
 
             if (passwordErrors.length > 0) {
-                loginPasswordErrorDiv.innerHTML = `<ul class="mb-0">${passwordErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                loginPasswordErrorDiv.innerHTML =
+                    `<ul class="mb-0">${passwordErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
                 loginPasswordErrorDiv.classList.remove('d-none');
                 loginPasswordInput.classList.add('is-invalid');
                 hasClientErrors = true;
@@ -1146,7 +1154,7 @@
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                showCustomAlert(successMessage, 'success');
+                showCustomAlert(successMessage, 'info');
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
                 showCustomAlert(errorMessage, 'error');

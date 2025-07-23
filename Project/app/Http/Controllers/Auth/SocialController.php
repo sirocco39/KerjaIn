@@ -52,7 +52,7 @@ class SocialController extends Controller
         Auth::login($user);
 
         // Changed to custom alert
-        return redirect('/')->with('custom_success_alert', 'Login berhasil! Selamat datang di aplikasi kami.');
+        return redirect('/')->with('custom_info_alert', 'Login berhasil! Selamat datang di aplikasi kami.');
     }
 
 }

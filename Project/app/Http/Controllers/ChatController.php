@@ -48,7 +48,6 @@ class ChatController extends Controller
 
         return response()->json([
             'success'      => true,
-            'message'      => 'Tawaran berhasil dikirim!',
             'redirect_url' => route('chat.job-taker', ['selectedRoomId' => $room->id])
         ]);
     }

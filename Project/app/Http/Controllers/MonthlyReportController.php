@@ -206,7 +206,7 @@ $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
         $worker = User::find($workerId);
 
         if (!$worker) {
-            return redirect()->back()->with('error', 'Worker profile not found. Please log in.');
+            return redirect()->back()->with('custom_error_alert', 'Worker profile not found. Please log in.');
         }
 
         // 2. Tentukan Periode Laporan (sama seperti di index)

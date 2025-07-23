@@ -62,7 +62,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Changed to custom alert
-        return redirect()->route('job-req.beranda')->with('custom_success_alert', "Login berhasil! Selamat datang, {$firstName}!");
+        return redirect()->route('job-req.beranda')->with('custom_info_alert', "Login berhasil! Selamat datang, {$firstName}!");
     }
 
 
@@ -81,3 +81,4 @@ class AuthenticatedSessionController extends Controller
         return redirect('/')->with('custom_info_alert', 'Anda telah berhasil keluar.');
     }
 }
+

@@ -439,12 +439,12 @@
 
             // Client-side validation for rating and comment
             if (rating == 0) {
-                alert('Silakan pilih rating terlebih dahulu.');
+                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
                 return;
             }
 
             if (comment == '') {
-                alert('Silakan isi komentar.');
+                window.showCustomAlert('Silakan isi komentar.', 'error');
                 return;
             }
 
@@ -476,17 +476,17 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        alert('Review berhasil disimpan!');
+                        window.showCustomAlert('Review berhasil disimpan!', 'success');
                         var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
                         completionModal.hide();
                         location.reload(); // Reload page to reflect changes
                     } else {
-                        alert('Gagal menyimpan review, coba lagi. ' + (data.message || ''));
+                        window.showCustomAlert('Gagal menyimpan review, coba lagi. ' + (data.message || ''), 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error submitting review:', error);
-                    alert('Terjadi kesalahan saat mengirim review, coba lagi.\nDetails: ' + error.message);
+                    window.showCustomAlert('Terjadi kesalahan saat mengirim review, coba lagi.\nDetails: ' + error.message, 'error');
                 });
         }
 
@@ -504,12 +504,12 @@
             // Client-side validation for report reasons
             const reasons = document.getElementById('reportNote').value.trim();
             if (!reasons) {
-                alert('Harap isi keluh kesah Anda terlebih dahulu.');
+                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
                 return;
             }
             // Client-side validation for photos
             if (reportImageInput.files.length === 0) {
-                alert("Silakan upload minimal satu foto bukti laporan.");
+                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
                 return;
             }
 
@@ -535,12 +535,12 @@
                 })
                 .then(data => {
                     console.log(data);
-                    alert(data.message);
+                    window.showCustomAlert(data.message, 'info');
                     location.reload(); // Reload page to reflect changes
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message);
+                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message, 'error');
                 });
         }
 
@@ -553,7 +553,7 @@
                 window.open(invoiceUrl, '_blank');
             } else {
                 console.error('Transaction ID not found for invoice generation.');
-                alert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.');
+                window.showCustomAlert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.', 'error');
             }
         }
 

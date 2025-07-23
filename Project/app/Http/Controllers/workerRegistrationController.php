@@ -23,7 +23,7 @@ class WorkerRegistrationController extends Controller
         $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
         if ($verificationRequest) {
             // If there's a pending or approved verification request, redirect to the pending page
-            return redirect()->route('worker.register.pending')->with('custom_info_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
+            return redirect()->route('worker.register.pending')->with('custom_success_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
         }
         // Ambil data dari session jika ada, untuk mengisi ulang form
         $data = Session::get('worker_registration.step1', []);
@@ -34,7 +34,8 @@ class WorkerRegistrationController extends Controller
     {
         // Validate input data
         $this->validate($request, [
-            'first_name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/', // Added regex
+            'last_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/',  // Added regex
             'nik' => [
                 'required',
                 'string',
@@ -56,6 +57,11 @@ class WorkerRegistrationController extends Controller
             ],
         ], [
             'first_name.required' => 'Nama depan tidak boleh kosong.',
+            'first_name.string' => 'Nama depan harus berupa teks.', // Better message for string type
+            'first_name.regex' => 'Nama depan hanya boleh mengandung huruf', // New message for regex
+            'last_name.required' => 'Nama belakang tidak boleh kosong.',
+            'last_name.string' => 'Nama belakang harus berupa teks.', // Better message for string type
+            'last_name.regex' => 'Nama belakang hanya boleh mengandung huruf', // New message for regex
             'address.required' => 'Alamat tidak boleh kosong.',
             'gender.required' => 'Jenis kelamin tidak boleh kosong.',
             'nik.required' => 'NIK tidak boleh kosong.',
@@ -65,7 +71,6 @@ class WorkerRegistrationController extends Controller
             'birthdate.before_or_equal' => 'Usia harus minimal 17 tahun.',
             'phone_number.regex' => 'Masukkan nomor telepon yang valid dengan format 08XXXXXXXXXX.',
             'phone_number.unique' => 'Nomor telepon sudah terdaftar.',
-
         ]);
 
 
