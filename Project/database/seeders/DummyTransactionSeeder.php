@@ -3,15 +3,20 @@
 namespace Database\Seeders;
 
 use App\Models\ChatRoom;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-use App\Models\User; // Assuming User model exists
+use App\Models\CompletionProof;
+use App\Models\Payment;
 use App\Models\Request as JobRequest; // Alias Request model to avoid conflict with Illuminate\Http\Request
-use App\Models\Transaction; // Assuming Transaction model exists
-use App\Models\Review; // Assuming Review model exists
+use App\Models\Review;
+use App\Models\Transaction;
+use App\Models\User;
+use App\Models\WalletTransaction;
+use App\Models\ChatRoom;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents; // Keep this if you use it elsewhere
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 
 class DummyTransactionSeeder extends Seeder
@@ -33,68 +38,90 @@ class DummyTransactionSeeder extends Seeder
 
         // Define all dummy request titles for cleanup
         $dummyRequestTitles = [
-            'Dummy Service Request',
-            'Another Dummy Service Request',
-            'Urgent Task Needed',
-            'Quick Fix Job',
-            'Maintenance Service Request',
-            'Software Development Project',
-            'Graphic Design Task',
+            'Perbaikan Pipa Bocor (Open)',
+            'Pembersihan Taman (Accepted)',
+            'Pemasangan Lampu Gantung (In Progress)',
+            'Pengecatan Kamar Tidur (Submitted)',
+            'Service AC Rutin (Completed)',
+            'Bantuan Pindah Barang (Cancelled)',
+            'Software Development Project (Open)', // Added for future open project
+            'Desain Grafis Cepat (Open)', // Added for future open project
+            'Pembersihan Rumah Mingguan (Open)', // Added for future open project
+            'Perbaikan Listrik Darurat (Open)',
+            'Pemasangan Wallpaper (Open)',
+            'Servis Kendaraan (Open)',
+            'Pengiriman Dokumen (Open)',
+            'Pembersihan Kantor (Open)',
+            'Pemasangan CCTV (Open)',
+            'Perakitan Furnitur (Open)',
+            'Les Privat Matematika (Open)',
+            'Jasa Fotografi Acara (Open)',
+            'Perbaikan Saluran Air (Open)',
+            'Pemasangan Keramik (Open)',
         ];
 
         // --- Cleanup existing dummy data to prevent duplicates on re-seeding ---
-        // Delete transactions created by dummy users
-        Transaction::where(function ($query) use ($dummyEmails) {
-            $query->whereHas('requester', function ($q) use ($dummyEmails) {
-                $q->whereIn('email', $dummyEmails);
-            })->orWhereHas('worker', function ($q) use ($dummyEmails) {
-                $q->whereIn('email', $dummyEmails);
-            });
-        })->forceDelete();
+        // Use DB::transaction for cleanup to ensure atomicity
+        DB::transaction(function () use ($dummyEmails, $dummyRequestTitles) {
+            // Get IDs of dummy users
+            $dummyUserIds = User::whereIn('email', $dummyEmails)->pluck('id');
 
-        // Delete chat rooms linked to dummy requests/users (Crucial step for cleanup)
-        ChatRoom::where(function ($query) use ($dummyEmails, $dummyRequestTitles) {
-            $query->whereHas('requester', function ($q) use ($dummyEmails) {
-                $q->whereIn('email', $dummyEmails);
-            })->orWhereHas('worker', function ($q) use ($dummyEmails) {
-                $q->whereIn('email', $dummyEmails);
-            })->orWhereHas('request', function ($q) use ($dummyRequestTitles) {
-                $q->whereIn('title', $dummyRequestTitles);
-            });
-        })->forceDelete();
+            // Get IDs of dummy requests
+            $dummyRequestIds = JobRequest::whereIn('title', $dummyRequestTitles)->pluck('id');
 
-        // Delete dummy requests
-        JobRequest::whereIn('title', $dummyRequestTitles)->forceDelete();
+            // Delete reviews first, as they depend on transactions
+            Review::whereIn('transaction_id', Transaction::whereIn('requester_id', $dummyUserIds)
+                ->orWhereIn('worker_id', $dummyUserIds)
+                ->pluck('id'))
+                ->forceDelete();
 
-        // Delete dummy users
-        User::whereIn('email', $dummyEmails)->forceDelete();
+            // Delete completion proofs, as they depend on transactions
+            CompletionProof::whereIn('transaction_id', Transaction::whereIn('requester_id', $dummyUserIds)
+                ->orWhereIn('worker_id', $dummyUserIds)
+                ->pluck('id'))
+                ->forceDelete();
 
-        // Delete dummy reviews associated with dummy transactions (optional, but good for a clean re-seed)
-        Review::whereIn('transaction_id', Transaction::where(function ($query) use ($dummyEmails) {
-            $query->whereHas('requester', function ($q) use ($dummyEmails) {
-                $q->whereIn('email', $dummyEmails);
-            })->orWhereHas('worker', function ($q) use ($dummyEmails) {
-                $q->whereIn('email', $dummyEmails);
-            });
-        })->pluck('id'))->forceDelete();
+            // Delete wallet transactions linked to dummy users
+            WalletTransaction::whereIn('user_id', $dummyUserIds)->forceDelete();
+
+            // Delete payments linked to dummy requests
+            Payment::whereIn('request_id', $dummyRequestIds)->forceDelete();
+
+            // Delete transactions created by dummy users
+            Transaction::whereIn('requester_id', $dummyUserIds)
+                ->orWhereIn('worker_id', $dummyUserIds)
+                ->forceDelete();
+
+            // Delete chat rooms linked to dummy requests or users
+            ChatRoom::whereIn('request_id', $dummyRequestIds)
+                ->orWhereIn('requester_id', $dummyUserIds)
+                ->orWhereIn('worker_id', $dummyUserIds)
+                ->forceDelete();
+
+            // Delete dummy requests
+            JobRequest::whereIn('title', $dummyRequestTitles)->forceDelete();
+
+            // Delete dummy users
+            User::whereIn('email', $dummyEmails)->forceDelete();
+        });
         // --- End Cleanup ---
 
 
-        // Create a dummy requester user with genuine-like email and password
+        // Create dummy users
         $requester = User::firstOrCreate(
-            ['email' => 'hansengunawan64@gmail.com'], // Use email as unique identifier for firstOrCreate
+            ['email' => 'hansengunawan64@gmail.com'],
             [
                 'first_name' => 'Hansen',
                 'last_name' => 'Gunawan',
-                'password' => bcrypt('@Super645!'), // Hashed password
-                'role' => 'user', // Assuming 'user' is a valid role from your schema
-                'phone_number' => '081234567890', // Example phone number
-                'balance' => 9999999.00, // Example balance
-                'locked_balance' => 0.00, // Initialize locked_balance
-                'is_worker' => true, // Can also act as a worker
+                'password' => Hash::make('@Super645!'),
+                'role' => 'user',
+                'phone_number' => '081234567890',
+                'balance' => 1500000.00, // Increased initial balance
+                'locked_balance' => 0.00,
+                'is_worker' => true, // Hansen can also be a worker
                 'rating' => 4.8,
                 'job_done' => 10,
-                'bank_acc_num' => null, // Or an example bank account number if needed
+                'bank_acc_num' => '1234567890',
                 'google_id' => null,
                 'is_blocked' => false,
                 'created_at' => Carbon::now()->subMonth(),
@@ -102,21 +129,20 @@ class DummyTransactionSeeder extends Seeder
             ]
         );
 
-        // Create a dummy worker user
         $worker = User::firstOrCreate(
-            ['email' => 'worker@example.com'], // Use email as unique identifier for firstOrCreate
+            ['email' => 'worker@example.com'],
             [
                 'first_name' => 'Dummy',
                 'last_name' => 'Worker',
-                'password' => bcrypt('password'), // A common test password, securely hashed
-                'role' => 'user', // Assuming 'user' is a valid role
-                'phone_number' => '089876543210', // Example phone number
-                'balance' => 300000.00, // Example balance
-                'locked_balance' => 0.00, // Initialize locked_balance
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'phone_number' => '089876543210',
+                'balance' => 500000.00,
+                'locked_balance' => 0.00,
                 'is_worker' => true,
                 'rating' => 4.5,
                 'job_done' => 5,
-                'bank_acc_num' => '1234567890', // Example bank account number
+                'bank_acc_num' => '1234567890',
                 'google_id' => null,
                 'is_blocked' => false,
                 'created_at' => Carbon::now()->subMonth()->addDays(3),
@@ -124,21 +150,20 @@ class DummyTransactionSeeder extends Seeder
             ]
         );
 
-        // Create another dummy requester/worker user
         $requester2 = User::firstOrCreate(
             ['email' => 'requester2@example.com'],
             [
                 'first_name' => 'Alice',
                 'last_name' => 'Smith',
-                'password' => bcrypt('password123'),
+                'password' => Hash::make('password123'),
                 'role' => 'user',
                 'phone_number' => '087654321098',
-                'balance' => 75000.00,
-                'locked_balance' => 0.00, // Initialize locked_balance
-                'is_worker' => true,
+                'balance' => 200000.00, // Increased initial balance
+                'locked_balance' => 0.00,
+                'is_worker' => false, // Alice is primarily a requester
                 'rating' => 4.2,
-                'job_done' => 3,
-                'bank_acc_num' => '9876543210',
+                'job_done' => 0,
+                'bank_acc_num' => null,
                 'google_id' => null,
                 'is_blocked' => false,
                 'created_at' => Carbon::now()->subMonth()->addDays(5),
@@ -146,17 +171,16 @@ class DummyTransactionSeeder extends Seeder
             ]
         );
 
-        // Create another dummy worker user
         $worker2 = User::firstOrCreate(
             ['email' => 'worker2@example.com'],
             [
                 'first_name' => 'Bob',
                 'last_name' => 'Johnson',
-                'password' => bcrypt('securepass'),
+                'password' => Hash::make('securepass'),
                 'role' => 'user',
                 'phone_number' => '081122334455',
                 'balance' => 150000.00,
-                'locked_balance' => 0.00, // Initialize locked_balance
+                'locked_balance' => 0.00,
                 'is_worker' => true,
                 'rating' => 4.9,
                 'job_done' => 8,
@@ -169,73 +193,73 @@ class DummyTransactionSeeder extends Seeder
         );
 
 
-        // Create dummy requests
-        $jobRequest1 = JobRequest::firstOrCreate(
-            ['title' => 'Dummy Service Request'], // Use title as unique identifier for firstOrCreate
-            [
-                'requester_id' => $requester->id,
-                'description' => 'This is a dummy request for testing purposes. It requires a skilled worker to complete the task efficiently.',
-                'location' => 'Jakarta, Indonesia',
-                'price' => 200000.00, // Price is on the request table
-                'status' => 'open', // Initial status for the request (from your requests table enum)
-                'start_time' => Carbon::now()->subDays(35),
-                'end_time' => Carbon::now()->subDays(33),
-                'slug' => Str::slug('Dummy Service Request ' . Str::random(5)), // Ensure slug is unique
-                'created_at' => Carbon::now()->subDays(38),
-                'updated_at' => Carbon::now()->subDays(38),
-                'final_price'=> 200000.00,
-            ]
+        // Helper function to create a request and handle initial payment/escrow
+        $createJobRequest = function ($title, $description, $price, $location, $requesterUser, $status, $start_time, $end_time) use ($faker) {
+            $jobRequest = JobRequest::create([
+                'title' => $title,
+                'slug' => Str::slug($title . '-' . Str::random(5)),
+                'description' => $description,
+                'price' => $price,
+                'final_price' => $price,
+                'location' => $location,
+                'requester_id' => $requesterUser->id,
+                'status' => $status,
+                'start_time' => $start_time,
+                'end_time' => $end_time,
+                'created_at' => $start_time->subHours(rand(1, 24)), // Request created slightly before start time
+                'updated_at' => $start_time->subHours(rand(1, 24)),
+            ]);
+
+            // Handle initial payment (escrow)
+            Payment::create([
+                'request_id' => $jobRequest->id,
+                'amount' => $price,
+                'status' => 'holding',
+            ]);
+            $requesterUser->decrement('balance', $price);
+            $requesterUser->increment('locked_balance', $price);
+            WalletTransaction::create([
+                'user_id' => $requesterUser->id,
+                'amount' => $price,
+                'type' => 'credit', // 'credit' for locked balance, 'debit' for active balance
+                'description' => 'Penahanan saldo untuk pekerjaan: ' . $jobRequest->title,
+            ]);
+
+            return $jobRequest;
+        };
+
+        // --- Scenario 1: Open Requests (Future Date/Time - discoverable by workers) ---
+        $jobRequest1 = $createJobRequest(
+            'Perbaikan Pipa Bocor (Open)',
+            'Pipa air di dapur bocor parah, butuh perbaikan segera.',
+            75000.00,
+            'Jl. Merdeka No. 10, Jakarta',
+            $requester,
+            'open',
+            Carbon::now()->addDays(5)->setTime(9, 0),
+            Carbon::now()->addDays(5)->setTime(17, 0)
         );
 
-        $jobRequest2 = JobRequest::firstOrCreate(
-            ['title' => 'Another Dummy Service Request'],
-            [
-                'requester_id' => $requester2->id,
-                'description' => 'A second dummy request for testing different scenarios and user interactions.',
-                'location' => 'Bandung, Indonesia',
-                'price' => 150000.00,
-                'status' => 'open',
-                'start_time' => Carbon::now()->subDays(30),
-                'end_time' => Carbon::now()->subDays(28),
-                'slug' => Str::slug('Another Dummy Service Request ' . Str::random(5)),
-                'created_at' => Carbon::now()->subDays(32),
-                'updated_at' => Carbon::now()->subDays(32),
-                'final_price'=> 150000.00,
-            ]
+        $jobRequest2 = $createJobRequest(
+            'Pembersihan Rumah Mingguan (Open)',
+            'Pembersihan menyeluruh rumah 3 kamar tidur, termasuk kamar mandi dan dapur.',
+            180000.00,
+            'Komplek Griya Asri, Tangerang',
+            $requester2,
+            'open',
+            Carbon::now()->addDays(2)->setTime(10, 0),
+            Carbon::now()->addDays(2)->setTime(14, 0)
         );
 
-        $jobRequest3 = JobRequest::firstOrCreate(
-            ['title' => 'Urgent Task Needed'],
-            [
-                'requester_id' => $requester->id,
-                'description' => 'An urgent task requiring immediate attention and quick completion.',
-                'location' => 'Surabaya, Indonesia',
-                'price' => 300000.00,
-                'status' => 'open',
-                'start_time' => Carbon::now()->subDays(25),
-                'end_time' => Carbon::now()->subDays(23),
-                'slug' => Str::slug('Urgent Task Needed ' . Str::random(5)),
-                'created_at' => Carbon::now()->subDays(27),
-                'updated_at' => Carbon::now()->subDays(27),
-                'final_price'=> 300000.00,
-            ]
-        );
-
-        $jobRequest4 = JobRequest::firstOrCreate(
-            ['title' => 'Quick Fix Job'],
-            [
-                'requester_id' => $requester2->id,
-                'description' => 'A small, quick job that can be completed in a few hours.',
-                'location' => 'Yogyakarta, Indonesia',
-                'price' => 50000.00,
-                'status' => 'open',
-                'start_time' => Carbon::now()->subDays(2),
-                'end_time' => Carbon::now()->subDay(),
-                'slug' => Str::slug('Quick Fix Job ' . Str::random(5)),
-                'created_at' => Carbon::now()->subDays(4),
-                'updated_at' => Carbon::now()->subDays(4),
-                'final_price'=> 50000.00,
-            ]
+        $jobRequest3 = $createJobRequest(
+            'Perbaikan Listrik Darurat (Open)',
+            'Listrik padam di sebagian rumah, butuh teknisi listrik segera.',
+            250000.00,
+            'Jl. Pahlawan No. 22, Bekasi',
+            $requester,
+            'open',
+            Carbon::now()->addHours(3)->setTime(Carbon::now()->addHours(3)->hour, 0), // Today, 3 hours from now
+            Carbon::now()->addHours(6)->setTime(Carbon::now()->addHours(6)->hour, 0)
         );
 
         $jobRequest5 = JobRequest::firstOrCreate(

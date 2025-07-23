@@ -1,89 +1,222 @@
-@extends('master.master-job-req') {{-- Ganti dengan layout master Anda --}}
+@extends('master.master-job-req')
 
 @section('content')
-    <div class="container-fluid p-4" style="background-color: #f0f3f7;">
-        <div class="row">
-            {{-- Kolom Kiri: Info Saldo & Aksi --}}
-            <div class="col-lg-4 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="text-muted">Saldo Aktif</h5>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <h1 id="user-balance" class="fw-bold m-0" style="font-size: 2.5rem;">
-                                Rp{{ number_format($user->balance, 0, ',', '.') }}
-                            </h1>
-                            <a href="{{ route('top-up.job-req') }}" class="btn btn-outline-primary fw-bold">Top-up</a>
+    <div class="wallet-page-wrapper">
+        {{-- Header dengan background gradasi --}}
+        <div class="wallet-header">
+            <div class="container-fluid pembatas-x">
+                <h2 class="text-white fw-bold">Dompet & Saldo</h2>
+            </div>
+        </div>
+
+        <div class="container-fluid pembatas-x wallet-content">
+            <div class="row">
+                {{-- Kolom Kiri: Info Saldo & Aksi --}}
+                <div class="col-lg-4 mb-4">
+                    <div class="card balance-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="card-text text-muted mb-1">Saldo Aktif</p>
+                                    <h2 class="card-title fw-bolder" id="user-balance">
+                                        Rp{{ number_format($user->balance, 0, ',', '.') }}
+                                    </h2>
+                                </div>
+                                <a href="{{ route('top-up.job-req') }}" class="btn btn-primary fw-bold px-3">Top-up</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card locked-balance-card mt-3">
+                        <div class="card-body">
+                            <p class="card-text text-muted mb-1">Saldo Ditahan (Escrow)</p>
+                            <h4 class="card-title fw-bolder">
+                                Rp{{ number_format($user->locked_balance, 0, ',', '.') }}
+                            </h4>
                         </div>
                     </div>
                 </div>
-                {{-- Anda bisa menambahkan card lain di sini jika perlu, seperti di contoh --}}
-            </div>
 
-            {{-- Kolom Kanan: Riwayat Transaksi --}}
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h4 class="card-title fw-bold mb-4">Riwayat Transaksi</h4>
+                {{-- Kolom Kanan: Riwayat Transaksi --}}
+                <div class="col-lg-8">
+                    <div class="card transaction-card">
+                        <div class="card-body">
+                            <h4 class="card-title fw-bold mb-4">Riwayat Transaksi</h4>
 
-                        {{-- Kontainer untuk daftar transaksi --}}
-                        <div class="transaction-list">
-                            @forelse ($walletTransactions as $transaction)
-                                <div class="d-flex justify-content-between align-items-center py-3">
-                                    <div class="d-flex align-items-center">
-                                        {{-- Ikon berdasarkan tipe transaksi --}}
-                                        <div class="me-3">
-                                            @if ($transaction->type == 'debit')
-                                                <i class="fas fa-arrow-down-circle fa-2x text-success"></i>
+                            <div class="transaction-list">
+                                @forelse ($walletTransactions as $transaction)
+                                    <div class="transaction-item">
+                                        <div class="transaction-icon">
+                                            @if ($transaction->type == 'credit')
+                                                <i class="fas fa-arrow-down-circle credit"></i>
                                             @else
-                                                <i class="fas fa-arrow-up-circle fa-2x text-danger"></i>
+                                                <i class="fas fa-arrow-up-circle debit"></i>
                                             @endif
                                         </div>
-                                        <div>
+                                        <div class="transaction-details">
                                             <p class="fw-bold mb-0">{{ $transaction->description }}</p>
                                             <p class="text-muted small mb-0">
                                                 {{ $transaction->created_at->format('d M Y, H:i') }}</p>
                                         </div>
+                                        <div class="transaction-amount">
+                                            <h5
+                                                class="fw-bold mb-0 {{ $transaction->type == 'credit' ? 'credit' : 'debit' }}">
+                                                {{ $transaction->type == 'credit' ? '-' : '+' }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
+                                            </h5>
+                                        </div>
                                     </div>
-                                    <div class="text-end">
-                                        <h5 class="fw-bold mb-0 {{ $transaction->type == 'debit' ? 'text-success' : 'text-danger' }}">
-                                            {{ $transaction->type == 'credit' ? '-' : '+' }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
-                                        </h5>
+                                @empty
+                                    <div class="text-center py-5">
+                                        <img src="{{ asset('Image/Icon/no-transaction.svg') }}" alt="Transaksi Kosong"
+                                            style="width: 150px;" class="mb-4">
+                                        <h5 class="fw-bold">Yah, belum ada transaksi</h5>
+                                        <p class="text-muted">Riwayat pengisian saldo dan pembayaran akan muncul di sini.
+                                        </p>
                                     </div>
-                                </div>
-                                @if (!$loop->last)
-                                    <hr class="my-0">
-                                @endif
-                            @empty
-                                {{-- Tampilan jika tidak ada transaksi --}}
-                                <div class="text-center py-5">
-                                    <img src="{{ asset('images/empty-transaction.svg') }}" alt="Ilustrasi Transaksi Kosong"
-                                        style="width: 150px;" class="mb-3">
-                                    <h5 class="fw-bold">Belum ada transaksi</h5>
-                                    <p class="text-muted">Semua riwayat pengisian saldo dan pembayaran akan muncul di sini.
-                                    </p>
-                                </div>
-                            @endforelse
-                        </div>
+                                @endforelse
+                            </div>
 
-                        {{-- Link Paginasi --}}
-                        <div class="d-flex justify-content-center mt-4">
-                            {{ $walletTransactions->links() }}
-                        </div>
+                            {{-- Link Paginasi --}}
+                            @if ($walletTransactions->hasPages())
+                                <div class="pagination-wrapper d-flex justify-content-center mt-4">
+                                    <nav>
+                                        <ul class="pagination">
+                                            {{-- Tombol Halaman Sebelumnya --}}
+                                            @if ($walletTransactions->onFirstPage())
+                                                <li class="page-item disabled" aria-disabled="true">
+                                                    <span class="page-link">&lsaquo;</span>
+                                                </li>
+                                            @else
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ $walletTransactions->previousPageUrl() }}"
+                                                        rel="prev">&lsaquo;</a>
+                                                </li>
+                                            @endif
 
+                                            {{-- Link Nomor Halaman --}}
+                                            @foreach ($walletTransactions->links()->elements[0] as $page => $url)
+                                                @if ($page == $walletTransactions->currentPage())
+                                                    <li class="page-item active" aria-current="page"><span
+                                                            class="page-link">{{ $page }}</span></li>
+                                                @else
+                                                    <li class="page-item"><a class="page-link"
+                                                            href="{{ $url }}">{{ $page }}</a></li>
+                                                @endif
+                                            @endforeach
+
+                                            {{-- Tombol Halaman Selanjutnya --}}
+                                            @if ($walletTransactions->hasMorePages())
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ $walletTransactions->nextPageUrl() }}"
+                                                        rel="next">&rsaquo;</a>
+                                                </li>
+                                            @else
+                                                <li class="page-item disabled" aria-disabled="true">
+                                                    <span class="page-link">&rsaquo;</span>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </nav>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Pastikan Anda sudah memuat Font Awesome di layout master Anda untuk ikon --}}
     <style>
-        .fa-arrow-down-circle {
+        /* Layout Utama */
+        .wallet-page-wrapper {
+            padding-bottom: 2rem;
+        }
+
+        .wallet-header {
+            background: linear-gradient(90deg, #00A99D, #007BFF);
+            padding: 2rem 0;
+        }
+
+        .wallet-content {
+            margin-top: -40px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .balance-card .card-title {
+            color: #00A99D;
+        }
+
+        .locked-balance-card .card-title {
+            color: #6c757d;
+        }
+
+        .transaction-card {
+            min-height: 400px;
+        }
+
+        /* Daftar Transaksi */
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .transaction-item:not(:last-child) {
+            border-bottom: 1px solid #f0f3f7;
+        }
+
+        .transaction-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .transaction-details {
+            flex-grow: 1;
+        }
+
+        .transaction-amount {
+            margin-left: 1rem;
+            text-align: right;
+        }
+
+        .debit {
             color: #28a745;
         }
 
-        .fa-arrow-up-circle {
+        .credit {
             color: #dc3545;
+        }
+
+        /* Pagination Baru */
+        .pagination-wrapper .pagination {
+            gap: 0.5rem;
+        }
+
+        .pagination-wrapper .page-item .page-link {
+            border-radius: 8px !important;
+            border: none;
+            font-weight: 600;
+            color: #6c757d;
+            background-color: #f0f3f7;
+        }
+
+        .pagination-wrapper .page-item.active .page-link {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .pagination-wrapper .page-item .page-link:hover {
+            background-color: #e2e6ea;
+        }
+
+        .pagination-wrapper .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            color: #adb5bd;
         }
     </style>
     <script>

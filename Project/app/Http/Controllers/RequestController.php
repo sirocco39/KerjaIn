@@ -11,6 +11,7 @@ use App\Models\Request as JobRequest;
 use App\Models\Request as RequestModel; // Avoid conflict with the Request facade
 use App\Models\User;
 use App\Models\WalletTransaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -93,7 +94,7 @@ class RequestController extends Controller
             'user_id' => $user->id,
             'amount' => $jobCost,
             'type' => 'credit',
-            'description' => 'Membuat tawaran pekerjaan dengan judul: ' . $workRequest->title,
+            'description' => 'Penahanan saldo untuk pekerjaan: ' . $workRequest->title,
         ]);
 
         // d. Buat catatan di tabel payments untuk escrow
@@ -105,9 +106,11 @@ class RequestController extends Controller
             'status' => 'holding',
         ]);
         if ($result) {
-            return redirect()->to('/job-req/beranda');
+            // Changed to custom alert
+            return redirect()->to('/job-req/beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
         } else {
-            return "request error";
+            // Changed to custom alert
+            return back()->with('custom_error_alert', 'Terjadi kesalahan saat membuat permintaan pekerjaan.');
         }
     }
 
@@ -149,46 +152,89 @@ class RequestController extends Controller
      */
     public function update(Request $request, string $slug)
     {
-        //
-        $validated = $request->validate([
-            'workTitleLabel' => 'required|string|max:255',
-            'workDetailLabel' => 'required|string',
-            'workPriceLabel' => 'required|numeric|min:5000',
-            'workAddressLabel' => 'required|string',
-            'workStartDateLabel' => 'required|date',
-            'workEndDateLabel' => 'required|date',
-            'workStartTimeLabel' => 'required',
-            'workEndTimeLabel' => 'required',
-        ]);
-        $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
-        $workRequest->title = $request->workTitleLabel;
-        $workRequest->slug = Str::slug($workRequest->title);
-        $workRequest->description = $request->workDetailLabel;
-        $workRequest->price = $request->workPriceLabel;
-        $workRequest->final_price = $request->workPriceLabel;
-        $workRequest->location = $request->workAddressLabel;
-        $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}:00");
-        $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}:00");
-        // Check if start is after end
-        if ($startDatetime > $endDatetime) {
-            return back()->withErrors([
-                'datetime' => 'Start time must not be after end time.'
-            ])->withInput();
-        }
-        $workRequest->start_time = $startDatetime;
-        $workRequest->end_time = $endDatetime;
-        //updated:
-        $workRequest->updated_at = date("Y-m-d h:i:sa", time());
+        try {
+            DB::transaction(function () use ($request, $slug) {
+                $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
 
-        // now update the request on database
-        $result = $workRequest->save();
-        if ($result) {
-            return redirect()->to('/job-req/beranda');
-        } else {
-            return "request update error";
+                // 2. Otorisasi: Pastikan yang mengedit adalah pemilik
+                if (Auth::id() !== $workRequest->requester_id) {
+                    throw new \Exception('Anda tidak berwenang untuk mengubah pekerjaan ini.');
+                }
+
+                // 3. Validasi Status: Jangan izinkan edit jika pekerjaan sudah tidak 'open'
+                if ($workRequest->status !== 'open') {
+                    throw new \Exception('Pekerjaan yang sudah berjalan tidak dapat diubah.');
+                }
+
+                // Add check for past end_time
+                if ($workRequest->end_time && $workRequest->end_time < Carbon::now()) {
+                    throw new \Exception('Pekerjaan ini sudah melewati batas waktu dan tidak dapat diubah.');
+                }
+
+                // 4. Logika Penyesuaian Saldo
+                $user = User::findOrFail(Auth::id());
+                $originalPrice = $workRequest->price;
+                $newPrice = $request->workPriceLabel;
+                $priceDifference = $newPrice - $originalPrice;
+                // Jika harga NAIK
+                if ($priceDifference > 0) {
+                    if ($user->balance < $priceDifference) {
+                        throw new \Exception('Saldo Anda tidak cukup untuk menaikkan harga pekerjaan.');
+                    }
+                    $user->balance -= $priceDifference;
+                    $user->locked_balance += $priceDifference;
+                    $user->save();
+
+                    WalletTransaction::create([
+                        'user_id' => $user->id,
+                        'amount' => $priceDifference,
+                        'type' => 'credit',
+                        'description' => 'Penambahan saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                    ]);
+                }
+                // Jika harga TURUN
+                else if ($priceDifference < 0) {
+                    $refundAmount = abs($priceDifference);
+                    $user->balance += $refundAmount;
+                    $user->locked_balance -= $refundAmount;
+                    $user->save();
+
+                    WalletTransaction::create([
+                        'user_id' => $user->id,
+                        'amount' => $refundAmount,
+                        'type' => 'debit',
+                        'description' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                    ]);
+                }
+
+                // 5. Update Detail Pekerjaan (Request)
+                $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}");
+                $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}");
+                if ($startDatetime >= $endDatetime) {
+                    throw new \Exception('Waktu mulai harus sebelum waktu selesai.');
+                }
+
+                $workRequest->title = $request->workTitleLabel;
+                $workRequest->slug = Str::slug($workRequest->title) . '-' . $workRequest->id; // Buat slug unik
+                $workRequest->description = $request->workDetailLabel;
+                $workRequest->price = $newPrice;
+                $workRequest->final_price = $newPrice; // Update juga final_amount
+                $workRequest->location = $request->workAddressLabel;
+                $workRequest->start_time = $startDatetime;
+                $workRequest->end_time = $endDatetime;
+                $workRequest->save();
+
+                // 6. Update Catatan Escrow (Payment)
+                $workRequest->payment->update(['amount' => $newPrice]);
+            });
+        } catch (\Exception $e) {
+            // Changed to custom alert
+            return back()->with('custom_error_alert', $e->getMessage())->withInput();
         }
+
+        // 7. Redirect jika berhasil
+        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
     }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -201,7 +247,8 @@ class RequestController extends Controller
 
                 // 1. Otorisasi: Pastikan yang menghapus adalah pemilik request
                 if (Auth::id() !== $workRequest->requester_id) {
-                    abort(403, 'Unauthorized action.'); // Hentikan jika bukan pemilik
+                    // Changed to custom alert
+                    return back()->with('custom_error_alert', 'Anda tidak berwenang untuk membatalkan pekerjaan ini.');
                 }
 
                 // 2. Validasi: Jangan biarkan request dihapus jika sudah ada offer diterima atau sedang berjalan
@@ -223,8 +270,8 @@ class RequestController extends Controller
                 WalletTransaction::create([
                     'user_id' => $user->id,
                     'amount' => $refundAmount,
-                    'type' => 'credit',
-                    'description' => 'Pengembalian dana dari pembatalan pekerjaan: ' . $workRequest->title,
+                    'type' => 'debit',
+                    'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $workRequest->title,
                 ]);
 
                 // 6. Update status terkait
@@ -233,15 +280,22 @@ class RequestController extends Controller
 
                 // 7. Hapus request (Soft Delete cara Laravel)
                 $workRequest->delete();
+
+                // Pass refund amount to session for display in custom alert
+                session()->flash('refund_amount', $refundAmount);
             });
         } catch (\Exception $e) {
-            // Jika ada error di tengah jalan, kembalikan pesan error
-            return back()->with('error', $e->getMessage());
+            // Changed to custom alert
+            return back()->with('custom_error_alert', $e->getMessage());
         }
 
         // 8. Jika semua berhasil, redirect dengan pesan sukses
-        return redirect()->route('job-req.beranda')->with('success', 'Pekerjaan berhasil dibatalkan dan dana telah dikembalikan.');
+        // Changed to custom alert, using the flashed refund_amount
+        $refundAmount = session('refund_amount', 0); // Get the flashed amount, default to 0
+        $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
+        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
     }
+
     public function showOngoing($id)
     {
         $request = JobRequest::findOrFail($id);
@@ -275,27 +329,41 @@ class RequestController extends Controller
     }
     public function validateRequest(Request $request)
     {
-        // Salin aturan validasi dari Form Request atau method store Anda ke sini
-        $validator = Validator::make($request->all(), [
-            'workTitleLabel'     => 'required|string|max:255',
-            'workDetailLabel'    => 'required|string',
-            'workAddressLabel'   => 'required|string|max:255',
+        $rules = [
+            'workTitleLabel' => 'required|string|max:255',
+            'workDetailLabel' => 'required|string',
+            'workPriceLabel' => 'required|numeric|min:5000',
+            'workAddressLabel' => 'required|string',
             'workStartDateLabel' => 'required|date',
+            'workEndDateLabel' => 'required|date',
             'workStartTimeLabel' => 'required',
-            'workEndDateLabel'   => 'required|date|after_or_equal:workStartDateLabel',
-            'workEndTimeLabel'   => 'required',
-            'workPriceLabel'     => 'required|numeric|min:5000',
-        ]);
+            'workEndTimeLabel' => 'required',
+        ];
 
-        // Cek jika ada kombinasi tanggal & waktu yang tidak valid
+        $validator = Validator::make($request->all(), $rules);
+
+        // ==========================================================
+        // LOGIKA KUSTOM YANG DIPERBAIKI
+        // ==========================================================
         $validator->after(function ($validator) use ($request) {
-            $startDateTime = $request->workStartDateLabel . ' ' . $request->workStartTimeLabel;
-            $endDateTime = $request->workEndDateLabel . ' ' . $request->workEndTimeLabel;
-            if (strtotime($endDateTime) <= strtotime($startDateTime)) {
-                $validator->errors()->add('datetime', 'Waktu selesai harus setelah waktu mulai.');
+            $startDate = $request->input('workStartDateLabel');
+            $startTime = $request->input('workStartTimeLabel');
+            $endDate = $request->input('workEndDateLabel');
+            $endTime = $request->input('workEndTimeLabel');
+
+            // HANYA jalankan validasi perbandingan jika SEMUA field sudah diisi
+            if ($startDate && $startTime && $endDate && $endTime) {
+                $startDateTime = Carbon::parse($startDate . ' ' . $startTime);
+                $endDateTime = Carbon::parse($endDate . ' ' . $endTime);
+
+                if ($startDateTime->gte($endDateTime)) { // gte = greater than or equal
+                    $validator->errors()->add(
+                        'datetime',
+                        __('validation.custom.datetime.after_start_time')
+                    );
+                }
             }
         });
-
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);

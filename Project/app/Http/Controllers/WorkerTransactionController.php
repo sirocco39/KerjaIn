@@ -10,9 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\Request as JobRequest; // Alias Request to JobRequest
 use App\Models\Report;
-use App\Models\Review; // Make sure this is imported
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException; // Import ValidationException
 
 class WorkerTransactionController extends Controller
 {
@@ -81,7 +82,8 @@ class WorkerTransactionController extends Controller
 
         // Authorization check: only the worker of the transaction can view this page
         if (Auth::id() !== $transaction->worker_id) {
-            abort(403, 'Unauthorized access.');
+            // Changed to custom alert
+            return redirect()->route('job-taker.home')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
         }
 
         $request = JobRequest::findOrFail($transaction->request_id);
@@ -101,13 +103,19 @@ class WorkerTransactionController extends Controller
             ]);
         }
 
+        // NEW: Check if a review already exists for this worker on this transaction
+        $hasReview = $transaction->reviewAboutWorker()->exists();
+        $receivedReview = $transaction->reviewAboutWorker; // This will be null if no review exists
+
         // Kirim ke view
         return view('job-taker.accepted-work-request', compact(
             'transaction',
             'request',
             'worker',
             'completionProof',
-            'room'
+            'room',
+            'hasReview', // Pass this flag
+            'receivedReview' // Pass the review object if it exists
         ));
     }
 
@@ -119,37 +127,77 @@ class WorkerTransactionController extends Controller
         $transaction->start_work = Carbon::now();
         $transaction->save();
 
-        return back()->with('success', 'Pekerjaan dimulai.');
-    }
-
-    public function uploadProof(Request $request, Transaction $transaction)
-    {
-        $request->validate([
-            'photo' => 'required|array',
-            'photo.*' => 'image|max:2048',
-            'note' => 'nullable|string',
-        ]);
-
-        foreach ($request->file('photo') as $file) {
-            $path = $file->store('completion_proofs', 'public');
-            $photoUrl = Storage::url($path);
-
-            CompletionProof::create([
-                'transaction_id' => $transaction->id,
-                'photo_url' => $photoUrl,
-                'note' => $request->note,
-                'submitted_at' => now(),
-            ]);
-        }
-
-        $transaction->status = 'submitted';
-        $transaction->finish_work = Carbon::now(); // Set finish_work when proof is uploaded
-        $transaction->save();
-
+        // Return JSON response for AJAX requests
         return response()->json([
             'success' => true,
-            'message' => 'Bukti pekerjaan berhasil diupload.'
+            'message' => 'Pekerjaan dimulai.',
+            'new_status' => $transaction->status,
+            'start_work_time' => $transaction->start_work->format('d M Y H:i'),
         ]);
+    }
+
+    /**
+     * Handles the upload of completion proof for a transaction.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Transaction  $transaction
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function uploadProof(Request $request, Transaction $transaction)
+    {
+        try {
+            $request->validate([
+                'photo' => 'required|array',
+                'photo.*' => 'image|max:2048', // Max 2MB per image
+                'note' => 'nullable|string',
+            ]);
+
+            $uploadedPhotoUrls = [];
+            foreach ($request->file('photo') as $file) {
+                // Store the file in 'completion_proofs' directory under 'public' disk
+                $path = $file->store('completion_proofs', 'public');
+                // Get the public URL for the stored file
+                $photoUrl = Storage::url($path);
+                $uploadedPhotoUrls[] = $photoUrl;
+
+                // Create a CompletionProof record for each uploaded photo
+                CompletionProof::create([
+                    'transaction_id' => $transaction->id,
+                    'photo_url' => $photoUrl,
+                    'note' => $request->note, // Note will be the same for all photos in this submission
+                    'submitted_at' => now(),
+                ]);
+            }
+
+            // Update the transaction status to 'submitted' and set finish_work timestamp
+            $transaction->status = 'submitted';
+            $transaction->finish_work = Carbon::now();
+            $transaction->save();
+
+            // Return a JSON success response for AJAX requests
+            return response()->json([
+                'success' => true,
+                'message' => 'Bukti pekerjaan berhasil diupload. Pekerjaan Anda sekarang dalam status ditinjau.',
+                'photo_urls' => $uploadedPhotoUrls, // Optionally return uploaded URLs
+                'new_status' => $transaction->status,
+                'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
+                'next_action' => 'show_review_modal' // Indicate next action for frontend
+            ]);
+
+        } catch (ValidationException $e) {
+            // Return JSON response for validation errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal: ' . $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422); // 422 Unprocessable Entity for validation errors
+        } catch (\Exception $e) {
+            // Return JSON response for other general errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat upload foto: ' . $e->getMessage()
+            ], 500); // 500 Internal Server Error
+        }
     }
 
     public function markComplete(Transaction $transaction)
@@ -164,8 +212,8 @@ class WorkerTransactionController extends Controller
         }
 
         // Ambil data yang dibutuhkan untuk pop-up rating
-        $job = Request::find($transaction->job->request_id);
-        $requester = $transaction->job->requester;
+        $job = JobRequest::find($transaction->request_id); // Corrected to use JobRequest alias
+        $requester = $transaction->requester; // Corrected to use requester relation
 
         // Kirim data ke view via session flash
         return back()->with([
@@ -213,9 +261,17 @@ class WorkerTransactionController extends Controller
                 'status' => 'Not Reviewed',
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Laporan berhasil dikirim.']);
+            // Changed from JSON response to redirect with custom alert
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+            // Changed from JSON response to redirect with custom alert
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -243,6 +299,10 @@ class WorkerTransactionController extends Controller
 
         User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
 
-        return response()->json(['success' => true]);
+        // Changed from JSON response to redirect with custom alert
+        return response()->json([
+            'success' => true,
+            'message' => 'Ulasan Anda berhasil disimpan!'
+        ]);
     }
 }

@@ -140,7 +140,7 @@ class Chat extends Component
                         'user_id' => $requester->id,
                         'amount' => $priceDifference,
                         'type' => 'credit',
-                        'description' => 'Penyesuaian dana ditahan untuk pekerjaan: ' . $workRequest->title,
+                        'description' => 'Penambahan saldo ditahan untuk pekerjaan: ' . $workRequest->title,
                     ]);
                 }
 
@@ -158,7 +158,7 @@ class Chat extends Component
                         'user_id' => $requester->id,
                         'amount' => $refundAmount,
                         'type' => 'debit',
-                        'description' => 'Pengembalian dana sebagian untuk pekerjaan: ' . $workRequest->title,
+                        'description' => 'Pengembalian saldo ditahan untuk pekerjaan: ' . $workRequest->title,
                     ]);
                 }
             });

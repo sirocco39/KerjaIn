@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
@@ -21,7 +24,6 @@
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
-
         .popup-error-card {
             position: absolute;
             top: calc(100% + 0.25rem);
@@ -73,6 +75,76 @@
                 margin-top: 0.5rem;
             }
         }
+
+        /* Custom Alert Styles for Top-Middle Positioning and Consistent Look */
+        #custom-alert-container {
+            position: fixed;
+            top: 20px;
+            /* Adjust as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            /* Ensure it's above other elements */
+            width: 100%;
+            max-width: 380px;
+            /* Adjust max-width for a good size */
+            padding: 0 15px;
+            /* Padding on sides for smaller screens */
+            box-sizing: border-box;
+            pointer-events: none;
+            /* Add this to prevent blocking clicks when not active */
+        }
+
+        #custom-alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-radius: 8px;
+            /* Rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            /* Soft shadow */
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            color: white;
+            /* Default text color, overridden by type classes */
+        }
+
+        #custom-alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Specific alert type styles */
+        .alert-success-bg {
+            background-color: #28a745;
+            /* Bootstrap success green */
+            color: white;
+        }
+
+        .alert-error-bg {
+            background-color: #dc3545;
+            /* Bootstrap danger red */
+            color: white;
+        }
+
+        .alert-info-bg {
+            background-color: #17a2b8;
+            /* Bootstrap info blue */
+            color: white;
+        }
+
+        #custom-alert-close {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: inherit;
+            /* Inherit color from parent */
+            line-height: 1;
+            padding: 0;
+        }
     </style>
 
 
@@ -87,6 +159,14 @@
 
 
 <body>
+    <!-- Custom Alert Container (Non-Modal) -->
+    <div id="custom-alert-container">
+        <div id="custom-alert">
+            <span id="custom-alert-message"></span>
+            <button type="button" id="custom-alert-close" aria-label="Close">&times;</button>
+        </div>
+    </div>
+
     {{-- Navbar Section --}}
     <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
@@ -145,7 +225,7 @@
 
                 <hr class="d-lg-none my-2">
 
-                <ul class="navbar-nav ms-auto mb-lg-0 d-flex align-items-lg-center">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
                             <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
@@ -184,7 +264,8 @@
 
                                 <li>
                                     {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('balance.job-req') }}">
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        href="{{ route('balance.job-req') }}">
                                         {{-- Sisi Kiri: Ikon dan Teks --}}
                                         <div class="d-flex align-items-center gap-2">
                                             {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
@@ -479,7 +560,8 @@
                         </div>
 
                         <div class="col-12 bottom-column">
-                            <div class="relative h-5"> <div id="otp-message" class="absolute inset-0 text-sm hidden text-center mb-2"
+                            <div class="relative h-5">
+                                <div id="otp-message" class="absolute inset-0 text-sm hidden text-center mb-2"
                                     style="color: #16a34a;">
                                 </div>
                             </div>
@@ -487,6 +569,12 @@
                             <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Daftar</button>
 
                             <div class="text-center">
+                                <p class="mb-2">Sudah punya akun?
+                                    <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
+                                        data-bs-target="#loginModal">
+                                        Masuk
+                                    </button>
+                                </p>
                                 <p>Atau daftar dengan:</p>
                                 <a href="{{ route('auth-google-redirect') }}" class="btn btn-link btn-floating mx-1">
                                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
@@ -501,8 +589,31 @@
         </div>
     </div>
     {{-- End Pop Up Register --}}
+    <style>
+        .dropdown-profile-custom {
+            min-width: 250px;
+            /* Lebar minimum agar tidak sempit */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
 
-    <script>
+        /* Ini adalah perbaikan utamanya */
+        .dropdown-profile-custom .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            /* Tambah padding kanan-kiri */
+            font-weight: 500;
+        }
+
+        .dropdown-profile-custom .navIcon {
+            width: 20px;
+            /* Pastikan ukuran ikon seragam */
+        }
+    </style>
+
+    <script defer>
         const loginEmailInput = document.getElementById('email-login');
         const loginEmailErrorDiv = document.getElementById('Loginemail-error');
         const loginPasswordInput = document.getElementById('password-login');
@@ -623,64 +734,71 @@
         const loginModal = document.getElementById('loginModal');
         const loginForm = loginModal.querySelector('form');
 
-        loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        // Removed the async and fetch logic for login form submission.
+        // This will now be a standard form submission, allowing Laravel's
+        // session flashing to work correctly across the redirect.
+        loginForm.addEventListener('submit', function(event) {
+            // No event.preventDefault() here, allowing default form submission
+            // No fetch() call here for successful login.
+            // Laravel's controller will handle the redirect with flashed data.
 
-            // Clear previous server errors
-            loginEmailErrorDiv.classList.add('d-none');
-            loginPasswordErrorDiv.classList.add('d-none');
-            loginEmailInput.classList.remove('is-invalid');
-            loginPasswordInput.classList.remove('is-invalid');
+            // Only handle client-side validation errors for display in the modal
+            // If there are client-side validation errors, prevent default submission
+            // For server-side errors, Laravel will redirect back with errors,
+            // which will be handled by the blade's error display (if any for non-modal)
+            // or by the session flash message logic on the next page.
 
-            const formData = new FormData(loginForm);
+            // Client-side validation for login form
+            let hasClientErrors = false;
 
-            try {
-                const response = await fetch("{{ route('login') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                });
+            // Email validation
+            const emailErrors = [];
+            if (loginEmailInput.value.trim() === '') {
+                emailErrors.push('Email harus diisi.');
+            } else if (!emailRegex.test(loginEmailInput.value.trim())) {
+                emailErrors.push('Silakan masukkan alamat email yang valid.');
+            }
+            if (emailErrors.length > 0) {
+                loginEmailErrorDiv.innerHTML =
+                    `<ul class="mb-0">${emailErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                loginEmailErrorDiv.classList.remove('d-none');
+                loginEmailInput.classList.add('is-invalid');
+                hasClientErrors = true;
+            } else {
+                loginEmailErrorDiv.classList.add('d-none');
+                loginEmailInput.classList.remove('is-invalid');
+            }
 
-                const result = await response.json();
+            // Password validation (simplified for client-side, full rules are server-side)
+            const passwordErrors = [];
+            if (loginPasswordInput.value.trim() === '') {
+                passwordErrors.push('Kata sandi harus diisi.');
+            }
+            // You might add basic length check here if desired, but full regex is complex for client-side immediate feedback
+            // else if (!passwordRegex.test(loginPasswordInput.value.trim())) {
+            //     passwordErrors.push('Kata sandi tidak memenuhi kriteria keamanan.');
+            // }
 
-                if (response.ok) {
-                    window.location.href = result.redirect_url ?? '/dashboard';
-                } else {
-                    if (result.errors) {
-                        if (result.errors.email) {
-                            loginEmailErrorDiv.innerHTML = `
-                        <ul class="mb-0">
-                            ${result.errors.email.map(err => `<li>${err}</li>`).join('')}
-                        </ul>
-                    `;
-                            loginEmailErrorDiv.classList.remove('d-none');
-                            loginEmailInput.classList.add('is-invalid');
-                        }
+            if (passwordErrors.length > 0) {
+                loginPasswordErrorDiv.innerHTML =
+                    `<ul class="mb-0">${passwordErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                loginPasswordErrorDiv.classList.remove('d-none');
+                loginPasswordInput.classList.add('is-invalid');
+                hasClientErrors = true;
+            } else {
+                loginPasswordErrorDiv.classList.add('d-none');
+                loginPasswordInput.classList.remove('is-invalid');
+            }
 
-                        if (result.errors.password) {
-                            loginPasswordErrorDiv.innerHTML = `
-                        <ul class="mb-0">
-                            ${result.errors.password.map(err => `<li>${err}</li>`).join('')}
-                        </ul>
-                    `;
-                            loginPasswordErrorDiv.classList.remove('d-none');
-                            loginPasswordInput.classList.add('is-invalid');
-                            loginPasswordInput.value = '';
-                            loginEmailInput.value = '';
-                            rememberMeCheckbox.checked = false;
-                        }
-                    }
-                }
 
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('Terjadi kesalahan saat login.');
+            if (hasClientErrors) {
+                event.preventDefault(); // Prevent form submission if client-side errors exist
+            } else {
+                // If no client-side errors, allow form to submit normally.
+                // The Laravel controller will handle authentication and redirection with flash messages.
+                // No need to manually hide modal or redirect here, Laravel will do a full page reload.
             }
         });
-
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -977,15 +1095,76 @@
                 }
             }, 1000);
         }
+
+        // Reverted showCustomAlert function to original
+        function showCustomAlert(message, type = 'info', duration = 3000) {
+            const alertContainer = document.getElementById('custom-alert-container');
+            const customAlert = document.getElementById('custom-alert');
+            const alertMessageSpan = document.getElementById('custom-alert-message');
+            const alertCloseButton = document.getElementById('custom-alert-close');
+
+            // Clear previous classes and reset state
+            customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'show');
+            customAlert.style.display = 'none'; // Hide it initially for transition
+
+            // Set message and type-specific background
+            alertMessageSpan.textContent = message;
+            if (type === 'success') {
+                customAlert.classList.add('alert-success-bg');
+            } else if (type === 'error') {
+                customAlert.classList.add('alert-error-bg');
+            } else if (type === 'info') {
+                customAlert.classList.add('alert-info-bg');
+            }
+
+            // Show the alert with a slight delay for CSS transition to work
+            alertContainer.style.pointerEvents = 'auto'; // Make container clickable when visible
+            customAlert.style.display = 'flex'; // Make it visible
+            setTimeout(() => {
+                customAlert.classList.add('show');
+            }, 10); // Small delay
+
+            // Set timeout to hide the alert
+            setTimeout(() => {
+                customAlert.classList.remove('show');
+                setTimeout(() => {
+                    customAlert.style.display = 'none';
+                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
+                }, 300); // Match CSS transition duration
+            }, duration);
+
+            // Close button functionality
+            alertCloseButton.onclick = () => {
+                customAlert.classList.remove('show');
+                setTimeout(() => {
+                    customAlert.style.display = 'none';
+                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
+                }, 300); // Match CSS transition duration
+            };
+        }
     </script>
 
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
-    <script>
+    <script defer>
         document.addEventListener('DOMContentLoaded', function() {
-            @if(session('loginModal'))
-                var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
-            @endif
+            // Check for flash messages from Laravel
+            const successMessage = "{{ session('custom_success_alert') }}";
+            const errorMessage = "{{ session('custom_error_alert') }}";
+            const infoMessage = "{{ session('custom_info_alert') }}";
+
+            if (successMessage) {
+                console.log('Flash message detected: Success -', successMessage);
+                showCustomAlert(successMessage, 'info');
+            } else if (errorMessage) {
+                console.log('Flash message detected: Error -', errorMessage);
+                showCustomAlert(errorMessage, 'error');
+            } else if (infoMessage) {
+                console.log('Flash message detected: Info -', infoMessage);
+                showCustomAlert(infoMessage, 'info');
+            }
+
+            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
+            window.showCustomAlert = showCustomAlert;
         });
     </script>
 </body>

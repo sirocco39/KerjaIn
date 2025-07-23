@@ -43,24 +43,26 @@ class AuthenticatedSessionController extends Controller
                 ], 422);
             }
 
-            return back()->withErrors([
-                'password' => 'Email atau kata sandi salah.',
-            ])->onlyInput('email');
+            // Changed to custom alert
+            return back()->with('custom_error_alert', 'Email atau kata sandi salah.')->onlyInput('email');
         }
 
 
         // Login success
         $request->session()->regenerate();
 
+        // Get the authenticated user's first name
+        $firstName = Auth::user()->first_name ?? 'Pengguna';
+
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Login berhasil!',
+                'message' => "Login berhasil! Selamat datang, {$firstName}!",
                 'redirect_url' => route('job-req.beranda') // Changed redirect URL for JSON response
             ]);
         }
 
-        // Changed redirect URL for traditional web response
-        return redirect()->route('job-req.beranda')->with('success', 'Login berhasil! Selamat datang di aplikasi kami.');
+        // Changed to custom alert
+        return redirect()->route('job-req.beranda')->with('custom_info_alert', "Login berhasil! Selamat datang, {$firstName}!");
     }
 
 
@@ -75,6 +77,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Changed to custom alert
+        return redirect('/')->with('custom_info_alert', 'Anda telah berhasil keluar.');
     }
 }
+

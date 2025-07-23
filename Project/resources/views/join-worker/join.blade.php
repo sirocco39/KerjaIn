@@ -16,9 +16,9 @@
             </div>
             <div class="col-6">
                 <input type="text" name="last_name" id="nama_belakang" placeholder="Nama belakang"
-                    value="{{ old('last_name', $data['last_name'] ?? '') }}"
-                    class="form-control inter bg-white border border-dark mb-3" placeholder="Nama belakang"
-                    id="nama_belakang" name="last_name">
+                value="{{ old('last_name', $data['last_name'] ?? '') }}"
+                class="form-control inter bg-white border border-dark mb-3" placeholder="Nama belakang"
+                id="nama_belakang" name="last_name">
                 <p id="error-last_name" class="text-danger @unless ($errors->has('last_name')) hidden @endunless">
                     {{ $errors->first('last_name') }}
             </div>
@@ -34,7 +34,6 @@
             <div class="col-12 col-md-6">
                 <label class="form-label manrope fs-6 fw-bold" for="jenis_kelamin">Jenis Kelamin</label>
                 <select class="form-select inter bg-white border border-dark mb-3" id="jenis_kelamin" name="gender">
-                    <option value="" {{ old('gender') == '' ? 'selected' : '' }}>Jenis kelamin</option>
                     <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Laki-laki</option>
                     <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Perempuan</option>
                 </select>

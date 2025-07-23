@@ -27,7 +27,7 @@ class MonthlyReportController extends Controller
 
         if (!$worker) {
             // If worker is not found (e.g., not logged in or ID is invalid), redirect with an error.
-            return redirect()->back()->with('error', 'Worker profile not found. Please log in.');
+            return redirect()->back()->with('custom_error_alert', 'Profil pekerja tidak ditemukan. Silakan login.');
         }
 
         // --- 2. Determine Report Period ---
@@ -206,7 +206,7 @@ $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
         $worker = User::find($workerId);
 
         if (!$worker) {
-            return redirect()->back()->with('error', 'Worker profile not found. Please log in.');
+            return redirect()->back()->with('custom_error_alert', 'Worker profile not found. Please log in.');
         }
 
         // 2. Tentukan Periode Laporan (sama seperti di index)

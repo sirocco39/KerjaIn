@@ -35,7 +35,8 @@ class TopUpController extends Controller
 
             // Jika tidak keduanya, arahkan ke halaman lain atau tampilkan error
         } else {
-            abort(404, 'Halaman tidak ditemukan');
+            // Changed to custom alert
+            return redirect()->route('landing')->with('custom_error_alert', 'Halaman tidak ditemukan.');
         }
 
         return view($viewPath, compact('user'));
@@ -78,8 +79,8 @@ class TopUpController extends Controller
             // 6. Arahkan Pengguna ke Halaman Pembayaran
             return redirect($invoice['invoice_url']);
         } catch (\Exception $e) {
-            dd('Error creating invoice: ' . $e->getMessage());
-            return back()->with('error', 'Gagal membuat invoice pembayaran: ' . $e->getMessage());
+            // Changed to custom alert
+            return back()->with('custom_error_alert', 'Gagal membuat invoice pembayaran: ' . $e->getMessage());
         }
     }
     public function checkStatus($external_id)
