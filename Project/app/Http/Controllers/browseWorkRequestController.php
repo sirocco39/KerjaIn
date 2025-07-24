@@ -8,7 +8,7 @@ use Carbon\Carbon; // For date and time formatting
 use Illuminate\Database\Eloquent\Builder; // Import Builder for type hinting
 use Illuminate\Support\Facades\Auth;
 
-class browseWorkRequestController extends Controller
+class BrowseWorkRequestController extends Controller
 {
     /**
      * Display a listing of open work requests.
@@ -21,7 +21,7 @@ class browseWorkRequestController extends Controller
         // Start with all open requests
         $query = WorkRequest::where('status', 'open')
                             ->where('requester_id', '!=', Auth::id()) // Exclude requests made by the current user
-                            ->where('end_time', '>', now()) // Only show requests that haven't passed their end time
+                            ->where('start_time', '>', now()) // Only show requests that haven't passed their end time
                             ->with('requester')
                             ->orderBy('created_at', 'desc'); // Order by newest first
 
@@ -32,7 +32,7 @@ class browseWorkRequestController extends Controller
         $workRequests = $query->paginate(10); // Adjust items per page as needed
 
         // Pass the work requests to the view
-        return view('Job_Taker.job_taker-carikerja', compact('workRequests'));
+        return view('job-taker.browse-work', compact('workRequests'));
     }
 
     /**

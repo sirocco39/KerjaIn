@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('password');
             $table->char('phone_number', 12)->nullable();
             $table->enum('role', ['user', 'admin']);
-            $table->decimal('saldokerjain', 12, 2)->default(0);
+            $table->decimal('balance', 12, 2)->default(0);
+            $table->decimal('locked_balance', 12, 2)->default(0);
             $table->boolean('is_worker')->default(false);
             $table->float('rating')->default(0);
             $table->integer('job_done')->default(0);

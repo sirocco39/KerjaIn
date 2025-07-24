@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'password' => bcrypt('password'),
             'phone_number' => fake()->numerify('08##########'),
-            'saldokerjain' => $this->faker->randomFloat(2, 0, 1000000),
+            'balance' => $this->faker->randomFloat(2, 0, 1000000),
             'role' => fake()->randomElement(['user', 'admin']),
             'is_worker' => false,
             'rating' => $this->faker->randomFloat(2, 1, 5),

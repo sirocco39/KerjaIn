@@ -6,37 +6,55 @@ use App\Models\User;
 use App\Models\Review;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 
 class ReviewController extends Controller
 {
     public function store(Request $request)
     {
+        try {
+            // Validate the incoming request data
+            $validated = $request->validate([
+                'transaction_id' => 'required|exists:transactions,id',
+                'reviewer_id' => 'required|exists:users,id',
+                'reviewee_id' => 'required|exists:users,id',
+                'rating' => 'required|integer|min:1|max:5',
+                'comment' => 'required|string',
+            ]);
 
-        $request->validate([
-            'transaction_id' => 'required|exists:transactions,id',
-            'reviewer_id' => 'required|exists:users,id',
-            'reviewee_id' => 'required|exists:users,id',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string',
-        ]);
+            // Create the review record
+            Review::create([
+                'transaction_id' => $validated['transaction_id'],
+                'reviewer_id' => $validated['reviewer_id'],
+                'reviewee_id' => $validated['reviewee_id'],
+                'rating' => $validated['rating'], // Use validated['rating']
+                'comment' => $validated['comment'],
+            ]);
 
-        $ratingGiven = $validated['rating'] ?? 5;
+            // Calculate the average rating for the reviewee and update the User model
+            $averageRating = Review::where('reviewee_id', $validated['reviewee_id'])->avg('rating');
+            User::where('id', $validated['reviewee_id'])->update(['rating' => $averageRating]);
 
-        Review::create([
-            'transaction_id' => $request->transaction_id,
-            'reviewer_id' => $request->reviewer_id,
-            'reviewee_id' => $request->reviewee_id,
-            'rating' => $request->rating,
-            'comment' => $request->comment,
-        ]);
+            // Return a JSON success response for AJAX requests
+            return response()->json([
+                'success' => true,
+                'message' => 'Ulasan Anda berhasil disimpan!'
+            ]);
 
-        $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
-
-        // 3. Update ke tabel users
-        User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
-
-
-        return response()->json(['success' => true]);
+        } catch (ValidationException $e) {
+            // Return JSON response for validation errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal: ' . $e->getMessage(),
+                'errors' => $e->errors()
+            ], 422); // 422 Unprocessable Entity for validation errors
+        } catch (\Exception $e) {
+            // Return JSON response for other general errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan ulasan: ' . $e->getMessage()
+            ], 500); // 500 Internal Server Error
+        }
     }
 }

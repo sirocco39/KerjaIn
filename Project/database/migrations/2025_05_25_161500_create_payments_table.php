@@ -14,11 +14,8 @@ public function up()
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('request_id')->constrained('requests');
-            $table->foreignId('offer_id')->constrained('offers');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'failed']);
-            $table->timestamp('paid_at')->nullable();
-            $table->enum('method', ['Saldo Kerjain', 'BCA VA']);
+            $table->enum('status', ['holding', 'released_to_worker', 'refunded_to_requester']);
             $table->timestamps();
         });
     }

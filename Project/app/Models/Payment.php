@@ -14,22 +14,15 @@ class Payment extends Model
         'request_id',
         'amount',
         'status',
-        'paid_at',
-        'method',
     ];
     protected $attributes = [
         'status' => 'pending',
     ];
     protected $casts = [
         'amount' => 'decimal:2',
-        'paid_at' => 'datetime',
     ];
     public function request() : BelongsTo
     {
         return $this->belongsTo(Request::class, 'request_id');
-    }
-    public function offer() : BelongsTo
-    {
-        return $this->belongsTo(Offer::class, 'offer_id');
     }
 }
