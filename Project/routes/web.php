@@ -217,5 +217,5 @@ Route::post('/request/validate', [RequestController::class, 'validateRequest'])-
 Route::get('/admin/activity-log', function () {
     // Kode yang benar untuk urutan kronologis
     $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
-    return view('admin.activity-log', compact('activities'));
+    return view('admin-test-iwan.activity-log', compact('activities'));
 })->name('admin.activity');
