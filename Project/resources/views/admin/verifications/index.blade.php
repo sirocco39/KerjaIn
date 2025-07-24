@@ -11,9 +11,9 @@
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'pending' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
                         href="{{ route('admin.verifications.index', ['status' => 'pending']) }}">
-                        <span class="me-2">Belum Diverifikasi</span>
+                        <span class="me-1">Belum Diverifikasi</span>
                         @if (isset($pendingVerificationsCount) && $pendingVerificationsCount > 0)
-                        <span class="badge badge-lg bg-danger rounded-circle text-white ms-1" style="width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">
+                        <span class="badge badge-lg bg-danger rounded-circle text-white ms-1" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
                             {{ $pendingVerificationsCount }}
                         </span>
                         @endif
@@ -37,7 +37,7 @@
                         <form id="indexSearchForm" action="{{ route('admin.verifications.index', ['status' => $status]) }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna" autocomplete="off" value="{{ $search ?? '' }}">
-                                <button class="btn btn-primary m-0" type="submit">Cari</button>
+                                <button class="btn btn-primary m-2" type="submit">Cari</button>
                                 @if ($search)
                                 <a href="{{ route('admin.verifications.index', ['status' => $status]) }}" class="btn btn-secondary">Reset</a>
                                 @endif
