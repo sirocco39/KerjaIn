@@ -14,6 +14,7 @@
         "laravel/ui": "^4.6",
         "livewire/livewire": "^3.6",
         "overtrue/socialite": "^4.11",
+        "spatie/laravel-activitylog": "^4.10",
         "xendit/xendit-php": "^7.0"
     },
     "require-dev": {
