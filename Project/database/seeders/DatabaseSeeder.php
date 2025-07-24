@@ -26,9 +26,11 @@ class DatabaseSeeder extends Seeder
             OfferSeeder::class,
             PaymentSeeder::class,
             TransactionSeeder::class,
+            MonthlyReportDataSeeder::class,
             CompletionProofSeeder::class,
             ReviewSeeder::class,
             ReportSeeder::class,
+            DummyTransactionSeeder::class,
         ]);
     }
 }

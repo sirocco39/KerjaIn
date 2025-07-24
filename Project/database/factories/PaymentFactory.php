@@ -17,9 +17,7 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => 'paid',
-            'method' => $this->faker->randomElement(['Saldo KerjaIn', 'BCA VA']),
-            'paid_at' => now(),
+            'status' => 'holding',
         ];
     }
 }

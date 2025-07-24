@@ -22,7 +22,8 @@ class User extends Authenticatable
         'rating',
         'job_done',
         'is_blocked',
-        'saldokerjain',
+        'balance',
+        'locked_balance',
         'bank_acc_num',
         'google_id',
     ];
@@ -33,7 +34,8 @@ class User extends Authenticatable
         'rating' => 0,
         'job_done' => 0,
         'is_blocked' => false,
-        'saldokerjain' => 0,
+        'balance' => 0,
+        'locked_balance' => 0,
     ];
 
     protected $hidden = [
@@ -45,21 +47,22 @@ class User extends Authenticatable
     protected $casts = [
         'is_worker' => 'boolean',
         'is_blocked' => 'boolean',
-        'saldokerjain' => 'decimal:2',   
+        'balance' => 'decimal:2',   
+        'locked_balance' => 'decimal:2',
     ];
 
     public function scopeNonAdmin($query)
-    {   
+    {
         return $query->where('role', 'user');
     }
 
     public function scopeWorker($query)
-    {   
+    {
         return $query->where('is_worker', true);
     }
 
     public function scopeNonWorker($query)
-    {   
+    {
         return $query->where('is_worker', false)->where('role', 'user');
     }
 
@@ -117,5 +120,17 @@ class User extends Authenticatable
     public function offers() : HasMany
     {
         return $this->hasMany(Offer::class, 'worker_id');
+    }
+    public function topUpOrders() : HasMany
+    {
+        return $this->hasMany(TopUpOrder::class, 'user_id');
+    }
+    public function walletTransactions() : HasMany
+    {
+        return $this->hasMany(WalletTransaction::class, 'user_id');
+    }
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }
