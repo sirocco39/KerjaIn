@@ -106,8 +106,16 @@
                         dilepaskan setelah pekerjaan selesai.</p>
 
                     <div class="mb-2 d-flex justify-content-between">
-                        <span>Biaya yang dibutuhkan:</span>
+                        <span>Upah tawaran kerja:</span>
                         <span class="fw-bold" id="modal-job-cost">Rp0</span>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span>Biaya layanan aplikasi:</span>
+                        <span class="fw-bold">Rp 2500</span>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span>Total yang harus dibayar:</span>
+                        <span class="fw-bold" id="modal-total-cost">Rp0</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span>Saldo Anda saat ini:</span>
@@ -137,6 +145,7 @@
             const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
 
             // Elemen-elemen di dalam modal
+            const modalTotalCost = document.getElementById('modal-total-cost');
             const modalJobCost = document.getElementById('modal-job-cost');
             const modalUserBalance = document.getElementById('modal-user-balance');
             const modalWarning = document.getElementById('modal-warning-message');
@@ -317,13 +326,14 @@
                         // Jika validasi SUKSES
                         else if (data.success) {
                             const jobCost = parseFloat(formData.get('workPriceLabel')) || 0;
-
+                            const totalCost = jobCost + 2500; // Biaya layanan aplikasi
                             // Isi data modal
+                            modalTotalCost.textContent = formatRupiah(totalCost);
                             modalJobCost.textContent = formatRupiah(jobCost);
                             modalUserBalance.textContent = formatRupiah(userBalance);
 
                             // Cek kecukupan saldo
-                            if (userBalance < jobCost) {
+                            if (userBalance < totalCost) {
                                 modalUserBalance.classList.add('text-danger');
                                 modalWarning.style.display = 'block';
                                 modalConfirmBtn.style.display = 'none';

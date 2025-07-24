@@ -22,6 +22,7 @@ class Request extends Model
         'description',
         'price',
         'final_price', // Added final_price to fillable
+        'service_fee', // Added service_fee to fillable
         'location',
         'requester_id',
         'status',
@@ -30,6 +31,7 @@ class Request extends Model
     ];
     protected $attributes = [
         'status' => 'open',
+        'service_fee' => 2500, // Default admin fee
     ];
     protected $casts = [
         'price' => 'decimal:2',

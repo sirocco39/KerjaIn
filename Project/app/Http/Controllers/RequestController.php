@@ -75,9 +75,9 @@ class RequestController extends Controller
         }
 
         $user = User::find(Auth::id());
-        $jobCost = $request->workPriceLabel;
+        $jobCost = $request->workPriceLabel + 2500;
         $user->balance -= $jobCost;
-        $user->locked_balance += $jobCost;
+        $user->locked_balance += $request->workPriceLabel;
         $user->save();
 
         //from handling post
@@ -86,6 +86,7 @@ class RequestController extends Controller
         $workRequest->description = $request->workDetailLabel;
         $workRequest->price = $request->workPriceLabel;
         $workRequest->final_price = $request->workPriceLabel;
+        $workRequest->service_fee = 2500;
         $workRequest->location = $request->workAddressLabel;
         $workRequest->start_time = $startDatetime;
         $workRequest->end_time = $endDatetime;
@@ -102,7 +103,7 @@ class RequestController extends Controller
         $result = $workRequest->save();
         Payment::create([
             'request_id' => $workRequest->id,
-            'amount' => $jobCost,
+            'amount' => $request->workPriceLabel,
             'status' => 'holding',
         ]);
         if ($result) {
