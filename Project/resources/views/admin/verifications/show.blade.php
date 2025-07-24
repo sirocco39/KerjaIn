@@ -10,7 +10,7 @@
                         <div class="col-6 d-flex align-items-center">
                             <h6 class="mb-0">Detail Permintaan Verifikasi</h6>
                         </div>
-                        <div class="col-6 text-end">
+                        <div class="col-6 text-end" style="padding-right: 12px">
                             {{-- Tombol Kembali --}}
                             <a href="{{ route('admin.verifications.index', ['status' => $verificationRequest->status, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-dark mb-0">
                                 <i class="material-symbols-rounded text-sm">arrow_back</i> Kembali
@@ -20,28 +20,39 @@
                 </div>
                 <div class="card-body p-3">
                     {{-- Search Bar with Recommendations for Show Page --}}
-                    <div class="mb-4">
-                        <label for="userSearchShow" class="form-label">Cari Pengguna:</label>
-                        <div class="input-group">
-                            <input type="text" id="userSearchShow" class="form-control" placeholder="Cari ID, NIK, atau Nama Lengkap pengguna..." value="{{ $search ?? '' }}">
-                            <button class="btn btn-primary" type="button" id="clearSearchShow">Clear</button>
+                <div class="mb-4">
+                    <label for="userSearchShow" class="form-label">Cari Pengguna:</label>
+                    <div class="row g-0 border rounded overflow-hidden">
+                        <div class="col">
+                            <input type="text" id="userSearchShow" class="form-control border-0 py-3 px-3" 
+                                placeholder="Cari ID, NIK, atau Nama Lengkap pengguna..." 
+                                value="{{ $search ?? '' }}">
                         </div>
-                        <div id="searchResults" class="list-group position-absolute w-75 mt-1" style="z-index: 1000;">
-                            {{-- Hasil pencarian akan ditampilkan di sini --}}
+                        <div class="col-auto">
+                            <button class="btn btn-primary h-100 border-0 rounded-0" 
+                                    type="button" 
+                                    id="clearSearchShow"
+                                    style="width: 80px;">
+                                Clear
+                            </button>
                         </div>
                     </div>
+                    <div id="searchResults" class="list-group position-absolute w-75 mt-1" style="z-index: 1000;">
+                        {{-- Hasil pencarian --}}
+                    </div>
+                </div>
 
                     {{-- Navigasi Previous/Next dan Dropdown --}}
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
+                    <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+                        <div style="padding-top: 1rem">
                             @if ($previousRequest)
-                            <a href="{{ route('admin.verifications.show', ['id' => $previousRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary">
+                            <a href="{{ route('admin.verifications.show', ['id' => $previousRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary order-1">
                                 <i class="material-symbols-rounded text-sm">chevron_left</i> Sebelumnya
                             </a>
                             @endif
                         </div>
-                        <div class="flex-grow-1 mx-2">
-                            <select id="statusFilteredUserDropdown" class="form-select">
+                        <div class="flex-grow-1 mx-1">
+                            <select id="statusFilteredUserDropdown" class="form-select" style="border-radius: 1px; text-align: center; background-color: #bcdeff;">
                                 <option value="">Pilih Pengguna (Status: {{ ucfirst($verificationRequest->status) }})</option>
                                 @foreach ($sameStatusRequests as $req)
                                 <option value="{{ $req->id }}" {{ $req->id == $verificationRequest->id ? 'selected' : '' }}>
@@ -50,7 +61,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div>
+                        <div style="padding-top: 1rem">
                             @if ($nextRequest)
                             <a href="{{ route('admin.verifications.show', ['id' => $nextRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary">
                                 Selanjutnya <i class="material-symbols-rounded text-sm">chevron_right</i>
@@ -404,7 +415,7 @@
 
                 if (query.length > 2) { // Mulai mencari setelah 2 karakter
                     searchTimeout = setTimeout(() => {
-                        fetch(`{{ route('admin.verifications.show.search-ajax') }}?query=${query}`)
+                        fetch(`{{ route('admin.verifications.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
                                 searchResults.innerHTML = ''; // Bersihkan hasil sebelumnya

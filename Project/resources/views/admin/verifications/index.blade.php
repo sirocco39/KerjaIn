@@ -38,9 +38,6 @@
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna" autocomplete="off" value="{{ $search ?? '' }}">
                                 <button class="btn btn-primary m-2" type="submit">Cari</button>
-                                @if ($search)
-                                <a href="{{ route('admin.verifications.index', ['status' => $status]) }}" class="btn btn-secondary">Reset</a>
-                                @endif
                             </div>
                         </form>
                         <div id="searchResultsIndex" class="list-group position-absolute w-100 mt-1" style="z-index: 1000;">
