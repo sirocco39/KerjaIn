@@ -1,5 +1,5 @@
 @extends('Master.master-admin')
 
 @section('content')
-Hello
+{{ $reportedUsers }}
 @endsection

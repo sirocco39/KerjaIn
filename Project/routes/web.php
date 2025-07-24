@@ -12,7 +12,7 @@ use App\Http\Controllers\PusherController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RequestController;
 use App\Livewire\jobTaker\JobTakerChatRoom;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\TransactionController;
@@ -207,13 +207,13 @@ Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->
 Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
 Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
 
-// Manajemen Pengguna (admin.users.*)
-Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-Route::get('/users/{id}', [UserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
-Route::get('/users/blocked-list', [UserController::class, 'blockedUsers'])->name('admin.users.blocked-list');
-Route::get('/users/reported-list', [UserController::class, 'reportedUsers'])->name('admin.users.reported-list');
+// Manajemen Pengguna (admin.users.*)   
+Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
+Route::get('/users-blocked-list', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+Route::get('/users-reported-list', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
 // Tambahkan rute lain seperti edit, update, delete jika diperlukan
-
+Route::view('/users/blocked_list', 'admin.users.blocked-list');
 // Manajemen Laporan (admin.reports.*)
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
 Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');

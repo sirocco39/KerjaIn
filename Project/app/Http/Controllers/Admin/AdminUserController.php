@@ -6,11 +6,13 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log; // Don't forget this!
 use App\Models\Report; // For reported users
 use Illuminate\Support\Facades\DB; // For database queries
-use App\Models\Session; // Assuming you have a Session model or access to session data
+use App\Models\Session;
+use function Laravel\Prompts\alert; // Assuming you have a Session model or access to session data
 
-class UserController extends Controller
+class AdminUserController extends Controller
 {
     /**
      * Menampilkan halaman manajemen pengguna.
@@ -107,7 +109,7 @@ class UserController extends Controller
     // Metode untuk menampilkan daftar pengguna yang diblokir (jika diperlukan)
     public function blockedUsers()
     {
-        $blockedUsers = User::where('is_blocked', true)->get();
+        $blockedUsers = User::where('is_blocked', 1)->get();
         return view('admin.users.blocked-list', compact('blockedUsers'));
     }
 
@@ -117,6 +119,6 @@ class UserController extends Controller
         $reportedUsers = User::whereIn('id', function ($query) {
             $query->select('reported_id')->from('reports');
         })->get();
-        return view('admin.users.reported_list', compact('reportedUsers'));
+        return view('admin.users.reported-list', compact('reportedUsers'));
     }
 }

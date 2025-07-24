@@ -64,7 +64,7 @@
                         </div>
                         <hr class="dark horizontal my-0">
                         <div class="card-footer p-3">
-                            <a href="{{ route('admin.users.blocked-list') }}" class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar blokir</a>
+                            <a href="{{ route("admin.users.blockedList") }}" class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar blokir</a>
                         </div>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                         </div>
                         <hr class="dark horizontal my-0">
                         <div class="card-footer p-3">
-                            <a href="{{ route('admin.reports.index') }}" class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar laporan</a>
+                            <a href="{{ route('admin.users.reported-list') }}" class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar laporan</a>
                         </div>
                     </div>
                 </div>
