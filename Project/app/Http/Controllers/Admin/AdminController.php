@@ -41,7 +41,7 @@ class AdminController extends Controller
         $latestTransactions = Transaction::latest()->take(5)->get();
         $latestReports = Report::where('status', 'Not Reviewed')->latest()->take(5)->get();
 
-        $totalUserSaldokerjain = User::sum('saldokerjain');
+        $totalUserSaldokerjain = User::sum('balance');
 
         return view('admin.dashboard', compact(
             'totalUsers',

@@ -58,7 +58,7 @@ class Transaction extends Model
     public function userReview(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id')
-                    ->where('reviewer_id', Auth::id()); // Filter by the authenticated user as the reviewer
+            ->where('reviewer_id', Auth::id()); // Filter by the authenticated user as the reviewer
     }
 
     // NEWLY ADDED: Retrieves a single review given TO this worker for this transaction
@@ -66,7 +66,7 @@ class Transaction extends Model
     public function reviewAboutWorker(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id', 'id')
-                    ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
+            ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
     }
 
 
