@@ -31,7 +31,6 @@ class ReportController extends Controller
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Laporan',
-            'currentSectionTitle' => 'Manajemen Laporan',
             'filterStatus' => $statusFilter, // Tambahkan status filter ke breadcrumbs jika perlu
         ];
 
@@ -54,8 +53,8 @@ class ReportController extends Controller
         // Data Breadcrumbs
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Detail Laporan',
-            'currentSectionTitle' => 'Manajemen Laporan',
+            'currentPageTitle' => 'Laporan',
+            'currentSectionTitle' => 'Detail',
             'reportId' => $report->id, // Tambahkan ID laporan ke breadcrumbs
         ];
 

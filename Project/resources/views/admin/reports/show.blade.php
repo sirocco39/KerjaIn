@@ -44,13 +44,35 @@
 
                     {{-- Bukti Foto (jika ada) --}}
                     @if ($report->photo_url)
+                    @php
+                    $photoPaths = json_decode($report->photo_url, true); // Decode to an associative array
+                    @endphp
+
+                    @if (!empty($photoPaths) && is_array($photoPaths) && isset($photoPaths[0]))
                     <h5 class="mt-4 mb-3">Bukti Foto</h5>
                     <div class="text-center mb-4">
-                        <img src="{{ asset('storage/' . $report->photo_url) }}" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain;" alt="Report evidence">
+                        {{-- Ambil elemen pertama dari array dan bersihkan '/storage/' prefix jika ada --}}
+                        @php
+                        $actualPathInStorage = str_replace('/storage/', '', $photoPaths[0]);
+                        @endphp
+                        <a href="{{ Storage::url($actualPathInStorage) }}" target="_blank">
+                            <img src="{{ Storage::url($actualPathInStorage) }}" class="img-fluid border-radius-lg mb-3" alt="Foto Bukti">
+                        </a>
                     </div>
                     @else
                     <p class="text-muted">Tidak ada bukti foto dilampirkan.</p>
                     @endif
+                    @endif
+                    <!-- {{-- Bukti Foto (jika ada) --}}
+                    @if ($report->photo_url)
+                    <h5 class="mt-4 mb-3">Bukti Foto</h5>
+                    <div class="text-center mb-4">
+                        <a href="{{ Storage::url($report->photo_url) }}" target="_blank">
+                            <img src="{{ Storage::url($report->photo_url) }}" class="img-fluid border-radius-lg mb-3" alt="Foto KTP">
+                        </a>
+                    </div>
+
+                    @endif -->
 
                     <hr>
 
@@ -58,12 +80,12 @@
                     <h5 class="mt-4 mb-3">Aksi Terkait Pengguna</h5>
                     <div class="d-flex flex-wrap gap-2">
                         {{-- Lihat Aktivitas Reporter --}}
-                        <a href="{{ route('admin.users.activityLog', ['id' => $report->reporter_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-2 me-2">
+                        <a href="{{ route('admin.users.activityLog', ['user' => $report->reporter_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-2 me-2">
                             <i class="material-symbols-rounded text-sm me-1">history</i> Lihat Aktivitas Pelapor
                         </a>
 
                         {{-- Lihat Aktivitas Reported User --}}
-                        <a href="{{ route('admin.users.activityLog', ['id' => $report->reported_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-info mb-2 me-2">
+                        <a href="{{ route('admin.users.activityLog', ['user' => $report->reported_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-info mb-2 me-2">
                             <i class="material-symbols-rounded text-sm me-1">manage_accounts</i> Lihat Aktivitas Pengguna Dilaporkan
                         </a>
 
@@ -170,7 +192,7 @@
 
         modalTitle.textContent = 'Konfirmasi Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('users') }}/" + userId + "/block"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/block"; // Sesuaikan rute Anda
     });
 
     // Script untuk Modal Batal Blokir

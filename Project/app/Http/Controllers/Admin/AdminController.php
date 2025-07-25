@@ -70,7 +70,6 @@ class AdminController extends Controller
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Dashboard',
-            'currentSectionTitle' => 'Ringkasan Statistik',
         ];
 
         return view('admin.dashboard', compact(

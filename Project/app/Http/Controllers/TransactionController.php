@@ -147,14 +147,13 @@ class TransactionController extends Controller
         // Changed to custom alert
         $userId = Auth::id();
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
-        if($userId === $requester->id){
+        if ($userId === $requester->id) {
             $alertMessage = 'Pekerjaan dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.';
-        }
-        else{
+        } else {
             $alertMessage = 'Pekerjaan telah berhasil dibatalkan';
         }
         $redirectRoute = $request->input('redirect_to', 'landing');
-        
+
         return redirect()->route($redirectRoute)->with('custom_info_alert', $alertMessage);
     }
 

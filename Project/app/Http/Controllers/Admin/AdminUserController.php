@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\DB; // Tambahkan ini
 
 class AdminUserController extends Controller
 {
@@ -33,33 +34,56 @@ class AdminUserController extends Controller
 
         // --- Pencarian Pengguna dan Filtering Log ---
         $searchedUser = null;
-        $searchQuery = $request->input('search_query');
+        $searchQuery = $request->input('search_query'); // Ini akan digunakan untuk menampilkan nilai di input
+        $selectedUserId = $request->input('user_id'); // Ini ID pengguna yang dipilih dari autocomplete
+
         $activityLogs = Activity::with('causer')
             ->orderByDesc('created_at');
 
-        if ($searchQuery) {
-            $searchedUser = User::where('id', $searchQuery)
-                ->orWhere('first_name', 'like', '%' . $searchQuery . '%')
-                ->orWhere('last_name', 'like', '%' . $searchQuery . '%')
-                ->first();
-
+        // Logika filtering activityLogs
+        if ($selectedUserId) {
+            // Jika ada user_id yang dipilih dari autocomplete
+            $searchedUser = User::find($selectedUserId);
             if ($searchedUser) {
                 $activityLogs->where(function ($query) use ($searchedUser) {
                     $query->where('causer_id', $searchedUser->id)
                         ->where('causer_type', get_class($searchedUser));
                 });
             } else {
+                // Jika ID tidak valid, tampilkan log kosong
                 $activityLogs = Activity::whereRaw('1 = 0');
             }
+        } elseif ($searchQuery) {
+            // Jika hanya ada search_query (dari form submit biasa, bukan autocomplete)
+            // Kita masih ingin menampilkan hasil yang relevan, tapi tanpa memilih satu user spesifik
+            $searchedUser = User::where('id', $searchQuery)
+                ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                ->orWhere('first_name', 'like', '%' . $searchQuery . '%')
+                ->orWhere('last_name', 'like', '%' . $searchQuery . '%')
+                ->first();
+
+            if ($searchedUser) {
+                $activityLogs = Activity::where('causer_type', User::class)
+                    ->where('causer_id', $searchedUser->id)
+                    ->latest()
+                    ->paginate(10)
+                    // === PENTING: Tambahkan ini ===
+                    ->appends(request()->query());
+            } else {
+                $activityLogs = Activity::whereRaw('1 = 0');
+            }
+        } else {
+            $activityLogs = Activity::latest()->paginate(10)
+                // === PENTING: Tambahkan ini juga ===
+                ->appends(request()->query());
         }
 
-        $activityLogs = $activityLogs->paginate(10);
+        // $activityLogs = $activityLogs->paginate(10);
 
         // Data Breadcrumbs
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Pengguna',
-            'currentSectionTitle' => 'Manajemen Pengguna',
         ];
 
         return view('admin.users.index', compact(
@@ -70,11 +94,57 @@ class AdminUserController extends Controller
             'activeWorkersToday',
             'blockedUsersCount',
             'reportedUsersCount',
-            'searchedUser',
-            'searchQuery',
+            'searchedUser',    // User yang terpilih (dari ID atau yang pertama ditemukan)
+            'searchQuery',     // Kueri asli dari input
             'activityLogs',
-            'breadcrumbs' // Tambahkan breadcrumbs
+            'breadcrumbs'
         ));
+    }
+
+    /**
+     * Endpoint AJAX untuk pencarian rekomendasi pengguna.
+     * Ini mirip dengan searchUsersForShow di VerificationController.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchAjax(Request $request)
+    {
+        $query = $request->input('query');
+        $isBlocked = $request->boolean('blocked'); // Check if blocked users are requested
+        $isWorker = $request->boolean('is_worker'); // Check if workers are requested
+
+        if (empty($query) || strlen($query) < 3) {
+            return response()->json([]);
+        }
+
+        $users = User::where(function ($q) use ($query) {
+            $q->where('id', 'like', '%' . $query . '%')
+                ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $query . '%')
+                ->orWhere('email', 'like', '%' . $query . '%');
+        })
+            ->when($isBlocked, function ($q) {
+                return $q->where('is_blocked', true);
+            })
+            ->when($isWorker, function ($q) {
+                return $q->where('is_worker', true);
+            })
+            ->select('id', 'first_name', 'last_name')
+            ->limit(5) // Limit the number of recommendations
+            ->get();
+
+        return response()->json($users);
+        // $query = $request->input('query');
+
+
+
+        // // Search users by ID, first name, or last name
+        // $users = User::where('id', $query)
+        //     ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $query . '%')
+        //     ->limit(10) // Limit results for recommendations
+        //     ->get(['id', 'first_name', 'last_name']); // Only select necessary columns
+
+        // return response()->json($users);
     }
 
     /**
@@ -82,13 +152,24 @@ class AdminUserController extends Controller
      */
     public function allUsers(Request $request)
     {
-        $users = User::paginate(15);
+        $query = User::query();
+
+        if ($searchQuery = $request->input('search_query')) {
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('id', $searchQuery)
+                    ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                    ->orWhere('email', 'like', '%' . $searchQuery . '%');
+            });
+        }
+
+        $users = $query->paginate(10)
+            ->appends(request()->query()); // Adjust pagination as needed
 
         // Data Breadcrumbs
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Semua Pengguna',
-            'currentSectionTitle' => 'Manajemen Pengguna',
+            'currentPageTitle' => 'Pengguna',
+            'currentSectionTitle' => 'Semua Pengguna',
         ];
 
         return view('admin.users.all-list', compact('users', 'breadcrumbs'));
@@ -99,13 +180,23 @@ class AdminUserController extends Controller
      */
     public function allWorkers(Request $request)
     {
-        $workers = User::where('is_worker', true)->paginate(15);
+        $query = User::where('is_worker', true);
 
+        if ($searchQuery = $request->input('search_query')) {
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('id', $searchQuery)
+                    ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                    ->orWhere('email', 'like', '%' . $searchQuery . '%');
+            });
+        }
+
+        $workers = $query->paginate(10)
+            ->appends(request()->query()); // Adjust pagination as needed
         // Data Breadcrumbs
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Pekerja',
-            'currentSectionTitle' => 'Manajemen Pengguna',
+            'currentPageTitle' => 'Pengguna',
+            'currentSectionTitle' => 'Pekerja',
         ];
 
         return view('admin.users.worker-list', compact('workers', 'breadcrumbs'));
@@ -114,15 +205,26 @@ class AdminUserController extends Controller
     /**
      * Menampilkan daftar pengguna yang diblokir.
      */
-    public function blockedUsers()
+    public function blockedUsers(Request $request)
     {
-        $blockedUsers = User::where('is_blocked', true)->paginate(15);
+        $query = User::where('is_blocked', true);
+
+        if ($searchQuery = $request->input('search_query')) {
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('id', $searchQuery)
+                    ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                    ->orWhere('email', 'like', '%' . $searchQuery . '%');
+            });
+        }
+
+        $blockedUsers = $query->paginate(10)
+            ->appends(request()->query()); // Adjust pagination as needed
 
         // Data Breadcrumbs
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Pengguna Diblokir',
-            'currentSectionTitle' => 'Manajemen Pengguna',
+            'currentPageTitle' => 'Pengguna',
+            'currentSectionTitle' => 'Pengguna Diblokir',
         ];
 
         return view('admin.users.blocked-list', compact('blockedUsers', 'breadcrumbs'));
@@ -167,19 +269,6 @@ class AdminUserController extends Controller
      */
     public function reportedUsers()
     {
-        // Mengarahkan ke admin.transactions.index sesuai permintaan
-        // Jika Anda ingin menampilkan di halaman terpisah, Anda harus membuat view baru dan logikanya di sini.
-        // Contoh:
-        // $reportedUsers = User::whereIn('id', function ($query) {
-        //     $query->select('reported_id')->from('reports');
-        // })->paginate(15);
-        // $breadcrumbs = [
-        //     'mainPageTitle' => 'Admin',
-        //     'currentPageTitle' => 'Pengguna Dilaporkan',
-        //     'currentSectionTitle' => 'Manajemen Pengguna',
-        // ];
-        // return view('admin.users.reported-list', compact('reportedUsers', 'breadcrumbs'));
-
         return redirect()->route('admin.transactions.index')->with('info', 'Anda diarahkan ke halaman transaksi untuk melihat laporan.');
     }
 
@@ -201,7 +290,7 @@ class AdminUserController extends Controller
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Log Aktivitas Pengguna',
             'currentSectionTitle' => 'Manajemen Pengguna',
-            'userFullName' => $user->first_name . ' ' . $user->last_name, // Tambahkan detail pengguna
+            'userFullName' => $user->first_name . ' ' . $user->last_name,
         ];
 
         return view('admin.users.user-activity-log', compact('user', 'activities', 'previousUrl', 'breadcrumbs'));

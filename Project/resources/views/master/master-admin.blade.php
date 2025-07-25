@@ -107,6 +107,9 @@
                         <li class="breadcrumb-item text-sm text-dark active" aria-current="page">
                             {{ $breadcrumbs['currentPageTitle'] ?? '' }}
                         </li>
+                        <li class="breadcrumb-item text-sm text-dark active" aria-current="page">
+                            {{ $breadcrumbs['currentSectionTitle'] ?? '' }}
+                        </li>
                     </ol>
                     {{-- Current section title --}}
                     <h6 class="font-weight-bolder mb-0">{{ $breadcrumbs['currentSectionTitle'] ?? '' }}</h6>
@@ -215,6 +218,7 @@
     <script src="{{ asset('assets/js/plugins/Chart.extension.js') }}"></script>
 
     <script src="{{ asset('assets/js/material-dashboard.min.js') }}"></script>
+
 
     @stack('scripts')
 </body>

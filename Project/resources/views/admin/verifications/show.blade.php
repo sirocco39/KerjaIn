@@ -20,27 +20,27 @@
                 </div>
                 <div class="card-body p-3">
                     {{-- Search Bar with Recommendations for Show Page --}}
-                <div class="mb-4">
-                    <label for="userSearchShow" class="form-label">Cari Pengguna:</label>
-                    <div class="row g-0 border rounded overflow-hidden">
-                        <div class="col">
-                            <input type="text" id="userSearchShow" class="form-control border-0 py-3 px-3" 
-                                placeholder="Cari ID, NIK, atau Nama Lengkap pengguna..." 
-                                value="{{ $search ?? '' }}">
-                        </div>
-                        <div class="col-auto">
-                            <button class="btn btn-primary h-100 border-0 rounded-0" 
-                                    type="button" 
+                    <div class="mb-4">
+                        <label for="userSearchShow" class="form-label">Cari Pengguna:</label>
+                        <div class="row g-0 border rounded overflow-hidden">
+                            <div class="col">
+                                <input type="text" id="userSearchShow" class="form-control border-0 py-3 px-3"
+                                    placeholder="Cari ID, NIK, atau Nama Lengkap pengguna..."
+                                    value="{{ $search ?? '' }}">
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary h-100 border-0 rounded-0"
+                                    type="button"
                                     id="clearSearchShow"
                                     style="width: 80px;">
-                                Clear
-                            </button>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div id="searchResults" class="list-group position-absolute w-75 mt-1" style="z-index: 1000;">
+                            {{-- Hasil pencarian --}}
                         </div>
                     </div>
-                    <div id="searchResults" class="list-group position-absolute w-75 mt-1" style="z-index: 1000;">
-                        {{-- Hasil pencarian --}}
-                    </div>
-                </div>
 
                     {{-- Navigasi Previous/Next dan Dropdown --}}
                     <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
@@ -256,6 +256,12 @@
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Nama Pengguna:</h6>
+                                <span class="text-xs">{{ $verificationRequest->user ? $verificationRequest->user->first_name . ' ' . $verificationRequest->user->last_name : 'N/A' }}</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                            <div class="d-flex flex-column">
                                 <h6 class="mb-1 text-dark font-weight-bold text-sm">Role:</h6>
                                 <span class="text-xs">{{ $verificationRequest->user->role ?? 'N/A' }}</span>
                             </div>
@@ -278,7 +284,7 @@
                                 <span class="text-xs">{{ number_format($verificationRequest->user->rating ?? 0, 2) }}</span>
                             </div>
                         </li>
-                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg {{ ($verificationRequest->user->is_worker ?? 0) ? '' : 'd-none'}}">
                             <div class="d-flex flex-column">
                                 <h6 class="mb-1 text-dark font-weight-bold text-sm">Pekerjaan Selesai:</h6>
                                 <span class="text-xs">{{ $verificationRequest->user->job_done ?? 0 }}</span>
@@ -422,7 +428,7 @@
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        a.href = `{{ url('admin/verifications') }}/${item.id}`;
+                                        a.href = `{{ url('verifications/show') }}/${item.id}`;
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name} (NIK: ${item.nik}) <span class="badge bg-secondary ms-2">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>`;
                                         searchResults.appendChild(a);

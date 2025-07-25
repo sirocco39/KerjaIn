@@ -32,6 +32,8 @@
                             <thead>
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Pengguna</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Target</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Deskripsi</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Log Nama</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Properti</th>
@@ -40,6 +42,12 @@
                             <tbody>
                                 @forelse($activities as $activity)
                                 <tr>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name : 'N/A'  }}</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->subject ? $activity->subject->first_name . ' ' . $activity->subject->last_name : 'N/A'  }}</span>
+                                    </td>
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">{{ $activity->created_at->format('d M Y, H:i:s') }}</span>
                                     </td>

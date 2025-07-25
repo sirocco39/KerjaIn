@@ -237,7 +237,12 @@ Route::post('verifications/{id}/reject', [VerificationController::class, 'reject
 Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
 // Manajemen Pengguna (admin.users.*)   
 // Route::resource('users', AdminUserController::class);
+Route::get('users/search', [AdminUserController::class, 'searchUsers'])->name('admin.users.search');
 Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+Route::get('/users/search-ajax', [AdminUserController::class, 'searchAjax'])->name('admin.users.search-ajax');
+
+// Contoh rute untuk melihat log aktivitas per user (jika diperlukan)
+Route::get('/users/{user}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('admin.users.activityLog');
 
 // Rute baru untuk fungsionalitas yang diminta
 Route::get('users/all', [AdminUserController::class, 'allUsers'])->name('admin.users.all');
@@ -248,7 +253,6 @@ Route::get('users/blocked', [AdminUserController::class, 'blockedUsers'])->name(
 Route::post('users/{id}/block', [AdminUserController::class, 'blockUser'])->name('admin.users.block'); // Rute baru
 Route::post('users/{id}/unblock', [AdminUserController::class, 'unblockUser'])->name('admin.users.unblock');
 
-Route::get('users/{id}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('admin.users.activityLog');
 
 // Rute ini akan mengarah ke transaksi sesuai permintaan
 Route::get('users/reported', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');

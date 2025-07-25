@@ -7,8 +7,29 @@
             <div class="card mb-4">
                 <div class="card-header pb-0">
                     <h6>Daftar Pengguna Diblokir</h6>
+                    {{-- Search Bar for Blocked Users List --}}
+                    <div class="p-0 position-relative mt-3">
+                        <form id="blockedUsersSearchForm" action="{{ route('admin.users.blockedList') }}" method="GET" class="mb-0">
+                            <div class="input-group rounded-start m-0">
+                                <input type="text" id="blockedUsersSearchInput" name="search_query" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna diblokir berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
+                                <button class="btn btn-primary m-2" type="submit">Cari</button>
+                            </div>
+                        </form>
+                        <div id="blockedUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
+                            {{-- Search results will be displayed here --}}
+                        </div>
+                    </div>
+                    {{-- End Search Bar --}}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
+                    @if(request('search_query') && $blockedUsers->isEmpty())
+                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert">
+                        <i class="material-symbols-rounded me-2">error</i>
+                        <div>
+                            Pengguna diblokir dengan ID atau Nama "**{{ request('search_query') }}**" tidak ditemukan.
+                        </div>
+                    </div>
+                    @endif
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-0">
                             <thead>
@@ -36,7 +57,7 @@
                                         <span class="badge badge-sm bg-gradient-danger">Diblokir</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', ['id' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2">Lihat Aktivitas</a>
+                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2">Lihat Aktivitas</a>
                                         {{-- Tombol Batal Blokir yang memicu modal --}}
                                         <button type="button" class="btn btn-sm btn-success mb-0"
                                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
@@ -63,7 +84,6 @@
     </div>
 </div>
 
-<!-- Modal Konfirmasi Batal Blokir (Hanya ini yang dibutuhkan di sini) -->
 <div class="modal fade" id="confirmUnblockModal" tabindex="-1" role="dialog" aria-labelledby="confirmUnblockModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -102,7 +122,70 @@
 
         modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('users') }}/" + userId + "/unblock"; // Sesuaikan rute Anda
+        form.action = "{{ url('users') }}/" + userId + "/unblock"; // Adjust your route
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- JavaScript for Search Recommendations on Blocked Users List Page ---
+        const blockedUsersSearchInput = document.getElementById('blockedUsersSearchInput');
+        const blockedUsersSearchResults = document.getElementById('blockedUsersSearchResults');
+        const blockedUsersSearchForm = document.getElementById('blockedUsersSearchForm');
+        let searchTimeoutBlockedUsers;
+
+        if (blockedUsersSearchInput) {
+            blockedUsersSearchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeoutBlockedUsers);
+                const query = this.value;
+
+                if (query.length > 2) { // Start searching after 2 characters
+                    searchTimeoutBlockedUsers = setTimeout(() => {
+                        // This AJAX call should specifically search for blocked users
+                        fetch(`{{ route('admin.users.search-ajax', ['blocked' => 1]) }}&query=${query}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                blockedUsersSearchResults.innerHTML = ''; // Clear previous results
+                                if (data.length > 0) {
+                                    data.forEach(item => {
+                                        const a = document.createElement('a');
+                                        // Link back to the blockedList page with the search_query parameter
+                                        a.href = `{{ route('admin.users.blockedList') }}?search_query=${item.id}`; // Filter by user ID
+                                        a.classList.add('list-group-item', 'list-group-item-action');
+                                        a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name}`;
+                                        blockedUsersSearchResults.appendChild(a);
+                                    });
+                                } else {
+                                    blockedUsersSearchResults.innerHTML = '<div class="list-group-item">Tidak ada pengguna diblokir ditemukan.</div>';
+                                }
+                                blockedUsersSearchResults.style.display = 'block'; // Show results
+                            })
+                            .catch(error => {
+                                console.error('Error fetching search results:', error);
+                                blockedUsersSearchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
+                                blockedUsersSearchResults.style.display = 'block';
+                            });
+                    }, 300); // Debounce 300ms
+                } else {
+                    blockedUsersSearchResults.innerHTML = ''; // Clear if query is too short
+                    blockedUsersSearchResults.style.display = 'none'; // Hide results
+                }
+            });
+
+            // Hide search results when clicking outside the input or results
+            document.addEventListener('click', function(event) {
+                if (!blockedUsersSearchInput.contains(event.target) && !blockedUsersSearchResults.contains(event.target)) {
+                    blockedUsersSearchResults.innerHTML = '';
+                    blockedUsersSearchResults.style.display = 'none';
+                }
+            });
+
+            // Handle Enter key: submit form
+            blockedUsersSearchInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent default form submission behavior
+                    blockedUsersSearchForm.submit(); // Manually submit the form
+                }
+            });
+        }
     });
 </script>
 @endpush

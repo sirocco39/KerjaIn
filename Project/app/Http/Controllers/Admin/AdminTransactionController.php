@@ -36,7 +36,6 @@ class AdminTransactionController extends Controller
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Penghasilan',
-            'currentSectionTitle' => 'Keuangan & Transaksi',
         ];
 
         return view('admin.transactions.index', compact(

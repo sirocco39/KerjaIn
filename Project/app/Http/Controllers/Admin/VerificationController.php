@@ -59,7 +59,6 @@ class VerificationController extends Controller
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Verifikasi ' . ucfirst($status), // Cth: Verifikasi Pending, Verifikasi Disetujui
-            'currentSectionTitle' => 'Manajemen Verifikasi',
             'filterStatus' => $status,
         ];
 
@@ -106,8 +105,9 @@ class VerificationController extends Controller
         // Data Breadcrumbs
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Detail Verifikasi',
-            'currentSectionTitle' => 'Manajemen Verifikasi',
+            'currentPageTitle' => 'Verifikasi ' . ucfirst($verificationRequest->status), // Cth: Verifikasi Pending, Verifikasi Disetujui
+            'filterStatus' => $verificationRequest->status,
+            'currentSectionTitle' => 'Detail Verifikasi',
             'requestId' => $verificationRequest->id,
         ];
 
@@ -202,7 +202,7 @@ class VerificationController extends Controller
         $verificationRequest->rejection_reason = $request->rejection_reason;
         $verificationRequest->save();
 
-        return redirect()->route('admin.verifications.show', ['status' => 'rejected'])
+        return redirect()->route('admin.verifications.show', ['status' => 'rejected'], $id)
             ->with('success', 'Permintaan verifikasi berhasil ditolak. Alasan: ' . $request->rejection_reason);
     }
 }
