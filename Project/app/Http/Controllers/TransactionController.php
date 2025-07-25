@@ -76,6 +76,11 @@ class TransactionController extends Controller
         // Authorization check: only the requester of the transaction can view this page
         if (Auth::id() !== $transaction->requester_id) {
             // Changed to custom alert
+            activity()
+                ->inLog('Security') // Kelompokkan ke log 'Security'
+                ->on($transaction)  // Targetnya adalah transaksi yang coba diakses
+                ->causedBy(Auth::user()) // Pelakunya adalah user yang mencoba akses
+                ->log("Percobaan akses tidak sah ke halaman transaksi on-going #{$transaction->order_number}.");
             return redirect()->route('job-req.beranda')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
         }
 
@@ -100,7 +105,7 @@ class TransactionController extends Controller
     }
 
 
-    public function cancel($id)
+    public function cancel($id, HttpRequest $request)
     {
         // Cari transaction berdasarkan id
         $transaction = Transaction::findOrFail($id);
@@ -124,6 +129,14 @@ class TransactionController extends Controller
             'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $transaction->request->title,
         ]);
 
+        $canceller = Auth::user();
+        activity()
+            ->inLog('Finance')
+            ->on($transaction)
+            ->causedBy($canceller) // Pelakunya adalah requester yang membatalkan
+            ->withProperties(['amount' => $refundAmount])
+            ->log("Dana sebesar Rp" . number_format($refundAmount) . " telah dikembalikan ke requester {$requester->first_name} karena pembatalan transaksi #{$transaction->order_number} oleh {$canceller->first_name}.");
+
         // If the request status should also be updated when cancelled by requester
         // Assuming there's a status on the Request model too
         if ($transaction->request) {
@@ -132,8 +145,17 @@ class TransactionController extends Controller
         }
 
         // Changed to custom alert
+        $userId = Auth::id();
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
-        return back()->with('custom_info_alert', 'Pekerjaan dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
+        if($userId === $requester->id){
+            $alertMessage = 'Pekerjaan dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.';
+        }
+        else{
+            $alertMessage = 'Pekerjaan telah berhasil dibatalkan';
+        }
+        $redirectRoute = $request->input('redirect_to', 'landing');
+        
+        return redirect()->route($redirectRoute)->with('custom_info_alert', $alertMessage);
     }
 
     public function markComplete(Transaction $transaction)
@@ -155,6 +177,13 @@ class TransactionController extends Controller
             $worker = $transaction->worker;
             $payment = $workRequest->payment;
             $payoutAmount = $payment->amount; // Jumlah yang akan dibayarkan
+
+            activity()
+                ->inLog('Finance')
+                ->on($transaction) // Targetnya adalah transaksi ini
+                ->causedBy($requester) // Pelakunya adalah requester yang menekan tombol "selesai"
+                ->withProperties(['amount' => $payoutAmount, 'worker_id' => $worker->id])
+                ->log("Dana sebesar Rp" . number_format($payoutAmount) . " telah dilepaskan ke pekerja {$worker->first_name} untuk transaksi #{$transaction->order_number}.");
 
             // 4. Proses pelepasan dana (payout)
             // a. Kurangi saldo tertahan milik Requester
@@ -216,14 +245,5 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
-    }
-
-    public function showAcceptedWork($transactionId)
-    {
-        $transaction = Transaction::findOrFail($transactionId);
-        $request = $transaction->request;
-        $worker = $transaction->worker;
-        $completionProof = $transaction->completionProof ?? null;
-        return view('job-taker.accepted-work-request', compact('transaction', 'request', 'worker', 'completionProof'));
     }
 }

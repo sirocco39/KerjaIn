@@ -497,6 +497,7 @@
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
                     class="d-flex flex-column flex-lg-row gap-3 mt-4">
                     @csrf
+                    <input type="hidden" name="redirect_to" value="job-req.beranda">
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
                         Lanjut Kerja

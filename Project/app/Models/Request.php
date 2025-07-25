@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Request extends Model
 {
     /** @use HasFactory<\Database\Factories\RequestFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'title',
@@ -22,6 +24,7 @@ class Request extends Model
         'description',
         'price',
         'final_price', // Added final_price to fillable
+        'service_fee', // Added service_fee to fillable
         'location',
         'requester_id',
         'status',
@@ -30,6 +33,7 @@ class Request extends Model
     ];
     protected $attributes = [
         'status' => 'open',
+        'service_fee' => 2500, // Default admin fee
     ];
     protected $casts = [
         'price' => 'decimal:2',
@@ -37,6 +41,84 @@ class Request extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'title',
+                'description',
+                'price',
+                'location',
+                'start_time',
+                'end_time',
+                'status'
+            ])
+            ->logOnlyDirty()
+            ->dontLogIfAttributesChangedOnly(['status'])
+            ->useLogName('Request');
+    }
+
+    // 4. METHOD UNTUK DESKRIPSI KUSTOM (VERSI FINAL)
+    public function tapActivity(Activity $activity, string $eventName)
+    {
+        $causerName = $activity->causer ? $activity->causer->first_name : 'Sistem';
+
+        if ($eventName === 'created') {
+            $activity->description = "Pekerjaan baru '{$this->title}' telah dibuat oleh {$causerName}.";
+            return;
+        }
+
+        if ($eventName === 'deleted') {
+            $activity->description = "Pekerjaan '{$this->title}' telah dibatalkan/dihapus oleh {$causerName}.";
+            return;
+        }
+
+        if ($eventName === 'updated') {
+            $changesList = [];
+            $old = $activity->properties['old'] ?? [];
+            $new = $activity->properties['attributes'] ?? [];
+
+            // Terjemahan nama kolom
+            $fieldTranslations = [
+                'title' => 'Judul',
+                'description' => 'Deskripsi',
+                'price' => 'Harga',
+                'location' => 'Lokasi',
+                'start_time' => 'Waktu Mulai',
+                'end_time' => 'Waktu Selesai',
+            ];
+
+            foreach ($new as $field => $newValue) {
+                if (isset($old[$field])) {
+                    $fieldName = $fieldTranslations[$field] ?? $field;
+                    $oldValue = $old[$field];
+
+                    // Format khusus untuk harga
+                    if ($field === 'price') {
+                        $oldValue = 'Rp' . number_format($oldValue, 0, ',', '.');
+                        $newValue = 'Rp' . number_format($newValue, 0, ',', '.');
+                    }
+
+                    // Format khusus untuk waktu
+                    if (in_array($field, ['start_time', 'end_time'])) {
+                        $oldValue = \Carbon\Carbon::parse($oldValue)->format('d M Y, H:i');
+                        $newValue = \Carbon\Carbon::parse($newValue)->format('d M Y, H:i');
+                    }
+
+                    $changesList[] = "<li><strong>{$fieldName}:</strong> dari '{$oldValue}' menjadi '{$newValue}'</li>";
+                }
+            }
+
+            if (!empty($changesList)) {
+                // Gabungkan semua perubahan menjadi satu blok HTML
+                $details = '<ul>' . implode('', $changesList) . '</ul>';
+                $activity->description = "{$causerName} telah memperbarui detail pekerjaan '{$this->title}':<br>{$details}";
+            } else {
+                $activity->description = "Detail pekerjaan '{$this->title}' telah diperbarui oleh {$causerName}.";
+            }
+        }
+    }
 
     public function requester(): BelongsTo
     {
@@ -71,7 +153,13 @@ class Request extends Model
         $request->chatRooms()->where('id', '!=', $winningChatRoom->id)->update(['is_open' => false]);
 
         // Tutup request
+        $request->disableLogging();
+
+        // 2. Tutup request (aksi ini TIDAK akan dicatat di log)
         $request->update(['status' => 'closed']);
+
+        // 3. Nyalakan kembali logging untuk aksi-aksi berikutnya
+        $request->enableLogging();
 
         // 1. Ambil 3 digit terakhir dari setiap ID.
         //    Menggunakan modulo (%) memastikan ID yang besar tetap menjadi 3 digit.

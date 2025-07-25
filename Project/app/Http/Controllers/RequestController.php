@@ -75,10 +75,21 @@ class RequestController extends Controller
         }
 
         $user = User::find(Auth::id());
-        $jobCost = $request->workPriceLabel;
+        $jobCost = $request->workPriceLabel + 2500;
+        $escrowAmount = $request->workPriceLabel;
+
         $user->balance -= $jobCost;
-        $user->locked_balance += $jobCost;
+        $user->locked_balance += $escrowAmount;
         $user->save();
+
+        // --- 👇 GANTI LOG LAMA DENGAN YANG INI 👇 ---
+        activity()
+            ->inLog('Finance')
+            ->on($user)
+            ->causedBy($user)
+            ->withProperties(['amount' => $escrowAmount, 'request_title' => $request->workTitleLabel]) // Menambahkan judul request ke properti
+            ->log("Dana dari {$user->first_name} sebesar Rp" . number_format($escrowAmount) . " telah ditahan untuk pekerjaan baru '{$request->workTitleLabel}'.");
+
 
         //from handling post
         $workRequest->title = $request->workTitleLabel;
@@ -86,6 +97,7 @@ class RequestController extends Controller
         $workRequest->description = $request->workDetailLabel;
         $workRequest->price = $request->workPriceLabel;
         $workRequest->final_price = $request->workPriceLabel;
+        $workRequest->service_fee = 2500;
         $workRequest->location = $request->workAddressLabel;
         $workRequest->start_time = $startDatetime;
         $workRequest->end_time = $endDatetime;
@@ -102,7 +114,7 @@ class RequestController extends Controller
         $result = $workRequest->save();
         Payment::create([
             'request_id' => $workRequest->id,
-            'amount' => $jobCost,
+            'amount' => $request->workPriceLabel,
             'status' => 'holding',
         ]);
         if ($result) {
@@ -135,9 +147,19 @@ class RequestController extends Controller
      */
     public function edit(string $slug)
     {
-
         // Find the request by slug
         $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
+        if (Auth::id() !== $workRequest->requester_id) {
+            // Buat log keamanan
+            activity()
+                ->inLog('Security')
+                ->on($workRequest) // Targetnya adalah request yang coba diakses
+                ->causedBy(Auth::user()) // Pelakunya adalah user yang mencoba
+                ->log("Percobaan akses tidak sah ke halaman edit pekerjaan '{$workRequest->id}'.");
+
+            // Alihkan dengan pesan error
+            return redirect()->route('job-req.beranda')->with('custom_error_alert', 'Anda tidak berwenang mengubah pekerjaan ini.');
+        }
         // If the request is not found, it will throw a 404 error
         if (!$workRequest || $workRequest->deleted_at) {
             abort(404, 'Request not found or has been deleted.');
@@ -184,13 +206,14 @@ class RequestController extends Controller
                     $user->balance -= $priceDifference;
                     $user->locked_balance += $priceDifference;
                     $user->save();
-
                     WalletTransaction::create([
                         'user_id' => $user->id,
                         'amount' => $priceDifference,
                         'type' => 'credit',
                         'description' => 'Penambahan saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
                     ]);
+                    activity()->inLog('Finance')->causedBy($user)->on($user)
+                        ->log("Dana tambahan sebesar Rp" . number_format($priceDifference) . " ditahan dari {$user->first_name} karena perubahan harga.");
                 }
                 // Jika harga TURUN
                 else if ($priceDifference < 0) {
@@ -205,6 +228,8 @@ class RequestController extends Controller
                         'type' => 'debit',
                         'description' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
                     ]);
+                    activity()->inLog('Finance')->causedBy($user)->on($user)
+                        ->log("Dana sebesar Rp" . number_format($refundAmount) . " dikembalikan ke {$user->first_name} karena perubahan harga.");
                 }
 
                 // 5. Update Detail Pekerjaan (Request)
@@ -273,6 +298,13 @@ class RequestController extends Controller
                     'type' => 'debit',
                     'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $workRequest->title,
                 ]);
+
+                activity()
+                    ->inLog('Finance') // Kelompokkan ke log 'Finance'
+                    ->on($workRequest) // Targetnya adalah request yang dihapus
+                    ->causedBy($user)  // Pelakunya adalah user yang menghapus
+                    ->withProperties(['amount' => $refundAmount, 'refunded_to' => $user->id])
+                    ->log("{$user->first_name} telah membatalkan pekerjaan '{$workRequest->title}', dan dana sebesar Rp" . number_format($refundAmount) . " telah dikembalikan.");
 
                 // 6. Update status terkait
                 $workRequest->payment->update(['status' => 'refunded_to_requester']); // Update status escrow

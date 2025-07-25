@@ -50,9 +50,12 @@ class SocialController extends Controller
         }
 
         Auth::login($user);
+        activity()
+            ->inLog('Authentication')
+            ->causedBy($user)
+            ->log('User telah login menggunakan akun Google');
 
         // Changed to custom alert
         return redirect('/')->with('custom_info_alert', 'Login berhasil! Selamat datang di aplikasi kami.');
     }
-
 }

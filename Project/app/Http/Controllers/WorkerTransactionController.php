@@ -83,6 +83,11 @@ class WorkerTransactionController extends Controller
         // Authorization check: only the worker of the transaction can view this page
         if (Auth::id() !== $transaction->worker_id) {
             // Changed to custom alert
+            activity()
+                ->inLog('Security')
+                ->on($transaction)
+                ->causedBy(Auth::user())
+                ->log("Percobaan akses tidak sah ke halaman pekerjaan yang diterima #{$transaction->order_number}.");
             return redirect()->route('job-taker.home')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
         }
 
@@ -174,6 +179,12 @@ class WorkerTransactionController extends Controller
             $transaction->finish_work = Carbon::now();
             $transaction->save();
 
+            activity()
+                ->inLog('Transaction') // Kelompokkan ke log 'Transaction'
+                ->performedOn($transaction) // Targetnya adalah transaksi ini
+                ->causedBy(Auth::user())    // Pelakunya adalah pekerja yang login
+                ->withProperties(['uploaded_photos' => $uploadedPhotoUrls, 'note' => $request->note]) // Simpan URL foto & catatan
+                ->log("Pekerja telah mengunggah bukti penyelesaian pekerjaan.");
             // Return a JSON success response for AJAX requests
             return response()->json([
                 'success' => true,
@@ -183,7 +194,6 @@ class WorkerTransactionController extends Controller
                 'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
                 'next_action' => 'show_review_modal' // Indicate next action for frontend
             ]);
-
         } catch (ValidationException $e) {
             // Return JSON response for validation errors
             return response()->json([
