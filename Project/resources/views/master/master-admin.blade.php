@@ -17,6 +17,8 @@
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css') }}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 </head>
 
@@ -95,10 +97,19 @@
             <div class="container-fluid py-1 px-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                        <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                        <li class="breadcrumb-item text-sm text-dark active" aria-current="page" id="currentPageTitle"></li>
+                        {{-- Main breadcrumb item, "Admin" --}}
+                        <li class="breadcrumb-item text-sm">
+                            <a class="opacity-5 text-dark" href="{{ route('admin.dashboard') }}">
+                                {{ $breadcrumbs['mainPageTitle'] ?? 'Admin' }}
+                            </a>
+                        </li>
+                        {{-- Current page breadcrumb item --}}
+                        <li class="breadcrumb-item text-sm text-dark active" aria-current="page">
+                            {{ $breadcrumbs['currentPageTitle'] ?? '' }}
+                        </li>
                     </ol>
-                    <h6 class="font-weight-bolder mb-0" id="currentSectionTitle"></h6>
+                    {{-- Current section title --}}
+                    <h6 class="font-weight-bolder mb-0">{{ $breadcrumbs['currentSectionTitle'] ?? '' }}</h6>
                 </nav>
                 <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
                     <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -142,7 +153,7 @@
                         <li class="nav-item d-flex align-items-center">
                             <a href="javascript:;" class="nav-link text-body font-weight-bold px-0">
                                 <i class="fa fa-user me-sm-1"></i>
-                                <span class="d-sm-inline d-none">Sign In</span>
+                                <span class="d-sm-inline d-none">Log out</span>
                             </a>
                         </li>
                     </ul>

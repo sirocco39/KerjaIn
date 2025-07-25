@@ -70,11 +70,11 @@
                 <div class="card-header pb-0 px-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="mb-0">Daftar Request yang Selesai (Penghasil Service Fee)</h6>
+                            <h6 class="mb-0">Daftar Semua Request</h6>
                         </div>
                         <div class="col-md-6 d-flex justify-content-start justify-content-md-end align-items-center">
-                            <i class="material-symbols-rounded me-2 text-lg">check_circle</i>
-                            <small>Pekerjaan terbaru yang telah diselesaikan dan menghasilkan service fee.</small>
+                            <i class="material-symbols-rounded me-2 text-lg">list_alt</i>
+                            <small>Menampilkan semua request, termasuk yang sudah selesai atau dibatalkan.</small>
                         </div>
                     </div>
                 </div>
@@ -87,14 +87,14 @@
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Layanan</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Client</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Worker</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Harga</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Harga Total</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Biaya Layanan</th>
                                     <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Status Request</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Selesai Pada</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Dibuat pada</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($recentCompletedRequests as $request)
+                                @forelse ($Requests as $request) {{-- UBAH NAMA VARIABEL DI SINI --}}
                                 <tr>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">#{{ $request->id }}</p>
@@ -116,34 +116,44 @@
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         @php
+                                        $statusDisplay = ''; // Variabel untuk menyimpan HTML status (badge)
+                                        $deletedBadge = ''; // Variabel untuk menyimpan HTML badge "Dihapus"
+
+                                        if ($request->trashed()) {
+                                        // Jika request sudah dihapus, hanya tampilkan badge 'Dihapus'
+                                        $deletedBadge = '<span class="badge badge-sm bg-gradient-danger ms-1">Dihapus</span>';
+                                        // statusDisplay tetap kosong, sehingga badge 'open'/'closed' tidak muncul
+                                        } else {
+                                        // Jika request TIDAK dihapus, tampilkan status normalnya
                                         $statusClass = '';
                                         switch ($request->status) {
                                         case 'closed': $statusClass = 'bg-gradient-success'; break;
                                         case 'open': $statusClass = 'bg-gradient-info'; break;
                                         default: $statusClass = 'bg-gradient-secondary'; break;
                                         }
+                                        $statusDisplay = '<span class="badge badge-sm ' . $statusClass . '">' . ucfirst($request->status) . '</span>';
+                                        }
                                         @endphp
-                                        <span class="badge badge-sm {{ $statusClass }}">{{ ucfirst($request->status) }}</span>
+                                        {!! $statusDisplay !!}{!! $deletedBadge !!}
                                     </td>
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">
-                                            @if($request->status == 'closed')
-                                            {{ $request->updated_at->format('d M Y, H:i') }}
-                                            @else
-                                            -
-                                            @endif
+                                            {{ $request->created_at->format('d M Y, H:i') }}
                                         </span>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted py-4">Tidak ada request yang telah selesai ditemukan.</td>
+                                    <td colspan="8" class="text-center text-muted py-4">Tidak ada request yang ditemukan.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    {{-- Anda bisa menambahkan paginasi di sini jika $recentCompletedRequests adalah paginator --}}
+                    {{-- Tambahkan Tautan Paginasi di sini --}}
+                    <div class="mt-4 px-4">
+                        {{ $Requests->links() }} {{-- UBAH NAMA VARIABEL DI SINI --}}
+                    </div>
                 </div>
             </div>
         </div>

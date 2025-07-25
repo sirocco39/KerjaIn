@@ -228,37 +228,13 @@ Route::get('/admin/activity-log', function () {
     $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
     return view('admin-test-iwan.activity-log', compact('activities'));
 })->name('admin.activity');
-Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
-
-Route::get('/', function () {
-    return view('landing');
-});
-
-
-Route::get('/hubungi/{requestId}', [ChatController::class, 'startChat'])->name('chat.start');
-Route::post('/tawar/{requestId}', [ChatController::class, 'startOffer'])->name('chat.offer');
-Route::get('/job-taker/pesan/{selectedRoomId?}', function ($selectedRoomId = null) {
-    return view('Job_Taker.pesan', ['chatRoomId' => $selectedRoomId]);
-})->name('chat.job-taker');
-
-Route::get(('/job-req/pesan'), function () {
-    return view('Job_Requester.pesan');
-})->name('jobrequester.chat');
-
-Route::post('/requests/{request}/hire/{worker}', [RequestController::class, 'hireWorker'])->name('requests.hire');
-Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
-
-Route::get('/test', function () {
-    return view('Job_Taker.job_taker-pesanSon');
-});
-
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 Route::get('/admin/verifikasi/{status?}', [VerificationController::class, 'index'])->name('admin.verifications.index');
 Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->name('admin.verifications.show');
 Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
 Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
-
+Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
 // Manajemen Pengguna (admin.users.*)   
 // Route::resource('users', AdminUserController::class);
 Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');

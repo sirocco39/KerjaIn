@@ -2,105 +2,89 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Report;
-use App\Models\Transaction;
 use Illuminate\Http\Request;
-use App\Models\VerificationRequest;
 use App\Http\Controllers\Controller;
-use App\Models\Request as ModelRequest;
+use App\Models\Request as ServiceRequest;
+use Spatie\Activitylog\Models\Activity;
+use App\Models\VerificationRequest;
 
 class AdminController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan dashboard admin yang sederhana, fungsional, dan estetis.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Mendapatkan total pengguna
+        // --- Statistik Pengguna ---
         $totalUsers = User::count();
+        $totalWorkers = User::where('is_worker', true)->count();
 
-        // Mendapatkan total pekerjaan (jobs) yang tersedia atau aktif
-        // Asumsi ada kolom 'status' di tabel jobs jika Anda ingin memfilter
-        // $totalJobs = Job::count();
+        // MENGAMBIL DATA LOGIN HARI INI DARI activity_log MENGGUNAKAN LIKE
+        $activeUsersToday = Activity::where('description', 'like', 'User telah login%')
+            ->whereDate('created_at', Carbon::today())
+            ->distinct('causer_id')
+            ->count();
 
-        // Mendapatkan total permintaan (requests)
-        $totalRequests = ModelRequest::count();
+        // --- Statistik Laporan ---
+        $pendingReportsCount = Report::where('status', 'Not Reviewed')->count();
 
-        // Mendapatkan total transaksi
-        $totalTransactions = Transaction::count();
+        // --- Statistik Keuangan Perusahaan ---
+        $totalCompanyProfit = ServiceRequest::where('status', 'closed')->sum('service_fee');
 
-        // Mendapatkan jumlah laporan yang perlu ditinjau
-        $pendingReports = Report::where('status', 'Not Reviewed')->count();
+        // --- Log Aktivitas Terbaru (Tabel) ---
+        $recentActivities = Activity::with('causer')
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get();
 
-        // Mendapatkan jumlah permintaan verifikasi yang tertunda
-        $pendingVerifications = VerificationRequest::where('status', 'pending')->count();
+        // --- Data untuk Grafik (Aktivitas Pengguna Mingguan) ---
+        $chartLabels = [];
+        $chartData = []; // Ini akan menjadi 'earningsData' Anda (jumlah pengguna aktif)
+        $jobsCompletedData = []; // Data dummy untuk 'jobsCompletedData'
 
-        // Data terbaru (opsional, bisa disesuaikan)
-        $latestUsers = User::latest()->take(5)->get();
-        $latestTransactions = Transaction::latest()->take(5)->get();
-        $latestReports = Report::where('status', 'Not Reviewed')->latest()->take(5)->get();
+        for ($i = 6; $i >= 0; $i--) { // Loop untuk 7 hari terakhir
+            $date = Carbon::today()->subDays($i);
+            $chartLabels[] = $date->format('D, M d');
 
-        $totalUserSaldokerjain = User::sum('balance');
+            // MENGAMBIL DATA LOGIN UNTUK GRAFIK DARI activity_log MENGGUNAKAN LIKE
+            $dailyLogins = Activity::where('description', 'like', 'User telah login%')
+                ->whereDate('created_at', $date)
+                ->distinct('causer_id')
+                ->count();
+            $chartData[] = $dailyLogins; // Data jumlah login/pengguna aktif untuk chart
+
+            // Data dummy untuk 'jobsCompletedData' (jika ingin garis kedua)
+            $jobsCompletedData[] = rand(5, 20); // Contoh data acak
+        }
+
+        // --- Statistik Verifikasi Pending ---
+        $pendingVerificationsCount = 0;
+        if (class_exists(VerificationRequest::class)) {
+            $pendingVerificationsCount = VerificationRequest::where('status', 'pending')->count();
+        }
+
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Dashboard',
+            'currentSectionTitle' => 'Ringkasan Statistik',
+        ];
 
         return view('admin.dashboard', compact(
             'totalUsers',
-            'totalRequests',
-            'totalTransactions',
-            'pendingReports',
-            'pendingVerifications',
-            'latestUsers',
-            'latestTransactions',
-            'latestReports',
-            'totalUserSaldokerjain',
+            'totalWorkers',
+            'activeUsersToday',
+            'pendingReportsCount',
+            'totalCompanyProfit',
+            'recentActivities',
+            'chartLabels',
+            'chartData',
+            'jobsCompletedData',
+            'pendingVerificationsCount',
+            'breadcrumbs' // Tambahkan breadcrumbs ke compact
         ));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

@@ -8,7 +8,7 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\Models\Activity; // Import model Activity dari Spatie
+use Spatie\Activitylog\Models\Activity;
 
 class AdminUserController extends Controller
 {
@@ -34,7 +34,7 @@ class AdminUserController extends Controller
         // --- Pencarian Pengguna dan Filtering Log ---
         $searchedUser = null;
         $searchQuery = $request->input('search_query');
-        $activityLogs = Activity::with('causer') // Memuat relasi causer (pengguna yang melakukan aktivitas)
+        $activityLogs = Activity::with('causer')
             ->orderByDesc('created_at');
 
         if ($searchQuery) {
@@ -44,18 +44,23 @@ class AdminUserController extends Controller
                 ->first();
 
             if ($searchedUser) {
-                // Filter log aktivitas berdasarkan pengguna yang dicari
                 $activityLogs->where(function ($query) use ($searchedUser) {
                     $query->where('causer_id', $searchedUser->id)
                         ->where('causer_type', get_class($searchedUser));
                 });
             } else {
-                // Jika user tidak ditemukan, pastikan log juga kosong
-                $activityLogs = Activity::whereRaw('1 = 0'); // Query yang selalu false
+                $activityLogs = Activity::whereRaw('1 = 0');
             }
         }
 
-        $activityLogs = $activityLogs->paginate(10); // Paginate log aktivitas
+        $activityLogs = $activityLogs->paginate(10);
+
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Pengguna',
+            'currentSectionTitle' => 'Manajemen Pengguna',
+        ];
 
         return view('admin.users.index', compact(
             'totalUsers',
@@ -67,7 +72,8 @@ class AdminUserController extends Controller
             'reportedUsersCount',
             'searchedUser',
             'searchQuery',
-            'activityLogs' // Mengganti recentLogins dengan activityLogs
+            'activityLogs',
+            'breadcrumbs' // Tambahkan breadcrumbs
         ));
     }
 
@@ -76,8 +82,16 @@ class AdminUserController extends Controller
      */
     public function allUsers(Request $request)
     {
-        $users = User::paginate(15); // Tambahkan paginasi
-        return view('admin.users.all-list', compact('users'));
+        $users = User::paginate(15);
+
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Semua Pengguna',
+            'currentSectionTitle' => 'Manajemen Pengguna',
+        ];
+
+        return view('admin.users.all-list', compact('users', 'breadcrumbs'));
     }
 
     /**
@@ -85,8 +99,16 @@ class AdminUserController extends Controller
      */
     public function allWorkers(Request $request)
     {
-        $workers = User::where('is_worker', true)->paginate(15); // Tambahkan paginasi
-        return view('admin.users.worker-list', compact('workers'));
+        $workers = User::where('is_worker', true)->paginate(15);
+
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Pekerja',
+            'currentSectionTitle' => 'Manajemen Pengguna',
+        ];
+
+        return view('admin.users.worker-list', compact('workers', 'breadcrumbs'));
     }
 
     /**
@@ -94,8 +116,16 @@ class AdminUserController extends Controller
      */
     public function blockedUsers()
     {
-        $blockedUsers = User::where('is_blocked', true)->paginate(15); // Tambahkan paginasi
-        return view('admin.users.blocked-list', compact('blockedUsers'));
+        $blockedUsers = User::where('is_blocked', true)->paginate(15);
+
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Pengguna Diblokir',
+            'currentSectionTitle' => 'Manajemen Pengguna',
+        ];
+
+        return view('admin.users.blocked-list', compact('blockedUsers', 'breadcrumbs'));
     }
 
     /**
@@ -109,7 +139,7 @@ class AdminUserController extends Controller
 
         activity()
             ->performedOn($user)
-            ->causedBy(Auth::id()) // Asumsi admin yang memblokir tercatat
+            ->causedBy(Auth::id())
             ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah diblokir.');
 
         return redirect()->back()->with('success', 'Pengguna berhasil diblokir.');
@@ -126,34 +156,37 @@ class AdminUserController extends Controller
 
         activity()
             ->performedOn($user)
-            ->causedBy(Auth::id()) // Asumsi admin yang membuka blokir tercatat
+            ->causedBy(Auth::id())
             ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah dibuka blokirnya.');
 
         return redirect()->back()->with('success', 'Pengguna berhasil dibuka blokirnya.');
     }
+
     /**
      * Menampilkan daftar pengguna yang dilaporkan.
-     * Sesuai permintaan, ini akan mengarah ke admin.transactions.index.
-     * Jika Anda ingin halaman terpisah, Anda harus membuat view dan logika terpisah.
      */
     public function reportedUsers()
     {
-        // Untuk saat ini, sesuai permintaan, kita akan redirect.
-        // Jika Anda ingin menampilkan daftar pengguna yang dilaporkan di halaman terpisah,
-        // Anda akan memerlukan view `admin.users.reported-list` dan logikanya di sini.
+        // Mengarahkan ke admin.transactions.index sesuai permintaan
+        // Jika Anda ingin menampilkan di halaman terpisah, Anda harus membuat view baru dan logikanya di sini.
+        // Contoh:
         // $reportedUsers = User::whereIn('id', function ($query) {
         //     $query->select('reported_id')->from('reports');
         // })->paginate(15);
-        // return view('admin.users.reported-list', compact('reportedUsers'));
+        // $breadcrumbs = [
+        //     'mainPageTitle' => 'Admin',
+        //     'currentPageTitle' => 'Pengguna Dilaporkan',
+        //     'currentSectionTitle' => 'Manajemen Pengguna',
+        // ];
+        // return view('admin.users.reported-list', compact('reportedUsers', 'breadcrumbs'));
 
-        // Mengarahkan ke admin.transactions.index sesuai permintaan
         return redirect()->route('admin.transactions.index')->with('info', 'Anda diarahkan ke halaman transaksi untuk melihat laporan.');
     }
 
     /**
      * Menampilkan semua log aktivitas untuk pengguna tertentu.
      */
-    public function userActivityLog($id, Request $request) // Tambahkan Request $request
+    public function userActivityLog($id, Request $request)
     {
         $user = User::findOrFail($id);
         $activities = Activity::where('causer_id', $user->id)
@@ -161,9 +194,16 @@ class AdminUserController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20);
 
-        // Dapatkan URL sebelumnya dari parameter 'from', jika ada, atau gunakan admin.users.index sebagai fallback
         $previousUrl = $request->query('from', route('admin.users.index'));
 
-        return view('admin.users.user-activity-log', compact('user', 'activities', 'previousUrl'));
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Log Aktivitas Pengguna',
+            'currentSectionTitle' => 'Manajemen Pengguna',
+            'userFullName' => $user->first_name . ' ' . $user->last_name, // Tambahkan detail pengguna
+        ];
+
+        return view('admin.users.user-activity-log', compact('user', 'activities', 'previousUrl', 'breadcrumbs'));
     }
 }

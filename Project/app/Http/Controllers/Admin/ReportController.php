@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
 
 class ReportController extends Controller
@@ -15,7 +16,6 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        // Kontroler index ini tidak perlu diubah karena kita tidak menampilkan hitungan di sini.
         $request->validate([
             'status' => ['sometimes', 'in:Reviewed,Not Reviewed']
         ]);
@@ -27,9 +27,18 @@ class ReportController extends Controller
             ->latest()
             ->paginate(15);
 
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Laporan',
+            'currentSectionTitle' => 'Manajemen Laporan',
+            'filterStatus' => $statusFilter, // Tambahkan status filter ke breadcrumbs jika perlu
+        ];
+
         return view('admin.reports.index', [
             'reports' => $reports,
-            'currentStatus' => $statusFilter
+            'currentStatus' => $statusFilter,
+            'breadcrumbs' => $breadcrumbs, // Tambahkan breadcrumbs
         ]);
     }
 
@@ -40,10 +49,17 @@ class ReportController extends Controller
      */
     public function show(Report $report)
     {
-        // Eager load relationships dan tambahkan hitungan laporan yang diterima oleh reported user
-        $report->load(['reporter', 'reported.reportsReceived']); // Load reported user dan relasi reportsReceived-nya
+        $report->load(['reporter', 'reported.reportsReceived']);
 
-        return view('admin.reports.show', compact('report'));
+        // Data Breadcrumbs
+        $breadcrumbs = [
+            'mainPageTitle' => 'Admin',
+            'currentPageTitle' => 'Detail Laporan',
+            'currentSectionTitle' => 'Manajemen Laporan',
+            'reportId' => $report->id, // Tambahkan ID laporan ke breadcrumbs
+        ];
+
+        return view('admin.reports.show', compact('report', 'breadcrumbs'));
     }
 
     /**
@@ -64,7 +80,7 @@ class ReportController extends Controller
 
         activity()
             ->performedOn($report)
-            ->causedBy(auth()->user())
+            ->causedBy(Auth::id())
             ->log("Laporan #{$report->id} diubah status dari '{$oldStatus}' menjadi '{$newStatus}'.");
 
         return redirect()
