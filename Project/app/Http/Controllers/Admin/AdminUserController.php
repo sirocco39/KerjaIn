@@ -6,58 +6,55 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Log; // Don't forget this!
-use App\Models\Report; // For reported users
-use Illuminate\Support\Facades\DB; // For database queries
-use App\Models\Session;
-use function Laravel\Prompts\alert; // Assuming you have a Session model or access to session data
+use Spatie\Activitylog\Models\Activity; // Import model Activity dari Spatie
+use App\Models\Report;
 
 class AdminUserController extends Controller
 {
     /**
      * Menampilkan halaman manajemen pengguna.
-     * Termasuk fungsionalitas pencarian, statistik, dan grafik pengguna aktif.
+     * Termasuk fungsionalitas pencarian dan tabel logging.
      */
     public function index(Request $request)
     {
         // --- Statistik Ringkasan Pengguna ---
         $totalUsers = User::count();
-        $activeToday = User::whereDate('last_activity', Carbon::today())->count(); // Assuming 'last_activity' column in users table or sessions
+        $activeToday = User::whereDate('last_activity', Carbon::today())->count();
         $newUsersThisWeek = User::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
 
-        // Total Pekerja dan Aktif hari ini (Jika ada kolom is_worker)
         $totalWorkers = User::where('is_worker', true)->count();
         $activeWorkersToday = User::where('is_worker', true)
-            ->whereDate('last_activity', Carbon::today()) // Asumsi pekerja juga punya last_activity
+            ->whereDate('last_activity', Carbon::today())
             ->count();
 
-        // Pengguna Diblokir dan Dilaporkan
-        $blockedUsersCount = User::where('is_blocked', true)->count(); // Asumsi kolom 'is_blocked' di tabel users
-        $reportedUsersCount = Report::distinct('reported_id')->count('reported_id'); // Menghitung jumlah user yang dilaporkan
+        $blockedUsersCount = User::where('is_blocked', true)->count();
+        $reportedUsersCount = Report::distinct('reported_id')->count('reported_id');
 
-        // --- Pencarian Pengguna ---
+        // --- Pencarian Pengguna dan Filtering Log ---
         $searchedUser = null;
         $searchQuery = $request->input('search_query');
+        $activityLogs = Activity::with('causer') // Memuat relasi causer (pengguna yang melakukan aktivitas)
+            ->orderByDesc('created_at');
 
         if ($searchQuery) {
             $searchedUser = User::where('id', $searchQuery)
                 ->orWhere('first_name', 'like', '%' . $searchQuery . '%')
                 ->orWhere('last_name', 'like', '%' . $searchQuery . '%')
-                ->first(); // Mengambil satu user yang cocok
+                ->first();
+
+            if ($searchedUser) {
+                // Filter log aktivitas berdasarkan pengguna yang dicari
+                $activityLogs->where(function ($query) use ($searchedUser) {
+                    $query->where('causer_id', $searchedUser->id)
+                        ->where('causer_type', get_class($searchedUser));
+                });
+            } else {
+                // Jika user tidak ditemukan, pastikan log juga kosong
+                $activityLogs = Activity::whereRaw('1 = 0'); // Query yang selalu false
+            }
         }
 
-        // --- Data Tabel Log Login Terbaru (menggunakan model Session jika ada) ---
-        // Jika tabel sessions Anda menyimpan user_id dan last_activity/login_time
-        // Jika tidak, Anda perlu cara lain untuk melacak login user
-        $recentLogins = Session::whereNotNull('user_id')
-            ->with('user') // Memuat data user terkait
-            ->orderByDesc('last_activity')
-            ->take(7) // Mengambil 7 log login terbaru
-            ->get();
-
-        // --- Data untuk Grafik Pengguna Aktif (Line Chart) ---
-        $activeUsersChartData = $this->getActiveUsersChartData();
-
+        $activityLogs = $activityLogs->paginate(10); // Paginate log aktivitas
 
         return view('admin.users.index', compact(
             'totalUsers',
@@ -69,56 +66,80 @@ class AdminUserController extends Controller
             'reportedUsersCount',
             'searchedUser',
             'searchQuery',
-            'recentLogins',
-            'activeUsersChartData'
+            'activityLogs' // Mengganti recentLogins dengan activityLogs
         ));
     }
 
     /**
-     * Mengambil data pengguna aktif per hari dalam seminggu terakhir.
+     * Menampilkan daftar semua pengguna.
      */
-    private function getActiveUsersChartData()
+    public function allUsers(Request $request)
     {
-        $labels = []; // Tanggal
-        $data = [];   // Jumlah pengguna aktif
-
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::today()->subDays($i);
-            $labels[] = $date->format('D, M d'); // Misal: Mon, Jul 01
-
-            // Menghitung pengguna aktif pada tanggal tersebut
-            // Asumsi: last_activity adalah kolom timestamp di tabel users
-            // Atau Anda bisa menggunakan tabel sessions dan menghitung distinct user_id per hari
-            $activeUsersCount = User::whereDate('last_activity', $date)->count();
-            $data[] = $activeUsersCount;
-        }
-
-        return [
-            'labels' => $labels,
-            'data' => $data,
-        ];
+        $users = User::paginate(15); // Tambahkan paginasi
+        return view('admin.users.all-list', compact('users'));
     }
 
-    // Metode untuk menampilkan detail pengguna (jika diperlukan oleh rute admin.users.show)
-    public function show($id)
+    /**
+     * Menampilkan daftar semua pekerja.
+     */
+    public function allWorkers(Request $request)
     {
-        $user = User::findOrFail($id);
-        return view('admin.users.show', compact('user'));
+        $workers = User::where('is_worker', true)->paginate(15); // Tambahkan paginasi
+        return view('admin.users.worker-list', compact('workers'));
     }
 
-    // Metode untuk menampilkan daftar pengguna yang diblokir (jika diperlukan)
+    /**
+     * Menampilkan daftar pengguna yang diblokir.
+     */
     public function blockedUsers()
     {
-        $blockedUsers = User::where('is_blocked', 1)->get();
+        $blockedUsers = User::where('is_blocked', true)->paginate(15); // Tambahkan paginasi
         return view('admin.users.blocked-list', compact('blockedUsers'));
     }
 
-    // Metode untuk menampilkan daftar pengguna yang dilaporkan (jika diperlukan)
+    /**
+     * Membuka blokir pengguna.
+     */
+    public function unblockUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_blocked = false;
+        $user->save();
+
+        activity()->performedOn($user)->log('Pengguna diblokir'); // Catat aktivitas unblock
+
+        return redirect()->back()->with('success', 'Pengguna berhasil dibuka blokirnya.');
+    }
+
+    /**
+     * Menampilkan daftar pengguna yang dilaporkan.
+     * Sesuai permintaan, ini akan mengarah ke admin.transactions.index.
+     * Jika Anda ingin halaman terpisah, Anda harus membuat view dan logika terpisah.
+     */
     public function reportedUsers()
     {
-        $reportedUsers = User::whereIn('id', function ($query) {
-            $query->select('reported_id')->from('reports');
-        })->get();
-        return view('admin.users.reported-list', compact('reportedUsers'));
+        // Untuk saat ini, sesuai permintaan, kita akan redirect.
+        // Jika Anda ingin menampilkan daftar pengguna yang dilaporkan di halaman terpisah,
+        // Anda akan memerlukan view `admin.users.reported-list` dan logikanya di sini.
+        // $reportedUsers = User::whereIn('id', function ($query) {
+        //     $query->select('reported_id')->from('reports');
+        // })->paginate(15);
+        // return view('admin.users.reported-list', compact('reportedUsers'));
+
+        // Mengarahkan ke admin.transactions.index sesuai permintaan
+        return redirect()->route('admin.transactions.index')->with('info', 'Anda diarahkan ke halaman transaksi untuk melihat laporan.');
+    }
+
+    /**
+     * Menampilkan semua log aktivitas untuk pengguna tertentu.
+     */
+    public function userActivityLog($id)
+    {
+        $user = User::findOrFail($id);
+        $activities = Activity::where('causer_id', $user->id)
+            ->where('causer_type', get_class($user))
+            ->orderByDesc('created_at')
+            ->paginate(20); // Paginate log aktivitas
+        return view('admin.users.user-activity-log', compact('user', 'activities'));
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Transaction; // Assuming your Transaction model is in App\Models
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf; // Import the PDF facade
 use Carbon\Carbon; // Import Carbon for date formatting
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File; // Import the File facade for reading image content
 
 class InvoiceController extends Controller
@@ -55,11 +56,16 @@ class InvoiceController extends Controller
         // Generate the PDF from the Blade view.
         // Explicitly set paper to A4 and orientation to 'portrait'.
         $pdf = Pdf::loadView('invoices.invoice_template', $data)
-                  ->setPaper('A4', 'portrait');
+            ->setPaper('A4', 'portrait');
 
         // Define the filename for the downloaded PDF.
         $filename = 'invoice_' . ($transaction->order_number ?? 'N_A') . '.pdf';
-
+        $user = Auth::user();
+        activity()
+            ->inLog('Document')
+            ->on($transaction)
+            ->causedBy($user)
+            ->log("{$user->first_name} telah mengunduh invoice untuk transaksi #{$transaction->order_number}.");
         // Return the PDF as a download.
         return $pdf->download($filename);
     }

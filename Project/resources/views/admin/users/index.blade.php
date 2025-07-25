@@ -8,107 +8,96 @@
             <div class="row">
                 {{-- Total Pengguna --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-symbols-rounded opacity-10">groups</i>
+                    <a href="{{ route('admin.users.all') }}" class="card-link"> {{-- Tambah link ini --}}
+                        <div class="card">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-symbols-rounded opacity-10">groups</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Total Pengguna</p>
+                                    <h4 class="mb-0">{{ number_format($totalUsers) }}</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Total Pengguna</p>
-                                <h4 class="mb-0">{{ number_format($totalUsers) }}</h4>
+                            <hr class="dark horizontal my-0">
+                            <div class="card-footer p-3">
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">{{ $activeToday }}</span> aktif hari ini
+                                    <span class="text-dark text-sm ms-2 font-weight-bolder">{{ $newUsersThisWeek }}</span> baru minggu ini
+                                </p>
                             </div>
                         </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            <p class="mb-0">
-                                <span class="text-success text-sm font-weight-bolder">{{ $activeToday }}</span> aktif hari ini
-                                <span class="text-dark text-sm ms-2 font-weight-bolder">{{ $newUsersThisWeek }}</span> baru minggu ini
-                            </p>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 {{-- Total Pekerja --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-symbols-rounded opacity-10">engineering</i>
+                    <a href="{{ route('admin.users.workers') }}" class="card-link"> {{-- Tambah link ini --}}
+                        <div class="card">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-symbols-rounded opacity-10">engineering</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Total Pekerja</p>
+                                    <h4 class="mb-0">{{ number_format($totalWorkers) }}</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Total Pekerja</p>
-                                <h4 class="mb-0">{{ number_format($totalWorkers) }}</h4>
+                            <hr class="dark horizontal my-0">
+                            <div class="card-footer p-3">
+                                <p class="mb-0">
+                                    <span class="text-success text-sm font-weight-bolder">{{ $activeWorkersToday }}</span> aktif hari ini
+                                </p>
                             </div>
                         </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            <p class="mb-0">
-                                <span class="text-success text-sm font-weight-bolder">{{ $activeWorkersToday }}</span> aktif hari ini
-                                {{-- <span class="text-dark text-sm ms-2 font-weight-bolder">X</span> pekerja baru minggu ini --}}
-                            </p>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 {{-- Pengguna Diblokir --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-symbols-rounded opacity-10">block</i>
+                    <a href="{{ route('admin.users.blockedList') }}" class="card-link"> {{-- Tambah link ini --}}
+                        <div class="card">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-symbols-rounded opacity-10">block</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Pengguna Diblokir</p>
+                                    <h4 class="mb-0">{{ number_format($blockedUsersCount) }}</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Pengguna Diblokir</p>
-                                <h4 class="mb-0">{{ number_format($blockedUsersCount) }}</h4>
+                            <hr class="dark horizontal my-0">
+                            <div class="card-footer p-3">
+                                <span class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar blokir</span>
                             </div>
                         </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            <a href="{{ route("admin.users.blockedList") }}" class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar blokir</a>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 {{-- Pengguna Dilaporkan --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="card">
-                        <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-symbols-rounded opacity-10">flag</i>
+                    <a href="{{ route('admin.transactions.index') }}" class="card-link"> {{-- Link ini sesuai permintaan --}}
+                        <div class="card">
+                            <div class="card-header p-3 pt-2">
+                                <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
+                                    <i class="material-symbols-rounded opacity-10">flag</i>
+                                </div>
+                                <div class="text-end pt-1">
+                                    <p class="text-sm mb-0 text-capitalize">Pengguna Dilaporkan</p>
+                                    <h4 class="mb-0">{{ number_format($reportedUsersCount) }}</h4>
+                                </div>
                             </div>
-                            <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize">Pengguna Dilaporkan</p>
-                                <h4 class="mb-0">{{ number_format($reportedUsersCount) }}</h4>
+                            <hr class="dark horizontal my-0">
+                            <div class="card-footer p-3">
+                                <span class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar laporan</span>
                             </div>
                         </div>
-                        <hr class="dark horizontal my-0">
-                        <div class="card-footer p-3">
-                            <a href="{{ route('admin.users.reported-list') }}" class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar laporan</a>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
 
-        {{-- Grafik Pengguna Aktif --}}
-        <div class="col-lg-8 col-md-6 mt-4 mb-4">
-            <div class="card z-index-2">
-                <div class="card-header pb-0 bg-transparent">
-                    <h6 class="mb-0">Grafik Pengguna Aktif</h6>
-                    <p class="text-sm mb-0">
-                        <i class="fa fa-arrow-up text-success"></i>
-                        <span class="font-weight-bold">Jumlah pengguna aktif</span> dalam 7 hari terakhir.
-                    </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="active-users-chart" class="chart-canvas" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Pencarian Pengguna & Log Login Terbaru --}}
+        {{-- Pencarian Pengguna --}}
         <div class="col-lg-4 col-md-6 mt-4 mb-4">
             <div class="card">
                 <div class="card-header pb-0 p-3">
@@ -121,7 +110,7 @@
                 <div class="card-body p-3">
                     <form action="{{ route('admin.users.index') }}" method="GET" class="mb-4">
                         <div class="input-group input-group-outline my-3">
-                            <label class="form-label">Cari ID atau Username...</label>
+                            <label class="form-label">Cari ID atau Nama...</label>
                             <input type="text" class="form-control" name="search_query" value="{{ $searchQuery ?? '' }}">
                             <button type="submit" class="btn btn-primary mb-0 ms-2">Cari</button>
                         </div>
@@ -142,136 +131,91 @@
                             @endif
                             <br>
                             Status: {{ $searchedUser->is_blocked ? 'Diblokir' : 'Aktif' }}
+                            <br>
+                            <a href="{{ route('admin.users.activityLog', $searchedUser->id) }}" class="text-primary text-sm font-weight-bolder mt-2">Lihat Aktivitas</a>
                         </div>
                     </div>
                     @elseif($searchQuery && !$searchedUser)
                     <div class="alert alert-danger d-flex align-items-center" role="alert">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
-                            Pengguna dengan ID atau Username "**{{ $searchQuery }}**" tidak ditemukan.
+                            Pengguna dengan ID atau Nama "**{{ $searchQuery }}**" tidak ditemukan.
                         </div>
                     </div>
                     @endif
+                </div>
+            </div>
+        </div>
 
-                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-4">Log Login Terbaru</h6>
-                    <ul class="list-group">
-                        @forelse($recentLogins as $session)
-                        <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
-                            <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">
-                                    {{ $session->user ? $session->user->first_name . ' ' . $session->user->last_name : 'Pengguna Dihapus' }}
-                                </h6>
-                                <span class="text-xs">Log ID: {{ $session->id }}</span>
-                            </div>
-                            <div class="d-flex align-items-center text-sm">
-                                @if($session->user)
-                                {{-- Menggunakan 'Aktif X waktu lalu' --}}
-                                Aktif {{ $session->last_activity->diffForHumans(null, false, true) }}
-                                @else
-                                Sesi berakhir.
-                                @endif
-                            </div>
-                        </li>
-                        @empty
-                        <li class="list-group-item border-0 ps-0 text-dark text-sm">Tidak ada log login terbaru.</li>
-                        @endforelse
-                    </ul>
+        {{-- Tabel Log Aktivitas --}}
+        <div class="col-lg-8 col-md-6 mt-4 mb-4">
+            <div class="card z-index-2">
+                <div class="card-header pb-0 bg-transparent">
+                    <h6 class="mb-0">Log Aktivitas Terbaru {{ $searchedUser ? 'untuk ' . $searchedUser->first_name . ' ' . $searchedUser->last_name : '' }}</h6>
+                    <p class="text-sm mb-0">
+                        <i class="fa fa-info-circle text-info"></i>
+                        <span class="font-weight-bold">Daftar aktivitas pengguna</span> di sistem.
+                    </p>
+                </div>
+                <div class="card-body p-3">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Pengguna</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Aktivitas</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Log Nama</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($activityLogs as $log)
+                                @php
+                                //dd($log);
+                                @endphp
+                                <tr>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $log->created_at->diffForHumans() }}</span>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">
+                                            {{ $log->causer ? $log->causer->first_name . ' ' . $log->causer->last_name : 'N/A' }}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ $log->description }}</p>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $log->log_name }}</span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-secondary text-sm">Tidak ada log aktivitas {{ $searchedUser ? 'untuk pengguna ini' : 'terbaru' }}.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4">
+                        {{ $activityLogs->links() }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Data untuk Chart.js (dari controller)
-        const activeUsersChartLabels = JSON.parse(chartElement.dataset.chartLabels);
-        console.log(activeUsersChartLabels); // Untuk debugging
-
-        // Mengambil data dari atribut data-chart-data dan mem-parse sebagai JSON
-        const activeUsersChartData = JSON.parse(chartElement.dataset.chartData);
-        console.log(activeUsersChartData); // Untuk debugging
-
-        // Inisialisasi Line Chart
-        var ctx = document.getElementById("active-users-chart").getContext("2d");
-        new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: activeUsersChartLabels,
-                datasets: [{
-                    label: "Pengguna Aktif",
-                    tension: 0.4,
-                    borderWidth: 0,
-                    pointRadius: 5,
-                    pointBackgroundColor: "#cb0c9f", // primary color
-                    pointBorderColor: "transparent",
-                    borderColor: "#cb0c9f", // primary color
-                    borderWidth: 4,
-                    backgroundColor: "transparent",
-                    fill: true,
-                    data: activeUsersChartData,
-                    maxBarThickness: 6
-                }],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            display: true,
-                            drawOnChartArea: true,
-                            drawTicks: false,
-                            borderDash: [5, 5]
-                        },
-                        ticks: {
-                            display: true,
-                            padding: 10,
-                            color: '#b2b9bf',
-                            font: {
-                                size: 11,
-                                family: "Open Sans",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
-                        }
-                    },
-                    x: {
-                        grid: {
-                            drawBorder: false,
-                            display: false,
-                            drawOnChartArea: false,
-                            drawTicks: false,
-                            borderDash: [5, 5]
-                        },
-                        ticks: {
-                            display: true,
-                            color: '#b2b9bf',
-                            padding: 20,
-                            font: {
-                                size: 11,
-                                family: "Open Sans",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
-                        }
-                    },
-                },
-            },
-        });
-    });
-</script>
-@endpush
+{{-- Hapus script Chart.js jika tidak ada grafik yang digunakan di halaman ini --}}
 @endsection
+
+@push('styles')
+<style>
+    .card-link {
+        text-decoration: none;
+        /* Hapus garis bawah */
+        color: inherit;
+        /* Warisan warna teks dari parent */
+    }
+</style>
+@endpush

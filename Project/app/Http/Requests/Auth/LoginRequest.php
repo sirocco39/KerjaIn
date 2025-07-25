@@ -43,6 +43,13 @@ class LoginRequest extends FormRequest
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+            activity()
+                ->inLog('Authentication') // Kelompokkan ke log 'Authentication'
+                ->withProperties([ // Simpan data penting untuk investigasi
+                    'ip_address' => $this->ip(),
+                    'email_attempted' => $this->input('email')
+                ])
+                ->log('Percobaan login gagal');
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -80,6 +87,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

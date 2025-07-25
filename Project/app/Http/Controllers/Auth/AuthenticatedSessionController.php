@@ -51,6 +51,11 @@ class AuthenticatedSessionController extends Controller
         // Login success
         $request->session()->regenerate();
 
+        activity()
+            ->inLog('Authentication') // Mengelompokkan log ke kategori 'Authentication'
+            ->causedBy(Auth::user())  // Pelakunya adalah user yang baru saja login
+            ->log('User telah login menggunakan email dan password');
+
         // Get the authenticated user's first name
         $firstName = Auth::user()->first_name ?? 'Pengguna';
 
@@ -71,14 +76,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+
+        $user = Auth::user();
+        activity()
+            ->inLog('Authentication')
+            ->causedBy($user)
+            ->log('User telah logout');
+
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        // Changed to custom alert
         return redirect('/')->with('custom_info_alert', 'Anda telah berhasil keluar.');
     }
 }
-

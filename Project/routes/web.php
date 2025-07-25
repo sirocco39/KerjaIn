@@ -34,10 +34,13 @@ use App\Http\Controllers\{
     InvoiceController,
     LocalizationController
 };
+use App\Http\Middleware\IsWorker;
+use App\Http\Middleware\PreventReRegistration;
 use App\Livewire\JobTaker\Chat;
 use App\Livewire\jobTaker\JobTakerChatRoom;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
 use App\Models\ChatRoom;
+use Spatie\Activitylog\Models\Activity;
 
 // =======================
 // LANDING PAGE
@@ -93,44 +96,37 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     // =======================
     // JOB TAKER PAGES (AUTHENTICATED)
     // =======================
-    Route::get('/job_taker', fn() => view('job-taker.dummy-job_taker-landingpage'));
-    Route::get('/job-taker/beranda', function () {
-        $workerId = FacadesAuth::id();
-        $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
-            ->whereNull('deleted_at')
-            ->latest()
-            ->take(5)
-            ->with('requester', 'request')
-            ->get();
-        return view('job-taker.home', compact('fiveLatestTransaction'));
-    })->name('job-taker.home');
-    Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
 
-    Route::get('/job-taker/riwayat', [WorkerTransactionController::class, 'index'])->name('orders.index');
-    Route::get('/job-taker/pesan/{selectedRoomId?}', fn($selectedRoomId = null) => view('job-taker.chat', ['chatRoomId' => $selectedRoomId]))->name('chat.job-taker');
-    Route::get('/job-taker/cari-kerja', [BrowseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
-
-    Route::get('/job-taker/cari-kerja', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
-
-
-    Route::get('/job-taker/monthly-report', [MonthlyReportController::class, 'index'])->name('monthly.report');
-    Route::get('/job-taker/monthly-report/download-pdf', [MonthlyReportController::class, 'downloadReportPdf'])->name('monthly.report.download.pdf');
-    Route::view('/job-taker/pdf', 'Job_Taker.pdf.report-pdf')->name('pdf');
-    Route::get('/navbar-job_taker', function () {
-        return view('Master.master-job_taker');
+    Route::middleware(['auth', IsWorker::class])->group(function () {
+        Route::get('/job-taker/beranda', function () {
+            $workerId = FacadesAuth::id();
+            $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
+                ->whereNull('deleted_at')
+                ->latest()
+                ->take(5)
+                ->with('requester', 'request')
+                ->get();
+            return view('job-taker.home', compact('fiveLatestTransaction'));
+        })->name('job-taker.home');
+        Route::get('/job-taker/beranda/{id}', [TransactionController::class, 'show']);
+        Route::get('/job-taker/riwayat', [WorkerTransactionController::class, 'index'])->name('orders.index');
+        Route::get('/job-taker/pesan/{selectedRoomId?}', fn($selectedRoomId = null) => view('job-taker.chat', ['chatRoomId' => $selectedRoomId]))->name('chat.job-taker');
+        Route::get('/job-taker/cari-kerja', [BrowseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
+        Route::get('/job-taker/monthly-report', [MonthlyReportController::class, 'index'])->name('monthly.report');
+        Route::get('/job-taker/monthly-report/download-pdf', [MonthlyReportController::class, 'downloadReportPdf'])->name('monthly.report.download.pdf');
+        Route::view('/job-taker/pdf', 'Job_Taker.pdf.report-pdf')->name('pdf');
+        Route::post('/job-taker/cari-kerja/{id}', [JobTakerRequestController::class, 'acceptRequest'])->name('job-taker.accept-request');
+        Route::get('/job-taker/accepted-work-request/{id}', [WorkerTransactionController::class, 'show'])->name('job-taker.accepted-work-request');
+        Route::post('/job-taker/start-work/{id}', [WorkerTransactionController::class, 'startWork'])->name('worker.startWork');
+        Route::post('/job-taker/upload-proof/{transaction}', [WorkerTransactionController::class, 'uploadProof'])->name('worker.uploadProof');
+        Route::post('/job-taker/submit-report/{transaction}', [WorkerTransactionController::class, 'storeReport'])->name('worker.submitReport');
+        Route::get('/job-taker/top-up', [TopUpController::class, 'index'])->name('top-up.job-taker');
+        Route::get('/job-taker/wallet', [BalanceController::class, 'index'])->name('balance.job-taker');
     });
+
     // Route::get('/browseWorkRequest', [browseWorkRequestController::class, 'index'])->name('browse.work.requests.index');
 
     Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
-
-    // =======================
-    // JOB TAKER REQUEST ACTIONS (AUTHENTICATED)
-    // =======================
-    Route::post('/job-taker/cari-kerja/{id}', [JobTakerRequestController::class, 'acceptRequest'])->name('job-taker.accept-request');
-    Route::get('/job-taker/accepted-work-request/{id}', [WorkerTransactionController::class, 'show'])->name('job-taker.accepted-work-request');
-    Route::post('/worker/start-work/{id}', [WorkerTransactionController::class, 'startWork'])->name('worker.startWork');
-    Route::post('/worker/upload-proof/{transaction}', [WorkerTransactionController::class, 'uploadProof'])->name('worker.uploadProof');
-    Route::post('/worker/submit-report/{transaction}', [WorkerTransactionController::class, 'storeReport'])->name('worker.submitReport');
 
     // =======================
     // REVIEW & COMPLETION ROUTES (AUTHENTICATED)
@@ -155,13 +151,11 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     Route::post('/requests/{request}/accept', [RequestController::class, 'acceptRequest'])->name('requests.accept');
 
     Route::get('/job-req/top-up', [TopUpController::class, 'index'])->name('top-up.job-req');
-    Route::get('/job-taker/top-up', [TopUpController::class, 'index'])->name('top-up.job-taker');
 
     // Memproses form dan membuat invoice Xendit
     Route::post('/topup', [TopUpController::class, 'createInvoice'])->name('topup.create');
 
     Route::get('/job-req/wallet', [BalanceController::class, 'index'])->name('balance.job-req');
-    Route::get('/job-taker/wallet', [BalanceController::class, 'index'])->name('balance.job-taker');
 
     Route::get('/wallet/balance', [BalanceController::class, 'getCurrentBalance'])->name('balance.get');
 
@@ -177,33 +171,34 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     Route::get('/joinworker', fn() => redirect()->route('worker.register.step1'));
 
     // Grup route untuk pendaftaran pekerja tanpa autentikasi
-    Route::prefix('joinWorker')->name('worker.register.')->group(function () {
-        // Langkah 1: Data Pribadi (Form GET, Proses POST)
-        // URL: /joinWorker/join
-        Route::get('/join', [WorkerRegistrationController::class, 'createStep1'])->name('step1');
-        Route::post('/join', [WorkerRegistrationController::class, 'store1'])->name('store1'); // <-- KEMBALIKAN KE 'store1'
 
-        // Langkah 2: Detail Kontrak (Form GET, Proses POST)
-        // URL: /joinWorker/join2
-        Route::get('/join2', [WorkerRegistrationController::class, 'createStep2'])->name('step2');
-        Route::post('/join2', [WorkerRegistrationController::class, 'store2'])->name('store2');
+    Route::middleware(['auth', PreventReRegistration::class])->group(function () {
+        Route::prefix('joinWorker')->name('worker.register.')->group(function () {
+            // Langkah 1: Data Pribadi (Form GET, Proses POST)
+            // URL: /joinWorker/join
+            Route::get('/join', [WorkerRegistrationController::class, 'createStep1'])->name('step1');
+            Route::post('/join', [WorkerRegistrationController::class, 'store1'])->name('store1'); // <-- KEMBALIKAN KE 'store1'
 
-        // Langkah 3: Verifikasi / Upload Dokumen / Finalisasi (Form GET, Proses POST)
-        // URL: /joinWorker/join3
-        Route::get('/join3', [WorkerRegistrationController::class, 'createStep3'])->name('step3');
-        Route::post('/join3', [WorkerRegistrationController::class, 'finalizeRegistration'])->name('finalize');
+            // Langkah 2: Detail Kontrak (Form GET, Proses POST)
+            // URL: /joinWorker/join2
+            Route::get('/join2', [WorkerRegistrationController::class, 'createStep2'])->name('step2');
+            Route::post('/join2', [WorkerRegistrationController::class, 'store2'])->name('store2');
 
-        // Halaman Sukses
-        // URL: /joinWorker/success
-        Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
-        Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
+            // Langkah 3: Verifikasi / Upload Dokumen / Finalisasi (Form GET, Proses POST)
+            // URL: /joinWorker/join3
+            Route::get('/join3', [WorkerRegistrationController::class, 'createStep3'])->name('step3');
+            Route::post('/join3', [WorkerRegistrationController::class, 'finalizeRegistration'])->name('finalize');
+
+            // Halaman Sukses
+            // URL: /joinWorker/success
+            Route::get('/success', [WorkerRegistrationController::class, 'showSuccessPage'])->name('success');
+            Route::get('/pending', [WorkerRegistrationController::class, 'showPendingPage'])->name('pending');
+        });
     });
 
     // =======================
     // MISC / NAVBAR (AUTHENTICATED)
     // =======================
-    Route::get('/navbar-job_taker', fn() => view('master.master-job_taker'));
-    Route::get('/navbar-job_req', fn() => view('master.master-job_req'));
     Route::get('switch-language/{locale}', [LocalizationController::class, 'switch'])->name('language.switch');
 
     // =======================
@@ -227,6 +222,12 @@ Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->nam
 // =======================
 Route::resource('request', RequestController::class);
 Route::post('/request/validate', [RequestController::class, 'validateRequest'])->name('request.validate');
+
+Route::get('/admin/activity-log', function () {
+    // Kode yang benar untuk urutan kronologis
+    $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
+    return view('admin-test-iwan.activity-log', compact('activities'));
+})->name('admin.activity');
 Route::get('/requests/{request}', [BrowseWorkRequestController::class, 'show'])->name('work_requests.show');
 
 Route::get('/', function () {
@@ -259,12 +260,30 @@ Route::post('verifications/{id}/approve', [VerificationController::class, 'appro
 Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
 
 // Manajemen Pengguna (admin.users.*)   
+// Route::resource('users', AdminUserController::class);
 Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
-Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
-Route::get('/users-blocked-list', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
-Route::get('/users-reported-list', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
-// Tambahkan rute lain seperti edit, update, delete jika diperlukan
-Route::view('/users/blocked_list', 'admin.users.blocked-list');
+
+// Rute baru untuk fungsionalitas yang diminta
+Route::get('users/all', [AdminUserController::class, 'allUsers'])->name('admin.users.all');
+Route::get('users/workers', [AdminUserController::class, 'allWorkers'])->name('admin.users.workers');
+Route::get('users/blocked', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+Route::post('users/{id}/unblock', [AdminUserController::class, 'unblockUser'])->name('admin.users.unblock');
+Route::get('users/{id}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('admin.users.activityLog');
+
+// Rute ini akan mengarah ke transaksi sesuai permintaan
+Route::get('users/reported', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
+
+// // Contoh rute transaksi, pastikan ini ada atau sesuaikan
+// Route::get('transactions', function () {
+//     return view('admin.transactions.index'); // Buat view ini jika belum ada
+// })->name('transactions.index');
+
+
+// Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
+// Route::get('/users-blocked-list', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+// Route::get('/users-reported-list', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
+// // Tambahkan rute lain seperti edit, update, delete jika diperlukan
+// Route::view('/users/blocked_list', 'admin.users.blocked-list');
 // Manajemen Laporan (admin.reports.*)
 Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
 Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');

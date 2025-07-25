@@ -75,6 +75,13 @@ class TopUpController extends Controller
                 'xendit_invoice_id' => $invoice['id'],
                 'invoice_url' => $invoice['invoice_url'],
             ]);
+            $user = Auth::user();
+            activity()
+                ->inLog('Finance') // Kelompokkan ke log 'Finance'
+                ->on($order) // Targetnya adalah order yang baru dibuat
+                ->causedBy(Auth::user()) // Pelakunya adalah user yang login
+                ->withProperties(['amount' => $request->amount])
+                ->log("Pengguna {$user->first_name} telah membuat invoice top up sebesar Rp" . number_format($request->amount));
 
             // 6. Arahkan Pengguna ke Halaman Pembayaran
             return redirect($invoice['invoice_url']);
