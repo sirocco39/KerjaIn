@@ -267,11 +267,20 @@ Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.i
 Route::get('users/all', [AdminUserController::class, 'allUsers'])->name('admin.users.all');
 Route::get('users/workers', [AdminUserController::class, 'allWorkers'])->name('admin.users.workers');
 Route::get('users/blocked', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+
+// Rute untuk blokir dan batal blokir
+Route::post('users/{id}/block', [AdminUserController::class, 'blockUser'])->name('admin.users.block'); // Rute baru
 Route::post('users/{id}/unblock', [AdminUserController::class, 'unblockUser'])->name('admin.users.unblock');
+
 Route::get('users/{id}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('admin.users.activityLog');
 
 // Rute ini akan mengarah ke transaksi sesuai permintaan
 Route::get('users/reported', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
+
+// Route::resource('reports', ReportController::class)->only(['index', 'show', 'update']); // Pastikan 'show' ada
+Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+Route::get('/reports/{report}', [ReportController::class, 'show'])->name('admin.reports.show');
+Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
 
 // // Contoh rute transaksi, pastikan ini ada atau sesuaikan
 // Route::get('transactions', function () {

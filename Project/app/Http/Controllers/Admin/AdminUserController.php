@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity; // Import model Activity dari Spatie
-use App\Models\Report;
 
 class AdminUserController extends Controller
 {
@@ -98,6 +99,23 @@ class AdminUserController extends Controller
     }
 
     /**
+     * Memblokir pengguna.
+     */
+    public function blockUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_blocked = true;
+        $user->save();
+
+        activity()
+            ->performedOn($user)
+            ->causedBy(Auth::id()) // Asumsi admin yang memblokir tercatat
+            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah diblokir.');
+
+        return redirect()->back()->with('success', 'Pengguna berhasil diblokir.');
+    }
+
+    /**
      * Membuka blokir pengguna.
      */
     public function unblockUser($id)
@@ -106,11 +124,13 @@ class AdminUserController extends Controller
         $user->is_blocked = false;
         $user->save();
 
-        activity()->performedOn($user)->log('Pengguna diblokir'); // Catat aktivitas unblock
+        activity()
+            ->performedOn($user)
+            ->causedBy(Auth::id()) // Asumsi admin yang membuka blokir tercatat
+            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah dibuka blokirnya.');
 
         return redirect()->back()->with('success', 'Pengguna berhasil dibuka blokirnya.');
     }
-
     /**
      * Menampilkan daftar pengguna yang dilaporkan.
      * Sesuai permintaan, ini akan mengarah ke admin.transactions.index.
@@ -133,13 +153,17 @@ class AdminUserController extends Controller
     /**
      * Menampilkan semua log aktivitas untuk pengguna tertentu.
      */
-    public function userActivityLog($id)
+    public function userActivityLog($id, Request $request) // Tambahkan Request $request
     {
         $user = User::findOrFail($id);
         $activities = Activity::where('causer_id', $user->id)
             ->where('causer_type', get_class($user))
             ->orderByDesc('created_at')
-            ->paginate(20); // Paginate log aktivitas
-        return view('admin.users.user-activity-log', compact('user', 'activities'));
+            ->paginate(20);
+
+        // Dapatkan URL sebelumnya dari parameter 'from', jika ada, atau gunakan admin.users.index sebagai fallback
+        $previousUrl = $request->query('from', route('admin.users.index'));
+
+        return view('admin.users.user-activity-log', compact('user', 'activities', 'previousUrl'));
     }
 }

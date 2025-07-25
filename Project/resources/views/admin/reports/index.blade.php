@@ -12,6 +12,14 @@
     </div>
     @endif
 
+    {{-- Info Message (from AdminUserController) --}}
+    @if (session('info'))
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ session('info') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     {{-- Tab Navigation --}}
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
@@ -50,8 +58,16 @@
                         <tr>
                             <td>#{{ $report->id }}</td>
                             <td>{{ $report->created_at->format('M d, Y H:i') }}</td>
-                            <td>{{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? 'N/A' }}</td>
-                            <td>{{$report->reported->first_name . ' ' . $report->reported->last_name ?? 'N/A' }}</td>
+                            <td>
+                                {{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? 'N/A' }}
+                                <br>
+                                <span class="text-muted text-sm">(ID: {{ $report->reporter_id }})</span>
+                            </td>
+                            <td>
+                                {{ $report->reported->first_name . ' ' . $report->reported->last_name ?? 'N/A' }}
+                                <br>
+                                <span class="text-muted text-sm">(ID: {{ $report->reported_id }})</span>
+                            </td>
                             <td>
                                 @if ($report->status == 'Reviewed')
                                 <span class="badge bg-success">Reviewed</span>
@@ -60,11 +76,13 @@
                                 @endif
                             </td>
                             <td class="text-end">
-                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#reportDetailsModal-{{ $report->id }}">
+                                {{-- Ubah ini untuk mengarah ke halaman detail --}}
+                                <a href="{{ route('admin.reports.show', $report) }}" class="btn btn-sm btn-info me-2">
                                     View Details
-                                </button>
+                                </a>
 
-                                {{-- Action Form --}}
+                                {{-- Action Form for Mark as Reviewed/Not Reviewed (bisa dipindahkan ke halaman detail) --}}
+                                {{-- Jika Anda ingin tetap ada di sini, biarkan seperti ini --}}
                                 <form action="{{ route('admin.reports.update', $report) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('PATCH')
@@ -78,46 +96,6 @@
                                 </form>
                             </td>
                         </tr>
-
-                        {{-- Details Modal for each report --}}
-                        <div class="modal fade" id="reportDetailsModal-{{ $report->id }}" tabindex="-1" aria-labelledby="reportDetailsModalLabel-{{ $report->id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="reportDetailsModalLabel-{{ $report->id }}">Report #{{ $report->id }} Details</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <strong>Reporter:</strong> {{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? 'N/A' }} (ID: {{ $report->reporter_id }})<br>
-                                                <strong>Reported User:</strong> {{ $report->reported->name ?? 'N/A' }} (ID: {{ $report->reported_id }})<br>
-                                                <strong>Transaction ID:</strong> {{ $report->transaction_id }}<br>
-                                                <strong>Date:</strong> {{ $report->created_at->format('F j, Y, g:i a') }}
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong>Status:</strong> <span class="badge {{ $report->status == 'Reviewed' ? 'bg-success' : 'bg-warning text-dark' }}">{{ $report->status }}</span>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        <h5>Reasons for Report:</h5>
-                                        <p class="text-break">{{ $report->reasons }}</p>
-
-                                        @if ($report->photo_url)
-                                        <hr>
-                                        <h5>Attached Photo Evidence:</h5>
-                                        {{-- IMPORTANT: Ensure you have run `php artisan storage:link` --}}
-                                        <img src="{{ asset('storage/' . $report->photo_url) }}" class="img-fluid rounded" alt="Report evidence">
-                                        @else
-                                        <p class="text-muted">No photo was attached.</p>
-                                        @endif
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         @endforeach
                     </tbody>
                 </table>

@@ -36,11 +36,14 @@
                                         <span class="badge badge-sm bg-gradient-danger">Diblokir</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', $user->id) }}" class="btn btn-sm btn-outline-primary mb-0 me-2">Lihat Aktivitas</a>
-                                        <form action="{{ route('admin.users.unblock', $user->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-success mb-0" onclick="return confirm('Apakah Anda yakin ingin membuka blokir pengguna ini?');">Unblock</button>
-                                        </form>
+                                        <a href="{{ route('admin.users.activityLog', ['id' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2">Lihat Aktivitas</a>
+                                        {{-- Tombol Batal Blokir yang memicu modal --}}
+                                        <button type="button" class="btn btn-sm btn-success mb-0"
+                                            data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
+                                            data-user-id="{{ $user->id }}"
+                                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}">
+                                            Unblock
+                                        </button>
                                     </td>
                                 </tr>
                                 @empty
@@ -59,4 +62,47 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Konfirmasi Batal Blokir (Hanya ini yang dibutuhkan di sini) -->
+<div class="modal fade" id="confirmUnblockModal" tabindex="-1" role="dialog" aria-labelledby="confirmUnblockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmUnblockModalLabel">Konfirmasi Batal Blokir Pengguna</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Anda akan **membatalkan blokir** pengguna <strong id="unblockUserName"></strong>. Pengguna ini akan bisa login dan mengakses layanan kembali.</p>
+                <p>Apakah Anda yakin ingin melanjutkan?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form id="unblockUserForm" action="" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-success">Ya, Batal Blokir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+    // Script untuk Modal Batal Blokir
+    document.getElementById('confirmUnblockModal').addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var userId = button.getAttribute('data-user-id');
+        var userName = button.getAttribute('data-user-name');
+
+        var modalTitle = this.querySelector('.modal-title');
+        var modalBodyUserName = this.querySelector('#unblockUserName');
+        var form = this.querySelector('#unblockUserForm');
+
+        modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
+        modalBodyUserName.textContent = userName;
+        form.action = "{{ url('users') }}/" + userId + "/unblock"; // Sesuaikan rute Anda
+    });
+</script>
+@endpush

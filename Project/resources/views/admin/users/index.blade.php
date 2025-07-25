@@ -76,7 +76,7 @@
 
                 {{-- Pengguna Dilaporkan --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.transactions.index') }}" class="card-link"> {{-- Link ini sesuai permintaan --}}
+                    <a href="{{ route('admin.reports.index') }}" class="card-link"> {{-- Link ini sesuai permintaan --}}
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">

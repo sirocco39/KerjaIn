@@ -6,30 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Spatie\Activitylog\Models\Activity;
 
 class ReportController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * This method displays reports, allowing filtering by status.
-     * It defaults to showing 'Not Reviewed' reports first.
      */
     public function index(Request $request)
     {
-        // Validate the incoming status filter
+        // Kontroler index ini tidak perlu diubah karena kita tidak menampilkan hitungan di sini.
         $request->validate([
             'status' => ['sometimes', 'in:Reviewed,Not Reviewed']
         ]);
 
-        // Get the status from the query string, defaulting to 'Not Reviewed'
         $statusFilter = $request->query('status', 'Not Reviewed');
 
-        // Eager load relationships (reporter, reported) to prevent N+1 query issues
         $reports = Report::with(['reporter', 'reported'])
             ->where('status', $statusFilter)
-            ->latest() // Show the newest reports first
-            ->paginate(15); // Paginate the results
+            ->latest()
+            ->paginate(15);
 
         return view('admin.reports.index', [
             'reports' => $reports,
@@ -37,25 +33,40 @@ class ReportController extends Controller
         ]);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * This method displays the detailed view of a single report.
+     */
+    public function show(Report $report)
+    {
+        // Eager load relationships dan tambahkan hitungan laporan yang diterima oleh reported user
+        $report->load(['reporter', 'reported.reportsReceived']); // Load reported user dan relasi reportsReceived-nya
+
+        return view('admin.reports.show', compact('report'));
+    }
 
     /**
      * Update the specified resource in storage.
-     *
-     * This method updates the status of a single report.
      */
     public function update(Request $request, Report $report)
     {
-        // Validate that the new status is one of the allowed values
         $validated = $request->validate([
             'status' => ['required', Rule::in(['Reviewed', 'Not Reviewed'])]
         ]);
 
-        // Update the report's status
+        $oldStatus = $report->status;
+        $newStatus = $validated['status'];
+
         $report->update([
-            'status' => $validated['status']
+            'status' => $newStatus
         ]);
 
-        // Redirect back to the index page with a success message
+        activity()
+            ->performedOn($report)
+            ->causedBy(auth()->user())
+            ->log("Laporan #{$report->id} diubah status dari '{$oldStatus}' menjadi '{$newStatus}'.");
+
         return redirect()
             ->route('admin.reports.index', ['status' => $report->status])
             ->with('success', "Report #{$report->id} has been marked as {$report->status}.");

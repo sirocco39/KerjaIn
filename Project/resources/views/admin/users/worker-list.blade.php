@@ -46,7 +46,7 @@
                                         </span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', $worker->id) }}" class="btn btn-sm btn-outline-primary mb-0">Lihat Aktivitas</a>
+                                        <a href="{{ route('admin.users.activityLog', ['id' => $worker->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0">Lihat Aktivitas</a>
                                         {{-- Tambahkan tombol aksi lain jika diperlukan --}}
                                     </td>
                                 </tr>
