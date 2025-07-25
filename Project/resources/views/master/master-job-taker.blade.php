@@ -220,48 +220,58 @@
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @auth
-                                <li>
-                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                    <a class="dropdown-item d-flex align-items-center"
-                                        href="{{ route('balance.job-taker') }}">
-                                        {{-- Sisi Kiri: Ikon dan Teks --}}
-                                        <div class="d-flex align-items-center gap-2">
-                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                            <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
-                                                class="navIcon">
-                                            <span>Saldo</span>
-                                        </div>
-                                        {{-- Sisi Kanan: Jumlah Saldo --}}
-                                        <span class="ms-auto fw-bold">
-                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                            {{-- Fungsi number_format untuk format Rupiah --}}
-                                            Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
-                                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                            onclick="event.preventDefault(); this.closest('form').submit();">
-                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                                class="navIcon">
-                                            Keluar
-                                        </button>
-                                    </form>
-                                </li>
-                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-1"
-                                        href="{{ route('job-req.beranda') }}">
-                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                            <li>
+                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('balance.job-taker') }}">
+                                    {{-- Sisi Kiri: Ikon dan Teks --}}
+                                    <div class="d-flex align-items-center gap-2">
+                                        {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
+                                        <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
                                             class="navIcon">
-                                        Ganti Peran
-                                    </a>
-                                </li>
+                                        <span>Saldo</span>
+                                    </div>
+                                    {{-- Sisi Kanan: Jumlah Saldo --}}
+                                    <span class="ms-auto fw-bold">
+                                        {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                        {{-- Fungsi number_format untuk format Rupiah --}}
+                                        Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                            class="navIcon">
+                                        Keluar
+                                    </button>
+                                </form>
+                            </li>
+                            @if (auth()->user()->role == 'admin')
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('admin.dashboard') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                        alt="Icon Ganti Peran" class="navIcon">
+                                    Admin
+                                </a>
+                            </li>
+                            @endif
+                            {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('job-req.beranda') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                        class="navIcon">
+                                    Ganti Peran
+                                </a>
+                            </li>
                             @endauth
                         </ul>
                     </li>
@@ -298,34 +308,34 @@
                 <h4>Fitur</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="/job-req/beranda" class="foot-list">Beranda</a>
+                    <a href="/job-req/beranda" class="foot-list">Beranda</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Beranda</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        class="foot-list">Beranda</a>
                     @endauth
 
 
                     @auth
-                        <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
+                    <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
-                            Kerja</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
+                        Kerja</a>
                     @endauth
 
 
                     @auth
-                        <a href="/job-req/pesan" class="foot-list">Pesan</a>
+                    <a href="/job-req/pesan" class="foot-list">Pesan</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Pesan</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        class="foot-list">Pesan</a>
                     @endauth
 
 
                     @auth
-                        <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
+                    <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Riwayat</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        class="foot-list">Riwayat</a>
                     @endauth
                 </div>
             </div>
@@ -334,13 +344,13 @@
                 <h4>Penawaran</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="#" class="foot-list">Acara</a>
-                        <a href="#" class="foot-list">Promo</a>
+                    <a href="#" class="foot-list">Acara</a>
+                    <a href="#" class="foot-list">Promo</a>
                     @else
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Acara</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Promo</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Acara</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Promo</a>
                     @endauth
                 </div>
             </div>
@@ -349,15 +359,15 @@
                 <h4>Bantuan</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="#" class="foot-list">Akun</a>
-                        <a href="#" class="foot-list">Laporkan</a>
-                        <a href="#" class="foot-list">Saran</a>
+                    <a href="#" class="foot-list">Akun</a>
+                    <a href="#" class="foot-list">Laporkan</a>
+                    <a href="#" class="foot-list">Saran</a>
                     @else
-                        <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Laporkan</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Saran</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Laporkan</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Saran</a>
                     @endauth
                 </div>
             </div>
@@ -439,7 +449,7 @@
                 setTimeout(() => {
                     customAlert.style.display = 'none';
                     alertContainer.style.pointerEvents =
-                    'none'; // Make container unclickable when hidden
+                        'none'; // Make container unclickable when hidden
                 }, 300); // Match CSS transition duration
             }, duration);
 

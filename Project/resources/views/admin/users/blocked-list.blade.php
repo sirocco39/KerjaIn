@@ -122,7 +122,7 @@
 
         modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('users') }}/" + userId + "/unblock"; // Adjust your route
+        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; // Adjust your route
     });
 
     document.addEventListener('DOMContentLoaded', function() {

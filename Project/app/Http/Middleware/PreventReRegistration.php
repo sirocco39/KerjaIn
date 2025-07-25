@@ -38,13 +38,14 @@ class PreventReRegistration
 
         if ($hasPendingOrApprovedRequest) {
             // --- 👇 TAMBAHKAN LOGGING DI SINI JUGA 👇 ---
-            activity()
-                ->inLog('Security')
-                ->causedBy($user)
-                ->log('Pengguna dengan verifikasi pending/approved mencoba mengakses kembali halaman pendaftaran.');
-            // --- 👆 BATAS PENAMBAHAN KODE 👆 ---
+            if (!$request->routeIs('worker.register.pending') && !$request->routeIs('worker.register.success')) {
+                activity()
+                    ->inLog('Security')
+                    ->causedBy($user)
+                    ->log('Pengguna dengan verifikasi pending/approved mencoba mengakses kembali halaman pendaftaran.');
 
-            return redirect()->route('worker.register.pending')->with('custom_info_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
+                return redirect()->route('worker.register.pending')->with('custom_info_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
+            }
         }
 
         // Jika semua kondisi tidak terpenuhi, izinkan akses ke halaman pendaftaran

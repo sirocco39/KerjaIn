@@ -59,7 +59,15 @@ Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('lo
 
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+// ... rute yang sudah ada ...
 
+Route::get('/admin/pilihan', function () {
+    // Pastikan hanya admin yang bisa mengakses halaman ini
+    if (FacadesAuth::check() && FacadesAuth::user()->role === 'admin') {
+        return view('admin.pilihan');
+    }
+    return redirect()->route('landing'); // Atau halaman lain jika bukan admin
+})->name('admin.pilihan')->middleware('auth'); // Tambahkan middleware 'auth' untuk memastikan user sudah login
 // =======================
 // SOCIAL AUTH
 // =======================
@@ -204,13 +212,13 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     // =======================
     // RESOURCE ROUTES
     // =======================
-    Route::resource('request', RequestController::class);
+    // Route::resource('request', RequestController::class);
 
 
     // =======================
     // RESOURCE ROUTES (AUTHENTICATED)
     // =======================
-    Route::resource('request', RequestController::class);
+    // Route::resource('request', RequestController::class);
     Route::post('/request/validate', [RequestController::class, 'validateRequest'])->name('request.validate');
 });
 
@@ -222,72 +230,116 @@ Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->nam
 // =======================
 Route::resource('request', RequestController::class);
 Route::post('/request/validate', [RequestController::class, 'validateRequest'])->name('request.validate');
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/pilihan', function () { // Pindahkan ini ke dalam grup admin
+        return view('admin.pilihan');
+    })->name('pilihan');
 
-Route::get('/admin/activity-log', function () {
-    // Kode yang benar untuk urutan kronologis
-    $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
-    return view('admin-test-iwan.activity-log', compact('activities'));
-})->name('admin.activity');
+    Route::get('/activity-log', function () {
+        $activities = Activity::orderBy('id', 'desc')->take(50)->get();
+        return view('admin-test-iwan.activity-log', compact('activities'));
+    })->name('activity');
 
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-Route::get('/admin/verifikasi/{status?}', [VerificationController::class, 'index'])->name('admin.verifications.index');
-Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->name('admin.verifications.show');
-Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
-Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
-Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
-// Manajemen Pengguna (admin.users.*)   
-// Route::resource('users', AdminUserController::class);
-Route::get('users/search', [AdminUserController::class, 'searchUsers'])->name('admin.users.search');
-Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
-Route::get('/users/search-ajax', [AdminUserController::class, 'searchAjax'])->name('admin.users.search-ajax');
+    Route::get('/verifikasi/{status?}', [VerificationController::class, 'index'])->name('verifications.index');
+    Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->name('verifications.show');
+    Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('verifications.approve');
+    Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('verifications.reject');
+    Route::get('/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('verifications.search-ajax');
 
-// Contoh rute untuk melihat log aktivitas per user (jika diperlukan)
-Route::get('/users/{user}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('admin.users.activityLog');
+    // Manajemen Pengguna
+    Route::get('users/search', [AdminUserController::class, 'searchUsers'])->name('users.search');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/search-ajax', [AdminUserController::class, 'searchAjax'])->name('users.search-ajax');
+    Route::get('/users/{user}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('users.activityLog');
+    Route::get('users/all', [AdminUserController::class, 'allUsers'])->name('users.all');
+    Route::get('users/workers', [AdminUserController::class, 'allWorkers'])->name('users.workers');
+    Route::get('users/blocked', [AdminUserController::class, 'blockedUsers'])->name('users.blockedList');
+    Route::post('users/{id}/block', [AdminUserController::class, 'blockUser'])->name('users.block');
+    Route::post('users/{id}/unblock', [AdminUserController::class, 'unblockUser'])->name('users.unblock');
+    Route::get('users/reported', [AdminUserController::class, 'reportedUsers'])->name('users.reported-list');
 
-// Rute baru untuk fungsionalitas yang diminta
-Route::get('users/all', [AdminUserController::class, 'allUsers'])->name('admin.users.all');
-Route::get('users/workers', [AdminUserController::class, 'allWorkers'])->name('admin.users.workers');
-Route::get('users/blocked', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+    // Manajemen Laporan
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('reports.update');
 
-// Rute untuk blokir dan batal blokir
-Route::post('users/{id}/block', [AdminUserController::class, 'blockUser'])->name('admin.users.block'); // Rute baru
-Route::post('users/{id}/unblock', [AdminUserController::class, 'unblockUser'])->name('admin.users.unblock');
+    // Manajemen Transaksi
+    Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/{id}/show', [AdminTransactionController::class, 'show'])->name('transactions.show');
+
+    // Notifikasi
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+    // Pengaturan
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+});
+// Route::get('/admin/activity-log', function () {
+//     // Kode yang benar untuk urutan kronologis
+//     $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
+//     return view('admin-test-iwan.activity-log', compact('activities'));
+// })->name('admin.activity');
+
+// Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+// Route::get('/admin/verifikasi/{status?}', [VerificationController::class, 'index'])->name('admin.verifications.index');
+// Route::get('verifications/show/{id}', [VerificationController::class, 'show'])->name('admin.verifications.show');
+// Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
+// Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
+// Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
+// // Manajemen Pengguna (admin.users.*)   
+// // Route::resource('users', AdminUserController::class);
+// Route::get('users/search', [AdminUserController::class, 'searchUsers'])->name('admin.users.search');
+// Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+// Route::get('/users/search-ajax', [AdminUserController::class, 'searchAjax'])->name('admin.users.search-ajax');
+
+// // Contoh rute untuk melihat log aktivitas per user (jika diperlukan)
+// Route::get('/users/{user}/activity-log', [AdminUserController::class, 'userActivityLog'])->name('admin.users.activityLog');
+
+// // Rute baru untuk fungsionalitas yang diminta
+// Route::get('users/all', [AdminUserController::class, 'allUsers'])->name('admin.users.all');
+// Route::get('users/workers', [AdminUserController::class, 'allWorkers'])->name('admin.users.workers');
+// Route::get('users/blocked', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+
+// // Rute untuk blokir dan batal blokir
+// Route::post('users/{id}/block', [AdminUserController::class, 'blockUser'])->name('admin.users.block'); // Rute baru
+// Route::post('users/{id}/unblock', [AdminUserController::class, 'unblockUser'])->name('admin.users.unblock');
 
 
-// Rute ini akan mengarah ke transaksi sesuai permintaan
-Route::get('users/reported', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
+// // Rute ini akan mengarah ke transaksi sesuai permintaan
+// Route::get('users/reported', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
 
-// Route::resource('reports', ReportController::class)->only(['index', 'show', 'update']); // Pastikan 'show' ada
-Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
-Route::get('/reports/{report}', [ReportController::class, 'show'])->name('admin.reports.show');
-Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
+// // Route::resource('reports', ReportController::class)->only(['index', 'show', 'update']); // Pastikan 'show' ada
+// Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+// Route::get('/reports/{report}', [ReportController::class, 'show'])->name('admin.reports.show');
+// Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
 
-// // Contoh rute transaksi, pastikan ini ada atau sesuaikan
-// Route::get('transactions', function () {
-//     return view('admin.transactions.index'); // Buat view ini jika belum ada
-// })->name('transactions.index');
+// // // Contoh rute transaksi, pastikan ini ada atau sesuaikan
+// // Route::get('transactions', function () {
+// //     return view('admin.transactions.index'); // Buat view ini jika belum ada
+// // })->name('transactions.index');
 
 
-// Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
-// Route::get('/users-blocked-list', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
-// Route::get('/users-reported-list', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
-// // Tambahkan rute lain seperti edit, update, delete jika diperlukan
-// Route::view('/users/blocked_list', 'admin.users.blocked-list');
-// Manajemen Laporan (admin.reports.*)
-Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
-Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
+// // Route::get('/users/{id}', [AdminUserController::class, 'show'])->name('admin.users.show'); // Contoh detail pengguna
+// // Route::get('/users-blocked-list', [AdminUserController::class, 'blockedUsers'])->name('admin.users.blockedList');
+// // Route::get('/users-reported-list', [AdminUserController::class, 'reportedUsers'])->name('admin.users.reported-list');
+// // // Tambahkan rute lain seperti edit, update, delete jika diperlukan
+// // Route::view('/users/blocked_list', 'admin.users.blocked-list');
+// // Manajemen Laporan (admin.reports.*)
+// Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+// Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
 
-// Anda mungkin ingin rute untuk mengubah status laporan (e.g., 'reviewed')
+// // Anda mungkin ingin rute untuk mengubah status laporan (e.g., 'reviewed')
 
-// Manajemen Transaksi (admin.transactions.*)
-Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('admin.transactions.index');
-Route::get('/transactions/{id}/show', [AdminTransactionController::class, 'show'])->name('admin.transactions.show'); // Contoh detail transaksi
+// // Manajemen Transaksi (admin.transactions.*)
+// Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('admin.transactions.index');
+// Route::get('/transactions/{id}/show', [AdminTransactionController::class, 'show'])->name('admin.transactions.show'); // Contoh detail transaksi
 
-// Notifikasi (admin.notifications.*)
-Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
-// Mungkin ada rute untuk menandai notifikasi sebagai sudah dibaca, atau menghapus
+// // Notifikasi (admin.notifications.*)
+// Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+// // Mungkin ada rute untuk menandai notifikasi sebagai sudah dibaca, atau menghapus
 
-// Pengaturan (admin.settings)
-Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');
-// Jika ada form pengaturan yang bisa di-update
-Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+// // Pengaturan (admin.settings)
+// Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');
+// // Jika ada form pengaturan yang bisa di-update
+// Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');

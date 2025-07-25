@@ -46,8 +46,55 @@ class AuthenticatedSessionController extends Controller
             // Changed to custom alert
             return back()->with('custom_error_alert', 'Email atau kata sandi salah.')->onlyInput('email');
         }
+        // --- Tambahan Logika untuk Memeriksa Status Blokir ---
+        /** @var \App\Models\User $user */
+        $user = Auth::user(); // Dapatkan pengguna yang baru saja mencoba login
 
+        // Asumsi ada kolom `is_blocked` di tabel users
+        if ($user && $user->is_blocked) {
+            // Logout pengguna jika dia berhasil login tapi ternyata diblokir
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
+            activity()
+                ->inLog('Authentication')
+                ->causedBy($user)
+                ->log('User mencoba login namun diblokir.');
+
+            $errorMessage = "Akun Anda telah diblokir. Silakan hubungi administrator.";
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'errors' => [
+                        'email' => [$errorMessage],
+                    ]
+                ], 403); // Menggunakan status 403 Forbidden
+            }
+
+            return back()->with('custom_error_alert', $errorMessage)->onlyInput('email');
+        }
+        // --- Akhir Tambahan Logika ---
+
+        // --- Logika Baru untuk Admin ---
+        if ($user && $user->role === 'admin') { // Asumsi ada kolom 'role' di tabel users
+            activity()
+                ->inLog('Authentication')
+                ->causedBy($user)
+                ->log('Admin telah login dan diarahkan ke halaman pilihan.');
+
+            if ($request->expectsJson()) {
+                // Untuk respons JSON, mungkin Anda ingin mengarahkan ke halaman default admin atau memberikan URL pilihan
+                return response()->json([
+                    'message' => "Login berhasil! Selamat datang, Admin {$user->first_name}! Silakan pilih tujuan Anda.",
+                    'redirect_url' => route('admin.pilihan') // Rute baru untuk halaman pilihan admin
+                ]);
+            }
+
+            // Arahkan admin ke halaman pilihan
+            return redirect()->route('admin.pilihan')->with('custom_info_alert', "Selamat datang, Admin {$user->first_name}! Silakan pilih tujuan Anda.");
+        }
+        // --- Akhir Logika Baru ---
         // Login success
         $request->session()->regenerate();
 

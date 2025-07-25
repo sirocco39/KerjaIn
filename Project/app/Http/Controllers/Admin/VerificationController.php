@@ -202,7 +202,7 @@ class VerificationController extends Controller
         $verificationRequest->rejection_reason = $request->rejection_reason;
         $verificationRequest->save();
 
-        return redirect()->route('admin.verifications.show', ['status' => 'rejected'], $id)
+        return redirect()->route('admin.verifications.show', ['status' => 'rejected', $id])
             ->with('success', 'Permintaan verifikasi berhasil ditolak. Alasan: ' . $request->rejection_reason);
     }
 }

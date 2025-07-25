@@ -100,7 +100,15 @@
                                         <p class="text-xs font-weight-bold mb-0">#{{ $request->id }}</p>
                                     </td>
                                     <td>
-                                        <p class="text-xs font-weight-bold mb-0">{{ $request->title }}</p>
+                                        <p class="text-xs font-weight-bold mb-0">
+                                            {{ $request->title }}
+                                            {{-- Conditionally display transaction status --}}
+                                            @if($request->transaction)
+                                            ({{ $request->transaction->status }})
+                                            @else
+                                            ({{ $request->status }})
+                                            @endif
+                                        </p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">{{ $request->requester->first_name ?? 'N/A' }} {{ $request->requester->last_name ?? '' }}</p>

@@ -403,7 +403,7 @@
             statusFilteredUserDropdown.addEventListener('change', function() {
                 const selectedId = this.value;
                 if (selectedId) {
-                    window.location.href = `{{ url('verifications/show') }}/${selectedId}`;
+                    window.location.href = `{{ url('admin/verifications/show') }}/${selectedId}`;
                 }
             });
         }
@@ -428,7 +428,7 @@
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        a.href = `{{ url('verifications/show') }}/${item.id}`;
+                                        a.href = `{{ url('admin/verifications/show') }}/${item.id}`;
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name} (NIK: ${item.nik}) <span class="badge bg-secondary ms-2">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>`;
                                         searchResults.appendChild(a);

@@ -138,7 +138,7 @@
 
         modalTitle.textContent = 'Konfirmasi Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('users') }}/" + userId + "/block"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/block"; // Sesuaikan rute Anda
     });
 
     // Script untuk Modal Batal Blokir
@@ -153,7 +153,7 @@
 
         modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('users') }}/" + userId + "/unblock"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; // Sesuaikan rute Anda
     });
 </script>
 @endpush

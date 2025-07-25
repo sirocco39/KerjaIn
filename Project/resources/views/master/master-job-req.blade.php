@@ -159,6 +159,13 @@
 
 
 <body>
+    {{-- Elemen Audio untuk Soundtrack Logo --}}
+    <audio id="logoSoundtrack" loop preload="auto" style="display: none;">
+        <source src="{{ asset('audio/kerjain_dvorak.mp3') }}" type="audio/mpeg">
+        {{-- Anda bisa menambahkan format lain seperti .ogg untuk kompatibilitas lebih luas --}}
+        {{-- <source src="{{ asset('audio/kerjain_soundtrack.ogg') }}" type="audio/ogg"> --}}
+        Your browser does not support the audio element.
+    </audio>
     <!-- Custom Alert Container (Non-Modal) -->
     <div id="custom-alert-container">
         <div id="custom-alert">
@@ -170,7 +177,9 @@
     {{-- Navbar Section --}}
     <nav class="navbar navbar-expand-lg bg-light fixed-top" id="mainNavbar">
         <div class="container-fluid pembatas-x">
-            <a class="navbar-brand" href="/job-req/beranda">
+
+            {{-- Tambahkan ID dan event listener ke elemen <a> yang membungkus logo --}}
+            <a class="navbar-brand" href="/job-req/beranda" id="logoNavbarLink">
                 <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain"
                     id="logoNavbar">
             </a>
@@ -295,6 +304,16 @@
                                     </button>
                                 </form>
                             </li>
+                            @if (auth()->user()->role === "admin")
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('admin.dashboard') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                        alt="Icon Ganti Peran" class="navIcon">
+                                    Admin
+                                </a>
+                            </li>
+                            @endif
                             @if (auth()->user()->is_worker)
                             {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                             <li>
@@ -1170,6 +1189,32 @@
             // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
             window.showCustomAlert = showCustomAlert;
         });
+
+        // --- SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoLink = document.getElementById('dropdownLang');
+            const logoSoundtrack = document.getElementById('logoSoundtrack');
+
+            if (logoLink && logoSoundtrack) {
+                logoLink.addEventListener('click', function(event) {
+                    // Mencegah redirect default langsung terjadi
+                    // Kita akan melakukan redirect secara manual setelah audio ditangani
+
+                    if (logoSoundtrack.paused) {
+                        logoSoundtrack.play().catch(e => {
+                            console.error("Autoplay diblokir atau error saat memutar:", e);
+                            // Jika autoplay diblokir, tetap lanjutkan ke href
+                            window.location.href = logoLink.href;
+                        });
+                    } else {
+                        logoSoundtrack.pause();
+                        logoSoundtrack.currentTime = 0; // Reset ke awal
+                    }
+
+                });
+            }
+        });
+        // --- AKHIR SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
     </script>
 </body>
 
