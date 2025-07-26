@@ -546,9 +546,9 @@
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="email-register">Email</label>
-                                <input class="form-control is-invalid" id="email-register" type="email"
-                                    name="email" required autocomplete="email" />
+                                <label for="email-register" class="form-label">Email</label>
+                                <input id="email-register" class="form-control is-invalid" type="email"
+                                    name="email" autocomplete="new-email" required>
                                 <div id="email-error" class="popup-error-card d-none"></div>
                             </div>
                         </div>
@@ -639,7 +639,6 @@
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        // Password rules for both login and registration
         const passwordRules = {
             length: {
                 test: value => value.length >= 8 && value.length <= 16,
@@ -667,23 +666,25 @@
             }
         };
 
-        // Helper function to validate an input and display error
+        // Modified validateInput: Now it ONLY handles the 'is-invalid' class.
+        // Error message visibility will be handled by blur/focus directly.
         function validateInput(inputElement, errorDiv, validationLogic) {
             const errors = validationLogic(inputElement.value.trim());
             if (errors.length > 0) {
                 errorDiv.innerHTML = `<ul class="mb-0">${errors.map(err => `<li>${err}</li>`).join('')}</ul>`;
-                errorDiv.classList.remove('d-none');
+                // errorDiv.classList.remove('d-none'); // Removed: Handled by focus
                 inputElement.classList.add('is-invalid');
                 return false;
             } else {
                 errorDiv.innerHTML = '';
-                errorDiv.classList.add('d-none');
+                errorDiv.classList.add('d-none'); // Keep hidden if no errors
                 inputElement.classList.remove('is-invalid');
                 return true;
             }
         }
 
-        // --- Validation Logic Functions for Register Form ---
+
+        // --- Validation Logic Functions (No change here) ---
         function validateFirstName(value) {
             const errors = [];
             if (value === '') {
@@ -725,7 +726,7 @@
 
         function validateConfirmPassword(value) {
             const errors = [];
-            const originalPassword = passwordInput.value; // CORRECTED: Get value from the *original* password input
+            const originalPassword = passwordInput.value;
             if (value === '') {
                 errors.push('Konfirmasi kata sandi harus diisi.');
             } else if (value !== originalPassword) {
@@ -744,32 +745,44 @@
             return errors;
         }
 
-        // --- Login Form Event Listeners ---
-        loginEmailInput.addEventListener('blur', function() {
-            loginEmailInput.classList.remove('is-invalid');
-            loginEmailErrorDiv.classList.add('d-none');
-        });
-
-        loginEmailInput.addEventListener('input', function() {
-            validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
-                const errors = [];
-                if (value === '') {
-                    errors.push('Email harus diisi.');
-                } else if (!emailRegex.test(value)) {
-                    errors.push('Silakan masukkan alamat email yang valid.');
-                }
-                return errors;
+        // Function to set up common blur/focus/input listeners
+        function setupValidationListeners(inputElement, errorDiv, validationLogic) {
+            inputElement.addEventListener('blur', function() {
+                validateInput(inputElement, errorDiv,
+                    validationLogic); // Re-validate to ensure red border if still invalid
+                errorDiv.classList.add('d-none'); // ALWAYS hide error text on blur
             });
-        });
 
-        loginPasswordInput.addEventListener('blur', function() {
-            loginPasswordInput.classList.remove('is-invalid');
-            loginPasswordErrorDiv.classList.add('d-none');
-        });
+            inputElement.addEventListener('focus', function() {
+                // Re-validate on focus to ensure the error text is up-to-date
+                validateInput(inputElement, errorDiv, validationLogic);
+                if (inputElement.classList.contains('is-invalid')) {
+                    errorDiv.classList.remove('d-none'); // Show error text if invalid
+                }
+            });
 
-        loginPasswordInput.addEventListener('input', function() {
-            validateInput(loginPasswordInput, loginPasswordErrorDiv, validatePasswordStrength);
+            inputElement.addEventListener('input', function() {
+                validateInput(inputElement, errorDiv, validationLogic); // Live validation
+                if (inputElement.classList.contains('is-invalid')) {
+                    errorDiv.classList.remove('d-none'); // Keep error text visible while typing if invalid
+                } else {
+                    errorDiv.classList.add('d-none'); // Hide error text if it becomes valid while typing
+                }
+            });
+        }
+
+        // --- Apply listeners to Login Form Inputs ---
+        setupValidationListeners(loginEmailInput, loginEmailErrorDiv, (value) => {
+            const errors = [];
+            if (value === '') {
+                errors.push('Email harus diisi.');
+            } else if (!emailRegex.test(value)) {
+                errors.push('Silakan masukkan alamat email yang valid.');
+            }
+            return errors;
         });
+        setupValidationListeners(loginPasswordInput, loginPasswordErrorDiv, validatePasswordStrength);
+
 
         const loginModal = document.getElementById('loginModal');
         const loginForm = loginModal.querySelector('form');
@@ -777,27 +790,27 @@
         loginForm.addEventListener('submit', function(event) {
             let hasClientErrors = false;
 
-            if (!validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
-                    const errors = [];
-                    if (value.trim() === '') {
-                        errors.push('Email harus diisi.');
-                    } else if (!emailRegex.test(value.trim())) {
-                        errors.push('Silakan masukkan alamat email yang valid.');
-                    }
-                    return errors;
-                })) {
+            // Perform full validation for submission
+            const isEmailValid = validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
+                const errors = [];
+                if (value.trim() === '') {
+                    errors.push('Email harus diisi.');
+                } else if (!emailRegex.test(value.trim())) {
+                    errors.push('Silakan masukkan alamat email yang valid.');
+                }
+                return errors;
+            });
+
+            const isPasswordValid = validateInput(loginPasswordInput, loginPasswordErrorDiv,
+                validatePasswordStrength);
+
+            if (!isEmailValid || !isPasswordValid) {
                 hasClientErrors = true;
+                // Ensure error messages are shown on submission if there are errors
+                if (!isEmailValid) loginEmailErrorDiv.classList.remove('d-none');
+                if (!isPasswordValid) loginPasswordErrorDiv.classList.remove('d-none');
             }
 
-            if (!validateInput(loginPasswordInput, loginPasswordErrorDiv, (value) => {
-                    const errors = [];
-                    if (value.trim() === '') {
-                        errors.push('Kata sandi harus diisi.');
-                    }
-                    return errors;
-                })) {
-                hasClientErrors = true;
-            }
 
             if (hasClientErrors) {
                 event.preventDefault(); // Prevent form submission if client-side errors exist
@@ -805,57 +818,41 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Register Inputs Event Listeners ---
-            firstNameInput.addEventListener('blur', function() {
-                firstNameInput.classList.remove('is-invalid');
-                firstNameErrorDiv.classList.add('d-none');
-            });
-            firstNameInput.addEventListener('input', function() {
-                validateInput(firstNameInput, firstNameErrorDiv, validateFirstName);
-            });
+            // --- Apply listeners to Register Form Inputs ---
+            setupValidationListeners(firstNameInput, firstNameErrorDiv, validateFirstName);
+            setupValidationListeners(lastNameInput, lastNameErrorDiv, validateLastName);
+            setupValidationListeners(emailInput, emailErrorDiv, validateRegisterEmail);
+            setupValidationListeners(passwordInput, passwordErrorDiv, validatePasswordStrength);
+            setupValidationListeners(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
+            setupValidationListeners(otpInput, otpErrorDiv, validateOtp);
 
-            lastNameInput.addEventListener('blur', function() {
-                lastNameInput.classList.remove('is-invalid');
-                lastNameErrorDiv.classList.add('d-none');
-            });
-            lastNameInput.addEventListener('input', function() {
-                validateInput(lastNameInput, lastNameErrorDiv, validateLastName);
-            });
-
-            emailInput.addEventListener('blur', function() {
-                emailInput.classList.remove('is-invalid');
-                emailErrorDiv.classList.add('d-none');
-            });
-            emailInput.addEventListener('input', function() {
-                validateInput(emailInput, emailErrorDiv, validateRegisterEmail);
-            });
-
-            passwordInput.addEventListener('blur', function() {
-                passwordInput.classList.remove('is-invalid');
-                passwordErrorDiv.classList.add('d-none');
-            });
+            // Special handling for passwordInput's input event to re-validate confirmPasswordInput
             passwordInput.addEventListener('input', function() {
                 validateInput(passwordInput, passwordErrorDiv, validatePasswordStrength);
-                // Only re-validate confirm password if it *already has content* to avoid premature errors.
                 if (confirmPasswordInput.value.trim() !== '') {
                     validateInput(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
+                    if (confirmPasswordInput.classList.contains('is-invalid') && document.activeElement ===
+                        confirmPasswordInput) {
+                        confirmPasswordErrorDiv.classList.remove(
+                            'd-none'); // Show if user is actively on it
+                    } else {
+                        confirmPasswordErrorDiv.classList.add('d-none'); // Hide if not focused
+                    }
+                }
+                if (passwordInput.classList.contains('is-invalid')) {
+                    passwordErrorDiv.classList.remove('d-none');
+                } else {
+                    passwordErrorDiv.classList.add('d-none');
                 }
             });
 
-            confirmPasswordInput.addEventListener('blur', function() {
-                confirmPasswordInput.classList.remove('is-invalid');
-                confirmPasswordErrorDiv.classList.add('d-none');
-            });
             confirmPasswordInput.addEventListener('input', function() {
                 validateInput(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
-            });
-
-            otpInput.addEventListener('blur', function() {
-                otpInput.classList.remove('is-invalid');
-                otpErrorDiv.classList.add('d-none');
-            });
-            otpInput.addEventListener('input', function() {
-                validateInput(otpInput, otpErrorDiv, validateOtp);
+                if (confirmPasswordInput.classList.contains('is-invalid')) {
+                    confirmPasswordErrorDiv.classList.remove('d-none');
+                } else {
+                    confirmPasswordErrorDiv.classList.add('d-none');
+                }
             });
 
 
@@ -866,26 +863,44 @@
             registerForm.addEventListener('submit', function(event) {
                 let hasErrors = false;
 
-                // Validate all fields (order matters for UX)
+                // Perform full validation for submission, ensuring error messages are shown
                 const isFirstNameValid = validateInput(firstNameInput, firstNameErrorDiv,
-                validateFirstName);
+                    validateFirstName);
+                if (!isFirstNameValid) {
+                    firstNameErrorDiv.classList.remove('d-none');
+                    hasErrors = true;
+                }
                 const isLastNameValid = validateInput(lastNameInput, lastNameErrorDiv, validateLastName);
+                if (!isLastNameValid) {
+                    lastNameErrorDiv.classList.remove('d-none');
+                    hasErrors = true;
+                }
                 const isEmailValid = validateInput(emailInput, emailErrorDiv, validateRegisterEmail);
+                if (!isEmailValid) {
+                    emailErrorDiv.classList.remove('d-none');
+                    hasErrors = true;
+                }
                 const isOtpValid = validateInput(otpInput, otpErrorDiv, validateOtp);
+                if (!isOtpValid) {
+                    otpErrorDiv.classList.remove('d-none');
+                    hasErrors = true;
+                }
 
                 const isPasswordStrong = validateInput(passwordInput, passwordErrorDiv,
                     validatePasswordStrength);
-                let isConfirmPasswordValid = true; // Assume valid until checked
+                let isConfirmPasswordValid = true;
 
                 if (!isPasswordStrong) {
                     hasErrors = true;
                     // Clear passwords if main password validation fails
                     passwordInput.value = '';
                     confirmPasswordInput.value = '';
-                    // Hide confirm password error if it was showing, as the main password is the primary issue
+                    // Ensure the password error is visible
+                    passwordErrorDiv.classList.remove('d-none');
+                    // Hide confirm password error text and ensure it's not marked invalid
                     confirmPasswordInput.classList.remove('is-invalid');
                     confirmPasswordErrorDiv.classList.add('d-none');
-                    confirmPasswordErrorDiv.innerHTML = ''; // Clear any previous error message
+                    confirmPasswordErrorDiv.innerHTML = '';
                 } else {
                     // Only validate confirm password if the main password is strong
                     isConfirmPasswordValid = validateInput(confirmPasswordInput, confirmPasswordErrorDiv,
@@ -895,21 +910,15 @@
                         // Clear passwords if confirm password validation fails
                         passwordInput.value = '';
                         confirmPasswordInput.value = '';
-                        // Ensure error message is shown for confirm password (it will be handled by validateInput)
-                        // No need to manually add 'is-invalid' or remove 'd-none' here, validateInput does it.
+                        // Ensure the confirm password error is visible
+                        confirmPasswordErrorDiv.classList.remove('d-none');
                     }
-                }
-
-                // Check other fields' validity
-                if (!isFirstNameValid || !isLastNameValid || !isEmailValid || !isOtpValid) {
-                    hasErrors = true;
                 }
 
                 if (hasErrors) {
                     event.preventDefault(); // Prevent form submission if any validation fails
                 } else {
                     // If all client-side validations pass, allow the form to submit normally.
-                    // Laravel will handle the server-side validation and actual registration.
                 }
             });
         });
@@ -923,8 +932,10 @@
             // Only proceed if email field is not empty and has no client-side validation errors
             if (!email) {
                 validateInput(emailInput, emailErrorDiv, validateRegisterEmail); // Show email error if empty
+                emailErrorDiv.classList.remove('d-none'); // Ensure text error is shown immediately
                 return;
             } else if (emailInput.classList.contains('is-invalid')) {
+                emailErrorDiv.classList.remove('d-none'); // Ensure text error is shown immediately
                 return; // Don't send OTP if email is invalid
             }
 
@@ -949,7 +960,6 @@
                 })
                 .then(data => {
                     showOtpMessage(data.message, true);
-                    // Note: The value for OTP_COOLDOWN_SECONDS should be injected from your backend (Laravel controller)
                     startCountdown(
                         {{ \App\Http\Controllers\Auth\RegisteredUserController::OTP_COOLDOWN_SECONDS }});
                 })
@@ -1002,9 +1012,8 @@
             // Clear previous classes and reset state
             customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'alert-blue-bg',
                 'show');
-            customAlert.style.display = 'none'; // Hide it initially for transition
+            customAlert.style.display = 'none';
 
-            // Set message and type-specific background
             alertMessageSpan.textContent = message;
             if (type === 'success') {
                 customAlert.classList.add('alert-success-bg');
@@ -1016,29 +1025,26 @@
                 customAlert.classList.add('alert-blue-bg');
             }
 
-            // Show the alert with a slight delay for CSS transition to work
-            alertContainer.style.pointerEvents = 'auto'; // Make container clickable when visible
-            customAlert.style.display = 'flex'; // Make it visible
+            alertContainer.style.pointerEvents = 'auto';
+            customAlert.style.display = 'flex';
             setTimeout(() => {
                 customAlert.classList.add('show');
-            }, 10); // Small delay
+            }, 10);
 
-            // Set timeout to hide the alert
             setTimeout(() => {
                 customAlert.classList.remove('show');
                 setTimeout(() => {
                     customAlert.style.display = 'none';
-                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
-                }, 300); // Match CSS transition duration
+                    alertContainer.style.pointerEvents = 'none';
+                }, 300);
             }, duration);
 
-            // Close button functionality
             alertCloseButton.onclick = () => {
                 customAlert.classList.remove('show');
                 setTimeout(() => {
                     customAlert.style.display = 'none';
-                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
-                }, 300); // Match CSS transition duration
+                    alertContainer.style.pointerEvents = 'none';
+                }, 300);
             };
         }
     </script>
@@ -1046,27 +1052,25 @@
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
     <script defer>
         document.addEventListener('DOMContentLoaded', function() {
-            // Check for flash messages from Laravel
             const successMessage = "{{ session('custom_success_alert') }}";
             const errorMessage = "{{ session('custom_error_alert') }}";
             const infoMessage = "{{ session('custom_info_alert') }}";
-            const blueMessage = "{{ session('custom_blue_alert') }}"; // New: Check for blue alert message
+            const blueMessage = "{{ session('custom_blue_alert') }}";
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                showCustomAlert(successMessage, 'success'); // Changed to 'success' type for success messages
+                showCustomAlert(successMessage, 'success');
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
                 showCustomAlert(errorMessage, 'error');
-            } else if (blueMessage) { // New: Condition for custom blue alert
+            } else if (blueMessage) {
                 console.log('Flash message detected: Blue -', blueMessage);
-                showCustomAlert(blueMessage, 'blue'); // Use 'blue' type for the new color
+                showCustomAlert(blueMessage, 'blue');
             } else if (infoMessage) {
                 console.log('Flash message detected: Info -', infoMessage);
                 showCustomAlert(infoMessage, 'info');
             }
 
-            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
             window.showCustomAlert = showCustomAlert;
         });
     </script>
