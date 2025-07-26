@@ -28,15 +28,14 @@
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Address">
                             </div>
-                            <span>{{ $request->start_time->format('d M Y') }}</span>
+                            <span>{{ $request->start_time->format('d M Y, H:i') }}</span>
                         </li>
 
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Address">
                             </div>
-                            <span>{{ $request->start_time->format('H.i') }} -
-                                {{ $request->end_time->format('H.i') }}</span>
+                            <span>{{ $request->end_time->format('d M Y, H:i') }}</span>
                         </li>
 
                         <li class="gap-2">
@@ -482,7 +481,8 @@
                 acceptButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         if (!currentRequestId) {
-                            window.showCustomAlert('Silakan pilih pekerjaan terlebih dahulu.', 'error');
+                            window.showCustomAlert('Silakan pilih pekerjaan terlebih dahulu.',
+                                'error');
                             return;
                         }
                         // Show the confirmation modal instead of direct confirm()
@@ -494,7 +494,9 @@
                 if (confirmAcceptJobButton) { // Tambahkan cek null
                     confirmAcceptJobButton.addEventListener('click', function() {
                         if (!currentRequestId) {
-                            window.showCustomAlert('Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.', 'error');
+                            window.showCustomAlert(
+                                'Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.', 'error'
+                                );
                             acceptJobConfirmationModal.hide(); // Hide modal if no ID
                             return;
                         }
@@ -529,7 +531,8 @@
                             })
                             .catch(error => {
                                 console.error('Error:', error);
-                                window.showCustomAlert('Terjadi kesalahan koneksi babi.' + error.message, 'error');
+                                window.showCustomAlert('Terjadi kesalahan koneksi babi.' + error
+                                    .message, 'error');
                             })
                             .finally(() => {
                                 acceptJobConfirmationModal

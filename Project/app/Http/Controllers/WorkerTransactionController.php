@@ -110,7 +110,9 @@ class WorkerTransactionController extends Controller
 
         // NEW: Check if a review already exists for this worker on this transaction
         $hasReview = $transaction->reviewAboutWorker()->exists();
+        $hasReviewRequester = $transaction->reviewAboutRequester()->exists();
         $receivedReview = $transaction->reviewAboutWorker; // This will be null if no review exists
+        $receivedReviewRequester = $transaction->reviewAboutRequester; // Review about requester
 
         // Kirim ke view
         return view('job-taker.accepted-work-request', compact(
@@ -120,7 +122,9 @@ class WorkerTransactionController extends Controller
             'completionProof',
             'room',
             'hasReview', // Pass this flag
-            'receivedReview' // Pass the review object if it exists
+            'hasReviewRequester', // Pass this flag for requester review
+            'receivedReview', // Pass the review object if it exists
+            'receivedReviewRequester' // Pass the review about requester if it exists
         ));
     }
 
