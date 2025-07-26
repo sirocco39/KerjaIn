@@ -111,6 +111,11 @@ class Transaction extends Model
             ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
     }
 
+    public function reviewAboutRequester(): HasOne
+    {
+        return $this->hasOne(Review::class, 'transaction_id', 'id')
+            ->where('reviewee_id', $this->requester_id); // Reviewee is the requester
+    }
 
     public function completionProof(): HasOne
     {
