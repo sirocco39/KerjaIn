@@ -17,6 +17,7 @@ return new class extends Migration
             $table->timestamps();
             $table->timestamp('verified_at')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected']);
+            $table->text('rejection_reason')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->char('nik', 16);

@@ -12,7 +12,8 @@ class WalletTransaction extends Model
         'type', // 'top_up', 'withdrawal', etc.
         'description', // Optional description of the transaction
     ];
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }
