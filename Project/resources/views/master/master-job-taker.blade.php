@@ -17,11 +17,12 @@
         xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/monthly.css') }}">
+
+
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
         .popup-error-card {
             position: absolute;
@@ -134,6 +135,11 @@
             color: white;
         }
 
+        .alert-blue-bg {
+            background-color: #309FFF;
+            color: white;
+        }
+
         #custom-alert-close {
             background: none;
             border: none;
@@ -183,8 +189,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}"
                             href="/job-taker/beranda">Beranda</a></li>
-                    <li class="nav-item"><a
-                            class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
+                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
                             href="/job-taker/cari-kerja">Cari Kerja</a></li>
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/pesan') ? 'active' : '' }}"
                             href="/job-taker/pesan">Pesan</a></li>
@@ -220,48 +225,58 @@
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @auth
-                                <li>
-                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                    <a class="dropdown-item d-flex align-items-center"
-                                        href="{{ route('balance.job-taker') }}">
-                                        {{-- Sisi Kiri: Ikon dan Teks --}}
-                                        <div class="d-flex align-items-center gap-2">
-                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                            <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
-                                                class="navIcon">
-                                            <span>Saldo</span>
-                                        </div>
-                                        {{-- Sisi Kanan: Jumlah Saldo --}}
-                                        <span class="ms-auto fw-bold">
-                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                            {{-- Fungsi number_format untuk format Rupiah --}}
-                                            Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
-                                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                            onclick="event.preventDefault(); this.closest('form').submit();">
-                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                                class="navIcon">
-                                            Keluar
-                                        </button>
-                                    </form>
-                                </li>
-                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-1"
-                                        href="{{ route('job-req.beranda') }}">
-                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                            <li>
+                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('balance.job-taker') }}">
+                                    {{-- Sisi Kiri: Ikon dan Teks --}}
+                                    <div class="d-flex align-items-center gap-2">
+                                        {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
+                                        <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
                                             class="navIcon">
-                                        Ganti Peran
-                                    </a>
-                                </li>
+                                        <span>Saldo</span>
+                                    </div>
+                                    {{-- Sisi Kanan: Jumlah Saldo --}}
+                                    <span class="ms-auto fw-bold">
+                                        {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                        {{-- Fungsi number_format untuk format Rupiah --}}
+                                        Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                            class="navIcon">
+                                        Keluar
+                                    </button>
+                                </form>
+                            </li>
+                            @if (auth()->user()->role == 'admin')
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('admin.dashboard') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                        alt="Icon Ganti Peran" class="navIcon">
+                                    Admin
+                                </a>
+                            </li>
+                            @endif
+                            {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('job-req.home') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
+                                        class="navIcon">
+                                    Ganti Peran
+                                </a>
+                            </li>
                             @endauth
                         </ul>
                     </li>
@@ -298,34 +313,34 @@
                 <h4>Fitur</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="/job-req/beranda" class="foot-list">Beranda</a>
+                    <a href="/job-req/beranda" class="foot-list">Beranda</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Beranda</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        class="foot-list">Beranda</a>
                     @endauth
 
 
                     @auth
-                        <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
+                    <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
-                            Kerja</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
+                        Kerja</a>
                     @endauth
 
 
                     @auth
-                        <a href="/job-req/pesan" class="foot-list">Pesan</a>
+                    <a href="/job-req/pesan" class="foot-list">Pesan</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Pesan</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        class="foot-list">Pesan</a>
                     @endauth
 
 
                     @auth
-                        <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
+                    <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">Riwayat</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        class="foot-list">Riwayat</a>
                     @endauth
                 </div>
             </div>
@@ -334,13 +349,13 @@
                 <h4>Penawaran</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="#" class="foot-list">Acara</a>
-                        <a href="#" class="foot-list">Promo</a>
+                    <a href="#" class="foot-list">Acara</a>
+                    <a href="#" class="foot-list">Promo</a>
                     @else
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Acara</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Promo</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Acara</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Promo</a>
                     @endauth
                 </div>
             </div>
@@ -349,15 +364,15 @@
                 <h4>Bantuan</h4>
                 <div class="list-group gap-2">
                     @auth
-                        <a href="#" class="foot-list">Akun</a>
-                        <a href="#" class="foot-list">Laporkan</a>
-                        <a href="#" class="foot-list">Saran</a>
+                    <a href="#" class="foot-list">Akun</a>
+                    <a href="#" class="foot-list">Laporkan</a>
+                    <a href="#" class="foot-list">Saran</a>
                     @else
-                        <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Laporkan</a>
-                        <a class="foot-list" href="#" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Saran</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Laporkan</a>
+                    <a class="foot-list" href="#" data-bs-toggle="modal"
+                        data-bs-target="#loginModal">Saran</a>
                     @endauth
                 </div>
             </div>
@@ -461,21 +476,26 @@
             const successMessage = "{{ session('custom_success_alert') }}";
             const errorMessage = "{{ session('custom_error_alert') }}";
             const infoMessage = "{{ session('custom_info_alert') }}";
+            const blueMessage = "{{ session('custom_blue_alert') }}"; // New: Check for blue alert message
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                window.showCustomAlert(successMessage, 'success');
+                showCustomAlert(successMessage, 'success'); // Changed to 'success' type for success messages
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
-                window.showCustomAlert(errorMessage, 'error');
+                showCustomAlert(errorMessage, 'error');
+            } else if (blueMessage) { // New: Condition for custom blue alert
+                console.log('Flash message detected: Blue -', blueMessage);
+                showCustomAlert(blueMessage, 'blue'); // Use 'blue' type for the new color
             } else if (infoMessage) {
                 console.log('Flash message detected: Info -', infoMessage);
-                window.showCustomAlert(infoMessage, 'info');
+                showCustomAlert(infoMessage, 'info');
             }
 
+            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
+            window.showCustomAlert = showCustomAlert;
         });
     </script>
-    @stack('scripts')
 </body>
 
 </html>
