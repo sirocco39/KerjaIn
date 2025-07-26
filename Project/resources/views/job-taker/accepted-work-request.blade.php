@@ -11,7 +11,7 @@
     $amount = $request->final_price;
     $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
 
-    $alamat = $request->alamat;
+    $alamat = $request->location; // Menggunakan $request->location dari model
     $alamatEncoded = urlencode($alamat);
     $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
 
@@ -265,7 +265,6 @@
                                 style="border: 1px solid #cacadd; height:100%;">
 
                                 @if ($transaction->status === 'accepted')
-
                                     {{-- Tombol Mulai Kerja --}}
                                     <form id="start-work-form" action="{{ route('worker.startWork', $transaction->id) }}"
                                         method="POST">
@@ -292,6 +291,9 @@
                                         style="background-color:#294287;">
                                         Ditinjau
                                     </a>
+                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
+                                        data-bs-toggle="modal" data-bs-target="#completionModal">Berikan Penilaian
+                                    </button>
                                 @elseif($transaction->status === 'in progress')
                                     {{-- Tombol untuk buka modal --}}
                                     <button class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
@@ -301,266 +303,267 @@
                                     </button>
                                     <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">Batalkan Kerja
                                     </div>
-
-                                    <div class="modal fade" id="completionModal" tabindex="-1"
-                                        aria-labelledby="completionModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg"
-                                            style="max-width: 1000px; width: 100%; margin-top:5vh;">
-                                            <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
-                                                @csrf
-                                                <div class="modal-content p-3">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">
-                                                            Detail Penyelesaian</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-
-                                                    <div class="modal-body overflow-auto overflow-lg-visible"
-                                                        style="max-height: 90vh;">
-                                                        <div class="d-flex flex-column flex-lg-row gap-3">
-                                                            <div class="d-flex flex-column flex-grow-1">
-                                                                <div class="d-flex flex-fill">
-                                                                    <div class="text flex-fill" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul
-                                                                            Pesanan</p>
-                                                                        <p class="fw-medium">{{ $request->title }}</p>
-                                                                    </div>
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor
-                                                                            Pesanan</p>
-                                                                        <p class="fw-medium">
-                                                                            {{ $transaction->order_number }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="d-flex">
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama
-                                                                            Klien</p>
-                                                                        <p class="fw-medium">
-                                                                            {{ $request->requester->first_name }}
-                                                                            {{ $request->requester->last_name }}</p>
-                                                                    </div>
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi
-                                                                        </p>
-                                                                        <p class="fw-medium">{{ $request->location }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="d-flex flex-fill">
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">
-                                                                            Tanggal Pemesanan</p>
-                                                                        <p class="fw-medium">
-                                                                            {{ $transaction->created_at->format('d M Y') }}
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">
-                                                                            Tanggal Selesai</p>
-                                                                        <p class="fw-medium">
-                                                                            {{ $transaction->updated_at->format('d M Y') }}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="d-flex">
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai
-                                                                            Kerja</p>
-                                                                        <p class="fw-medium">{{ $start_work }}</p>
-                                                                    </div>
-                                                                    <div class="text" style="width:50%;">
-                                                                        <p class="m-0 p-0 text-black-50 fw-semibold">
-                                                                            Selesai Kerja</p>
-                                                                        <p class="fw-medium">{{ $finish_work }}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <hr class="my-1 border border-dark">
-                                                                <div class="d-flex mt-1">
-                                                                    <div class="text d-flex justify-content-between align-items-center"
-                                                                        style="width:50%;">
-                                                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">
-                                                                            Total</p>
-                                                                        <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
-                                                                            {{ number_format($request->final_price, 2, ',', '.') }}
-                                                                        </p>
-                                                                    </div>
-                                                                    {{-- Removed Invoice Button as per user request --}}
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="vr d-none d-lg-block mx-3"></div>
-
-                                                            <div
-                                                                class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                                                                <h4 class="fw-semibold mt-3 mb-1">Kasih penilaian, yuk!
-                                                                </h4>
-                                                                <div class="text-center mt-0 mb-3 w-100">
-                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                        <i class="bi bi-star-fill text-secondary star-rating fs-2"
-                                                                            data-value="{{ $i }}"></i>
-                                                                    @endfor
-                                                                    <input type="hidden" name="rating"
-                                                                        id="rating-input" value="0">
-                                                                </div>
-
-                                                                <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                                                    <label for="note"
-                                                                        class="form-label text-start">Komentar</label>
-                                                                    <textarea name="note" id="comment" class="form-control" rows="3"
-                                                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
-                                                                </div>
-
-                                                                <div
-                                                                    class="d-flex flex-column mt-3 justify-content-center">
-                                                                    <button type="button"
-                                                                        class="btn btn-primary fw-medium rounded-3"
-                                                                        onclick="submitReview()">Kirim</button>
-                                                                    <div class="m-1 text-center">Atau</div>
-                                                                    <button type="button"
-                                                                        class="m-0 p-0 fw-medium btn text-danger"
-                                                                        onclick="openReportModal()">Laporkan
-                                                                        masalah</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-
-                                    <div class="modal fade" id="reportModal" tabindex="-1"
-                                        aria-labelledby="reportModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-scrollable modal-lg"
-                                            style="max-width: 900px;">
-                                            @if ($errors->any())
-                                                <div class="alert alert-danger">
-                                                    <ul class="mb-0">
-                                                        @foreach ($errors->all() as $error)
-                                                            <li>{{ $error }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
-                                            <form id="reportForm"
-                                                action="{{ route('worker.submitReport', $transaction->id) }}"
-                                                method="POST" enctype="multipart/form-data" class="modal-content">
-                                                @csrf
-                                                <input type="hidden" name="transaction_id"
-                                                    value="{{ $transaction->id }}">
-                                                <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
-                                                <input type="hidden" name="reported_id"
-                                                    value="{{ $transaction->requester->id }}">
-
-
-                                                <div class="modal-header border-0 justify-content-center">
-                                                    <h3 class="modal-title fw-bold text-center w-100"
-                                                        id="reportWorkModalLabel">Laporan</h3>
-                                                    <button type="button" class="btn-close position-absolute end-0 me-3"
-                                                        data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-
-                                                <hr class="mx-auto mb-3"
-                                                    style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
-
-                                                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
-                                                            <p class="fw-medium">{{ $request->title }}</p>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
-                                                            <p class="fw-medium">{{ $transaction->order_number }}</p>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Nama Pekerja</p>
-                                                            <p class="fw-medium">{{ $worker->first_name }}
-                                                                {{ $worker->last_name }}</p>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
-                                                            <p class="fw-medium">{{ $request->location }}</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
-                                                            <p class="fw-medium">
-                                                                {{ $transaction->created_at->format('d M Y') }}</p>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
-                                                            <p class="fw-medium">
-                                                                {{ $transaction->updated_at->format('d M Y') }}</p>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
-                                                            <p class="fw-medium">{{ $start_work ?? '-' }}</p>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-3">
-                                                            <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
-                                                            <p class="fw-medium">{{ $finish_work ?? '-' }}</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="d-flex justify-content-between mb-4">
-                                                        <p class="text-black-50 fw-semibold mb-0">Total</p>
-                                                        <p class="fw-medium fs-5 mb-0">Rp
-                                                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
-                                                    </div>
-
-                                                    <div class="mb-4">
-                                                        <label class="form-label fw-semibold">Upload Bukti
-                                                            (gambar):</label>
-                                                        <div class="d-flex flex-wrap gap-3 align-items-start"
-                                                            id="previewContainerProof">
-                                                            <div class="pb-2"
-                                                                onclick="document.getElementById('photoInputProof').click()"
-                                                                style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                                                <span class="text-center"
-                                                                    style="font-size: 32px; color:#309FFF;">+</span>
-                                                            </div>
-                                                        </div>
-                                                        <input type="file" class="d-none" id="photoInputProof"
-                                                            name="photo[]" accept="image/*" multiple>
-                                                    </div>
-
-                                                    <div class="mb-4">
-                                                        <label for="reportNote" class="form-label fw-semibold">Keluh Kesah
-                                                            Anda</label>
-                                                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                                                            placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff;"></textarea>
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-footer border-0 d-flex justify-content-end">
-                                                    <button type="submit" class="btn btn-danger px-4 py-2">Kirim
-                                                        Laporan</button>
-                                                </div>
-
-                                            </form>
-                                        </div>
-                                    </div>
-
-
-
-
                                 @endif
-
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
-
             @livewire('job-taker.chat-work', ['selectedRoomId' => $room->id])
         </div>
     </div>
+    <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
+            <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
+                @csrf
+                <div class="modal-content p-3">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">
+                            Detail Penyelesaian</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
 
+                    <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 90vh;">
+                        <div class="d-flex flex-column flex-lg-row gap-3">
+                            <div class="d-flex flex-column flex-grow-1">
+                                <div class="d-flex flex-fill">
+                                    <div class="text flex-fill" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul
+                                            Pesanan</p>
+                                        <p class="fw-medium">{{ $request->title }}</p>
+                                    </div>
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor
+                                            Pesanan</p>
+                                        <p class="fw-medium">
+                                            {{ $transaction->order_number }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama
+                                            Klien</p>
+                                        <p class="fw-medium">
+                                            {{ $request->requester->first_name }}
+                                            {{ $request->requester->last_name }}</p>
+                                    </div>
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi
+                                        </p>
+                                        <p class="fw-medium">{{ $request->location }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-fill">
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            Tanggal Pemesanan</p>
+                                        <p class="fw-medium">
+                                            {{ $transaction->created_at->format('d M Y') }}
+                                        </p>
+                                    </div>
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            Tanggal Selesai</p>
+                                        <p class="fw-medium">
+                                            {{ $transaction->updated_at->format('d M Y') }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai
+                                            Kerja</p>
+                                        <p class="fw-medium">{{ $start_work }}</p>
+                                    </div>
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            Selesai Kerja</p>
+                                        <p class="fw-medium">{{ $finish_work }}</p>
+                                    </div>
+                                </div>
+                                <hr class="my-1 border border-dark">
+                                <div class="d-flex mt-1">
+                                    <div class="text d-flex justify-content-between align-items-center"
+                                        style="width:50%;">
+                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">
+                                            Total</p>
+                                        <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
+                                            {{ number_format($request->final_price, 2, ',', '.') }}
+                                        </p>
+                                    </div>
+                                    {{-- Removed Invoice Button as per user request --}}
+                                </div>
+                            </div>
+
+                            <div class="vr d-none d-lg-block mx-3"></div>
+
+                            {{-- GANTI SELURUH BLOK "KASIH PENILAIAN" DENGAN KODE INI --}}
+
+                            <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                                {{-- Judul dinamis --}}
+                                <h4 class="fw-semibold mt-3 mb-1">
+                                    @if ($hasReview)
+                                        Ini Penilaian Klien Untukmu
+                                    @else
+                                        Kasih penilaian, yuk!
+                                    @endif
+                                </h4>
+
+                                {{-- Bagian Bintang Rating --}}
+                                <div class="text-center mt-0 mb-3 w-100">
+                                    @if ($hasReview)
+                                        {{-- Tampilkan bintang yang sudah diisi (read-only) --}}
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i
+                                                class="bi bi-star-fill fs-2 {{ $i <= $receivedReview->rating ? 'text-warning' : 'text-secondary' }}"></i>
+                                        @endfor
+                                    @else
+                                        {{-- Tampilkan bintang interaktif untuk diisi --}}
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="bi bi-star-fill text-secondary star-rating fs-2"
+                                                data-value="{{ $i }}"></i>
+                                        @endfor
+                                        <input type="hidden" name="rating" id="rating-input" value="0">
+                                    @endif
+                                </div>
+
+                                {{-- Bagian Komentar --}}
+                                <div class="ps-3 flex-fill d-flex flex-column w-100">
+                                    <label for="comment" class="form-label text-start">Komentar</label>
+                                    <textarea name="comment" id="comment" class="form-control" rows="3"
+                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"
+                                        @if ($hasReview) disabled @endif>{{ $hasReview ? $receivedReview->comment : '' }}</textarea>
+                                </div>
+
+                                {{-- Bagian Tombol Aksi --}}
+                                <div class="d-flex flex-column mt-3 justify-content-center">
+                                    @if (!$hasReview)
+                                        <button type="button" class="btn btn-primary fw-medium rounded-3"
+                                            onclick="submitReview()">
+                                            Kirim
+                                        </button>
+                                        <div class="m-1 text-center">Atau</div>
+                                    @endif
+                                    <button type="button" class="m-0 p-0 fw-medium btn text-danger"
+                                        onclick="openReportModal()">
+                                        Laporkan masalah
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <form id="reportForm" action="{{ route('worker.submitReport', $transaction->id) }}" method="POST"
+                enctype="multipart/form-data" class="modal-content">
+                @csrf
+                <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
+                <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
+                <input type="hidden" name="reported_id" value="{{ $transaction->requester->id }}">
+
+
+                <div class="modal-header border-0 justify-content-center">
+                    <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
+
+                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                            <p class="fw-medium">{{ $request->title }}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                            <p class="fw-medium">{{ $transaction->order_number }}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Nama Pekerja</p>
+                            <p class="fw-medium">{{ $worker->first_name }}
+                                {{ $worker->last_name }}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
+                            <p class="fw-medium">{{ $request->location }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                            <p class="fw-medium">
+                                {{ $transaction->created_at->format('d M Y') }}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                            <p class="fw-medium">
+                                {{ $transaction->updated_at->format('d M Y') }}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                            <p class="fw-medium">{{ $start_work ?? '-' }}</p>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                            <p class="fw-medium" id="reportModalFinishWork">
+                                {{ $finish_work ?? '-' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <p class="text-black-50 fw-semibold mb-0">Total</p>
+                        <p class="fw-medium fs-5 mb-0">Rp
+                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Upload Bukti
+                            (gambar):</label>
+                        <div id="uploadAreaReport" class="d-flex flex-wrap gap-3 align-items-start">
+                            <div id="previewContainerReport" class="d-flex flex-wrap gap-3 align-items-start">
+                                {{-- Placeholder & preview akan di-generate oleh JavaScript --}}
+                            </div>
+                        </div>
+                        <input type="file" class="d-none" id="photoInputReport" name="photo[]" accept="image/*"
+                            multiple>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="reportNote" class="form-label fw-semibold">Keluh Kesah
+                            Anda</label>
+                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
+                            placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff;"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-danger px-4 py-2">Kirim
+                        Laporan</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
     <div class="modal fade" id="cancelWorkModal" tabindex="-1" aria-labelledby="cancelWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" style="max-width: 600px;">
@@ -590,6 +593,7 @@
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
                     class="d-flex flex-column flex-lg-row gap-3 mt-4">
                     @csrf
+                    <input type="hidden" name="redirect_to" value="job-taker.home">
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
                         Lanjut Kerja
@@ -616,14 +620,14 @@
 
                         <div class="w-100">
                             <label for="photo" class="form-label fw-semibold">Upload Foto Bukti Pekerjaan</label>
-                            <div id="uploadAreaWrapper"
+                            <div id="uploadAreaProof"
                                 class="rounded p-4 text-center d-flex flex-column align-items-center justify-content-center"
                                 style="cursor: pointer; min-height: 200px; border-style: dashed; border-color:#cacadd; background-color: #F4f4f4;">
-                                <div id="previewContainerReport"
+                                <div id="previewContainerProof"
                                     class="d-flex flex-wrap gap-2 justify-content-center w-100 h-100 align-items-center">
-                                    {{-- Initial placeholder content will be set by JavaScript --}}
+                                    {{-- Placeholder & preview akan di-generate oleh JavaScript --}}
                                 </div>
-                                <input type="file" id="photoInputReport" name="photo[]" accept="image/*" multiple
+                                <input type="file" id="photoInputProof" name="photo[]" accept="image/*" multiple
                                     class="d-none">
                             </div>
                             {{-- Error message display area for photo input --}}
@@ -647,7 +651,7 @@
                                 </button>
                                 <button type="button" class="btn flex-fill fw-semibold text-light"
                                     style="background-color:#309FFF;" onclick="uploadProof()">
-                                    Selesai Pekerjaan
+                                    Selesaikan Pekerjaan
                                 </button>
                             </div>
                         </div>
@@ -661,9 +665,24 @@
 
     {{-- JavaScript section --}}
     <script>
+        // >>> TAMBAH BARIS INI <<<
+        window.isOpeningReportModal = false; // Inisialisasi flag global
+        // >>> BATAS TAMBAH <<<
+
         document.addEventListener('DOMContentLoaded', function() {
             // Existing functions initialization
-            initPhotoPreview('photoInputReport', 'previewContainerReport');
+            initPhotoPreview('photoInputProof', 'previewContainerProof', 'uploadAreaProof', 'image');
+
+            // Inisialisasi area upload untuk "Laporan" (placeholder '+')
+            initPhotoPreview('photoInputReport', 'previewContainerReport', 'uploadAreaReport', 'plus');
+
+            const reportForm = document.getElementById('reportForm');
+            if (reportForm) {
+                reportForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Mencegah submit form HTML bawaan
+                    submitReport(); // Memanggil fungsi submitReport() Anda
+                });
+            }
 
             const photoInputReport = document.getElementById('photoInputReport');
             const uploadPlaceholder = document.getElementById('uploadPlaceholder');
@@ -787,16 +806,17 @@
                 });
             }
 
-            // --- START OF MODIFICATION ---
-            // Add event listener to refresh page on completionModal close
             const completionModalElement = document.getElementById('completionModal');
             if (completionModalElement) {
-                completionModalElement.addEventListener('hidden.bs.modal', function () {
-                    location.reload();
+                completionModalElement.addEventListener('hidden.bs.modal', function() {
+                    // Hanya reload jika kita TIDAK dalam proses membuka modal laporan
+                    if (!window.isOpeningReportModal) {
+                        location.reload();
+                    }
+                    // Reset flag setelah modal disembunyikan
+                    window.isOpeningReportModal = false;
                 });
             }
-            // --- END OF MODIFICATION ---
-
         }); // End of DOMContentLoaded
 
         // Existing uploadProof function - MODIFIED to remove review modal's reload listener
@@ -804,7 +824,7 @@
             var form = document.getElementById('proofForm');
             var formData = new FormData(form);
 
-            const photoInput = document.getElementById('photoInputReport');
+            const photoInput = document.getElementById('photoInputProof');
             const photoErrorDiv = document.getElementById('photoError');
             const noteErrorDiv = document.getElementById('noteError');
 
@@ -852,13 +872,6 @@
                             completionModal.show();
                         }, 50);
 
-                        // IMPORTANT: REMOVE or COMMENT OUT this specific event listener
-                        // document.getElementById('completionModal').addEventListener('hidden.bs.modal', function (event) {
-                        //     location.reload();
-                        // }, { once: true });
-                        // We will not reload here directly after the proof upload/review modal show.
-                        // Reload will happen after review submission or manually if user closes the modal.
-
                     } else {
                         window.showCustomAlert(data.message, "error");
                     }
@@ -890,77 +903,109 @@
 
 
         // Existing initPhotoPreview function (no changes needed here)
-        function initPhotoPreview(inputId, previewContainerId) {
-            const input = document.getElementById(inputId);
+        // GANTI SELURUH FUNGSI LAMA DENGAN YANG INI
+        function initPhotoPreview(inputId, previewContainerId, uploadAreaId, placeholderType = 'image') {
+            const inputEl = document.getElementById(inputId);
             const previewContainer = document.getElementById(previewContainerId);
+            const uploadArea = document.getElementById(uploadAreaId);
 
-            const placeholderHtml = `
-                <div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
-                    <p class="mb-2 text-muted small">Klik disini untuk upload gambar</p>
-                    <svg width="80" height="80" viewBox="0 0 120 120" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 45.2275C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z"
-                            fill="#294287" />
-                    </svg>
-                </div>
-            `;
+            if (!uploadArea || uploadArea.dataset.initialized) {
+                return; // Hentikan jika elemen tidak ada atau sudah diinisialisasi
+            }
 
-            if (input && previewContainer) {
-                const uploadAreaWrapper = document.getElementById('uploadAreaWrapper');
-                if (uploadAreaWrapper) {
-                    uploadAreaWrapper.addEventListener('click', function() {
-                        input.click();
-                    });
+            const createPlaceholder = () => {
+                const placeholder = document.createElement('div');
+                if (placeholderType === 'plus') {
+                    placeholder.className = 'pb-2';
+                    placeholder.style.cssText =
+                        "width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;";
+                    placeholder.innerHTML =
+                        `<span class="text-center" style="font-size: 32px; color:#294287;">+</span>`;
+                } else { // default to 'image'
+                    placeholder.className =
+                        'text-center text-muted d-flex flex-column align-items-center justify-content-center w-100 h-100';
+                    placeholder.innerHTML = `
+                    <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
+                    <p class="mb-0 mt-2 small">Klik untuk upload bukti pekerjaan</p>
+                `;
                 }
+                return placeholder;
+            };
 
-                input.addEventListener('change', function(event) {
-                    const files = event.target.files;
-                    previewContainer.innerHTML = '';
+            const updatePreview = () => {
+                previewContainer.innerHTML = '';
+                const files = inputEl.files;
 
-                    if (files.length > 0) {
-                        Array.from(files).forEach(file => {
-                            if (file && file.type.startsWith('image/')) {
-                                const reader = new FileReader();
-                                reader.onload = function(e) {
-                                    const img = document.createElement('img');
-                                    img.src = e.target.result;
-                                    img.classList.add('img-thumbnail', 'me-2', 'mb-2');
-                                    img.style.maxWidth = '120px';
-                                    img.style.maxHeight = '120px';
-                                    img.style.objectFit = 'cover';
-                                    previewContainer.appendChild(img);
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        });
-                    } else {
-                        previewContainer.innerHTML = placeholderHtml;
-                    }
+                // Tampilkan preview untuk setiap file
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const previewWrapper = document.createElement('div');
+                        previewWrapper.className = 'position-relative m-1';
+                        previewWrapper.innerHTML =
+                            `<img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">`;
+                        previewContainer.appendChild(previewWrapper);
+                    };
+                    reader.readAsDataURL(file);
                 });
 
-                if (input.files.length === 0) {
-                    previewContainer.innerHTML = placeholderHtml;
+                // Jika tidak ada file (setelah menghapus misalnya), atau jika placeholder adalah '+', tambahkan placeholder
+                if (files.length === 0 || placeholderType === 'plus') {
+                    previewContainer.appendChild(createPlaceholder());
                 }
-            }
+            };
+
+            uploadArea.addEventListener('click', (e) => {
+                // Cek agar klik pada gambar preview tidak membuka file dialog
+                if (e.target.tagName !== 'IMG') {
+                    inputEl.click();
+                }
+            });
+
+            inputEl.addEventListener('change', updatePreview);
+            updatePreview();
+            uploadArea.dataset.initialized = 'true';
         }
 
 
         // MODIFIED openReportModal function
+        // GANTI DENGAN FUNGSI openReportModal YANG BARU INI
         function openReportModal() {
-            // Close completionModal
-            var completionModalInstance = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-            if (completionModalInstance) {
-                completionModalInstance.hide();
+            window.isOpeningReportModal = true;
+            const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+            if (completionModal) {
+                completionModal.hide();
             }
 
-            // Open reportModal after a short delay to allow completionModal to fully hide
-            setTimeout(() => {
-                var reportModalInstance = new bootstrap.Modal(document.getElementById('reportModal'));
-                reportModalInstance.show();
-            }, 300); // Increased delay slightly for smoother transition
-        }
+            // Ambil ID transaksi dari URL form (cara aman untuk mendapatkannya)
+            const transactionId = "{{ $transaction->id }}";
+            const url = `/transaction-details/${transactionId}`;
 
+            // Tampilkan loading spinner (opsional, tapi bagus)
+            document.getElementById('reportModalFinishWork').textContent = 'Memuat...';
+
+            // Ambil data terbaru dari server
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Suntikkan data terbaru ke dalam modal
+                        document.getElementById('reportModalFinishWork').textContent = data.finish_work;
+                    } else {
+                        // Jika gagal, tampilkan pesan error
+                        document.getElementById('reportModalFinishWork').textContent = 'Gagal memuat';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching transaction details:', error);
+                    document.getElementById('reportModalFinishWork').textContent = 'Error';
+                })
+                .finally(() => {
+                    // Tampilkan modal setelah selesai (baik berhasil maupun gagal)
+                    const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+                    reportModal.show();
+                });
+        }
         // MODIFIED submitReview function
         function submitReview() {
             const comment = document.getElementById('comment').value.trim();
@@ -1009,11 +1054,9 @@
                         if (completionModal) {
                             completionModal.hide();
                         }
-                        // IMPORTANT: We do NOT call location.reload() here.
-                        // The user can now choose to report a problem or navigate.
-                        // If they close the modal, the page will remain as is until a new action (like a new job) is taken.
-                        // You might want to refresh the status display without a full page reload here if possible.
-                        // For now, we rely on the next page load or manual refresh to show the review status.
+                        // >>> TAMBAH BARIS INI <<<
+                        location.reload(); // Reload halaman setelah review berhasil dikirim
+                        // >>> BATAS TAMBAH <<<
                     } else {
                         window.showCustomAlert(data.message || 'Gagal menyimpan ulasan.', "error");
                     }
@@ -1078,8 +1121,8 @@
                     if (reportModal) {
                         reportModal.hide();
                     }
-                    // Reload the page after reporting, as this implies a state change requiring a full refresh
-                    location.reload();
+                    // >>> GANTI BARIS INI <<<
+                    window.location.href = "{{ route('job-taker.home') }}"; // Redirect ke beranda job requester
                 })
                 .catch(error => {
                     console.error('Error submitting report:', error);
@@ -1102,5 +1145,4 @@
                 });
         }
     </script>
-
 @endsection

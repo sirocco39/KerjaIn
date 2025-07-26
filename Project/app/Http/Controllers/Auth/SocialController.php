@@ -55,5 +55,4 @@ class SocialController extends Controller
         // Changed to custom alert
         return redirect('/job-req/beranda')->with('custom_blue_alert', "Login berhasil! Selamat datang, {$firstName}!");
     }
-
 }

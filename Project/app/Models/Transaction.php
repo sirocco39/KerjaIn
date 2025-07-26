@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,12 +10,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth; // Don't forget to import Auth
-
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
     protected $fillable = [
         'order_number',
         'request_id',
@@ -32,8 +35,47 @@ class Transaction extends Model
         'start_work' => 'datetime',
         'finish_work' => 'datetime',
     ];
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'start_work', 'finish_work'])
+            ->logOnlyDirty()
+            ->useLogName('Transaction');
+    }
 
-    // Existing relationships
+    public function tapActivity(Activity $activity, string $eventName)
+    {
+        $causerName = $activity->causer ? $activity->causer->first_name : 'Sistem';
+        $transactionId = $this->order_number;
+
+        if ($eventName === 'updated') {
+            $newAttributes = $activity->subject->getDirty();
+            if (isset($newAttributes['status'])) {
+                $status = $newAttributes['status'];
+
+                switch ($status) {
+                    case 'in progress':
+                        $startTime = Carbon::parse($this->start_work)->format('d M Y, H:i');
+                        $activity->description = "Pekerja {$causerName} telah mulai bekerja untuk transaksi #{$transactionId} pada {$startTime}.";
+                        break;
+                    case 'submitted':
+                        $finishTime = Carbon::parse($this->finish_work)->format('d M Y, H:i');
+                        $activity->description = "Pekerja {$causerName} telah menyelesaikan pekerjaan untuk transaksi #{$transactionId} pada {$finishTime}.";
+                        break;
+                    case 'completed':
+                        $activity->description = "Requester {$causerName} telah menyelesaikan transaksi #{$transactionId}.";
+                        break;
+                    case 'cancelled':
+                        $activity->description = "Transaksi #{$transactionId} telah dibatalkan oleh {$causerName}.";
+                        break;
+                }
+            }
+        } elseif ($eventName === 'created') {
+            $workerName = $this->worker ? $this->worker->first_name : 'N/A';
+            $activity->description = "Pekerjaan untuk transaksi #{$transactionId} telah diterima oleh pekerja {$workerName}.";
+        }
+    }
+
     public function request(): BelongsTo
     {
         return $this->belongsTo(Request::class, 'request_id');
@@ -58,7 +100,7 @@ class Transaction extends Model
     public function userReview(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id')
-                    ->where('reviewer_id', Auth::id()); // Filter by the authenticated user as the reviewer
+            ->where('reviewer_id', Auth::id()); // Filter by the authenticated user as the reviewer
     }
 
     // NEWLY ADDED: Retrieves a single review given TO this worker for this transaction
@@ -66,7 +108,7 @@ class Transaction extends Model
     public function reviewAboutWorker(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id', 'id')
-                    ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
+            ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
     }
 
 

@@ -17,12 +17,11 @@
         xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
+    <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/monthly.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
         .popup-error-card {
             position: absolute;
@@ -189,7 +188,8 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}"
                             href="/job-taker/beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
+                    <li class="nav-item"><a
+                            class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
                             href="/job-taker/cari-kerja">Cari Kerja</a></li>
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/pesan') ? 'active' : '' }}"
                             href="/job-taker/pesan">Pesan</a></li>
@@ -487,6 +487,7 @@
             window.showCustomAlert = showCustomAlert;
         });
     </script>
+    @stack('scripts')
 </body>
 
 </html>

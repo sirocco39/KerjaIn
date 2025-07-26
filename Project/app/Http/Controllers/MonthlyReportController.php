@@ -71,7 +71,7 @@ class MonthlyReportController extends Controller
             ->with('request') // Eager load the related Request (Job) model
             ->get();
 
-            // dd($completedTransactions);
+        // dd($completedTransactions);
         // A. Summary Statistics
         $totalJobsCompleted = $completedTransactions->count();
         // Calculate total hours worked from start_work and finish_work
@@ -110,11 +110,11 @@ class MonthlyReportController extends Controller
             ->get();
 
         // C. Reviews from Clients for the selected month's completed transactions
-$clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
-->where('reviewee_id', $worker->id) // Filter reviews for the worker
-    ->with('reviewer')
-    ->latest()
-    ->get();
+        $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
+            ->where('reviewee_id', $worker->id) // Filter reviews for the worker
+            ->with('reviewer')
+            ->latest()
+            ->get();
         // D. Gamification / Achievements (Placeholder - implement your logic)
         $achievements = [
             'Top Worker of the Month' => ($totalJobsCompleted >= 20 && $averageRating >= 4.9),
@@ -241,11 +241,11 @@ $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
             ->orderBy('finish_work', 'desc')
             ->get();
 
-$clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
-->where('reviewee_id', $worker->id) // Filter reviews for the worker
-    ->with('reviewer')
-    ->latest()
-    ->get();
+        $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
+            ->where('reviewee_id', $worker->id) // Filter reviews for the worker
+            ->with('reviewer')
+            ->latest()
+            ->get();
         // Siapkan data untuk view PDF
         $data = [
             'worker' => $worker,
@@ -259,6 +259,11 @@ $clientReviews = Review::whereIn('transaction_id', $transactionIdsForReviews)
 
         // Muat view Blade ke Dompdf dan buat PDF
         $pdf = Pdf::loadView('job-taker.pdf.report-pdf', $data);
+        activity()
+            ->inLog('Document')
+            ->on($worker)
+            ->causedBy($worker)
+            ->log("Pekerja {$worker->first_name} telah mengunduh laporan bulanan untuk periode {$reportPeriod}.");
 
         // Unduh PDF dengan nama file yang sesuai
         return $pdf->download('laporan-bulanan-' . $worker->name . '-' . $parsedSelectedMonth->format('Y-m') . '.pdf');

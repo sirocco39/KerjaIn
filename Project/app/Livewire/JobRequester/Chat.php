@@ -142,6 +142,10 @@ class Chat extends Component
                         'type' => 'credit',
                         'description' => 'Penambahan saldo ditahan untuk pekerjaan: ' . $workRequest->title,
                     ]);
+
+                    $user = Auth::user();
+                    activity()->inLog('Finance')->causedBy($user)->on($workRequest)
+                        ->log("Dana tambahan sebesar Rp" . number_format($priceDifference) . " ditahan dari {$user->first_name} karena perubahan harga melalui tawaran.");
                 }
 
                 // --- Skenario 2: Harga Penawaran LEBIH RENDAH ---
@@ -160,9 +164,14 @@ class Chat extends Component
                         'type' => 'debit',
                         'description' => 'Pengembalian saldo ditahan untuk pekerjaan: ' . $workRequest->title,
                     ]);
+                    $user = Auth::user();
+                    activity()->inLog('Finance')->causedBy($user)->on($workRequest)
+                        ->log("Dana sebesar Rp" . number_format($refundAmount) . " dikembalikan ke {$user->first_name} karena perubahan harga melalui tawaran.");
                 }
             });
+            $offer->request->disableLogging();
             $offer->request->update(['final_price' => $offer->amount]);
+            $offer->request->enableLogging();
             $transaction = Request::hireAndFinalize($offer->request, $offer->worker);
             return redirect()->route('request.ongoing', ['transactionId' => $transaction->id]);
         }
