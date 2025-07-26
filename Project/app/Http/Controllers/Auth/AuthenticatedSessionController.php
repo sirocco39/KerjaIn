@@ -35,6 +35,17 @@ class AuthenticatedSessionController extends Controller
 
         // Attempt login
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            $ipAddress = $request->ip();
+            $emailAttempted = $request->input('email');
+
+            activity()
+                ->inLog('Authentication') // Kelompokkan ke log 'Authentication'
+                ->withProperties([ // Simpan data penting untuk investigasi
+                    'ip_address' => $ipAddress,
+                    'email_attempted' => $emailAttempted
+                ])
+                // Lengkapi deskripsi log agar lebih informatif
+                ->log("Percobaan login gagal untuk email '{$emailAttempted}' dari IP '{$ipAddress}'"); // Menggunakan IP & Email di deskripsi
             if ($request->expectsJson()) {
                 return response()->json([
                     'errors' => [

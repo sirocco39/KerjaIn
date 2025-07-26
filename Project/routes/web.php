@@ -124,10 +124,11 @@ Route::middleware('auth')->group(function () { // Apply auth middleware to job r
     // =======================
     Route::post('/transaction/{id}/cancel', [TransactionController::class, 'cancel'])->name('transaction.cancel');
     Route::post('/transaction/{transaction}/mark-complete', [TransactionController::class, 'markComplete'])->name('transaction.markComplete');
-    Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'submitReport'])->name('user.submitReport');
+    Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'storeReport'])->name('user.submitReport');
 
     // Avoid duplicates — keep only one valid review route
     Route::post('/reviews/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/transaction-details/{id}', [TransactionController::class, 'getTransactionDetails'])->name('transaction.details');
 
     // =======================
     // CHAT / OFFER ROUTES (AUTHENTICATED)
