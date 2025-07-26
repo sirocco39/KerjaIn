@@ -29,7 +29,7 @@
         {{-- Total Pengguna --}}
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
             <a href="{{ route('admin.users.all') }}" class="card-link">
-                <div class="card">
+                <div class="card" id="totalUsersCard">
                     <div class="card-header p-3 pt-2">
                         <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
                             <i class="material-symbols-rounded opacity-10">groups</i>
@@ -51,7 +51,7 @@
 
         {{-- JUMLAH VERIFIKASI PENDING --}}
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <a href="{{ class_exists('App\Models\VerificationRequest') ? route('admin.verifications.index', ['status' => 'pending']) : '#' }}" class="card-link">
+            <a href="{{ class_exists('App\Models\VerificationRequest') ? route('admin.verifications.index', ['status' => 'pending']) : '#' }}" class="card-link" id="pendingVerificationsCard">
                 <div class="card">
                     <div class="card-header p-3 pt-2">
                         <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
@@ -74,7 +74,7 @@
 
         {{-- Laporan Pending --}}
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <a href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}" class="card-link">
+            <a href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}" class="card-link" id="pendingReportsCard">
                 <div class="card">
                     <div class="card-header p-3 pt-2">
                         <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
@@ -95,7 +95,7 @@
 
         {{-- Keuntungan Perusahaan --}}
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <a href="{{ route('admin.transactions.index') }}" class="card-link">
+            <a href="{{ route('admin.transactions.index') }}" class="card-link" id="companyProfitCard">
                 <div class="card">
                     <div class="card-header p-3 pt-2">
                         <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
@@ -146,7 +146,7 @@
                 <div class="card-header pb-0 bg-transparent">
                     <div class="d-flex justify-content-between align-items-center">
                         <h6 class="mb-0">Log Aktivitas Terbaru</h6>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary mb-0">Lihat Semua Log</a>
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary mb-0" id="lihat-log">Lihat Semua Log</a>
                     </div>
                     <p class="text-sm mb-0">
                         <i class="fa fa-info-circle text-info"></i>

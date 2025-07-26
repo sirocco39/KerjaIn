@@ -12,7 +12,7 @@
                         <form id="blockedUsersSearchForm" action="{{ route('admin.users.blockedList') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="blockedUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna diblokir berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
-                                <button class="btn btn-primary m-2" type="submit">Cari</button>
+                                <button class="btn btn-primary m-2" type="submit" id="cariBtn">Cari</button>
                             </div>
                         </form>
                         <div id="blockedUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
@@ -57,12 +57,13 @@
                                         <span class="badge badge-sm bg-gradient-danger">Diblokir</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2">Lihat Aktivitas</a>
+                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2" id="SeeActivityBtn">Lihat Aktivitas</a>
                                         {{-- Tombol Batal Blokir yang memicu modal --}}
                                         <button type="button" class="btn btn-sm btn-success mb-0"
                                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
                                             data-user-id="{{ $user->id }}"
-                                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}">
+                                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}"
+                                            id="unblockUserButton">
                                             Unblock
                                         </button>
                                     </td>

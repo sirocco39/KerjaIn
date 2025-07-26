@@ -12,7 +12,7 @@
                         <form id="allUsersSearchForm" action="{{ route('admin.users.all') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="allUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
-                                <button class="btn btn-primary m-2" type="submit">Cari</button>
+                                <button class="btn btn-primary m-2" type="submit" id="btn-cari">Cari</button>
                             </div>
                         </form>
                         <div id="allUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
@@ -65,7 +65,7 @@
                                         </span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0">Lihat Aktivitas</a>
+                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0" id="SeeActivityBtn">Lihat Aktivitas</a>
                                         {{-- Add other action buttons if needed, e.g., edit, block/unblock --}}
                                     </td>
                                 </tr>

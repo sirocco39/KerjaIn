@@ -23,12 +23,12 @@
     {{-- Tab Navigation --}}
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link {{ $currentStatus == 'Not Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}">
-                Belum Ditinjau <span class="badge bg-warning">{{ \App\Models\Report::where('status', 'Not Reviewed')->count() }}</span>
+            <a class="nav-link {{ $currentStatus == 'Not Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}" id="notReviewedTab">
+                Tinjau <span class="badge bg-warning">{{ \App\Models\Report::where('status', 'Not Reviewed')->count() }}</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $currentStatus == 'Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Reviewed']) }}">
+            <a class="nav-link {{ $currentStatus == 'Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Reviewed']) }}" id="reviewedTab">
                 Sudah Ditinjau <span class="badge bg-success">{{ \App\Models\Report::where('status', 'Reviewed')->count() }}</span>
             </a>
         </li>
@@ -77,7 +77,7 @@
                             </td>
                             <td class="text-end">
                                 {{-- Ubah ini untuk mengarah ke halaman detail --}}
-                                <a href="{{ route('admin.reports.show', $report) }}" class="btn btn-sm btn-info me-2">
+                                <a href="{{ route('admin.reports.show', $report) }}" class="btn btn-sm btn-info me-2" id="lihat-detail">
                                     Detail
                                 </a>
 
@@ -87,11 +87,11 @@
                                     @csrf
                                     @method('PATCH')
                                     @if ($report->status == 'Not Reviewed')
-                                    <input type="hidden" name="status" value="Reviewed">
-                                    <button type="submit" class="btn btn-sm btn-success">Tandai Sudah Ditinjau</button>
+                                    <input type="hidden" name="status" value="Reviewed" id="status">
+                                    <button type="submit" class="btn btn-sm btn-success" id="tandai-sudah-ditinjau">Tandai Sudah Ditinjau</button>
                                     @else
-                                    <input type="hidden" name="status" value="Not Reviewed">
-                                    <button type="submit" class="btn btn-sm btn-secondary">Tandai Belum Ditinjau</button>
+                                    <input type="hidden" name="status" value="Not Reviewed" id="status">
+                                    <button type="submit" class="btn btn-sm btn-secondary" id="tandai-sudah-ditinjau">Tandai Belum Ditinjau</button>
                                     @endif
                                 </form>
                             </td>

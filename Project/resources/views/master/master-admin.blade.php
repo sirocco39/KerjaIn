@@ -36,43 +36,43 @@
         <div class="collapse navbar-collapse w-auto " id="sidenav-collapse-main">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{route('admin.dashboard')}}">
+                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{route('admin.dashboard')}}" id="dashboard-link">
                         <i class="material-symbols-rounded opacity-5">dashboard</i>
                         <span class="nav-link-text ms-1">Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.verifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.verifications.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.verifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.verifications.index') }}" id="verifications-link">
                         <i class="material-symbols-rounded opacity-5">table_view</i>
                         <span class="nav-link-text ms-1">Verifikasi</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.users.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.users.index') }}" id="users-link">
                         <i class="material-symbols-rounded opacity-5">receipt_long</i>
                         <span class="nav-link-text ms-1">Pengguna</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.reports.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.reports.index') }}" id="reports-link">
                         <i class="material-symbols-rounded opacity-5">view_in_ar</i>
                         <span class="nav-link-text ms-1">Laporan</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.transactions.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.transactions.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.transactions.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.transactions.index') }}" id="transactions-link">
                         <i class="material-symbols-rounded opacity-5">format_textdirection_r_to_l</i>
                         <span class="nav-link-text ms-1">Penghasilan</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.notifications.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.notifications.index') }}" id="notifications-link">
                         <i class="material-symbols-rounded opacity-5">notifications</i>
                         <span class="nav-link-text ms-1">Notifikasi</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.settings') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.settings') }}" id="settings-link">
                         <i class="material-symbols-rounded opacity-5">settings</i>
                         <span class="nav-link-text ms-1">Settings</span>
                     </a>
@@ -81,7 +81,7 @@
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
             <div class="mx-3">
-                <a class="btn bg-gradient-dark w-100" href="{{ route('logout') }}" type="button"
+                <a class="btn bg-gradient-dark w-100" id="logout-btn" href="{{ route('logout') }}" type="button"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     Log out
                 </a>
@@ -154,7 +154,7 @@
                             </ul>
                         </li>
                         <li class="nav-item d-flex align-items-center">
-                            <a class="nav-link text-body font-weight-bold px-0" href="{{ route('logout') }}" type="button"
+                            <a class="nav-link text-body font-weight-bold px-0" id="logout" href="{{ route('logout') }}" type="button"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fa fa-user me-sm-1"></i>
                                 <span class="d-sm-inline d-none">Log out</span>

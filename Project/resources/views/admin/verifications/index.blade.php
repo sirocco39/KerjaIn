@@ -10,7 +10,7 @@
             <div class="row gx-2 mb-4"> {{-- Gunakan row dan gx-2 untuk spacing antar kolom --}}
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'pending' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
-                        href="{{ route('admin.verifications.index', ['status' => 'pending']) }}">
+                        href="{{ route('admin.verifications.index', ['status' => 'pending']) }}" id="pendingVerificationsButton">
                         <span class="me-1">Belum Diverifikasi</span>
                         @if (isset($pendingVerificationsCount) && $pendingVerificationsCount > 0)
                         <span class="badge badge-lg bg-danger rounded-circle text-white ms-1" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
@@ -21,13 +21,13 @@
                 </div>
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'approved' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
-                        href="{{ route('admin.verifications.index', ['status' => 'approved']) }}">
+                        href="{{ route('admin.verifications.index', ['status' => 'approved']) }}" id="approvedVerificationsButton">
                         Terverifikasi
                     </a>
                 </div>
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'rejected' && $search == null)  ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
-                        href="{{ route('admin.verifications.index', ['status' => 'rejected']) }}">
+                        href="{{ route('admin.verifications.index', ['status' => 'rejected']) }}" id="rejectedVerificationsButton">
                         Verifikasi Ditolak
                     </a>
                 </div>
@@ -37,7 +37,7 @@
                         <form id="indexSearchForm" action="{{ route('admin.verifications.index', ['status' => $status]) }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna" autocomplete="off" value="{{ $search ?? '' }}">
-                                <button class="btn btn-primary m-2" type="submit">Cari</button>
+                                <button class="btn btn-primary m-2" type="submit" id="btn-cari">Cari</button>
                             </div>
                         </form>
                         <div id="searchResultsIndex" class="list-group position-absolute w-100 mt-1" style="z-index: 1000;">
@@ -115,7 +115,7 @@
                                             @endif
                                             <td>
                                                 {{-- Pass the current search term when linking to show page --}}
-                                                <a href="{{ route('admin.verifications.show', ['id' => $request->id]) }}" class="btn btn-primary btn-sm">Lihat Detail</a>
+                                                <a href="{{ route('admin.verifications.show', ['id' => $request->id]) }}" class="btn btn-primary btn-sm" id="lihat-detail">Lihat Detail</a>
                                             </td>
                                         </tr>
                                         @endforeach

@@ -8,7 +8,7 @@
             <div class="row">
                 {{-- Total Pengguna --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.all') }}" class="card-link"> {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.all') }}" class="card-link" id="totalPengguna">  {{-- Tambah link ini --}}
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
@@ -32,7 +32,7 @@
 
                 {{-- Total Pekerja --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.workers') }}" class="card-link"> {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.workers') }}" class="card-link" id="totalPekerja"> {{-- Tambah link ini --}}
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
@@ -55,7 +55,7 @@
 
                 {{-- Pengguna Diblokir --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.blockedList') }}" class="card-link"> {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.blockedList') }}" class="card-link" id="PenggunaDiBlok"> {{-- Tambah link ini --}}
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
@@ -76,7 +76,7 @@
 
                 {{-- Pengguna Dilaporkan --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.reports.index') }}" class="card-link"> {{-- Link ini sesuai permintaan --}}
+                    <a href="{{ route('admin.reports.index') }}" class="card-link" id="LihatDaftarReport"> {{-- Link ini sesuai permintaan --}}
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
@@ -112,7 +112,7 @@
                         <form id="usersLogSearchForm" action="{{ route('admin.users.index') }}" method="GET" class="mb-0">
                             <div class="input-group m-0">
                                 <input type="text" id="usersLogSearchInput" name="search_query" class="form-control bg-white border border-primary p-2" placeholder="Cari pengguna berdasarkan ID atau Nama..." autocomplete="off" value="{{ $searchQuery ?? '' }}">
-                                <button class="btn btn-primary m-2" type="submit">Cari</button>
+                                <button class="btn btn-primary m-2" type="submit" id="cari-btn">Cari</button>
                             </div>
                         </form>
                         <div id="usersLogSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto;">

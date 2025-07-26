@@ -12,7 +12,7 @@
                         </div>
                         <div class="col-6 text-end" style="padding-right: 12px">
                             {{-- Tombol Kembali --}}
-                            <a href="{{ route('admin.verifications.index', ['status' => $verificationRequest->status, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-dark mb-0">
+                            <a href="{{ route('admin.verifications.index', ['status' => $verificationRequest->status, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-dark mb-0" id="backButton">
                                 <i class="material-symbols-rounded text-sm">arrow_back</i> Kembali
                             </a>
                         </div>
@@ -46,7 +46,7 @@
                     <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
                         <div style="padding-top: 1rem">
                             @if ($previousRequest)
-                            <a href="{{ route('admin.verifications.show', ['id' => $previousRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary order-1">
+                            <a href="{{ route('admin.verifications.show', ['id' => $previousRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary order-1" id="previousRequestButton">
                                 <i class="material-symbols-rounded text-sm">chevron_left</i> Sebelumnya
                             </a>
                             @endif
@@ -63,7 +63,7 @@
                         </div>
                         <div style="padding-top: 1rem">
                             @if ($nextRequest)
-                            <a href="{{ route('admin.verifications.show', ['id' => $nextRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary">
+                            <a href="{{ route('admin.verifications.show', ['id' => $nextRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary" id="nextRequestButton">
                                 Selanjutnya <i class="material-symbols-rounded text-sm">chevron_right</i>
                             </a>
                             @endif
@@ -222,12 +222,12 @@
                             <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Aksi</h6>
                             <form action="{{ route('admin.verifications.approve', $verificationRequest->id) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="button" class="btn bg-gradient-success mb-0 me-2" data-bs-toggle="modal" data-bs-target="#approveConfirmationModal">
+                                <button type="button" class="btn bg-gradient-success mb-0 me-2" data-bs-toggle="modal" data-bs-target="#approveConfirmationModal" id="approveButton">
                                     <i class="material-symbols-rounded text-sm">check_circle</i> Setujui
                                 </button>
                             </form>
                             {{-- Tombol Tolak memicu modal --}}
-                            <button type="button" class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#rejectReasonModal">
+                            <button type="button" class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#rejectReasonModal" id="rejectButton">
                                 <i class="material-symbols-rounded text-sm">cancel</i> Tolak
                             </button>
                         </div>
@@ -331,18 +331,18 @@
 
                     <p class="text-sm font-weight-bold mb-2">Pilih Alasan Cepat:</p>
                     <div class="d-flex flex-wrap gap-2"> {{-- Flexbox untuk layout gelembung --}}
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Foto KTP buram atau tidak jelas.">KTP Buram</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Data NIK tidak sesuai.">NIK Tidak Sesuai</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Wajah di foto selfie tidak terlihat jelas.">Wajah Tidak Jelas</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Foto selfie dengan KTP tidak sesuai ketentuan.">Selfie KTP Salah</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Data diri tidak konsisten.">Data Tidak Konsisten</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Dokumen yang diunggah tidak valid.">Dokumen Tidak Valid</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Foto KTP buram atau tidak jelas." id="KTPBuram" >KTP Buram</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Data NIK tidak sesuai." id="NIKtidaksesuai">NIK Tidak Sesuai</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Wajah di foto selfie tidak terlihat jelas." id="WajahTidakJelas">Wajah Tidak Jelas</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Foto selfie dengan KTP tidak sesuai ketentuan." id="SelfieSalah">Selfie KTP Salah</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Data diri tidak konsisten." id="Datatidakkonsisten">Data Tidak Konsisten</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Dokumen yang diunggah tidak valid." id="DokumenTidakValid">Dokumen Tidak Valid</span>
                         {{-- Tambahkan lebih banyak opsi sesuai kebutuhan --}}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Tolak Verifikasi</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="BatalButton">Batal</button>
+                    <button type="submit" class="btn btn-danger" id="TolakVerifikasi">Tolak Verifikasi</button>
                 </div>
             </form>
         </div>
@@ -361,10 +361,10 @@
                 <p class="text-danger">Tindakan ini tidak dapat dibatalkan.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="CancelBtn">Batalkan</button>
                 <form action="{{ route('admin.verifications.approve', $verificationRequest->id) }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn bg-gradient-success">Ya, Setujui</button>
+                    <button type="submit" class="btn bg-gradient-success" id="yesApproveBtn" >Ya, Setujui</button>
                 </form>
             </div>
         </div>

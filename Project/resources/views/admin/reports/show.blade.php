@@ -7,7 +7,7 @@
             <div class="card mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h6>Detail Laporan #{{ $report->id }}</h6>
-                    <a href="{{ route('admin.reports.index', ['status' => $report->status]) }}" class="btn btn-sm btn-secondary mb-0">Kembali ke Daftar Laporan</a>
+                    <a href="{{ route('admin.reports.index', ['status' => $report->status]) }}" class="btn btn-sm btn-secondary mb-0" id="KembaliBtn">Kembali ke Daftar Laporan</a>
                 </div>
                 <div class="card-body">
                     {{-- Informasi Dasar Laporan --}}
@@ -80,12 +80,12 @@
                     <h5 class="mt-4 mb-3">Aksi Terkait Pengguna</h5>
                     <div class="d-flex flex-wrap gap-2">
                         {{-- Lihat Aktivitas Reporter --}}
-                        <a href="{{ route('admin.users.activityLog', ['user' => $report->reporter_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-2 me-2">
+                        <a href="{{ route('admin.users.activityLog', ['user' => $report->reporter_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-2 me-2" id="lihat-aktivitas-pelapor">
                             <i class="material-symbols-rounded text-sm me-1">history</i> Lihat Aktivitas Pelapor
                         </a>
 
                         {{-- Lihat Aktivitas Reported User --}}
-                        <a href="{{ route('admin.users.activityLog', ['user' => $report->reported_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-info mb-2 me-2">
+                        <a href="{{ route('admin.users.activityLog', ['user' => $report->reported_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-info mb-2 me-2" id="lihat-aktivitas-pengguna-dilaporkan">
                             <i class="material-symbols-rounded text-sm me-1">manage_accounts</i> Lihat Aktivitas Pengguna Dilaporkan
                         </a>
 
@@ -94,14 +94,16 @@
                         <button type="button" class="btn btn-sm btn-success mb-2 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
                             data-user-id="{{ $report->reported_id }}"
-                            data-user-name="{{ $report->reported->first_name }} {{ $report->reported->last_name }}">
+                            data-user-name="{{ $report->reported->first_name }} {{ $report->reported->last_name }}"
+                            id="unblockUserButton">
                             <i class="material-symbols-rounded text-sm me-1">lock_open</i> Batal Blokir Pengguna Dilaporkan
                         </button>
                         @else
                         <button type="button" class="btn btn-sm btn-warning mb-2 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmBlockModal"
                             data-user-id="{{ $report->reported_id }}"
-                            data-user-name="{{ $report->reported->first_name }} {{ $report->reported->last_name }}">
+                            data-user-name="{{ $report->reported->first_name }} {{ $report->reported->last_name }}"
+                            id="blockUserButton">
                             <i class="material-symbols-rounded text-sm me-1">lock</i> Blokir Pengguna Dilaporkan
                         </button>
                         @endif
@@ -116,12 +118,12 @@
                         @method('PATCH')
                         @if ($report->status == 'Not Reviewed')
                         <input type="hidden" name="status" value="Reviewed">
-                        <button type="submit" class="btn btn-success btn-lg mt-3">
+                        <button type="submit" class="btn btn-success btn-lg mt-3" id="tandai-sudah-ditinjau">
                             <i class="material-symbols-rounded text-sm me-1">check_circle</i> Tandai sebagai Ditinjau
                         </button>
                         @else
                         <input type="hidden" name="status" value="Not Reviewed">
-                        <button type="submit" class="btn btn-secondary btn-lg mt-3">
+                        <button type="submit" class="btn btn-secondary btn-lg mt-3" id="tandai-belum-ditinjau">
                             <i class="material-symbols-rounded text-sm me-1">remove_done</i> Tandai sebagai Belum Ditinjau
                         </button>
                         @endif
@@ -144,10 +146,10 @@
                 <p>Apakah Anda yakin ingin melanjutkan?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="Batalbtn">Batal</button>
                 <form id="blockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-warning">Ya, Blokir</button>
+                    <button type="submit" class="btn btn-warning" id="BlokirPgn">Ya, Blokir</button>
                 </form>
             </div>
         </div>
@@ -166,10 +168,10 @@
                 <p>Apakah Anda yakin ingin melanjutkan?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="batalBatalBlokir">Batal</button>
                 <form id="unblockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-success">Ya, Batal Blokir</button>
+                    <button type="submit" class="btn btn-success" id="BatalBlokir">Ya, Batal Blokir</button>
                 </form>
             </div>
         </div>

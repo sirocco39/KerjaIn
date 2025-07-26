@@ -12,18 +12,18 @@
                         <button type="button" class="btn btn-sm btn-success mb-0 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
                             data-user-id="{{ $user->id }}"
-                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}">
+                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}" id="unblockUserButton">
                             <i class="material-symbols-rounded text-sm">lock_open</i> Batal Blokir
                         </button>
                         @else
                         <button type="button" class="btn btn-sm btn-warning mb-0 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmBlockModal"
                             data-user-id="{{ $user->id }}"
-                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}">
+                            data-user-name="{{ $user->first_name }} {{ $user->last_name }}" id="blockUserButton">
                             <i class="material-symbols-rounded text-sm">lock</i> Blokir Pengguna
                         </button>
                         @endif
-                        <a href="{{ $previousUrl }}" class="btn btn-sm btn-secondary mb-0">Kembali</a>
+                        <a href="{{ $previousUrl }}" class="btn btn-sm btn-secondary mb-0" id="backBtn">Kembali</a>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
