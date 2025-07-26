@@ -26,7 +26,25 @@ class DummyTransactionSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('id_ID');
-
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'], // Use email as unique identifier for firstOrCreate
+            [
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'password' => bcrypt('password'), // A common test password for admin
+                'role' => 'admin', // Assuming 'admin' is a valid role from your schema
+                'phone_number' => '081122334455',
+                'balance' => 0.00, // Admins typically don't have balance
+                'is_worker' => false,
+                'rating' => 0.0,
+                'job_done' => 0,
+                'bank_acc_num' => null,
+                'google_id' => null,
+                'is_blocked' => false,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]
+        );
         // Define all dummy emails used in this seeder for cleanup
         $dummyEmails = [
             'hansengunawan64@gmail.com',

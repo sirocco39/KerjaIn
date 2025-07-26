@@ -21,11 +21,11 @@ class MonthlyReportDataSeeder extends Seeder
     public function run()
     {
         // Clear existing data to ensure a fresh start
-        CompletionProof::query()->delete();
-        Review::query()->delete();
-        Transaction::query()->delete();
-        JobRequest::query()->delete();
-        User::query()->delete();
+        // CompletionProof::query()->delete();
+        // Review::query()->delete();
+        // Transaction::query()->delete();
+        // JobRequest::query()->delete();
+        // User::query()->delete();
 
         // 1. Create Users
         $workerUser = User::create([
@@ -96,7 +96,7 @@ class MonthlyReportDataSeeder extends Seeder
             'title' => 'Perbaiki Keran Bocor',
             'description' => 'Ada keran bocor di dapur, perlu diperbaiki segera.',
             'price' => 75000.00,
-                        'final_price' => 150000.00, // Assuming no negotiation
+            'final_price' => 150000.00, // Assuming no negotiation
 
             'location' => 'Jalan Sudirman No. 25, Bandung',
             'status' => 'closed', // This will be completed
@@ -110,7 +110,7 @@ class MonthlyReportDataSeeder extends Seeder
             'title' => 'Pijat Relaksasi',
             'description' => 'Membutuhkan jasa pijat relaksasi selama 2 jam di rumah.',
             'price' => 200000.00,
-                        'final_price' => 150000.00, // Assuming no negotiation
+            'final_price' => 150000.00, // Assuming no negotiation
 
             'location' => 'Jalan Gatot Subroto No. 5, Surabaya',
             'status' => 'open', // Example of an open request

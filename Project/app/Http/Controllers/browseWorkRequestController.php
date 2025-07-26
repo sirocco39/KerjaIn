@@ -79,8 +79,8 @@ class BrowseWorkRequestController extends Controller
             'location' => $request->location,
             'start_time' => $request->start_time->format('Y-m-d H:i'), // Format untuk JS
             'end_time' => $request->end_time->format('Y-m-d H:i'),      // Format untuk JS
-            'display_date' => $request->start_time->format('d M Y'), // Untuk tampilan '19 Mei 2025'
-            'display_time_range' => $request->start_time->format('H.i') . ' - ' . $request->end_time->format('H.i'),
+            'display_date' => $request->start_time->format('d M Y, H:i'), // Untuk tampilan '19 Mei 2025'
+            'display_time_range' => $request->end_time->format('d M Y, H:i'),
             'requester_first_name' => $request->requester->first_name
             // Tambahkan data lain yang mungkin Anda perlukan di detail panel
         ]);

@@ -18,6 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);
+
+        $middleware->alias([
+            'auth' => \App\Http\Middleware\Authenticate::class,
+            'is_worker' => \App\Http\Middleware\IsWorker::class,
+            'prevent_re_registration' => \App\Http\Middleware\PreventReRegistration::class,
+            'is_admin' => \App\Http\Middleware\IsAdmin::class, // <-- CORRECT PLACE FOR THIS ALIAS
+            // Add any other route middleware aliases here
+        ]);
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {

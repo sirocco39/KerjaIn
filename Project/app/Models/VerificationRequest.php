@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -41,7 +41,7 @@ class VerificationRequest extends Model
         'birthdate' => 'date',
     ];
 
-     public function getActivitylogOptions(): LogOptions
+    public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             // Kita hanya perlu memantau perubahan pada kolom 'status'.
@@ -73,7 +73,7 @@ class VerificationRequest extends Model
             }
         }
     }
-    
+
     // ini berarti satu user dapat mengajukan banyak verification request
     public function user(): BelongsTo
     {
