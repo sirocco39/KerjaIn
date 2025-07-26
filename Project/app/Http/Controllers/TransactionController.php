@@ -81,7 +81,7 @@ class TransactionController extends Controller
                 ->on($transaction)  // Targetnya adalah transaksi yang coba diakses
                 ->causedBy(Auth::user()) // Pelakunya adalah user yang mencoba akses
                 ->log("Percobaan akses tidak sah ke halaman transaksi on-going #{$transaction->order_number}.");
-            return redirect()->route('job-req.beranda')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
         }
 
         // Ambil data request yang berhubungan dengan transaction
