@@ -119,7 +119,7 @@ class RequestController extends Controller
         ]);
         if ($result) {
             // Changed to custom alert
-            return redirect()->to('/job-req/beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
+            return redirect()->to('/job-req/home')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
         } else {
             // Changed to custom alert
             return back()->with('custom_error_alert', 'Terjadi kesalahan saat membuat permintaan pekerjaan.');
@@ -158,7 +158,7 @@ class RequestController extends Controller
                 ->log("Percobaan akses tidak sah ke halaman edit pekerjaan '{$workRequest->id}'.");
 
             // Alihkan dengan pesan error
-            return redirect()->route('job-req.beranda')->with('custom_error_alert', 'Anda tidak berwenang mengubah pekerjaan ini.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang mengubah pekerjaan ini.');
         }
         // If the request is not found, it will throw a 404 error
         if (!$workRequest || $workRequest->deleted_at) {
@@ -258,7 +258,7 @@ class RequestController extends Controller
         }
 
         // 7. Redirect jika berhasil
-        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
+        return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
     }
     /**
      * Remove the specified resource from storage.
@@ -325,7 +325,7 @@ class RequestController extends Controller
         // Changed to custom alert, using the flashed refund_amount
         $refundAmount = session('refund_amount', 0); // Get the flashed amount, default to 0
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
-        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
+        return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
     }
 
     public function showOngoing($id)

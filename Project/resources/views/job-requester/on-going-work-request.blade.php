@@ -508,7 +508,7 @@
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
                     class="d-flex flex-column flex-lg-row gap-3 mt-4">
                     @csrf
-                    <input type="hidden" name="redirect_to" value="job-req.beranda">
+                    <input type="hidden" name="redirect_to" value="job-req.home">
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
                         Lanjut Kerja
@@ -1061,8 +1061,8 @@
                     if (reportModal) {
                         reportModal.hide();
                     }
-                    // Redirect after successful report submission
-                    window.location.href = "{{ route('job-req.home') }}";
+                    // >>> GANTI BARIS INI <<<
+                    window.location.href = "{{ route('job-req.home') }}"; // Redirect ke beranda job requester
                 })
                 .catch(error => {
                     console.error('Error submitting report:', error);
