@@ -133,7 +133,7 @@ class DummyTransactionSeeder extends Seeder
             [
                 'first_name' => 'Dummy',
                 'last_name' => 'Worker',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('password!123'),
                 'role' => 'user',
                 'phone_number' => '089876543210',
                 'balance' => 500000.00,

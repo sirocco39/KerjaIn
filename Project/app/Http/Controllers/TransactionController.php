@@ -212,47 +212,55 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function storeReport(HttpRequest $request)
+    public function storeReport(HttpRequest $request, $transactionId)
     {
         $request->validate([
-            'transaction_id' => 'required|exists:transactions,id',
+            'reasons' => 'required|string|max:2000',
+            'photo' => 'required|array|min:1|max:7',
+            'photo.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'reporter_id' => 'required|exists:users,id',
             'reported_id' => 'required|exists:users,id',
-            'reasons' => 'required|string',
-            'photo' => 'required|array',
-            'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        try {
-            $photoUrls = [];
+        $transaction = Transaction::findOrFail($transactionId);
+
+        if (Auth::id() !== $transaction->requester_id || $request->reporter_id != Auth::id()) {
+            activity()
+                ->inLog('Security')
+                ->on($transaction)
+                ->causedBy(Auth::user())
+                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan requester.");
+            return redirect()->route('job-req.home')->with('error', 'Anda tidak berwenang melaporkan transaksi ini.');
+        }
+
+        $existingReport = Report::where('transaction_id', $transactionId)
+            ->where('reporter_id', Auth::id())
+            ->first();
+        if ($existingReport) {
+            return redirect()->route('job-req.home')->with('error', 'Anda sudah mengajukan laporan untuk transaksi ini.');
+        }
+
+        DB::transaction(function () use ($request, $transaction) {
+            $photoUrls = []; // Array to store public URLs of uploaded photos
 
             foreach ($request->file('photo') as $file) {
-                $path = $file->store('report_photos', 'public');
-                $photoUrls[] = Storage::url($path);
+                $path = $file->store('reports/photos', 'public'); // Store in storage/app/public/reports/photos
+                $photoUrls[] = Storage::url($path); // Get public URL for storage
             }
 
             Report::create([
-                'transaction_id' => $request->transaction_id,
+                'transaction_id' => $transaction->id,
                 'reporter_id' => $request->reporter_id,
                 'reported_id' => $request->reported_id,
                 'reasons' => $request->reasons,
-                'photo_url' => json_encode($photoUrls),
-                'status' => 'Not Reviewed',
+                'photo_url' => json_encode($photoUrls), // Store JSON encoded array of URLs
+                'status' => 'pending', // Default status for a new report
             ]);
+        });
 
-            // Changed from JSON response to redirect with custom alert
-            return response()->json([
-                'success' => true,
-                'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
-            ]);
-        } catch (\Exception $e) {
-            // Changed from JSON response to redirect with custom alert
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage()
-            ], 500);
-        }
+        return redirect()->route('job-req.home')->with('success', 'Laporan berhasil dikirim dan akan segera ditinjau.');
     }
+
     public function getTransactionDetails($id)
     {
         // Temukan transaksi berdasarkan ID

@@ -61,7 +61,7 @@
                         {{ str_replace(' ', '-', $order->status) }}-tab"
                         {{-- Determine whether to open modal or redirect based on status and user role --}}
                         @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
-                            data-bs-target="#completionModal"
+                                data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
                             data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}" @endif
@@ -79,13 +79,17 @@
                         data-finish-work="{{ \Carbon\Carbon::parse($order->finish_work)->format('H.i') ?? '-' }}"
                         data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
                         data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
+                        data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
                         @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
-                                data-user-comment="{{ $order->user_review->comment }}" @endif>
+                                data-user-comment="{{ $order->user_review->comment }}" @endif
+                        {{-- Pass decoded photo URLs if a report exists --}}
+                        @if ($order->has_user_report && $order->user_report->decoded_photo_urls) data-report-photo-urls="{{ json_encode($order->user_report->decoded_photo_urls) }}" @endif>
                         {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
                         <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
                             style="min-height: 3.5rem;">
                             {{-- Added ps-3 for left padding on the title column, and added 'title-col' class for specific responsive styling --}}
-                            <div class="col m-0 p-0 text-xxs text-start ps-3 title-col"> {{ $order->request->title ?? '-' }}</div>
+                            <div class="col m-0 p-0 text-xxs text-start ps-3 title-col">
+                                {{ $order->request->title ?? '-' }}</div>
                             <div class="col m-0 p-0">
                                 {{-- Added status-badge-fixed for fixed width --}}
                                 <span class="badge rounded-pill text-xxs status-badge-fixed"
@@ -111,7 +115,7 @@
                                 </span>
                             </div>
                             <div class="col m-0 p-0 text-xxs">
-                                {{ \Carbon\Carbon::parse($order->updated_at)->format('d - m - Y') ?? '-' }}</div>
+                                {{ \Carbon\Carbon::parse($order->finish_work)->format('d - m - Y') ?? '-' }}</div>
                             <div class="col m-0 p-0 text-xxs">{{ $order->worker->full_name ?? '-' }}</div>
                             <div class="col m-0 p-0 text-xxs">{{ $order->request->location ?? '-' }}</div>
                             <div class="col m-0 p-0 text-xxs">Rp
@@ -223,11 +227,11 @@
 
                                 {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
-                                    <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                        onclick="submitReview()" id="submitReviewButton">Kirim</button>
+                                    <button type="submit" class="btn btn-primary fw-medium rounded-3"
+                                        id="submitReviewButton">Kirim</button>
                                     <div class="m-1 text-center">Atau</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()">Laporkan masalah</button>
+                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
                                 </div>
                             </div>
                         </div>
@@ -241,103 +245,99 @@
     <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
-            {{-- Display validation errors if any --}}
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <form id="reportForm" method="POST" enctype="multipart/form-data" class="modal-content">
-                @csrf
-                {{-- Hidden inputs for report submission data --}}
-                <input type="hidden" name="transaction_id" id="reportTransactionId">
-                <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
-                <input type="hidden" name="reported_id" id="reportReportedId">
+            <div class="modal-content">
+                <form id="reportForm" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    {{-- Hidden inputs for report submission data --}}
+                    <input type="hidden" name="transaction_id" id="reportTransactionId">
+                    <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
+                    <input type="hidden" name="reported_id" id="reportReportedId">
 
-                <div class="modal-header border-0 justify-content-center">
-                    <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-                <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
-
-                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                    {{-- Transaction details displayed in the report modal --}}
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
-                            <p class="fw-medium" id="reportModalRequestTitle"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
-                            <p class="fw-medium" id="reportModalOrderNumber"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
-                            <p class="fw-medium" id="reportModalRequesterName"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
-                            <p class="fw-medium" id="reportModalRequestLocation"></p>
-                        </div>
+                    <div class="modal-header border-0 justify-content-center">
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
-                            <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
-                            <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
-                            <p class="fw-medium" id="reportModalStartWork"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="fw-medium" id="reportModalFinishWork"></p>
-                        </div>
-                    </div>
+                    <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    {{-- Total price display in report modal --}}
-                    <div class="d-flex justify-content-between mb-4">
-                        <p class="text-black-50 fw-semibold mb-0">Total</p>
-                        <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
-                    </div>
-
-                    {{-- Image upload section for report proof --}}
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Upload Bukti (gambar):</label>
-                        <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
-                            <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
-                                style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
+                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="fw-medium" id="reportModalRequestTitle"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="fw-medium" id="reportModalOrderNumber"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                                <p class="fw-medium" id="reportModalRequesterName"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
+                                <p class="fw-medium" id="reportModalRequestLocation"></p>
                             </div>
                         </div>
-                        <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
-                            multiple>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="fw-medium" id="reportModalStartWork"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                                <p class="fw-medium" id="reportModalFinishWork"></p>
+                            </div>
+                        </div>
+
+                        {{-- Total price display in report modal --}}
+                        <div class="d-flex justify-content-between mb-4">
+                            <p class="text-black-50 fw-semibold mb-0">Total</p>
+                            <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
+                        </div>
+
+                        {{-- Image upload section for report proof --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                            <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
+                                {{-- Images will be appended here dynamically by JS --}}
+                                <div class="add-image-button pb-2"
+                                    onclick="document.getElementById('reportImageInput').click()"
+                                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
+                                </div>
+                                <span id="image-count"
+                                    class="text-secondary fw-medium align-self-center ms-auto">0/7</span>
+                            </div>
+                            <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
+                                multiple>
+                        </div>
+
+                        {{-- Textarea for reporting reasons --}}
+                        <div class="mb-4">
+                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                            <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
+                                placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
+                        </div>
                     </div>
 
-                    {{-- Textarea for reporting reasons --}}
-                    <div class="mb-4">
-                        <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
-                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                            placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff;"></textarea>
+                    {{-- Report submission button --}}
+                    <div class="modal-footer border-0 d-flex justify-content-end">
+                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
+                            Laporan</button>
                     </div>
-                </div>
-
-                {{-- Report submission button --}}
-                <div class="modal-footer border-0 d-flex justify-content-end">
-                    <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
-                        Laporan</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -345,33 +345,108 @@
         // Global variables for managing transaction and worker IDs across modals
         let currentTransactionId = null;
         let reportedWorkerId = null;
+        // Store uploaded files globally for the report modal
+        let reportFiles = []; // Array of File objects
+        const MAX_REPORT_IMAGES = 7; // Define max images constant
 
         // --- Image Preview Logic for Report Modal ---
         const reportImageInput = document.getElementById('reportImageInput');
         const reportImagePreviewContainer = document.getElementById('reportImagePreviewContainer');
+        const addImageButton = reportImagePreviewContainer.querySelector('.add-image-button');
+        const imageCountSpan = document.getElementById('image-count');
+
+        /**
+         * Updates the display of uploaded report images and the image count.
+         * Newest image appears to the left of the '+' button.
+         * This function handles both newly added images and pre-existing images from a report.
+         */
+        function updateReportImagePreview() {
+            // Remove all current image preview wrappers to re-render them
+            reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el.remove());
+
+            // Iterate in reverse to add new images to the left, or in order for existing,
+            // and correctly place them relative to the addImageButton
+            reportFiles.forEach((fileOrUrl, index) => {
+                const isFileObject = fileOrUrl instanceof File;
+                const src = isFileObject ? URL.createObjectURL(fileOrUrl) : fileOrUrl;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-preview-wrapper position-relative';
+                wrapper.style.width = '80px';
+                wrapper.style.height = '80px';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'rounded border img-thumbnail';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className =
+                    'btn-close position-absolute top-0 end-0 m-1'; // Removed btn-close-white
+                deleteButton.style.fontSize = '0.7rem';
+                deleteButton.style.backgroundColor = '#dc3545';
+                deleteButton.style.borderRadius = '50%';
+                deleteButton.style.padding = '0.25em';
+                deleteButton.type = 'button';
+                deleteButton.onclick = function() {
+                    deleteReportImage(index); // Use captured index for correct deletion
+                };
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(deleteButton);
+
+                // Insert the new image wrapper right before the 'add-image-button'
+                // This ensures new images stack to the right, and the '+' button remains at the end
+                reportImagePreviewContainer.insertBefore(wrapper, addImageButton);
+            });
+
+            // Update image count and add button visibility
+            imageCountSpan.textContent = `${reportFiles.length}/${MAX_REPORT_IMAGES}`;
+            if (reportFiles.length >= MAX_REPORT_IMAGES) {
+                addImageButton.style.display = 'none'; // Hide the add button
+            } else {
+                addImageButton.style.display = 'flex'; // Show the add button
+            }
+        }
+
+        /**
+         * Deletes an image from the reportFiles array at the specified index and updates the preview.
+         * @param {number} index - The index of the image to delete.
+         */
+        function deleteReportImage(index) {
+            reportFiles.splice(index, 1); // Remove the file from the array
+            updateReportImagePreview(); // Re-render previews to reflect deletion and update indices
+        }
 
         reportImageInput.addEventListener('change', function(event) {
-            // Reset with the add button
-            reportImagePreviewContainer.innerHTML = `
-                <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
-                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
-                </div>
-            `;
+            // Iterate over selected files and apply validation
             Array.from(event.target.files).forEach(file => {
-                if (!file.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'rounded border img-thumbnail';
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    img.style.objectFit = 'cover';
-                    reportImagePreviewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
+                // Client-side validation for file type
+                if (!file.type.startsWith('image/')) {
+                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    return; // Skip this file and continue to next
+                }
+                // Client-side validation for file size
+                const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                if (file.size > maxSizeBytes) {
+                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    return; // Skip this file and continue to next
+                }
+
+                // Add file to array if max limit not reached
+                if (reportFiles.length < MAX_REPORT_IMAGES) {
+                    reportFiles.push(file);
+                } else {
+                    window.showCustomAlert(
+                        `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`, 'error');
+                    // Stop processing further files if limit is hit
+                    return;
+                }
             });
+            event.target.value = ''; // Clear the input value to allow re-selection of same files
+            updateReportImagePreview(); // Update the visual display
         });
 
         // --- Function to Open Report Modal ---
@@ -389,9 +464,8 @@
             if (rowData) {
                 document.getElementById('reportModalRequestTitle').textContent = rowData.dataset.requestTitle;
                 document.getElementById('reportModalOrderNumber').textContent = rowData.dataset.orderNumber;
-                // Populating worker name (Requester is reporting a Worker)
                 document.getElementById('reportModalRequesterName').textContent =
-                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`; // Corrected: Use worker's name for requester modal
+                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`;
                 document.getElementById('reportModalRequestLocation').textContent = rowData.dataset.requestLocation;
                 document.getElementById('reportModalTransactionCreatedAt').textContent = rowData.dataset
                     .transactionCreatedAt;
@@ -403,10 +477,39 @@
 
                 // Set hidden form fields for submission
                 document.getElementById('reportTransactionId').value = currentTransactionId;
-                document.getElementById('reportReportedId').value = reportedWorkerId; // Use the stored worker ID
+                document.getElementById('reportReportedId').value = reportedWorkerId;
 
-                // Correct route for job requester reports (reporting a worker)
+                // Set form action for report submission
                 document.getElementById('reportForm').action = `/user/submit-report/${currentTransactionId}`;
+
+                // --- Populate existing report data if available ---
+                const hasUserReport = rowData.getAttribute('data-has-user-report') === 'true';
+                const reportPhotoUrlsJson = rowData.getAttribute('data-report-photo-urls');
+                const reportReasons = rowData.getAttribute(
+                    'data-user-report-reasons'); // Assuming you add this data attribute
+
+                if (hasUserReport && reportPhotoUrlsJson) {
+                    try {
+                        reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs into reportFiles
+                        document.getElementById('reportNote').value = reportReasons || ''; // Populate reasons
+                        // Disable fields if report already exists
+                        document.getElementById('reportNote').disabled = true;
+                        reportImageInput.disabled = true;
+                        document.getElementById('submitReportButton').style.display = 'none'; // Hide submit button
+                        addImageButton.style.display = 'none'; // Hide add image button
+                    } catch (e) {
+                        console.error('Error parsing report photo URLs:', e);
+                        reportFiles = []; // Fallback to empty
+                    }
+                } else {
+                    // Reset for new report
+                    reportFiles = [];
+                    document.getElementById('reportNote').value = '';
+                    document.getElementById('reportNote').disabled = false;
+                    reportImageInput.disabled = false;
+                    document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
+                }
+                updateReportImagePreview(); // Render initial state (either empty or existing images)
             }
 
             // Show the report modal after a brief delay
@@ -432,7 +535,7 @@
         }
 
 
-        // --- Function to Submit Review via AJAX ---
+        // --- Function to Submit Review ---
         function submitReview() {
             const comment = document.getElementById('comment').value.trim();
             const rating = document.getElementById('rating-input').value;
@@ -448,101 +551,134 @@
                 return;
             }
 
-            // Send review data to the server
-            fetch(`/reviews/${currentTransactionId}`, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        transaction_id: currentTransactionId,
-                        reviewer_id: "{{ auth()->id() }}",
-                        reviewee_id: reportedWorkerId, // Reviewee is the worker (stored from modal populate)
-                        rating: rating,
-                        comment: comment,
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
-                        }).catch(() => {
-                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response
-                                .status);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        window.showCustomAlert('Review berhasil disimpan!', 'success');
-                        var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-                        completionModal.hide();
-                        location.reload(); // Reload page to reflect changes
-                    } else {
-                        window.showCustomAlert('Gagal menyimpan review, coba lagi. ' + (data.message || ''), 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting review:', error);
-                    window.showCustomAlert('Terjadi kesalahan saat mengirim review, coba lagi.\nDetails: ' + error.message, 'error');
-                });
+            // Submit the form normally. Laravel will handle the redirect with flashed data.
+            // Ensure the form's action is correctly set for review submission.
+            document.getElementById('reviewForm').submit();
+
+            // Optionally, disable button and show loading here, as page will reload
+            const submitBtn = document.getElementById('submitReviewButton');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
         }
 
-        // --- Function to Submit Report via AJAX ---
+        // --- Function to Submit Report ---
         function submitReport(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); // Prevent default form submission to handle manually
 
             const form = document.getElementById('reportForm');
-            if (!form) {
-                console.error('reportForm not found!');
+            const reasons = document.getElementById('reportNote').value.trim();
+
+            if (reportFiles.length === 0) {
+                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
                 return;
             }
-            const formData = new FormData(form);
-
-            // Client-side validation for report reasons
-            const reasons = document.getElementById('reportNote').value.trim();
             if (!reasons) {
                 window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
                 return;
             }
-            // Client-side validation for photos
-            if (reportImageInput.files.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+
+            // Re-validate files in reportFiles array before submission, as user might delete/add
+            let hasInvalidFile = false;
+            // Filter out existing URLs and only send File objects
+            const filesToSend = reportFiles.filter(item => item instanceof File);
+
+            for (const file of filesToSend) { // Use for...of for easy breaking
+                if (!file.type.startsWith('image/')) {
+                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    hasInvalidFile = true;
+                    break; // Exit loop
+                }
+                const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                if (file.size > maxSizeBytes) {
+                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    hasInvalidFile = true;
+                    break; // Exit loop
+                }
+            }
+            if (hasInvalidFile) {
                 return;
             }
 
-            fetch(form.action, {
+            const formData = new FormData(); // Create new FormData object for submission
+            // Append static form fields
+            formData.append('transaction_id', document.getElementById('reportTransactionId').value);
+            formData.append('reporter_id', document.getElementById('reportForm').querySelector('input[name="reporter_id"]')
+                .value);
+            formData.append('reported_id', document.getElementById('reportReportedId').value);
+            formData.append('reasons', reasons);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
+                'content')); // Manually add CSRF token
+
+            // Append all collected files from our `reportFiles` array
+            filesToSend.forEach((file, index) => {
+                formData.append(`photo[${index}]`, file);
+            });
+
+            const submitBtn = document.getElementById('submitReportButton');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim Laporan...';
+
+            // Submit the form using fetch, expecting a redirect
+            fetch(form.action, { // Use the form's action which includes transaction ID
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json' // Explicitly request JSON response
+                        // DO NOT set 'Content-Type': 'multipart/form-data' explicitly when using FormData,
+                        // the browser does it correctly with a boundary.
+                        'Accept': 'application/json, text/plain, */*' // Accept various response types
                     },
+                    redirect: 'follow' // Instructs fetch to follow redirects
                 })
                 .then(response => {
+                    // This block will be executed if the initial response is NOT a redirect (e.g., validation error, 4xx/5xx status)
+                    // If the server successfully redirects (2xx status), this block might be skipped as the browser handles the redirect.
                     if (!response.ok) {
-                        // Attempt to parse JSON error from server, or throw general error
+                        // Try to parse JSON errors from Laravel validation
                         return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
-                        }).catch(() => {
-                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response
-                                .status);
+                            let errorMessage = '';
+                            if (errorData.errors) {
+                                for (let key in errorData.errors) {
+                                    errorMessage += `${errorData.errors[key].join(', ')}\n`;
+                                }
+                                window.showCustomAlert('Validasi Gagal:\n' + errorMessage, 'error');
+                            } else {
+                                // Fallback for non-validation errors
+                                throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                            }
+                        }).catch(jsonError => {
+                            // Catch errors from parsing JSON or from the throw new Error above
+                            console.error('Error parsing server response:', jsonError);
+                            window.showCustomAlert('Terjadi kesalahan saat memproses respons server: ' +
+                                jsonError.message, 'error');
                         });
                     }
-                    return response.json();
+                    // If response is OK, but not a redirect (unlikely if backend redirects on success)
+                    // or if it's a successful JSON response we didn't expect,
+                    // it means the backend didn't redirect as planned.
+                    // We'll just return text to consume the response body if it's not a redirect.
+                    return response.text();
                 })
-                .then(data => {
-                    console.log(data);
-                    window.showCustomAlert(data.message, 'info');
-                    location.reload(); // Reload page to reflect changes
+                .then(text => {
+                    // This block is typically hit if the fetch promise resolves successfully
+                    // BUT the server did not issue a redirect (e.g., returned a success JSON or HTML directly).
+                    // If a redirect was successful, the page would have already navigated.
+                    console.log("Fetch completed, but no redirect occurred:", text);
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message, 'error');
+                    // Catch network errors or errors thrown from the .then(response => ...) block
+                    console.error('Error during report submission:', error);
+                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message,
+                        'error');
+                })
+                .finally(() => {
+                    // This finally block will always run.
+                    // For a successful redirect, the page will reload, making these UI updates moot.
+                    // But for client-side errors or server-side errors that don't redirect, they are important.
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Laporan';
                 });
         }
+
 
         // Handles click event for generating and downloading invoice
         function handleInvoiceLinkClick(e) {
@@ -559,31 +695,35 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            // No longer checking URL parameters for success messages, Laravel's session will handle it.
+            // The global alert display in master-job-req.blade.php handles it.
+
             const orderRows = document.querySelectorAll('.order-row');
             const submitReviewButton = document.getElementById('submitReviewButton');
             const reviewSectionContainer = document.getElementById('review-section-container');
             const reviewSectionHeading = document.getElementById('reviewSectionHeading');
+            const reportProblemButton = document.getElementById('reportProblemButton');
+            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
 
 
             let selectedRating = 0; // Local variable for selected rating within current modal view
 
-            // Function to render the review form
+            // Function to render the review form (unchanged)
             function renderReviewForm() {
-                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!'; // Set heading for new review
+                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
                 reviewSectionContainer.innerHTML = `
-                    <div class="text-center mt-0 mb-3 w-100">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
-                        @endfor
-                        <input type="hidden" name="rating" id="rating-input" value="0">
-                    </div>
-                    <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
-                        <textarea name="comment" id="comment" class="form-control" rows="3"
-                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
-                    </div>
-                `;
-                // Re-attach star rating event listeners for newly rendered stars
+            <div class="text-center mt-0 mb-3 w-100">
+                @for ($i = 1; $i <= 5; $i++)
+                    <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
+                @endfor
+                <input type="hidden" name="rating" id="rating-input" value="0">
+            </div>
+            <div class="ps-3 flex-fill d-flex flex-column w-100">
+                <label for="comment" class="form-label text-start">Komentar</label>
+                <textarea name="comment" id="comment" class="form-control" rows="3"
+                    placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+            </div>
+        `;
                 const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
                 const newRatingInput = document.getElementById('rating-input');
                 newStars.forEach(star => {
@@ -593,7 +733,7 @@
                     });
                     star.addEventListener('mouseout', function() {
                         updateStarDisplay(
-                            selectedRating); // Use selectedRating from the outer scope
+                            selectedRating);
                     });
                     star.addEventListener('click', function() {
                         selectedRating = parseInt(this.getAttribute('data-value'));
@@ -602,13 +742,13 @@
                     });
                 });
                 if (submitReviewButton) {
-                    submitReviewButton.style.display = 'block'; // Show submit button
+                    submitReviewButton.style.display = 'block';
                 }
             }
 
-            // Function to render the existing review display
+            // Function to render the existing review display (unchanged)
             function renderExistingReview(rating, comment) {
-                reviewSectionHeading.textContent = 'Ini penilaianmu'; // Set heading for existing review
+                reviewSectionHeading.textContent = 'Ini penilaianmu';
                 let starHtml = '';
                 for (let i = 1; i <= 5; i++) {
                     starHtml +=
@@ -616,17 +756,17 @@
                 }
 
                 reviewSectionContainer.innerHTML = `
-                    <div class="text-center mt-0 mb-3 w-100">
-                        ${starHtml}
-                    </div>
-                    <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
-                        <textarea id="comment" class="form-control" rows="3" disabled
-                            style="border-color:#8a8a8a;">${comment}</textarea>
-                    </div>
-                `;
+            <div class="text-center mt-0 mb-3 w-100">
+                ${starHtml}
+            </div>
+            <div class="ps-3 flex-fill d-flex flex-column w-100">
+                <label for="comment" class="form-label text-start">Komentar</label>
+                <textarea id="comment" class="form-control" rows="3" disabled
+                    style="border-color:#8a8a8a;">${comment}</textarea>
+            </div>
+        `;
                 if (submitReviewButton) {
-                    submitReviewButton.style.display = 'none'; // Hide submit button
+                    submitReviewButton.style.display = 'none';
                 }
             }
 
@@ -641,15 +781,14 @@
                     const hasReview = this.getAttribute('data-has-review') === 'true';
                     const userRating = this.getAttribute('data-user-rating');
                     const userComment = this.getAttribute('data-user-comment');
+                    const hasUserReport = this.getAttribute('data-has-user-report') === 'true';
 
 
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
-                    // Set the worker ID from the row for the requester to review/report
                     reportedWorkerId = this.getAttribute('data-worker-id');
 
                     if (orderStatusText === 'Selesai') {
-                        // For 'Selesai' status, open the completion modal
                         const completionModal = new bootstrap.Modal(document.getElementById(
                             'completionModal'));
                         completionModal.show();
@@ -677,7 +816,11 @@
                             .finishWork;
 
                         // Set form actions dynamically for the completion modal
+                        // This form will be submitted directly via .submit()
+                        // Ensure this route is correct for your ReviewController.store method
+                        // Or if `storeReview` is in TransactionController, adjust accordingly.
                         document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
+
 
                         // Conditional rendering of review section
                         if (hasReview) {
@@ -687,6 +830,24 @@
                         } else {
                             renderReviewForm();
                             selectedRating = 0; // Reset selectedRating for new review
+                        }
+
+                        // --- Handle Report Button State ---
+                        if (reportProblemButton) {
+                            if (hasUserReport) {
+                                reportProblemButton.textContent = 'Laporan sudah terkirim';
+                                reportProblemButton.disabled = true;
+                                reportProblemButton.classList.remove('text-danger');
+                                reportProblemButton.classList.add('text-secondary');
+                                reportProblemButton.onclick = null; // Remove click listener
+                            } else {
+                                reportProblemButton.textContent = 'Laporkan masalah';
+                                reportProblemButton.disabled = false;
+                                reportProblemButton.classList.remove('text-secondary');
+                                reportProblemButton.classList.add('text-danger');
+                                reportProblemButton.onclick =
+                                    openReportModal; // Re-attach click listener
+                            }
                         }
 
                         // Setup invoice link
@@ -703,24 +864,41 @@
                         // For these specific statuses, redirect to the ongoing request page
                         window.location.href = `/job-req/on-going-work-request/${transactionId}`;
                     } else {
-                        // For 'Dibatalin' and any other unhandled statuses, do nothing on click
                         console.log('Clicked on a row with status:', orderStatusText,
                             'No specific action defined.');
                     }
                 });
             });
 
-            // Attach submitReport to the "Kirim Laporan" button
-            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
+            // Attach submitReport to the "Kirim Laporan" button inside the report modal
             if (submitReportButtonForReportModal) {
                 submitReportButtonForReportModal.addEventListener('click', submitReport);
             }
+
+            // Attach submitReview to its button
+            if (submitReviewButton) {
+                // Changed from onclick in HTML to addEventListener for cleaner JS
+                submitReviewButton.addEventListener('click', submitReview);
+            }
+
 
             // Reset review form state when the completion modal is hidden
             const completionModalElement = document.getElementById('completionModal');
             completionModalElement.addEventListener('hidden.bs.modal', function() {
                 selectedRating = 0; // Reset selected rating
                 // The HTML content of reviewSectionContainer is rebuilt on modal open, so no need to clear its elements here.
+            });
+
+            // Clear report form state and re-enable button when the report modal is hidden
+            const reportWorkModalElement = document.getElementById('reportWorkModal');
+            reportWorkModalElement.addEventListener('hidden.bs.modal', function() {
+                document.getElementById('reportNote').value = ''; // Clear textarea
+                reportFiles = []; // Clear the global array of files
+                updateReportImagePreview
+                    (); // Reset preview container (removes all image wrappers and re-adds placeholder)
+                reportImageInput.value = ''; // Clear file input (important for re-selecting same files)
+                document.getElementById('submitReportButton').disabled = false;
+                document.getElementById('submitReportButton').textContent = 'Kirim Laporan';
             });
 
 
@@ -845,9 +1023,22 @@
     </script>
     <style>
         /* Star Rating Styles */
-        .star-rating {
+        .star-rating,
+        .star-animate {
             cursor: pointer;
             transition: color 0.2s ease-in-out;
+            margin-right: 0.1em;
+            /* Consistent right margin */
+            margin-left: 0.1em;
+            /* Consistent left margin */
+            display: inline-block;
+            /* Ensure margins are respected */
+        }
+
+        .star-rating:last-of-type,
+        .star-animate:last-of-type {
+            margin-right: 0;
+            /* No right margin for the last star */
         }
 
         .star-blue {
@@ -925,9 +1116,11 @@
 
         /* Fixed width for status badge */
         .status-badge-fixed {
-            min-width: 90px; /* Adjust this value as needed based on your longest status text */
+            min-width: 90px;
+            /* Adjust this value as needed based on your longest status text */
             text-align: center;
-            display: inline-flex; /* Use flexbox to center content vertically and horizontally */
+            display: inline-flex;
+            /* Use flexbox to center content vertically and horizontally */
             align-items: center;
             justify-content: center;
         }
@@ -1007,8 +1200,10 @@
             .tableHeader .col,
             .order-row .col {
                 font-size: 12px !important;
-                padding-left: 0.3rem; /* Default small padding */
+                padding-left: 0.3rem;
+                /* Default small padding */
                 padding-right: 0.3rem;
+                /* Default small padding */
                 white-space: normal !important;
             }
 
@@ -1028,7 +1223,8 @@
             }
 
             .order-row .status-badge-fixed {
-                min-width: 70px !important; /* Smaller width for mobile */
+                min-width: 70px !important;
+                /* Smaller width for mobile */
             }
 
             .order-row .col.m-0.p-0 {
@@ -1096,7 +1292,35 @@
             }
 
             .order-row .status-badge-fixed {
-                min-width: 60px !important; /* Even smaller width for very small screens */
+                min-width: 60px !important;
+                /* Even smaller width for very small screens */
+            }
+
+            /* You might also need to adjust modal font sizes if they become too large */
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
             }
         }
 
@@ -1172,7 +1396,8 @@
 
             /* Default padding for desktop Judul column header */
             .tableHeader .col:first-child {
-                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+                padding-left: 1rem;
+                /* Corresponds to Bootstrap's ps-3 */
             }
 
             .order-row .col {
@@ -1181,7 +1406,8 @@
 
             /* Default padding for desktop Judul column in order rows */
             .order-row .title-col {
-                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+                padding-left: 1rem;
+                /* Corresponds to Bootstrap's ps-3 */
             }
 
             .order-row .badge {

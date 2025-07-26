@@ -529,7 +529,7 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
+                    <div class="row mb-4">
                         <div class="col-md-6 col-lg-3">
                             <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
                             <p class="fw-medium">
@@ -920,7 +920,7 @@
                         reportModal.hide();
                     }
                     // >>> GANTI BARIS INI <<<
-                    window.location.href = "{{ route('job-req.beranda') }}"; // Redirect ke beranda job requester
+                    window.location.href = "{{ route('job-req.home') }}"; // Redirect ke beranda job requester
                 })
                 .catch(error => {
                     console.error('Error submitting report:', error);

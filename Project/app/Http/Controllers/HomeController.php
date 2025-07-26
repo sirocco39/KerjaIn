@@ -44,7 +44,7 @@ class HomeController extends Controller
         // $worker->update(['role' => 'job_taker']);
 
         // Redirect to the job taker home page with the flash message
-        return redirect()->route('job-taker.home')->with('custom_blue_alert', "Anda berhasil beralih ke peran Jobb Taker, {$firstName}!");
+        return redirect()->route('job-taker.home')->with('custom_blue_alert', "Anda berhasil beralih ke peran Job Taker, {$firstName}!");
     }
 
     /**
@@ -59,7 +59,6 @@ class HomeController extends Controller
         $fiveLatestRequests = WorkRequest::where('requester_id', $requesterId)
             ->whereNull('deleted_at')
             ->latest()
-            ->take(5)
             ->with('transaction')
             ->get();
 
@@ -79,7 +78,6 @@ class HomeController extends Controller
         $fiveLatestTransaction = Transaction::where('worker_id', $workerId)
             ->whereNull('deleted_at')
             ->latest()
-            ->take(5)
             ->with('requester', 'request')
             ->get();
 
