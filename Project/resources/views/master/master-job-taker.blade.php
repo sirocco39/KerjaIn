@@ -135,6 +135,11 @@
             color: white;
         }
 
+        .alert-blue-bg {
+            background-color: #309FFF;
+            color: white;
+        }
+
         #custom-alert-close {
             background: none;
             border: none;
@@ -266,7 +271,7 @@
                             {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('job-req.beranda') }}">
+                                    href="{{ route('job-req.home') }}">
                                     <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                         class="navIcon">
                                     Ganti Peran
@@ -471,18 +476,24 @@
             const successMessage = "{{ session('custom_success_alert') }}";
             const errorMessage = "{{ session('custom_error_alert') }}";
             const infoMessage = "{{ session('custom_info_alert') }}";
+            const blueMessage = "{{ session('custom_blue_alert') }}"; // New: Check for blue alert message
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                window.showCustomAlert(successMessage, 'success');
+                showCustomAlert(successMessage, 'success'); // Changed to 'success' type for success messages
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
-                window.showCustomAlert(errorMessage, 'error');
+                showCustomAlert(errorMessage, 'error');
+            } else if (blueMessage) { // New: Condition for custom blue alert
+                console.log('Flash message detected: Blue -', blueMessage);
+                showCustomAlert(blueMessage, 'blue'); // Use 'blue' type for the new color
             } else if (infoMessage) {
                 console.log('Flash message detected: Info -', infoMessage);
-                window.showCustomAlert(infoMessage, 'info');
+                showCustomAlert(infoMessage, 'info');
             }
 
+            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
+            window.showCustomAlert = showCustomAlert;
         });
     </script>
 </body>

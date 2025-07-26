@@ -212,7 +212,7 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function submitReport(HttpRequest $request)
+    public function storeReport(HttpRequest $request)
     {
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
@@ -240,9 +240,30 @@ class TransactionController extends Controller
                 'status' => 'Not Reviewed',
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Laporan berhasil dikirim.']);
+            // Changed from JSON response to redirect with custom alert
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+            // Changed from JSON response to redirect with custom alert
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage()
+            ], 500);
         }
+    }
+    public function getTransactionDetails($id)
+    {
+        // Temukan transaksi berdasarkan ID
+        $transaction = Transaction::findOrFail($id);
+        // Otorisasi: Pastikan hanya worker yang bersangkutan yang bisa akse
+        // Kirim kembali data yang dibutuhkan dalam format JSON
+        return response()->json([
+            'success' => true,
+            'finish_work' => $transaction->finish_work ? date('d M Y H:i', strtotime($transaction->finish_work)) : '-',
+            // Anda bisa tambahkan data lain di sini jika perlu di masa depan
+            // 'status_text' => $transaction->status_text,
+        ]);
     }
 }

@@ -110,8 +110,8 @@
                     {{-- Search Bar for Users Log Activity --}}
                     <div class="p-0 position-relative mt-3">
                         <form id="usersLogSearchForm" action="{{ route('admin.users.index') }}" method="GET" class="mb-0">
-                            <div class="input-group rounded-start m-0">
-                                <input type="text" id="usersLogSearchInput" name="search_query" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna berdasarkan ID atau Nama..." autocomplete="off" value="{{ $searchQuery ?? '' }}">
+                            <div class="input-group m-0">
+                                <input type="text" id="usersLogSearchInput" name="search_query" class="form-control bg-white border border-primary p-2" placeholder="Cari pengguna berdasarkan ID atau Nama..." autocomplete="off" value="{{ $searchQuery ?? '' }}">
                                 <button class="btn btn-primary m-2" type="submit">Cari</button>
                             </div>
                         </form>
@@ -124,12 +124,12 @@
                 </div>
                 <div class="card-body p-3">
                     @if($searchQuery && $searchedUser)
-                    <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                    <div class="alert alert-success d-flex align-items-center mb-3" role="alert"  style="color:white">
                         <i class="material-symbols-rounded me-2">check_circle</i>
                         <div>
-                            Pengguna **{{ $searchedUser->first_name }} {{ $searchedUser->last_name }}** ditemukan.
+                            Pengguna <strong>{{ $searchedUser->first_name }} {{ $searchedUser->last_name }}</strong> ditemukan.
                             <br>
-                            ID: **{{ $searchedUser->id }}**
+                            ID: <strong>{{ $searchedUser->id }}</strong>
                             <br>
                             @if($searchedUser->last_activity)
                             Aktif {{ \Carbon\Carbon::parse($searchedUser->last_activity)->diffForHumans(null, false, true) }}
@@ -141,10 +141,10 @@
                         </div>
                     </div>
                     @elseif($searchQuery && !$searchedUser)
-                    <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                    <div class="alert alert-danger d-flex align-items-center mb-3" role="alert" style="color:white">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
-                            Pengguna dengan ID atau Nama "**{{ $searchQuery }}**" tidak ditemukan.
+                            Pengguna dengan ID atau Nama <strong>{{ $searchQuery }}</strong> tidak ditemukan.
                         </div>
                     </div>
                     @endif
@@ -161,10 +161,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if($searchedUser)
                                 @forelse($activityLogs as $log)
                                 <tr>
                                     <td class="align-middle">
-                                        <span class="text-secondary text-xs font-weight-bold">{{ $log->created_at->diffForHumans() }}</span>
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $log->created_at }}</span>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">
@@ -188,11 +189,14 @@
                                     <td colspan="4" class="text-center text-secondary text-sm">Tidak ada log aktivitas {{ $searchedUser ? 'untuk pengguna ini' : 'terbaru' }}.</td>
                                 </tr>
                                 @endforelse
+                                @endif
                             </tbody>
                         </table>
                     </div>
                     <div class="mt-4">
+                        @if($searchedUser)
                         {{ $activityLogs->links() }}
+                        @endif
                     </div>
                 </div>
             </div>

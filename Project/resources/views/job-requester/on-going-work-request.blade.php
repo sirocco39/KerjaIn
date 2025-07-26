@@ -13,7 +13,7 @@
         $amount = $request->final_price;
         $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
 
-        $alamat = $request->alamat;
+        $alamat = $request->location; // Menggunakan $request->location dari model
         $alamatEncoded = urlencode($alamat);
         $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
 
@@ -74,19 +74,6 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Tanggal</div>
-                                </div>
-                                <div class="py-2 fw-bold text-end">{{ $date }}</div>
-                            </div>
-                            <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
-                                <div class="separate d-flex align-items-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M12 2.25C6.615 2.25 2.25 6.615 2.25 12C2.25 17.385 6.615 21.75 12 21.75C17.385 21.75 21.75 17.385 21.75 12C21.75 6.615 17.385 2.25 12 2.25ZM12.75 6C12.75 5.80109 12.671 5.61032 12.5303 5.46967C12.3897 5.32902 12.1989 5.25 12 5.25C11.8011 5.25 11.6103 5.32902 11.4697 5.46967C11.329 5.61032 11.25 5.80109 11.25 6V12C11.25 12.414 11.586 12.75 12 12.75H16.5C16.6989 12.75 16.8897 12.671 17.0303 12.5303C17.171 12.3897 17.25 12.1989 17.25 12C17.25 11.8011 17.171 11.6103 17.0303 11.4697C16.8897 11.329 16.6989 11.25 16.5 11.25H12.75V6Z"
-                                            fill="#133E87" />
-                                    </svg>
-
                                     <div class="p-2">Jam</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $time }}</div>
@@ -112,7 +99,7 @@
                                             d="M12 7.5C11.4033 7.5 10.831 7.73705 10.409 8.15901C9.98705 8.58097 9.75 9.15326 9.75 9.75C9.75 10.3467 9.98705 10.919 10.409 11.341C10.831 11.7629 11.4033 12 12 12C12.5967 12 13.169 11.7629 13.591 11.341C14.0129 10.919 14.25 10.3467 14.25 9.75C14.25 9.15326 14.0129 8.58097 13.591 8.15901C13.169 7.73705 12.5967 7.5 12 7.5Z"
                                             fill="#133E87" />
                                         <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3H20.625C21.66 3 22.5 3.84 22.5 4.875V14.625C22.5 15.661 21.66 16.5 20.625 16.5H3.375C3.12877 16.5 2.88495 16.4515 2.65747 16.3573C2.42998 16.263 2.22328 16.1249 2.04917 15.9508C1.87506 15.7767 1.73695 15.57 1.64273 15.3425C1.5485 15.115 1.5 14.8712 1.5 14.625V4.875ZM8.25 9.75C8.25 8.75544 8.64509 7.80161 9.34835 7.09835C10.0516 6.39509 11.0054 6 12 6C12.9946 6 13.9484 6.39509 14.6517 7.09835C15.3549 7.80161 15.75 8.75544 15.75 9.75C15.75 10.7446 15.3549 11.6984 14.6517 12.4017C13.9484 13.1049 12.9946 13.5 12 13.5C11.0054 13.5 10.0516 13.1049 9.34835 12.4017C8.64509 11.6984 8.25 10.7446 8.25 9.75ZM18.75 9C18.5511 9 18.3603 9.07902 18.2197 9.21967C18.079 9.36032 18 9.55109 18 9.75V9.758C18 10.172 18.336 10.508 18.75 10.508H18.758C18.9569 10.508 19.1477 10.429 19.2883 10.2883C19.429 10.1477 19.508 9.95691 19.508 9.758V9.75C19.508 9.55109 19.429 9.36032 19.2883 9.21967C19.1477 9.07902 18.9569 9 18.758 9H18.75ZM4.5 9.75C4.5 9.55109 4.57902 9.36032 4.71967 9.21967C4.86032 9.07902 5.05109 9 5.25 9H5.258C5.45691 9 5.64768 9.07902 5.78833 9.21967C5.92898 9.36032 6.008 9.55109 6.008 9.75V9.758C6.008 9.95691 5.92898 10.1477 5.78833 10.2883C5.64768 10.429 5.45691 10.508 5.258 10.508H5.25C5.05109 10.508 4.86032 10.429 4.71967 10.2883C4.57902 10.1477 4.5 9.95691 4.5 9.758V9.75Z"
+                                            d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3H20.625C21.66 3 22.5 3.84 22.5 4.875V14.625C22.5 15.661 21.66 16.5 20.625 16.5H3.375C3.12877 16.5 2.88495 16.4515 2.65747 16.3573C2.42998 16.263 2.22328 16.1249 2.04917 15.9508C1.87506 15.7767 1.73695 15.57 1.64273 15.3425C1.5485 15.115 1.5 14.8712 1.5 14.625V4.875ZM8.25 9.75C8.25 8.75544 8.64509 7.80161 9.34835 7.09835C10.0516 6.39509 11.0054 6 12 6C12.9946 6 13.9484 6.39509 14.6517 7.09835C15.3549 7.80161 15.75 8.75544 15.75 9.75C15.75 10.7446 15.3549 11.6984 14.6517 12.4017C13.9484 13.1049 12.9946 13.5 12 13.5C11.0054 13.5 10.0516 13.1049 9.34835 12.4017C8.64509 11.6984 8.25 10.7446 8.25 9.75ZM18.75 9C18.5511 9 18.3603 9.07902 18.2197 9.21967C18.079 9.36032 18 9.55109 18 9.75V9.758C18 10.172 18.336 10.508 18.75 10.508H18.758C18.9569 10.508 19.1477 10.429 19.2883 10.2883C19.429 10.1477 19.508 9.95691 19.508 9.758V9.75C19.508 9.55109 19.429 9.36032 19.2883 9.21967C19.1477 9.07902 19.508 9 18.758 9H18.75ZM4.5 9.75C4.5 9.55109 4.57902 9.36032 4.71967 9.21967C4.86032 9.36032 5.05109 9.55109 5.25 9H5.258C5.45691 9 5.64768 9.07902 5.78833 9.21967C5.92898 9.36032 6.008 9.55109 6.008 9.75V9.758C6.008 9.95691 5.92898 10.1477 5.78833 10.2883C5.64768 10.429 5.45691 10.508 5.258 10.508H5.25C5.05109 10.508 4.86032 10.429 4.71967 10.2883C4.57902 10.1477 4.5 9.95691 4.5 9.758V9.75Z"
                                             fill="#133E87" />
                                         <path
                                             d="M2.25 18C2.05109 18 1.86032 18.079 1.71967 18.2197C1.57902 18.3603 1.5 18.5511 1.5 18.75C1.5 18.9489 1.57902 19.1397 1.71967 19.2803C1.86032 19.421 2.05109 19.5 2.25 19.5C7.65 19.5 12.88 20.222 17.85 21.575C19.04 21.899 20.25 21.017 20.25 19.755V18.75C20.25 18.5511 20.171 18.3603 20.0303 18.2197C19.8897 18.079 19.6989 18 19.5 18H2.25Z"
@@ -177,9 +164,7 @@
                             <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center"
                                 style="border: 1px solid #cacadd; height:100%;">
 
-                                <!-- Tombol Tandai Selesai -->
                                 @if ($transaction->status == 'submitted')
-                                    <!-- Tombol Tandai Selesai hanya muncul jika status sesuai -->
                                     <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
                                         data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
                                         style="background-color:#294287; width:88%;">
@@ -188,7 +173,6 @@
                                 @endif
 
                                 @if ($transaction->status == 'completed')
-                                    <!-- Tombol Tandai Selesai hanya muncul jika status sesuai -->
                                     <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                         style="width:88%;cursor: not-allowed;pointer-events: none;">
                                         Selesai
@@ -227,7 +211,6 @@
     </div>
 
 
-    <!-- Modal tandai selesai flow pertama-->
     <div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -270,7 +253,6 @@
         </div>
     </div>
 
-    <!-- Modal tandai selesai flow kedua-->
     <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
@@ -282,10 +264,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <!-- Modal body with responsive scroll behavior -->
                     <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 90vh;">
                         <div class="d-flex flex-column flex-lg-row gap-3">
-                            <!-- Detail Pesanan -->
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill">
@@ -351,7 +331,6 @@
 
                             <div class="vr d-none d-lg-block mx-3"></div>
 
-                            <!-- Rating + Comment -->
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
                                 <h4 class="fw-semibold mt-3 mb-1">
                                     @if ($hasReview)
@@ -363,7 +342,8 @@
                                 <div class="text-center mt-0 mb-3 w-100">
                                     @if ($hasReview)
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star-fill {{ $i <= $userReview->rating ? 'star-blue' : 'text-secondary' }} fs-2"></i>
+                                            <i
+                                                class="bi bi-star-fill {{ $i <= $userReview->rating ? 'star-blue' : 'text-secondary' }} fs-2"></i>
                                         @endfor
                                     @else
                                         @for ($i = 1; $i <= 5; $i++)
@@ -400,7 +380,6 @@
     </div>
 
 
-    <!-- Modal lihat bukti penyelesaian -->
     <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 800px; width: 100%; margin-top: 5vh;">
@@ -412,11 +391,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <!-- Scrollable only on small screens -->
                 <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 85vh;">
                     <div class="d-flex flex-column flex-lg-row gap-3">
 
-                        <!-- Left side: Image / Placeholder -->
                         <div class="d-flex flex-column flex-grow-1">
                             <h6 class="fw-bold">Lampiran Bukti Pekerjaan</h6>
                             <div class="rounded-3 my-2 p-2 d-flex justify-content-center align-items-center"
@@ -427,7 +404,6 @@
                                 @else
                                     <div
                                         class="text-center text-muted d-flex flex-column justify-content-center align-items-center">
-                                        <!-- Placeholder SVG -->
                                         <svg width="80" height="80" viewBox="0 0 120 120" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -442,7 +418,6 @@
 
                         <div class="vr d-none d-lg-block mx-3"></div>
 
-                        <!-- Right side: Catatan dan Tombol -->
                         <div class="d-flex flex-column flex-grow-1">
                             <h6 class="fw-bold">Catatan dari Pekerja</h6>
                             <div class="rounded-3 mt-2 mb-4 p-2"
@@ -464,13 +439,11 @@
         </div>
     </div>
 
-    <!-- modal batalkan kerja -->
     <div class="modal fade" id="cancelWorkModal" tabindex="-1" aria-labelledby="cancelWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" style="max-width: 600px;">
             <div class="modal-content p-4">
 
-                <!-- Header -->
                 <div class="d-flex align-items-center justify-content-center">
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -487,13 +460,11 @@
                     </svg>
                 </div>
 
-                <!-- Body Text -->
                 <div class="text-center my-4 fw-semibold">
                     <div>Apakah kamu yakin ingin membatalkan pekerjaan ini?</div>
                     <div>Tindakan ini bisa mempengaruhi reputasimu di platform KerjaIn.</div>
                 </div>
 
-                <!-- Action Buttons -->
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
                     class="d-flex flex-column flex-lg-row gap-3 mt-4">
                     @csrf
@@ -521,7 +492,7 @@
                     </ul>
                 </div>
             @endif
-            <form id="reportForm" action="{{ route('worker.submitReport', $transaction->id) }}" method="POST"
+            <form id="reportForm" action="{{ route('user.submitReport', $transaction->id) }}" method="POST"
                 enctype="multipart/form-data" class="modal-content">
                 @csrf
                 <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
@@ -529,7 +500,6 @@
                 <input type="hidden" name="reported_id" value="{{ $worker->id }}">
 
 
-                <!-- Header -->
                 <div class="modal-header border-0 justify-content-center">
                     <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
@@ -538,9 +508,7 @@
 
                 <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
 
-                <!-- Body -->
                 <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                    <!-- Informasi Pesanan -->
                     <div class="row mb-3">
                         <div class="col-md-6 col-lg-3">
                             <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
@@ -582,14 +550,12 @@
                         </div>
                     </div>
 
-                    <!-- Total -->
                     <div class="d-flex justify-content-between mb-4">
                         <p class="text-black-50 fw-semibold mb-0">Total</p>
                         <p class="fw-medium fs-5 mb-0">Rp
                             {{ number_format($request->final_price, 2, ',', '.') }}</p>
                     </div>
 
-                    <!-- Upload Bukti -->
                     <div class="mb-4">
                         <label class="form-label fw-semibold">Upload Bukti
                             (gambar):</label>
@@ -603,7 +569,6 @@
                             multiple>
                     </div>
 
-                    <!-- Keluhan -->
                     <div class="mb-4">
                         <label for="reportNote" class="form-label fw-semibold">Keluh Kesah
                             Anda</label>
@@ -612,7 +577,6 @@
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="modal-footer border-0 d-flex justify-content-end">
                     <button type="submit" class="btn btn-danger px-4 py-2">Kirim
                         Laporan</button>
@@ -627,7 +591,7 @@
         // Variabel ini perlu diakses oleh beberapa fungsi, jadi kita letakkan di sini.
         // ===================================================================
         let selectedRating = 0;
-
+        window.isOpeningReportModal = false; // <<< Ttambahkan flag global ini
 
         // ===================================================================
         // >> FUNGSI-FUNGSI UTAMA (Dipanggil dari atribut onclick di HTML)
@@ -716,7 +680,9 @@
                         window.showCustomAlert(data.message, 'success');
                         var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
                         if (completionModal) completionModal.hide();
-                        // Page reload will be handled by the 'hidden.bs.modal' listener added in point 1.
+                        // >>> TAMBAH BARIS INI <<<
+                        location.reload(); // Reload halaman setelah review berhasil dikirim
+                        // >>> BATAS TAMBAH <<<
                     } else {
                         let errorMessage = data.message || 'Gagal menyimpan review, coba lagi.';
                         if (data.errors) {
@@ -735,7 +701,7 @@
                     console.error(error);
                     // Check if it's a network error or an error thrown from `.then` (which might contain server errors)
                     if (error.message) {
-                         window.showCustomAlert('Terjadi kesalahan: ' + error.message, 'error');
+                        window.showCustomAlert('Terjadi kesalahan: ' + error.message, 'error');
                     } else {
                         window.showCustomAlert('Terjadi kesalahan, coba lagi.', 'error');
                     }
@@ -743,6 +709,10 @@
         }
 
         function openReportModal() {
+            // >>> TAMBAH BARIS INI <<<
+            window.isOpeningReportModal = true; // Set flag ke true
+            // >>> BATAS TAMBAH <<<
+
             var completionModalInstance = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
             if (completionModalInstance) {
                 completionModalInstance.hide();
@@ -752,7 +722,7 @@
             setTimeout(() => {
                 var reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
                 reportModal.show();
-            }, 500);
+            }, 300); // Sesuaikan jeda sesuai kebutuhan (misal 300ms)
         }
 
         // ===================================================================
@@ -766,6 +736,14 @@
             function initPhotoPreview(inputId, previewContainerId) {
                 const input = document.getElementById(inputId);
                 const previewContainer = document.getElementById(previewContainerId);
+
+                const reportForm = document.getElementById('reportForm');
+                if (reportForm) {
+                    reportForm.addEventListener('submit', function(event) {
+                        event.preventDefault(); // Mencegah submit form HTML bawaan
+                        submitReport(); // Memanggil fungsi submitReport() Anda
+                    });
+                }
 
                 if (input && previewContainer) {
                     input.addEventListener('change', function(event) {
@@ -793,7 +771,6 @@
             // Panggil fungsi init untuk semua preview foto
             initPhotoPreview('photoInputReport', 'previewContainerReport');
             initPhotoPreview('photoInputProof', 'previewContainerProof');
-            initPhotoPreview('reportImageInput', 'imagePreviewContainer');
 
 
             // Logika untuk Bintang Rating (Hanya satu blok yang benar)
@@ -856,25 +833,30 @@
                         .then(data => {
                             if (data.success) {
                                 window.showCustomAlert(data.message, "success"); // Show success alert
-                                const confirmModal = bootstrap.Modal.getInstance(document.getElementById('completeJobModal'));
+                                const confirmModal = bootstrap.Modal.getInstance(document
+                                    .getElementById('completeJobModal'));
                                 if (confirmModal) confirmModal.hide();
 
-                                const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+                                const completionModal = new bootstrap.Modal(document.getElementById(
+                                    'completionModal'));
                                 completionModal.show();
 
-                                // Add event listener to reload page after completionModal is hidden
-                                document.getElementById('completionModal').addEventListener('hidden.bs.modal', function() {
-                                    location.reload();
-                                }, {
-                                    once: true
-                                }); // Use { once: true } to ensure it only runs once
+                                // --- HAPUS listener ini. Reload akan dihandle oleh submitReview() ---
+                                // document.getElementById('completionModal').addEventListener('hidden.bs.modal', function() {
+                                //     location.reload();
+                                // }, {
+                                //     once: true
+                                // });
+                                // --- BATAS HAPUS ---
                             } else {
-                                window.showCustomAlert(data.message || 'Terjadi kesalahan.', "error"); // Use custom alert for errors too
+                                window.showCustomAlert(data.message || 'Terjadi kesalahan.',
+                                    "error"); // Use custom alert for errors too
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            window.showCustomAlert('Terjadi kesalahan. Silakan coba lagi.', "error"); // Use custom alert for errors
+                            window.showCustomAlert('Terjadi kesalahan. Silakan coba lagi.',
+                                "error"); // Use custom alert for errors
                         })
                         .finally(() => {
                             this.disabled = false;
@@ -883,6 +865,82 @@
                 });
             }
 
+            // >>> TAMBAH BLOK KODE INI <<<
+            // Listener untuk completionModal saat disembunyikan
+            const completionModalElement = document.getElementById('completionModal');
+            if (completionModalElement) {
+                completionModalElement.addEventListener('hidden.bs.modal', function() {
+                    // Hanya reload jika kita TIDAK dalam proses membuka modal laporan
+                    if (!window.isOpeningReportModal) {
+                        location.reload();
+                    }
+                    // Reset flag setelah modal disembunyikan
+                    window.isOpeningReportModal = false;
+                });
+            }
+            // >>> BATAS TAMBAH <<<
+
         }); // Akhir dari DOMContentLoaded
+        function submitReport() {
+            const form = document.getElementById('reportForm');
+            if (!form) {
+                console.error('reportForm not found!');
+                return;
+            }
+            const formData = new FormData(form);
+
+            const reportNote = document.getElementById('reportNote').value;
+            if (!reportNote.trim()) {
+                window.showCustomAlert('Harap isi keterangan masalah terlebih dahulu.', 'error');
+                return;
+            }
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest', // Crucial for Laravel AJAX detection
+                        'Accept': 'application/json' // Request JSON response
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw errorData; // Throw the parsed error object
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Report submission data:', data);
+                    window.showCustomAlert(data.message, 'success');
+                    var reportModal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+                    if (reportModal) {
+                        reportModal.hide();
+                    }
+                    // >>> GANTI BARIS INI <<<
+                    window.location.href = "{{ route('job-req.beranda') }}"; // Redirect ke beranda job requester
+                })
+                .catch(error => {
+                    console.error('Error submitting report:', error);
+                    let errorMessage = 'Terjadi kesalahan saat mengirim laporan.';
+
+                    if (error.errors) {
+                        errorMessage = 'Validasi gagal:';
+                        for (const key in error.errors) {
+                            if (error.errors.hasOwnProperty(key)) {
+                                error.errors[key].forEach(msg => {
+                                    errorMessage += `\n- ${msg}`;
+                                });
+                            }
+                        }
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+
+                    window.showCustomAlert(errorMessage, 'error');
+                });
+        }
     </script>
 @endsection

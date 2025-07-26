@@ -2,11 +2,11 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <h1 class="mb-4">User Reports Management</h1>
+    <h1 class="mb-4">Management Laporan Pengguna</h1>
 
     {{-- Success Message --}}
     @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show" role="alert" style="color:white">
         {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -24,12 +24,12 @@
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ $currentStatus == 'Not Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}">
-                Not Reviewed <span class="badge bg-warning">{{ \App\Models\Report::where('status', 'Not Reviewed')->count() }}</span>
+                Belum Ditinjau <span class="badge bg-warning">{{ \App\Models\Report::where('status', 'Not Reviewed')->count() }}</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ $currentStatus == 'Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Reviewed']) }}">
-                Reviewed <span class="badge bg-success">{{ \App\Models\Report::where('status', 'Reviewed')->count() }}</span>
+                Sudah Ditinjau <span class="badge bg-success">{{ \App\Models\Report::where('status', 'Reviewed')->count() }}</span>
             </a>
         </li>
     </ul>
@@ -46,11 +46,11 @@
                     <thead class="table-light">
                         <tr>
                             <th>ID</th>
-                            <th>Date</th>
-                            <th>Reporter</th>
-                            <th>Reported User</th>
+                            <th>Tanggal</th>
+                            <th>Pelapor</th>
+                            <th>Pengguna yang dilaporkan</th>
                             <th>Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,15 +70,15 @@
                             </td>
                             <td>
                                 @if ($report->status == 'Reviewed')
-                                <span class="badge bg-success">Reviewed</span>
+                                <span class="badge bg-success">Belum Ditinjau</span>
                                 @else
-                                <span class="badge bg-warning text-dark">Not Reviewed</span>
+                                <span class="badge bg-warning text-dark">Belum Ditinjau</span>
                                 @endif
                             </td>
                             <td class="text-end">
                                 {{-- Ubah ini untuk mengarah ke halaman detail --}}
                                 <a href="{{ route('admin.reports.show', $report) }}" class="btn btn-sm btn-info me-2">
-                                    View Details
+                                    Detail
                                 </a>
 
                                 {{-- Action Form for Mark as Reviewed/Not Reviewed (bisa dipindahkan ke halaman detail) --}}
@@ -88,10 +88,10 @@
                                     @method('PATCH')
                                     @if ($report->status == 'Not Reviewed')
                                     <input type="hidden" name="status" value="Reviewed">
-                                    <button type="submit" class="btn btn-sm btn-success">Mark as Reviewed</button>
+                                    <button type="submit" class="btn btn-sm btn-success">Tandai Sudah Ditinjau</button>
                                     @else
                                     <input type="hidden" name="status" value="Not Reviewed">
-                                    <button type="submit" class="btn btn-sm btn-secondary">Mark as Not Reviewed</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary">Tandai Belum Ditinjau</button>
                                     @endif
                                 </form>
                             </td>

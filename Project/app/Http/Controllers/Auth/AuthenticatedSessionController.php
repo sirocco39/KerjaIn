@@ -35,6 +35,17 @@ class AuthenticatedSessionController extends Controller
 
         // Attempt login
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            $ipAddress = $request->ip();
+            $emailAttempted = $request->input('email');
+
+            activity()
+                ->inLog('Authentication') // Kelompokkan ke log 'Authentication'
+                ->withProperties([ // Simpan data penting untuk investigasi
+                    'ip_address' => $ipAddress,
+                    'email_attempted' => $emailAttempted
+                ])
+                // Lengkapi deskripsi log agar lebih informatif
+                ->log("Percobaan login gagal untuk email '{$emailAttempted}' dari IP '{$ipAddress}'"); // Menggunakan IP & Email di deskripsi
             if ($request->expectsJson()) {
                 return response()->json([
                     'errors' => [
@@ -109,12 +120,12 @@ class AuthenticatedSessionController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => "Login berhasil! Selamat datang, {$firstName}!",
-                'redirect_url' => route('job-req.beranda') // Changed redirect URL for JSON response
+                'redirect_url' => route('job-req.home') // Changed redirect URL for JSON response
             ]);
         }
 
         // Changed to custom alert
-        return redirect()->route('job-req.beranda')->with('custom_info_alert', "Login berhasil! Selamat datang, {$firstName}!");
+        return redirect()->route('job-req.home')->with('custom_blue_alert', "Login berhasil! Selamat datang, {$firstName}!");
     }
 
 
@@ -134,6 +145,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('custom_info_alert', 'Anda telah berhasil keluar.');
+        // Changed to custom alert
+        return redirect('/')->with('custom_blue_alert', 'Anda telah berhasil keluar.');
     }
 }

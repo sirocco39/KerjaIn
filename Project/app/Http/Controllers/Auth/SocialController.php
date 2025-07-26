@@ -50,12 +50,9 @@ class SocialController extends Controller
         }
 
         Auth::login($user);
-        activity()
-            ->inLog('Authentication')
-            ->causedBy($user)
-            ->log('User telah login menggunakan akun Google');
+        $firstName = Auth::user()->first_name ?? 'Pengguna';
 
         // Changed to custom alert
-        return redirect('/')->with('custom_info_alert', 'Login berhasil! Selamat datang di aplikasi kami.');
+        return redirect('/job-req/beranda')->with('custom_blue_alert', "Login berhasil! Selamat datang, {$firstName}!");
     }
 }

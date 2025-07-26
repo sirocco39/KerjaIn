@@ -43,13 +43,13 @@
                                 @forelse($activities as $activity)
                                 <tr>
                                     <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->created_at->format('d M Y, H:i:s') }}</span>
+                                    </td>
+                                    <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">{{ $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name : 'N/A'  }}</span>
                                     </td>
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">{{ $activity->subject ? $activity->subject->first_name . ' ' . $activity->subject->last_name : 'N/A'  }}</span>
-                                    </td>
-                                    <td class="align-middle">
-                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->created_at->format('d M Y, H:i:s') }}</span>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">{{ $activity->description }}</p>

@@ -11,7 +11,7 @@
                     <div class="p-0 position-relative mt-3">
                         <form id="blockedUsersSearchForm" action="{{ route('admin.users.blockedList') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
-                                <input type="text" id="blockedUsersSearchInput" name="search_query" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna diblokir berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
+                                <input type="text" id="blockedUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna diblokir berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
                                 <button class="btn btn-primary m-2" type="submit">Cari</button>
                             </div>
                         </form>
@@ -22,11 +22,11 @@
                     {{-- End Search Bar --}}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
-                    @if(request('search_query') && $blockedUsers->isEmpty())
-                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert">
+                    @if(request('search_query') && $blockedUsers->isEmpty()) 
+                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert"  style="color:white">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
-                            Pengguna diblokir dengan ID atau Nama "**{{ request('search_query') }}**" tidak ditemukan.
+                            Pengguna diblokir dengan ID atau Nama <strong>{{ request('search_query') }}</strong> tidak ditemukan.
                         </div>
                     </div>
                     @endif
