@@ -236,7 +236,7 @@ class WorkerRegistrationController extends Controller
         User::where('id', Auth::id())->update(['is_worker' => 1]);
         Session::forget('worker_registration');
         // update is_worker user jadi 1
-        return redirect()->route('worker.register.success')->with('custom_success_alert', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
+        return redirect()->route('worker.register.success')->with('custom_blue_alert', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
     }
 
     public function showSuccessPage()

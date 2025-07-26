@@ -95,7 +95,7 @@ class RegisteredUserController extends Controller
 
         if (!$cachedOtp) {
             // Changed to custom alert
-            return back()->with('custom_error_alert', 'OTP sudah kedaluwarsa atau belum diminta.')->withInput();
+            return back()->with('custom_error_alert', 'OTP sudah kadaluwarsa atau belum diminta.')->withInput();
         }
 
         if ($cachedOtp !== $request->otp) {
@@ -118,7 +118,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // Changed to custom alert, including the user's first name
-        return redirect('/job-req/beranda')->with('custom_info_alert', "Daftar berhasil! Selamat datang, {$user->first_name}!");
+        return redirect('/job-req/beranda')->with('custom_blue_alert', "Daftar berhasil! Selamat datang, {$user->first_name}!");
     }
 }
 

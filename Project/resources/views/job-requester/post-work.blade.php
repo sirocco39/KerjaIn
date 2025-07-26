@@ -73,7 +73,7 @@
 
                     {{-- Harga --}}
                     <div class="mb-4">
-                        <label for="work-price-text" class="form-label fw-semibold">Harga</label>
+                        <label for="work-price-text" class="form-label fw-semibold">Upah</label>
                         <div class="input-group">
                             <span class="input-group-text rounded-start-3">Rp</span>
                             <input type="number" class="form-control rounded-end-3" min="5000" id="work-price-text"

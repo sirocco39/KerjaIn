@@ -135,6 +135,11 @@
             color: white;
         }
 
+        .alert-blue-bg {
+            background-color: #309FFF;
+            color: white;
+        }
+
         #custom-alert-close {
             background: none;
             border: none;
@@ -256,7 +261,7 @@
                                 {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center gap-1"
-                                        href="{{ route('job-req.beranda') }}">
+                                        href="{{ route('switch.to.requester') }}">
                                         <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                             class="navIcon">
                                         Ganti Peran
@@ -406,14 +411,14 @@
 
     <script defer>
         // Custom Alert function (copied from master-job-req.blade.php's original)
-        window.showCustomAlert = function(message, type = 'info', duration = 3000) {
+        function showCustomAlert(message, type = 'info', duration = 3000) {
             const alertContainer = document.getElementById('custom-alert-container');
             const customAlert = document.getElementById('custom-alert');
             const alertMessageSpan = document.getElementById('custom-alert-message');
             const alertCloseButton = document.getElementById('custom-alert-close');
 
             // Clear previous classes and reset state
-            customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'show');
+            customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'alert-blue-bg', 'show');
             customAlert.style.display = 'none'; // Hide it initially for transition
 
             // Set message and type-specific background
@@ -424,6 +429,8 @@
                 customAlert.classList.add('alert-error-bg');
             } else if (type === 'info') {
                 customAlert.classList.add('alert-info-bg');
+            } else if (type === 'blue') { // New condition for 'blue' type
+                customAlert.classList.add('alert-blue-bg');
             }
 
             // Show the alert with a slight delay for CSS transition to work
@@ -438,8 +445,7 @@
                 customAlert.classList.remove('show');
                 setTimeout(() => {
                     customAlert.style.display = 'none';
-                    alertContainer.style.pointerEvents =
-                    'none'; // Make container unclickable when hidden
+                    alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
                 }, 300); // Match CSS transition duration
             }, duration);
 
@@ -451,7 +457,7 @@
                     alertContainer.style.pointerEvents = 'none'; // Make container unclickable when hidden
                 }, 300); // Match CSS transition duration
             };
-        };
+        }
     </script>
 
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
@@ -461,18 +467,24 @@
             const successMessage = "{{ session('custom_success_alert') }}";
             const errorMessage = "{{ session('custom_error_alert') }}";
             const infoMessage = "{{ session('custom_info_alert') }}";
+            const blueMessage = "{{ session('custom_blue_alert') }}"; // New: Check for blue alert message
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                window.showCustomAlert(successMessage, 'success');
+                showCustomAlert(successMessage, 'success'); // Changed to 'success' type for success messages
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
-                window.showCustomAlert(errorMessage, 'error');
+                showCustomAlert(errorMessage, 'error');
+            } else if (blueMessage) { // New: Condition for custom blue alert
+                console.log('Flash message detected: Blue -', blueMessage);
+                showCustomAlert(blueMessage, 'blue'); // Use 'blue' type for the new color
             } else if (infoMessage) {
                 console.log('Flash message detected: Info -', infoMessage);
-                window.showCustomAlert(infoMessage, 'info');
+                showCustomAlert(infoMessage, 'info');
             }
 
+            // Expose showAlert globally if needed by other scripts (e.g., for AJAX responses)
+            window.showCustomAlert = showCustomAlert;
         });
     </script>
 </body>

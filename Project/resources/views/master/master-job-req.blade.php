@@ -24,6 +24,28 @@
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
+        .dropdown-profile-custom {
+            min-width: 250px;
+            /* Lebar minimum agar tidak sempit */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Ini adalah perbaikan utamanya */
+        .dropdown-profile-custom .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            /* Tambah padding kanan-kiri */
+            font-weight: 500;
+        }
+
+        .dropdown-profile-custom .navIcon {
+            width: 20px;
+            /* Pastikan ukuran ikon seragam */
+        }
+
         .popup-error-card {
             position: absolute;
             top: calc(100% + 0.25rem);
@@ -132,6 +154,12 @@
         .alert-info-bg {
             background-color: #17a2b8;
             /* Bootstrap info blue */
+            color: white;
+        }
+
+        /* New: Custom Blue Alert Style */
+        .alert-blue-bg {
+            background-color: #309FFF;
             color: white;
         }
 
@@ -299,7 +327,7 @@
                                     {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                                     <li>
                                         <a class="dropdown-item d-flex align-items-center gap-1"
-                                            href="{{ route('job-taker.home') }}">
+                                            href="{{ route('switch.to.taker') }}">
                                             <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
                                                 alt="Icon Ganti Peran" class="navIcon">
                                             Ganti Peran
@@ -488,7 +516,7 @@
             </div>
         </div>
     </div>
-    {{-- End Pop Up Register --}}
+    {{-- End Pop Up Login --}}
 
     {{-- Pop Up Register --}}
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -588,30 +616,7 @@
             </div>
         </div>
     </div>
-    {{-- End Pop Up Register --}}
-    <style>
-        .dropdown-profile-custom {
-            min-width: 250px;
-            /* Lebar minimum agar tidak sempit */
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: none;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
 
-        /* Ini adalah perbaikan utamanya */
-        .dropdown-profile-custom .dropdown-item {
-            padding: 0.75rem 1.25rem;
-            /* Tambah padding kanan-kiri */
-            font-weight: 500;
-        }
-
-        .dropdown-profile-custom .navIcon {
-            width: 20px;
-            /* Pastikan ukuran ikon seragam */
-        }
-    </style>
 
     <script defer>
         const loginEmailInput = document.getElementById('email-login');
@@ -632,41 +637,10 @@
         const otpErrorDiv = document.getElementById('otp-error');
         const rememberMeCheckbox = document.getElementById('remember_me');
 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[^\s]{8,16}$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        // === Login Email ===
-        loginEmailInput.addEventListener('blur', function() {
-            loginEmailInput.classList.remove('is-invalid');
-            loginEmailErrorDiv.classList.add('d-none');
-        });
-
-        loginEmailInput.addEventListener('input', function() {
-            const errors = [];
-
-            if (loginEmailInput.value.trim() === '') {
-                errors.push('Email harus diisi.');
-            } else if (!emailRegex.test(loginEmailInput.value.trim())) {
-                errors.push('Silakan masukkan alamat email yang valid.');
-            }
-
-            if (errors.length > 0) {
-                loginEmailErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                loginEmailErrorDiv.classList.remove('d-none');
-                loginEmailInput.classList.add('is-invalid');
-            } else {
-                loginEmailErrorDiv.innerHTML = '';
-                loginEmailErrorDiv.classList.add('d-none');
-                loginEmailInput.classList.remove('is-invalid');
-            }
-        });
-
-        // === Register Password ===
-        const rules = {
+        // Password rules for both login and registration
+        const passwordRules = {
             length: {
                 test: value => value.length >= 8 && value.length <= 16,
                 message: 'Minimal 8 dan maksimal 16 karakter.',
@@ -693,331 +667,251 @@
             }
         };
 
+        // Helper function to validate an input and display error
+        function validateInput(inputElement, errorDiv, validationLogic) {
+            const errors = validationLogic(inputElement.value.trim());
+            if (errors.length > 0) {
+                errorDiv.innerHTML = `<ul class="mb-0">${errors.map(err => `<li>${err}</li>`).join('')}</ul>`;
+                errorDiv.classList.remove('d-none');
+                inputElement.classList.add('is-invalid');
+                return false;
+            } else {
+                errorDiv.innerHTML = '';
+                errorDiv.classList.add('d-none');
+                inputElement.classList.remove('is-invalid');
+                return true;
+            }
+        }
+
+        // --- Validation Logic Functions for Register Form ---
+        function validateFirstName(value) {
+            const errors = [];
+            if (value === '') {
+                errors.push('Nama depan diperlukan.');
+            }
+            return errors;
+        }
+
+        function validateLastName(value) {
+            const errors = [];
+            if (value === '') {
+                errors.push('Nama belakang diperlukan.');
+            }
+            return errors;
+        }
+
+        function validateRegisterEmail(value) {
+            const errors = [];
+            if (value === '') {
+                errors.push('Email harus diisi.');
+            } else if (!emailRegex.test(value)) {
+                errors.push('Silakan masukkan alamat email yang valid.');
+            }
+            return errors;
+        }
+
+        function validatePasswordStrength(value) {
+            const errors = [];
+            if (value === '') {
+                errors.push('Password harus diisi.');
+            }
+            for (const key in passwordRules) {
+                if (!passwordRules[key].test(value)) {
+                    errors.push(passwordRules[key].message);
+                }
+            }
+            return errors;
+        }
+
+        function validateConfirmPassword(value) {
+            const errors = [];
+            const originalPassword = passwordInput.value; // CORRECTED: Get value from the *original* password input
+            if (value === '') {
+                errors.push('Konfirmasi kata sandi harus diisi.');
+            } else if (value !== originalPassword) {
+                errors.push('Kata sandi tidak cocok.');
+            }
+            return errors;
+        }
+
+        function validateOtp(value) {
+            const errors = [];
+            if (value === '') {
+                errors.push('OTP harus diisi.');
+            } else if (!/^\d{6}$/.test(value)) {
+                errors.push('OTP harus berupa 6 digit angka.');
+            }
+            return errors;
+        }
+
+        // --- Login Form Event Listeners ---
+        loginEmailInput.addEventListener('blur', function() {
+            loginEmailInput.classList.remove('is-invalid');
+            loginEmailErrorDiv.classList.add('d-none');
+        });
+
+        loginEmailInput.addEventListener('input', function() {
+            validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
+                const errors = [];
+                if (value === '') {
+                    errors.push('Email harus diisi.');
+                } else if (!emailRegex.test(value)) {
+                    errors.push('Silakan masukkan alamat email yang valid.');
+                }
+                return errors;
+            });
+        });
+
         loginPasswordInput.addEventListener('blur', function() {
             loginPasswordInput.classList.remove('is-invalid');
             loginPasswordErrorDiv.classList.add('d-none');
         });
 
         loginPasswordInput.addEventListener('input', function() {
-            const value = loginPasswordInput.value.trim();
-            let errors = [];
-
-            if (value === '') {
-                loginPasswordErrorDiv.innerHTML = 'Password harus diisi.';
-                loginPasswordErrorDiv.classList.remove('d-none');
-                loginPasswordInput.classList.add('is-invalid');
-                return;
-            }
-
-            for (const key in rules) {
-                if (!rules[key].test(value)) {
-                    errors.push(rules[key].message);
-                }
-            }
-
-            if (errors.length > 0) {
-                loginPasswordErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                loginPasswordErrorDiv.classList.remove('d-none');
-                loginPasswordInput.classList.add('is-invalid');
-            } else {
-                loginPasswordErrorDiv.innerHTML = '';
-                loginPasswordErrorDiv.classList.add('d-none');
-                loginPasswordInput.classList.remove('is-invalid');
-            }
+            validateInput(loginPasswordInput, loginPasswordErrorDiv, validatePasswordStrength);
         });
-
 
         const loginModal = document.getElementById('loginModal');
         const loginForm = loginModal.querySelector('form');
 
-        // Removed the async and fetch logic for login form submission.
-        // This will now be a standard form submission, allowing Laravel's
-        // session flashing to work correctly across the redirect.
         loginForm.addEventListener('submit', function(event) {
-            // No event.preventDefault() here, allowing default form submission
-            // No fetch() call here for successful login.
-            // Laravel's controller will handle the redirect with flashed data.
-
-            // Only handle client-side validation errors for display in the modal
-            // If there are client-side validation errors, prevent default submission
-            // For server-side errors, Laravel will redirect back with errors,
-            // which will be handled by the blade's error display (if any for non-modal)
-            // or by the session flash message logic on the next page.
-
-            // Client-side validation for login form
             let hasClientErrors = false;
 
-            // Email validation
-            const emailErrors = [];
-            if (loginEmailInput.value.trim() === '') {
-                emailErrors.push('Email harus diisi.');
-            } else if (!emailRegex.test(loginEmailInput.value.trim())) {
-                emailErrors.push('Silakan masukkan alamat email yang valid.');
-            }
-            if (emailErrors.length > 0) {
-                loginEmailErrorDiv.innerHTML =
-                    `<ul class="mb-0">${emailErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
-                loginEmailErrorDiv.classList.remove('d-none');
-                loginEmailInput.classList.add('is-invalid');
+            if (!validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
+                    const errors = [];
+                    if (value.trim() === '') {
+                        errors.push('Email harus diisi.');
+                    } else if (!emailRegex.test(value.trim())) {
+                        errors.push('Silakan masukkan alamat email yang valid.');
+                    }
+                    return errors;
+                })) {
                 hasClientErrors = true;
-            } else {
-                loginEmailErrorDiv.classList.add('d-none');
-                loginEmailInput.classList.remove('is-invalid');
             }
 
-            // Password validation (simplified for client-side, full rules are server-side)
-            const passwordErrors = [];
-            if (loginPasswordInput.value.trim() === '') {
-                passwordErrors.push('Kata sandi harus diisi.');
-            }
-            // You might add basic length check here if desired, but full regex is complex for client-side immediate feedback
-            // else if (!passwordRegex.test(loginPasswordInput.value.trim())) {
-            //     passwordErrors.push('Kata sandi tidak memenuhi kriteria keamanan.');
-            // }
-
-            if (passwordErrors.length > 0) {
-                loginPasswordErrorDiv.innerHTML =
-                    `<ul class="mb-0">${passwordErrors.map(err => `<li>${err}</li>`).join('')}</ul>`;
-                loginPasswordErrorDiv.classList.remove('d-none');
-                loginPasswordInput.classList.add('is-invalid');
+            if (!validateInput(loginPasswordInput, loginPasswordErrorDiv, (value) => {
+                    const errors = [];
+                    if (value.trim() === '') {
+                        errors.push('Kata sandi harus diisi.');
+                    }
+                    return errors;
+                })) {
                 hasClientErrors = true;
-            } else {
-                loginPasswordErrorDiv.classList.add('d-none');
-                loginPasswordInput.classList.remove('is-invalid');
             }
-
 
             if (hasClientErrors) {
                 event.preventDefault(); // Prevent form submission if client-side errors exist
-            } else {
-                // If no client-side errors, allow form to submit normally.
-                // The Laravel controller will handle authentication and redirection with flash messages.
-                // No need to manually hide modal or redirect here, Laravel will do a full page reload.
             }
         });
 
-
         document.addEventListener('DOMContentLoaded', function() {
-            // === OTP ===
-            otpInput.addEventListener('blur', function() {
-                otpInput.classList.remove('is-invalid');
-                otpErrorDiv.classList.add('d-none');
-            });
-
-            otpInput.addEventListener('input', function() {
-                const errors = [];
-
-                if (otpInput.value.trim() === '') {
-                    errors.push('OTP harus diisi.');
-                } else if (!/^\d{6}$/.test(otpInput.value.trim())) {
-                    errors.push('OTP harus berupa 6 digit angka.');
-                }
-
-                if (errors.length > 0) {
-                    otpErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    otpErrorDiv.classList.remove('d-none');
-                    otpInput.classList.add('is-invalid');
-                } else {
-                    otpErrorDiv.innerHTML = '';
-                    otpErrorDiv.classList.add('d-none');
-                    otpInput.classList.remove('is-invalid');
-                }
-            });
-
-            // === Register Email ===
-            emailInput.addEventListener('blur', function() {
-                emailInput.classList.remove('is-invalid');
-                emailErrorDiv.classList.add('d-none');
-            });
-
-            emailInput.addEventListener('input', function() {
-                const errors = [];
-
-                if (emailInput.value.trim() === '') {
-                    errors.push('Email harus diisi.');
-                } else if (!emailRegex.test(emailInput.value.trim())) {
-                    errors.push('Silakan masukkan alamat email yang valid.');
-                }
-
-                if (errors.length > 0) {
-                    emailErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    emailErrorDiv.classList.remove('d-none');
-                    emailInput.classList.add('is-invalid');
-                } else {
-                    emailErrorDiv.innerHTML = '';
-                    emailErrorDiv.classList.add('d-none');
-                    emailInput.classList.remove('is-invalid');
-                }
-            });
-
-            // === Register Password ===
-            const rules = {
-                length: {
-                    test: value => value.length >= 8 && value.length <= 16,
-                    message: 'Minimal 8 dan maksimal 16 karakter.',
-                },
-                lowercase: {
-                    test: value => /[a-z]/.test(value),
-                    message: 'Mengandung huruf kecil (a–z).',
-                },
-                uppercase: {
-                    test: value => /[A-Z]/.test(value),
-                    message: 'Mengandung huruf besar (A–Z).',
-                },
-                digit: {
-                    test: value => /\d/.test(value),
-                    message: 'Mengandung angka (0–9).',
-                },
-                special: {
-                    test: value => /[\W_]/.test(value),
-                    message: 'Mengandung karakter spesial (contoh: !@#%).',
-                },
-                noSpaces: {
-                    test: value => /^\S+$/.test(value),
-                    message: 'Tidak boleh mengandung spasi.',
-                }
-            };
-
-            passwordInput.addEventListener('blur', function() {
-                passwordInput.classList.remove('is-invalid');
-                passwordErrorDiv.classList.add('d-none');
-            });
-
-            passwordInput.addEventListener('input', function() {
-                const value = passwordInput.value.trim();
-                let errors = [];
-
-                if (value === '') {
-                    passwordErrorDiv.innerHTML = 'Password harus diisi.';
-                    passwordErrorDiv.classList.remove('d-none');
-                    passwordInput.classList.add('is-invalid');
-                    return;
-                }
-
-                for (const key in rules) {
-                    if (!rules[key].test(value)) {
-                        errors.push(rules[key].message);
-                    }
-                }
-
-                if (errors.length > 0) {
-                    passwordErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    passwordErrorDiv.classList.remove('d-none');
-                    passwordInput.classList.add('is-invalid');
-                } else {
-                    passwordErrorDiv.innerHTML = '';
-                    passwordErrorDiv.classList.add('d-none');
-                    passwordInput.classList.remove('is-invalid');
-                }
-            });
-
-
-            // === Nama Depan ===
-
+            // --- Register Inputs Event Listeners ---
             firstNameInput.addEventListener('blur', function() {
                 firstNameInput.classList.remove('is-invalid');
                 firstNameErrorDiv.classList.add('d-none');
             });
-
             firstNameInput.addEventListener('input', function() {
-                const errors = [];
-
-                if (firstNameInput.value.trim() === '') {
-                    errors.push('Nama depan diperlukan.');
-                }
-
-                if (errors.length > 0) {
-                    firstNameErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    firstNameErrorDiv.classList.remove('d-none');
-                    firstNameInput.classList.add('is-invalid');
-                } else {
-                    firstNameErrorDiv.innerHTML = '';
-                    firstNameErrorDiv.classList.add('d-none');
-                    firstNameInput.classList.remove('is-invalid');
-                }
+                validateInput(firstNameInput, firstNameErrorDiv, validateFirstName);
             });
-
-            // === Nama Belakang ===
 
             lastNameInput.addEventListener('blur', function() {
                 lastNameInput.classList.remove('is-invalid');
                 lastNameErrorDiv.classList.add('d-none');
             });
-
             lastNameInput.addEventListener('input', function() {
-                const errors = [];
+                validateInput(lastNameInput, lastNameErrorDiv, validateLastName);
+            });
 
-                if (lastNameInput.value.trim() === '') {
-                    errors.push('Nama belakang diperlukan.');
-                }
+            emailInput.addEventListener('blur', function() {
+                emailInput.classList.remove('is-invalid');
+                emailErrorDiv.classList.add('d-none');
+            });
+            emailInput.addEventListener('input', function() {
+                validateInput(emailInput, emailErrorDiv, validateRegisterEmail);
+            });
 
-                if (errors.length > 0) {
-                    lastNameErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    lastNameErrorDiv.classList.remove('d-none');
-                    lastNameInput.classList.add('is-invalid');
-                } else {
-                    lastNameErrorDiv.innerHTML = '';
-                    lastNameErrorDiv.classList.add('d-none');
-                    lastNameInput.classList.remove('is-invalid');
+            passwordInput.addEventListener('blur', function() {
+                passwordInput.classList.remove('is-invalid');
+                passwordErrorDiv.classList.add('d-none');
+            });
+            passwordInput.addEventListener('input', function() {
+                validateInput(passwordInput, passwordErrorDiv, validatePasswordStrength);
+                // Only re-validate confirm password if it *already has content* to avoid premature errors.
+                if (confirmPasswordInput.value.trim() !== '') {
+                    validateInput(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
                 }
             });
 
-            // === Konfirmasi Password ===
             confirmPasswordInput.addEventListener('blur', function() {
                 confirmPasswordInput.classList.remove('is-invalid');
                 confirmPasswordErrorDiv.classList.add('d-none');
             });
             confirmPasswordInput.addEventListener('input', function() {
-                const originalPassword = passwordInput.value;
-                const confirmPassword = confirmPasswordInput.value;
-
-                const errors = [];
-
-                if (confirmPassword === '') {
-                    errors.push('Konfirmasi kata sandi harus diisi.');
-                } else if (confirmPassword !== originalPassword) {
-                    errors.push('Kata sandi tidak cocok.');
-                }
-
-                if (errors.length > 0) {
-                    confirmPasswordErrorDiv.innerHTML = `
-            <ul class="mb-0">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        `;
-                    confirmPasswordErrorDiv.classList.remove('d-none');
-                    confirmPasswordInput.classList.add('is-invalid');
-                } else {
-                    confirmPasswordErrorDiv.innerHTML = '';
-                    confirmPasswordErrorDiv.classList.add('d-none');
-                    confirmPasswordInput.classList.remove('is-invalid');
-                }
+                validateInput(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
             });
 
+            otpInput.addEventListener('blur', function() {
+                otpInput.classList.remove('is-invalid');
+                otpErrorDiv.classList.add('d-none');
+            });
+            otpInput.addEventListener('input', function() {
+                validateInput(otpInput, otpErrorDiv, validateOtp);
+            });
+
+
+            // --- Register Form Submission Logic (logoutModal is actually the Register Modal) ---
+            const registerModal = document.getElementById('logoutModal');
+            const registerForm = registerModal.querySelector('form');
+
+            registerForm.addEventListener('submit', function(event) {
+                let hasErrors = false;
+
+                // Validate all fields (order matters for UX)
+                const isFirstNameValid = validateInput(firstNameInput, firstNameErrorDiv,
+                validateFirstName);
+                const isLastNameValid = validateInput(lastNameInput, lastNameErrorDiv, validateLastName);
+                const isEmailValid = validateInput(emailInput, emailErrorDiv, validateRegisterEmail);
+                const isOtpValid = validateInput(otpInput, otpErrorDiv, validateOtp);
+
+                const isPasswordStrong = validateInput(passwordInput, passwordErrorDiv,
+                    validatePasswordStrength);
+                let isConfirmPasswordValid = true; // Assume valid until checked
+
+                if (!isPasswordStrong) {
+                    hasErrors = true;
+                    // Clear passwords if main password validation fails
+                    passwordInput.value = '';
+                    confirmPasswordInput.value = '';
+                    // Hide confirm password error if it was showing, as the main password is the primary issue
+                    confirmPasswordInput.classList.remove('is-invalid');
+                    confirmPasswordErrorDiv.classList.add('d-none');
+                    confirmPasswordErrorDiv.innerHTML = ''; // Clear any previous error message
+                } else {
+                    // Only validate confirm password if the main password is strong
+                    isConfirmPasswordValid = validateInput(confirmPasswordInput, confirmPasswordErrorDiv,
+                        validateConfirmPassword);
+                    if (!isConfirmPasswordValid) {
+                        hasErrors = true;
+                        // Clear passwords if confirm password validation fails
+                        passwordInput.value = '';
+                        confirmPasswordInput.value = '';
+                        // Ensure error message is shown for confirm password (it will be handled by validateInput)
+                        // No need to manually add 'is-invalid' or remove 'd-none' here, validateInput does it.
+                    }
+                }
+
+                // Check other fields' validity
+                if (!isFirstNameValid || !isLastNameValid || !isEmailValid || !isOtpValid) {
+                    hasErrors = true;
+                }
+
+                if (hasErrors) {
+                    event.preventDefault(); // Prevent form submission if any validation fails
+                } else {
+                    // If all client-side validations pass, allow the form to submit normally.
+                    // Laravel will handle the server-side validation and actual registration.
+                }
+            });
         });
 
         const otpMessage = document.getElementById('otp-message');
@@ -1026,10 +920,12 @@
         const sendButton = document.getElementById('send-otp-button');
         sendButton.addEventListener('click', function() {
             const email = document.getElementById('email-register').value.trim();
+            // Only proceed if email field is not empty and has no client-side validation errors
             if (!email) {
+                validateInput(emailInput, emailErrorDiv, validateRegisterEmail); // Show email error if empty
                 return;
             } else if (emailInput.classList.contains('is-invalid')) {
-                return;
+                return; // Don't send OTP if email is invalid
             }
 
             sendButton.disabled = true;
@@ -1053,6 +949,7 @@
                 })
                 .then(data => {
                     showOtpMessage(data.message, true);
+                    // Note: The value for OTP_COOLDOWN_SECONDS should be injected from your backend (Laravel controller)
                     startCountdown(
                         {{ \App\Http\Controllers\Auth\RegisteredUserController::OTP_COOLDOWN_SECONDS }});
                 })
@@ -1096,7 +993,6 @@
             }, 1000);
         }
 
-        // Reverted showCustomAlert function to original
         function showCustomAlert(message, type = 'info', duration = 3000) {
             const alertContainer = document.getElementById('custom-alert-container');
             const customAlert = document.getElementById('custom-alert');
@@ -1104,7 +1000,8 @@
             const alertCloseButton = document.getElementById('custom-alert-close');
 
             // Clear previous classes and reset state
-            customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'show');
+            customAlert.classList.remove('alert-success-bg', 'alert-error-bg', 'alert-info-bg', 'alert-blue-bg',
+                'show');
             customAlert.style.display = 'none'; // Hide it initially for transition
 
             // Set message and type-specific background
@@ -1115,6 +1012,8 @@
                 customAlert.classList.add('alert-error-bg');
             } else if (type === 'info') {
                 customAlert.classList.add('alert-info-bg');
+            } else if (type === 'blue') {
+                customAlert.classList.add('alert-blue-bg');
             }
 
             // Show the alert with a slight delay for CSS transition to work
@@ -1151,13 +1050,17 @@
             const successMessage = "{{ session('custom_success_alert') }}";
             const errorMessage = "{{ session('custom_error_alert') }}";
             const infoMessage = "{{ session('custom_info_alert') }}";
+            const blueMessage = "{{ session('custom_blue_alert') }}"; // New: Check for blue alert message
 
             if (successMessage) {
                 console.log('Flash message detected: Success -', successMessage);
-                showCustomAlert(successMessage, 'info');
+                showCustomAlert(successMessage, 'success'); // Changed to 'success' type for success messages
             } else if (errorMessage) {
                 console.log('Flash message detected: Error -', errorMessage);
                 showCustomAlert(errorMessage, 'error');
+            } else if (blueMessage) { // New: Condition for custom blue alert
+                console.log('Flash message detected: Blue -', blueMessage);
+                showCustomAlert(blueMessage, 'blue'); // Use 'blue' type for the new color
             } else if (infoMessage) {
                 console.log('Flash message detected: Info -', infoMessage);
                 showCustomAlert(infoMessage, 'info');
