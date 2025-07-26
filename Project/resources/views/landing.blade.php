@@ -1,7 +1,11 @@
 @extends('master.master-job-req')
 
 @section('content')
-
+@if(session()->has('custom_error_alert'))
+<div class="alert alert-danger" role="alert">
+  {{ session()->get('custom_error_alert') }}
+</div>
+@endif
 <!-- Banner Section -->
 <section class="banner-section">
   <div class="container-fluid p-0">

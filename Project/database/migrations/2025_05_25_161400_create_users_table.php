@@ -26,7 +26,8 @@ return new class extends Migration
             $table->string('google_id')->nullable()->unique();
             $table->timestamps();
             $table->softDeletes();
-            $table->rememberToken()->nullable();
+            $table->rememberToken();
+            $table->timestamp('last_activity')->nullable();
             $table->boolean('is_blocked')->default(false);
         });
     }
