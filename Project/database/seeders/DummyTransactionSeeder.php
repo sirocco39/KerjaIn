@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Faker\Factory as Faker;
+use App\Models\Report; // <-- Ensure this is imported
 
 class DummyTransactionSeeder extends Seeder
 {
@@ -104,6 +105,14 @@ class DummyTransactionSeeder extends Seeder
             // Delete payments linked to dummy requests
             Payment::whereIn('request_id', $dummyRequestIds)->forceDelete();
 
+            // Delete reports linked to dummy transactions or users
+            Report::whereIn('transaction_id', Transaction::whereIn('requester_id', $dummyUserIds)
+                ->orWhereIn('worker_id', $dummyUserIds)
+                ->pluck('id'))
+                ->orWhereIn('reporter_id', $dummyUserIds)
+                ->orWhereIn('reported_id', $dummyUserIds)
+                ->forceDelete();
+
             // Delete transactions created by dummy users
             Transaction::whereIn('requester_id', $dummyUserIds)
                 ->orWhereIn('worker_id', $dummyUserIds)
@@ -172,7 +181,7 @@ class DummyTransactionSeeder extends Seeder
             [
                 'first_name' => 'Alice',
                 'last_name' => 'Smith',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('password123!'),
                 'role' => 'user',
                 'phone_number' => '087654321098',
                 'balance' => 200000.00, // Increased initial balance
@@ -385,6 +394,18 @@ class DummyTransactionSeeder extends Seeder
             ['request_id' => $jobRequestSubmitted->id, 'worker_id' => $worker2->id],
             ['requester_id' => $requester2->id, 'is_open' => true]
         );
+        // Add a dummy report for a submitted transaction to simulate the original error context
+        // FIX: Ensure 'photo_url' is JSON encoded as an array of strings
+        Report::create([
+            'status' => 'Not Reviewed',
+            'reasons' => 'Iure velit sunt nihil.',
+            'photo_url' => json_encode(['https://via.placeholder.com/640x480.png/0044aa?text=laborum']), // <-- FIXED LINE
+            'transaction_id' => $transactionSubmitted->id, // Use actual transaction ID
+            'reporter_id' => $requester->id, // A dummy reporter
+            'reported_id' => $worker->id, // A dummy reported user
+            'created_at' => Carbon::now()->subHours(2),
+            'updated_at' => Carbon::now()->subHours(2),
+        ]);
 
 
         // --- Scenario 5: Completed Transaction (Past Date, funds released, reviewed) ---

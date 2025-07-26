@@ -293,7 +293,7 @@
                             {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('job-req.home') }}">
+                                    href="{{ route('switch.to.requester') }}">
                                     <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                         class="navIcon">
                                     Ganti Peran

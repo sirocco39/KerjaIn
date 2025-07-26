@@ -276,7 +276,7 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
 // Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
 // Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
 // Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
-// // Manajemen Pengguna (admin.users.*)   
+// // Manajemen Pengguna (admin.users.*)
 // // Route::resource('users', AdminUserController::class);
 // Route::get('users/search', [AdminUserController::class, 'searchUsers'])->name('admin.users.search');
 // Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');

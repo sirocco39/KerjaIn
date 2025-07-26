@@ -64,22 +64,23 @@
                                 data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
-                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}" @endif
-                        data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
-                        data-order-number="{{ $order->order_number ?? '-' }}"
-                        data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
-                        data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
-                        data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
-                        data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
-                        data-request-location="{{ $order->request->location ?? '-' }}"
-                        data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
-                        data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
-                        data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
-                        data-start-work="{{ \Carbon\Carbon::parse($order->start_work)->format('H.i') ?? '-' }}"
-                        data-finish-work="{{ \Carbon\Carbon::parse($order->finish_work)->format('H.i') ?? '-' }}"
-                        data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
-                        data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
-                        data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
+                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}"
+                        @endif
+                            data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
+                            data-order-number="{{ $order->order_number ?? '-' }}"
+                            data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
+                            data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
+                            data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
+                            data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
+                            data-request-location="{{ $order->request->location ?? '-' }}"
+                            data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
+                            data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
+                            data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
+                            data-start-work="{{ $order->start_work ? \Carbon\Carbon::parse($order->start_work)->format('H.i') : '-' }}"
+                            data-finish-work="{{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('H.i') : '-' }}"
+                            data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
+                            data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
+                            data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
                         @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
                                 data-user-comment="{{ $order->user_review->comment }}" @endif
                         {{-- Pass decoded photo URLs if a report exists --}}
@@ -115,7 +116,8 @@
                                 </span>
                             </div>
                             <div class="col m-0 p-0 text-xxs">
-                                {{ \Carbon\Carbon::parse($order->finish_work)->format('d - m - Y') ?? '-' }}</div>
+                                {{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('d - m - Y') : '-' }}
+                            </div>
                             <div class="col m-0 p-0 text-xxs">{{ $order->worker->full_name ?? '-' }}</div>
                             <div class="col m-0 p-0 text-xxs">{{ $order->request->location ?? '-' }}</div>
                             <div class="col m-0 p-0 text-xxs">Rp
@@ -125,7 +127,7 @@
                 @empty
                     {{-- Message displayed when no orders are found --}}
                     <div id="no-transaction-message"
-                        class="my-0 py-6 px-6 text-center text-gray-500 justify-content-center flex items-center w-full"
+                        class="mt-3 mb-0 py-6 px-6 text-center text-gray-500 justify-content-center flex items-center w-full"
                         style="height: 3rem">
                         Belum Ada Transaksi
                     </div>
@@ -1225,6 +1227,11 @@
             .order-row .status-badge-fixed {
                 min-width: 70px !important;
                 /* Smaller width for mobile */
+                text-align: center;
+                display: inline-flex;
+                /* Use flexbox to center content vertically and horizontally */
+                align-items: center;
+                justify-content: center;
             }
 
             .order-row .col.m-0.p-0 {

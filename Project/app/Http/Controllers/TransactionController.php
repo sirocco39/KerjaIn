@@ -21,18 +21,40 @@ class TransactionController extends Controller
         $userId = Auth::id();
 
         // Fetch all orders where the authenticated user is the REQUIESTER
-        // Eager load the 'userReview' relationship
+        // Eager load the 'userReview' and 'userReport' relationships
+        // userReport is the report specific to the *authenticated user*
         $transactions = Transaction::withTrashed()
-            ->with(['request', 'requester', 'worker', 'userReview']) // Eager load the NEW userReview relationship
+            ->with(['request', 'requester', 'worker', 'userReview', 'userReport'])
             ->where('requester_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Attach a flag to each order indicating if a review exists and load the review data
+        // Attach flags and process report data for each order
         $allOrders = $transactions->map(function ($order) {
             // Check if the specific userReview exists for this order
             $order->has_review = $order->userReview()->exists();
             $order->user_review = $order->userReview; // Get the actual userReview object (will be null if no review)
+
+            // NEW: Check for existing report and load report data
+            $order->has_user_report = $order->userReport()->exists();
+
+            // Corrected logic: Ensure $order->user_report is an object before accessing its properties.
+            // If userReport() returns null, assign a new StdClass object to it
+            // and then set the properties on that new object.
+            if ($order->userReport) { // Check if the relationship loaded an actual report
+                $order->user_report->decoded_photo_urls = json_decode($order->userReport->photo_url, true) ?? [];
+                // Ensure 'reasons' is accessible, even if not explicitly stored in decoded_photo_urls
+                // It should be a direct property of the Report model if it exists.
+                // You might need to adjust your Report model's accessors/attributes if 'reasons' isn't directly available.
+                // Assuming 'reasons' is a standard column, it will be available when $order->userReport is not null.
+            } else {
+                // If no userReport exists, create a dummy object to prevent errors in Blade
+                $order->user_report = (object)[
+                    'decoded_photo_urls' => [],
+                    'reasons' => null, // Provide a default null for 'reasons' as well
+                ];
+            }
+
             return $order;
         });
 
@@ -75,7 +97,6 @@ class TransactionController extends Controller
 
         // Authorization check: only the requester of the transaction can view this page
         if (Auth::id() !== $transaction->requester_id) {
-            // Changed to custom alert
             activity()
                 ->inLog('Security') // Kelompokkan ke log 'Security'
                 ->on($transaction)  // Targetnya adalah transaksi yang coba diakses
@@ -96,12 +117,27 @@ class TransactionController extends Controller
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
 
-        // NEW: Check if a review already exists from the current requester for this transaction
+        // Check if a review already exists from the current requester for this transaction
         $hasReview = $transaction->userReview()->exists();
         $userReview = $transaction->userReview; // This will be null if no review exists
 
-        // Kirim data ke view
-        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room', 'hasReview', 'userReview'));
+        // Add this to check for an existing user report
+        $hasUserReport = $transaction->userReport()->exists();
+        $userReport = $transaction->userReport; // This will be null if no report exists
+
+        // Corrected logic: Ensure $userReport is an object before trying to set properties
+        if ($userReport) { // Check if the relationship loaded an actual report
+            $userReport->decoded_photo_urls = json_decode($userReport->photo_url, true) ?? [];
+        } else {
+            // If no userReport exists, create a dummy object to prevent errors in Blade
+            $userReport = (object)[
+                'decoded_photo_urls' => [],
+                'reasons' => null, // Also provide a default null for 'reasons'
+            ];
+        }
+
+        // Kirim data ke view, including hasUserReport and userReport
+        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room', 'hasReview', 'userReview', 'hasUserReport', 'userReport'));
     }
 
 
@@ -230,14 +266,15 @@ class TransactionController extends Controller
                 ->on($transaction)
                 ->causedBy(Auth::user())
                 ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan requester.");
-            return redirect()->route('job-req.home')->with('error', 'Anda tidak berwenang melaporkan transaksi ini.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang melaporkan transaksi ini.');
         }
 
         $existingReport = Report::where('transaction_id', $transactionId)
             ->where('reporter_id', Auth::id())
             ->first();
         if ($existingReport) {
-            return redirect()->route('job-req.home')->with('error', 'Anda sudah mengajukan laporan untuk transaksi ini.');
+            // Changed to custom_error_alert for consistency
+            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda sudah mengajukan laporan untuk transaksi ini.');
         }
 
         DB::transaction(function () use ($request, $transaction) {
@@ -258,7 +295,8 @@ class TransactionController extends Controller
             ]);
         });
 
-        return redirect()->route('job-req.home')->with('success', 'Laporan berhasil dikirim dan akan segera ditinjau.');
+        // Changed to custom_success_alert for consistency
+        return redirect()->route('job-req.home')->with('custom_success_alert', 'Laporan berhasil dikirim dan akan segera ditinjau.');
     }
 
     public function getTransactionDetails($id)

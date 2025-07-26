@@ -283,7 +283,7 @@
     <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
-            <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
+            <form id="reviewForm" action="{{ route('reviews.store', $transaction->id) }}" method="POST">
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
@@ -295,26 +295,16 @@
                         <div class="d-flex flex-column flex-lg-row gap-3">
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
-                                    <div class="text flex-fill">
+                                    <div class="text flex-fill" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
                                         <p class="fw-medium">{{ $request->title }}</p>
                                     </div>
-                                    <div class="text">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold"></p>
-                                        <p class="fw-medium"></p>
-                                    </div>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="text">
+                                    <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
                                         <p class="fw-medium">{{ $transaction->order_number }}</p>
                                     </div>
-                                    <div class="text">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold"></p>
-                                        <p class="fw-medium"></p>
-                                    </div>
                                 </div>
-                                <div class="d-flex flex-fill">
+                                <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
                                         <p class="fw-medium">{{ $worker->first_name }} {{ $worker->last_name }}</p>
@@ -324,7 +314,7 @@
                                         <p class="fw-medium">{{ $request->location }}</p>
                                     </div>
                                 </div>
-                                <div class="d-flex">
+                                <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
                                         <p class="fw-medium">{{ $transaction->created_at->format('d M Y') }}</p>
@@ -332,6 +322,16 @@
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
                                         <p class="fw-medium">{{ $transaction->updated_at->format('d M Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                        <p class="fw-medium">{{ \Carbon\Carbon::parse($transaction->start_work)->format('H.i') ?? '-' }}</p>
+                                    </div>
+                                    <div class="text" style="width:50%;">
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                        <p class="fw-medium">{{ \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') ?? '-' }}</p>
                                     </div>
                                 </div>
                                 <hr class="my-1 border border-dark">
@@ -343,7 +343,7 @@
                                             {{ number_format($request->final_price, 2, ',', '.') }}</p>
                                     </div>
                                     <div class="text d-flex justify-content-end align-items-center" style="width:50%;">
-                                        <a href="#"
+                                        <a href="/generate-invoice/{{ $transaction->id }}" target="_blank"
                                             class="d-flex text-decoration-none justify-content-center align-items-center">
                                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -351,6 +351,7 @@
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
                                                     fill="#309FFF" />
                                             </svg>
+                                            <div class="ms-2 fw-medium fs-5">Invoice</div>
                                         </a>
                                     </div>
                                 </div>
@@ -359,48 +360,60 @@
                             <div class="vr d-none d-lg-block mx-3"></div>
 
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                                <h4 class="fw-semibold mt-3 mb-1">
+                                <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading">
                                     @if ($hasReview)
                                         Ini penilaianmu
                                     @else
                                         Kasih penilaian, yuk!
                                     @endif
                                 </h4>
-                                <div class="text-center mt-0 mb-3 w-100">
+                                <div id="review-section-container" class="w-100">
                                     @if ($hasReview)
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i
-                                                class="bi bi-star-fill {{ $i <= $userReview->rating ? 'star-blue' : 'text-secondary' }} fs-2"></i>
-                                        @endfor
+                                        <div class="text-center mt-0 mb-3 w-100">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i
+                                                    class="bi bi-star-fill {{ $i <= $userReview->rating ? 'star-blue' : 'text-secondary' }} fs-2"></i>
+                                            @endfor
+                                        </div>
+                                        <div class="ps-3 flex-fill d-flex flex-column w-100">
+                                            <label for="comment" class="form-label text-start">Komentar</label>
+                                            <textarea id="comment" class="form-control" rows="3" disabled
+                                                style="border-color:#8a8a8a;">{{ $userReview->comment }}</textarea>
+                                        </div>
                                     @else
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star-fill text-secondary star-rating fs-2"
-                                                data-value="{{ $i }}"></i>
-                                        @endfor
-                                        <input type="hidden" name="rating" id="rating-input" value="0">
+                                        <div class="text-center mt-0 mb-3 w-100">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="bi bi-star-fill text-secondary star-rating fs-2"
+                                                    data-value="{{ $i }}"></i>
+                                            @endfor
+                                            <input type="hidden" name="rating" id="rating-input" value="0">
+                                        </div>
+                                        <div class="ps-3 flex-fill d-flex flex-column w-100">
+                                            <label for="comment" class="form-label text-start">Komentar</label>
+                                            <textarea name="comment" id="comment" class="form-control" rows="3"
+                                                placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+                                        </div>
                                     @endif
-                                </div>
-
-                                <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                    <label for="comment" class="form-label text-start">Komentar</label>
-                                    <textarea name="note" id="comment" class="form-control" rows="3"
-                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"
-                                        @if ($hasReview) disabled @endif>{{ $hasReview ? $userReview->comment : old('note') }}</textarea>
                                 </div>
 
                                 <div class="d-flex flex-column mt-3 justify-content-center">
                                     @if (!$hasReview)
                                         <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                            onclick="submitReview()">Kirim</button>
+                                            id="submitReviewButton">Kirim</button>
                                         <div class="m-1 text-center">Atau</div>
                                     @endif
-                                    <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()">Laporkan masalah</button>
+                                    @if ($hasUserReport) {{-- Assuming $hasUserReport is passed from controller --}}
+                                        <button type="button" class="m-0 p-0 fw-medium btn text-secondary" disabled>
+                                            Laporan sudah terkirim
+                                        </button>
+                                    @else
+                                        <button type="button" class="m-0 p-0 fw-medium btn text-danger"
+                                            id="reportProblemButton">Laporkan masalah</button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </form>
         </div>
@@ -586,13 +599,13 @@
                     <div class="mb-4">
                         <label class="form-label fw-semibold">Upload Bukti
                             (gambar):</label>
-                        <div class="d-flex flex-wrap gap-3 align-items-start" id="previewContainerProof">
-                            <div class="pb-2" onclick="document.getElementById('photoInputProof').click()"
+                        <div class="d-flex flex-wrap gap-3 align-items-start" id="previewContainerReport">
+                            <div class="pb-2" onclick="document.getElementById('photoInputReport').click()"
                                 style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                                 <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
                             </div>
                         </div>
-                        <input type="file" class="d-none" id="photoInputProof" name="photo[]" accept="image/*"
+                        <input type="file" class="d-none" id="photoInputReport" name="photo[]" accept="image/*"
                             multiple>
                     </div>
 
@@ -614,22 +627,36 @@
     </div>
     <script>
         // ===================================================================
-        // >> VARIABEL GLOBAL
-        // Variabel ini perlu diakses oleh beberapa fungsi, jadi kita letakkan di sini.
+        // >> GLOBAL VARIABLES
+        // These variables need to be accessible across multiple functions and modals.
         // ===================================================================
         let selectedRating = 0;
-        window.isOpeningReportModal = false; // <<< Ttambahkan flag global ini
+        // Flag to prevent page reload when transitioning from Completion Modal to Report Modal
+        window.isOpeningReportModal = false;
 
         // ===================================================================
-        // >> FUNGSI-FUNGSI UTAMA (Dipanggil dari atribut onclick di HTML)
+        // >> MAIN FUNCTIONS (Called from HTML attributes or event listeners)
         // ===================================================================
 
+        /**
+         * Function to handle the submission of the completion proof.
+         * Note: This function name `uploadProof` conflicts with the `submitReport` function logic,
+         * and the original HTML structure indicates `submitReport` is for the report modal.
+         * If 'uploadProof' is intended for the completion proof modal (not present in the provided HTML),
+         * its action and logic would need to be defined separately.
+         * I've kept it as is for now, but it might need review depending on your backend.
+         */
         function uploadProof() {
-            var form = document.getElementById('proofForm');
+            var form = document.getElementById('proofForm'); // This ID is not present in the HTML provided.
+            if (!form) {
+                console.error("Form with ID 'proofForm' not found.");
+                return;
+            }
             var formData = new FormData(form);
 
-            if (document.getElementById('photoInputReport').files.length === 0) {
-                alert("Silakan upload minimal satu foto bukti pekerjaan.");
+            // Assuming 'photoInputProof' is used for the completion proof upload.
+            if (document.getElementById('photoInputProof').files.length === 0) {
+                window.showCustomAlert("Silakan upload minimal satu foto bukti pekerjaan.", "error");
                 return;
             }
 
@@ -644,9 +671,8 @@
                 })
                 .then(response => {
                     if (!response.ok) {
-                        // Coba baca error sebagai teks jika JSON gagal
                         return response.text().then(text => {
-                            throw new Error(text || 'Gagal menghubungi server.')
+                            throw new Error(text || 'Gagal menghubungi server.');
                         });
                     }
                     return response.json();
@@ -654,22 +680,27 @@
                 .then(data => {
                     console.log(data);
                     var modal = bootstrap.Modal.getInstance(document.getElementById('completionProofModal'));
-                    var completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
                     if (modal) modal.hide();
-                    completionModal.show();
+                    // After successfully uploading proof, maybe show the completion modal or just reload
+                    // The original code was trying to open 'completionModal' after proof upload,
+                    // which seems counter-intuitive if proof is for a completed job.
+                    // If you want to show the completion/review modal, you'd need to ensure its data is fresh.
+                    // For now, let's assume successful proof upload should lead to a page reload if needed.
+                    location.reload();
                 })
                 .catch(error => {
-                    console.error(error);
-                    alert('Terjadi kesalahan saat upload foto.');
+                    console.error("Error uploading proof:", error);
+                    window.showCustomAlert('Terjadi kesalahan saat upload foto bukti pekerjaan.', 'error');
                 });
         }
 
         function submitReview() {
             const comment = document.getElementById('comment').value.trim();
-            const ratingInput = document.getElementById('rating-input'); // Get the input
-            const selectedRating = parseInt(ratingInput.value); // Get its value
+            const ratingInput = document.getElementById('rating-input');
+            const currentRating = ratingInput ? parseInt(ratingInput.value) : selectedRating; // Use selectedRating if input doesn't exist (e.g., for existing review)
 
-            if (selectedRating === 0) {
+
+            if (currentRating === 0) {
                 window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
                 return;
             }
@@ -678,104 +709,101 @@
                 return;
             }
 
-            fetch("{{ route('reviews.store', $transaction->id) }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
-                    },
-                    body: JSON.stringify({
-                        transaction_id: "{{ $transaction->id }}",
-                        reviewer_id: "{{ auth()->id() }}",
-                        reviewee_id: "{{ $worker->id }}",
-                        rating: selectedRating,
-                        comment: comment,
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        // If response is not OK, try to parse JSON error and throw it
-                        return response.json().then(errorData => {
-                            throw errorData; // Throw the error data object
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        window.showCustomAlert(data.message, 'success');
-                        var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-                        if (completionModal) completionModal.hide();
-                        // >>> TAMBAH BARIS INI <<<
-                        location.reload(); // Reload halaman setelah review berhasil dikirim
-                        // >>> BATAS TAMBAH <<<
-                    } else {
-                        let errorMessage = data.message || 'Gagal menyimpan review, coba lagi.';
-                        if (data.errors) {
-                            for (const key in data.errors) {
-                                if (data.errors.hasOwnProperty(key)) {
-                                    data.errors[key].forEach(msg => {
-                                        errorMessage += `\n- ${msg}`;
-                                    });
-                                }
-                            }
-                        }
-                        window.showCustomAlert(errorMessage, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    // Check if it's a network error or an error thrown from `.then` (which might contain server errors)
-                    if (error.message) {
-                        window.showCustomAlert('Terjadi kesalahan: ' + error.message, 'error');
-                    } else {
-                        window.showCustomAlert('Terjadi kesalahan, coba lagi.', 'error');
-                    }
-                });
+            // Get the review form and submit it
+            const reviewForm = document.getElementById('reviewForm');
+            if (reviewForm) {
+                // Manually add the rating value to the form data for submission
+                const hiddenRatingInput = document.createElement('input');
+                hiddenRatingInput.type = 'hidden';
+                hiddenRatingInput.name = 'rating';
+                hiddenRatingInput.value = currentRating;
+                reviewForm.appendChild(hiddenRatingInput);
+
+                // Disable the submit button and show loading state
+                const submitBtn = document.getElementById('submitReviewButton');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Mengirim...';
+                }
+
+                reviewForm.submit(); // Submit the form normally, Laravel handles the redirect/response
+            } else {
+                console.error("Review form not found.");
+            }
         }
 
+
         function openReportModal() {
-            // >>> TAMBAH BARIS INI <<<
-            window.isOpeningReportModal = true; // Set flag ke true
-            // >>> BATAS TAMBAH <<<
+            // Set flag to true when opening the report modal from the completion modal
+            window.isOpeningReportModal = true;
 
             var completionModalInstance = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
             if (completionModalInstance) {
                 completionModalInstance.hide();
             }
 
-            // Beri jeda agar transisi antar modal mulus
+            // Populate report modal fields (if needed, based on your previous design)
+            // The provided HTML for #reportModal already uses Blade for data.
+            // If you need dynamic updates from JS, you'd populate these here:
+            // document.getElementById('reportModalRequestTitle').textContent = '...';
+
+            // Give a slight delay for smooth transition between modals
             setTimeout(() => {
                 var reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
                 reportModal.show();
-            }, 300); // Sesuaikan jeda sesuai kebutuhan (misal 300ms)
+            }, 300);
         }
 
         // ===================================================================
-        // >> INISIALISASI & EVENT LISTENER (Dijalankan setelah halaman siap)
+        // >> INITIALIZATION & EVENT LISTENERS (Executed after the DOM is ready)
         // ===================================================================
         document.addEventListener('DOMContentLoaded', function() {
 
             /**
-             * Fungsi untuk inisialisasi preview gambar pada sebuah input file.
+             * Function to initialize image preview for a given file input and preview container.
+             * This version only handles adding images and showing them. Deletion logic is not included here.
+             * @param {string} inputId The ID of the file input element.
+             * @param {string} previewContainerId The ID of the container where image previews will be shown.
              */
             function initPhotoPreview(inputId, previewContainerId) {
                 const input = document.getElementById(inputId);
                 const previewContainer = document.getElementById(previewContainerId);
 
-                const reportForm = document.getElementById('reportForm');
-                if (reportForm) {
-                    reportForm.addEventListener('submit', function(event) {
-                        event.preventDefault(); // Mencegah submit form HTML bawaan
-                        submitReport(); // Memanggil fungsi submitReport() Anda
-                    });
+                // Clear previous previews and reset input when modal is opened for a new report
+                // This is specifically for the report modal, so it's placed here.
+                if (inputId === 'photoInputReport' && previewContainer) {
+                    const reportModalElement = document.getElementById('reportModal');
+                    if (reportModalElement) {
+                        reportModalElement.addEventListener('show.bs.modal', function() {
+                            previewContainer.innerHTML = `
+                                <div class="pb-2" onclick="document.getElementById('photoInputReport').click()"
+                                    style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
+                                </div>
+                            `;
+                            input.value = ''; // Clear the file input
+                            // Ensure the report note is also cleared when opening for a new report
+                            const reportNote = document.getElementById('reportNote');
+                            if (reportNote) {
+                                reportNote.value = '';
+                            }
+                        });
+                    }
                 }
+
 
                 if (input && previewContainer) {
                     input.addEventListener('change', function(event) {
                         const files = event.target.files;
-                        previewContainer.innerHTML = ''; // Selalu kosongkan preview lama
+                        // For the current setup, we clear and re-add for simplicity.
+                        // If multiple uploads are desired, you'd append to existing.
+                        // For single image upload, this is fine.
+                        // For 'photoInputProof', it might already be displaying one image, if so, this logic
+                        // will replace it.
+                        if (inputId !== 'photoInputReport') { // If it's not the report input, clear previous previews.
+                            previewContainer.innerHTML = '';
+                        }
+
 
                         Array.from(files).forEach(file => {
                             if (file && file.type.startsWith('image/')) {
@@ -791,49 +819,75 @@
                                 reader.readAsDataURL(file);
                             }
                         });
+
+                        // Re-add the '+' button if it's the report modal's preview and not already there
+                        if (inputId === 'photoInputReport') {
+                            const addButtonExists = previewContainer.querySelector('.add-image-button');
+                            if (!addButtonExists) {
+                                const addButton = document.createElement('div');
+                                addButton.className = "pb-2 add-image-button"; // Add the class for the button
+                                addButton.setAttribute('onclick', `document.getElementById('${inputId}').click()`);
+                                addButton.style.cssText = "width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;";
+                                addButton.innerHTML = `<span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>`;
+                                previewContainer.appendChild(addButton);
+                            }
+                        }
                     });
                 }
             }
 
-            // Panggil fungsi init untuk semua preview foto
+
+            // Call init for all photo previews
+            // Note: `previewContainerReport` is used for the Report Modal
+            // `previewContainerProof` is used for the Completion Proof Modal
             initPhotoPreview('photoInputReport', 'previewContainerReport');
             initPhotoPreview('photoInputProof', 'previewContainerProof');
 
 
-            // Logika untuk Bintang Rating (Hanya satu blok yang benar)
-            const stars = document.querySelectorAll('.star-rating');
-            const ratingInput = document.getElementById('rating-input');
+            // Logic for Star Rating (for new reviews)
+            const stars = document.querySelectorAll('#review-section-container .star-rating');
+            const ratingInput = document.getElementById('rating-input'); // This input exists only if `!$hasReview`
 
-            stars.forEach(star => {
-                star.addEventListener('mouseover', function() {
-                    const hoverValue = parseInt(this.dataset.value);
-                    updateStarDisplay(hoverValue, 'hover');
+            if (ratingInput) { // Only attach listeners if the rating input exists (i.e., user can give a review)
+                stars.forEach(star => {
+                    star.addEventListener('mouseover', function() {
+                        const hoverValue = parseInt(this.dataset.value);
+                        updateStarDisplay(hoverValue, 'hover');
+                    });
+
+                    star.addEventListener('mouseout', function() {
+                        // Revert to selected rating when mouse leaves stars
+                        updateStarDisplay(selectedRating, 'select');
+                    });
+
+                    star.addEventListener('click', function() {
+                        selectedRating = parseInt(this.dataset.value);
+                        ratingInput.value = selectedRating; // Update the hidden input value
+                        updateStarDisplay(selectedRating, 'select');
+                    });
                 });
 
-                star.addEventListener('mouseout', function() {
-                    updateStarDisplay(selectedRating, 'select');
-                });
+                // Set initial display for stars based on selectedRating (which is 0 initially)
+                updateStarDisplay(selectedRating, 'select');
+            }
 
-                star.addEventListener('click', function() {
-                    selectedRating = parseInt(this.dataset.value);
-                    ratingInput.value = selectedRating;
-                    updateStarDisplay(selectedRating, 'select');
-                });
-            });
 
+            // Function to update star visual display
             function updateStarDisplay(rating, type) {
-                stars.forEach(s => {
+                const allStars = document.querySelectorAll('#review-section-container .bi-star-fill');
+                allStars.forEach(s => {
                     const sVal = parseInt(s.dataset.value);
-                    s.classList.remove('star-green', 'star-blue', 'text-secondary');
                     if (sVal <= rating) {
-                        s.classList.add(type === 'hover' ? 'star-green' : 'star-blue');
+                        s.classList.remove('text-secondary');
+                        s.classList.add('star-blue'); // Always use star-blue for selected/hovered stars
                     } else {
+                        s.classList.remove('star-blue');
                         s.classList.add('text-secondary');
                     }
                 });
             }
 
-            // Logika untuk tombol "Ya, Selesaikan Pekerjaan"
+            // Logic for "Ya, Selesaikan Pekerjaan" button
             const completeButton = document.getElementById('completeWorkButton');
             if (completeButton) {
                 completeButton.addEventListener('click', function() {
@@ -849,41 +903,58 @@
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
                                     .getAttribute('content'),
-                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-Requested-With': 'XMLHttpRequest', // Crucial for Laravel AJAX detection
                                 'Accept': 'application/json',
                             }
                         })
                         .then(response => {
-                            if (!response.ok) throw new Error('Gagal menghubungi server.');
+                            if (!response.ok) {
+                                // If response is not OK, try to parse JSON error and throw it
+                                return response.json().then(errorData => {
+                                    throw errorData; // Throw the error data object
+                                });
+                            }
                             return response.json();
                         })
                         .then(data => {
+                            console.log("Response data from markComplete:", data);
                             if (data.success) {
-                                window.showCustomAlert(data.message, "success"); // Show success alert
+                                window.showCustomAlert(data.message, "success");
                                 const confirmModal = bootstrap.Modal.getInstance(document
                                     .getElementById('completeJobModal'));
                                 if (confirmModal) confirmModal.hide();
 
+                                // When job is marked complete, open the completion/review modal
                                 const completionModal = new bootstrap.Modal(document.getElementById(
                                     'completionModal'));
                                 completionModal.show();
-
-                                // --- HAPUS listener ini. Reload akan dihandle oleh submitReview() ---
-                                // document.getElementById('completionModal').addEventListener('hidden.bs.modal', function() {
-                                //     location.reload();
-                                // }, {
-                                //     once: true
-                                // });
-                                // --- BATAS HAPUS ---
+                                // No need to reload here. The review submission or report submission will handle the reload.
                             } else {
-                                window.showCustomAlert(data.message || 'Terjadi kesalahan.',
-                                    "error"); // Use custom alert for errors too
+                                let errorMessage = data.message || 'Terjadi kesalahan.';
+                                if (data.errors) {
+                                    for (const key in data.errors) {
+                                        if (data.errors.errors.hasOwnProperty(key)) {
+                                            data.errors.errors[key].forEach(msg => {
+                                                errorMessage += `\n- ${msg}`;
+                                            });
+                                        }
+                                    }
+                                }
+                                window.showCustomAlert(errorMessage, "error");
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            window.showCustomAlert('Terjadi kesalahan. Silakan coba lagi.',
-                                "error"); // Use custom alert for errors
+                            let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+                            if (error.message) {
+                                errorMessage = error.message;
+                            } else if (error.errors) { // Handle Laravel validation errors
+                                errorMessage = 'Validasi gagal:';
+                                for (const key in error.errors) {
+                                    errorMessage += `\n- ${error.errors[key].join(', ')}`;
+                                }
+                            }
+                            window.showCustomAlert(errorMessage, "error");
                         })
                         .finally(() => {
                             this.disabled = false;
@@ -892,35 +963,79 @@
                 });
             }
 
-            // >>> TAMBAH BLOK KODE INI <<<
-            // Listener untuk completionModal saat disembunyikan
+            // --- Event Listeners for Modals Hiding ---
+            // Listener for `completionModal` when it is hidden
             const completionModalElement = document.getElementById('completionModal');
             if (completionModalElement) {
                 completionModalElement.addEventListener('hidden.bs.modal', function() {
-                    // Hanya reload jika kita TIDAK dalam proses membuka modal laporan
+                    // Only reload if we are NOT in the process of opening the report modal
                     if (!window.isOpeningReportModal) {
                         location.reload();
                     }
-                    // Reset flag setelah modal disembunyikan
+                    // Reset the flag after the modal is hidden
                     window.isOpeningReportModal = false;
                 });
             }
-            // >>> BATAS TAMBAH <<<
 
-        }); // Akhir dari DOMContentLoaded
+            // Listener for `reportModal` when it is hidden
+            const reportModalElement = document.getElementById('reportModal');
+            if (reportModalElement) {
+                reportModalElement.addEventListener('hidden.bs.modal', function() {
+                    // Always reload after the report modal is closed, regardless of how it was opened
+                    location.reload();
+                });
+            }
+
+            // Attach submitReview to its button
+            const submitReviewButton = document.getElementById('submitReviewButton');
+            if (submitReviewButton) {
+                submitReviewButton.addEventListener('click', submitReview);
+            }
+
+            // Attach openReportModal to its button
+            const reportProblemButton = document.getElementById('reportProblemButton');
+            if (reportProblemButton) {
+                reportProblemButton.addEventListener('click', openReportModal);
+            }
+
+            // Attach custom submit behavior to the report form
+            const reportForm = document.getElementById('reportForm');
+            if (reportForm) {
+                reportForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent default HTML form submission
+                    submitReport(); // Call your custom submit function
+                });
+            }
+        }); // End of DOMContentLoaded
+
+        // Function to submit the report via Fetch API
         function submitReport() {
             const form = document.getElementById('reportForm');
             if (!form) {
-                console.error('reportForm not found!');
+                console.error('Report form not found!');
                 return;
             }
-            const formData = new FormData(form);
 
+            const formData = new FormData(form);
             const reportNote = document.getElementById('reportNote').value;
-            if (!reportNote.trim()) {
-                window.showCustomAlert('Harap isi keterangan masalah terlebih dahulu.', 'error');
+            const photoInput = document.getElementById('photoInputReport');
+
+            if (photoInput && photoInput.files.length === 0) {
+                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
                 return;
             }
+            if (!reportNote.trim()) {
+                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                return;
+            }
+
+            // Disable button and show loading
+            const submitBtn = form.querySelector('button[type="submit"]'); // Get the specific submit button
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Mengirim Laporan...';
+            }
+
 
             fetch(form.action, {
                     method: 'POST',
@@ -946,8 +1061,8 @@
                     if (reportModal) {
                         reportModal.hide();
                     }
-                    // >>> GANTI BARIS INI <<<
-                    window.location.href = "{{ route('job-req.home') }}"; // Redirect ke beranda job requester
+                    // Redirect after successful report submission
+                    window.location.href = "{{ route('job-req.home') }}";
                 })
                 .catch(error => {
                     console.error('Error submitting report:', error);
@@ -967,7 +1082,411 @@
                     }
 
                     window.showCustomAlert(errorMessage, 'error');
+                })
+                .finally(() => {
+                    // Re-enable button regardless of success or failure
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Kirim Laporan';
+                    }
                 });
         }
     </script>
+    <style>
+        /* Star Rating Styles */
+        .star-rating,
+        .star-animate {
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+            margin-right: 0.1em;
+            /* Consistent right margin */
+            margin-left: 0.1em;
+            /* Consistent left margin */
+            display: inline-block;
+            /* Ensure margins are respected */
+        }
+
+        .star-rating:last-of-type,
+        .star-animate:last-of-type {
+            margin-right: 0;
+            /* No right margin for the last star */
+        }
+
+        .star-blue {
+            color: gold !important;
+        }
+
+        /* Tab Navigation (from previous context, might not be fully used here but included for completeness) */
+        .tabs-wrapper {
+            height: 3.5rem;
+            border-radius: 1.5rem;
+            position: relative;
+            z-index: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            border-radius: 0.5rem;
+            color: #6b7280;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            padding: 0.5rem 1rem;
+        }
+
+        .tab-button:hover {
+            color: #4f46e5;
+        }
+
+        .tab-button.active {
+            background-color: #ffffff;
+            color: #1f2937;
+            font-weight: 600;
+            z-index: 10;
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top: 8px solid #bfff00;
+            padding-top: calc(0.5rem - 8px);
+            padding-bottom: calc(0.5rem - 2px);
+            margin-bottom: -4px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Order List Row Hover Effect (from previous context) */
+        .hoverable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            border-radius: 0.25rem;
+        }
+
+        .hoverable-row:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.175);
+            transform: translateY(-2px);
+        }
+
+        /* Status Badge Styling (from previous context) */
+        .status-badge {
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-badge-fixed {
+            min-width: 90px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Global Table Cell Styling for Text Wrapping (from previous context) */
+        .tableHeader .col,
+        .order-row .col {
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .tableHeader .col {
+            font-size: 14px;
+        }
+
+        .order-row .col {
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .order-list-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        .modal.fade.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Responsive Adjustments for Mobile (max-width: 767px) */
+        @media (max-width: 767px) {
+            .tabs-wrapper {
+                display: none !important;
+            }
+
+            .tabs-dropdown-wrapper {
+                display: block !important;
+            }
+
+            .tabs-dropdown-wrapper select {
+                border-color: #bfff00 !important;
+                border-width: 2px !important;
+            }
+
+            .tableHeader .col,
+            .order-row .col {
+                font-size: 12px !important;
+                padding-left: 0.3rem;
+                padding-right: 0.3rem;
+                white-space: normal !important;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 0.8rem !important;
+            }
+
+            .order-row .title-col {
+                padding-left: 0.8rem !important;
+            }
+
+            .order-row .badge {
+                font-size: 12px !important;
+                padding: .2em .4em !important;
+            }
+
+            .order-row .status-badge-fixed {
+                min-width: 70px !important;
+                text-align: center;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .order-row .col.m-0.p-0 {
+                margin: 0 !important;
+            }
+
+            .modal-body p {
+                font-size: 14px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 16px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 20px !important;
+            }
+
+            .modal-body label {
+                font-size: 14px !important;
+            }
+
+            .modal-body textarea {
+                font-size: 14px !important;
+            }
+
+            .modal-footer button {
+                font-size: 14px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 18px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 16px !important;
+            }
+
+            .star-rating {
+                font-size: 28px !important;
+            }
+        }
+
+        /* Specific Adjustments for Smaller Screens (max-width: 500px) */
+        @media (max-width: 500px) {
+
+            .tableHeader .col,
+            .order-row .col {
+                padding-left: 0.6rem !important;
+                padding-right: 0.6rem !important;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 0.6rem !important;
+            }
+
+            .order-row .title-col {
+                padding-left: 0.6rem !important;
+            }
+
+            .order-row .badge {
+                font-size: 10px !important;
+            }
+
+            .order-row .status-badge-fixed {
+                min-width: 60px !important;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
+            }
+        }
+
+        /* Specific Adjustments for Very Small Screens (max-width: 433px) */
+        @media (max-width: 440px) {
+
+            .tableHeader .col,
+            .order-row .col {
+                font-size: 11px !important;
+                padding-left: 0.4rem !important;
+                padding-right: 0.4rem !important;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 0.4rem !important;
+            }
+
+            .order-row .title-col {
+                padding-left: 0.4rem !important;
+            }
+
+            .order-row .badge {
+                font-size: 9px !important;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
+            }
+        }
+
+        /* Desktop Specific Styles (min-width: 768px) */
+        @media (min-width: 768px) {
+            .tabs-wrapper {
+                display: flex !important;
+            }
+
+            .tabs-dropdown-wrapper {
+                display: none !important;
+            }
+
+            .tableHeader .col {
+                font-size: 16px;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 1rem;
+            }
+
+            .order-row .col {
+                font-size: 14px;
+            }
+
+            .order-row .title-col {
+                padding-left: 1rem;
+            }
+
+            .order-row .badge {
+                font-size: 14px;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 16px;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 18px;
+            }
+
+            .modal-header h5 {
+                font-size: 24px;
+            }
+
+            #reviewSectionHeading {
+                font-size: 22px;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 18px;
+            }
+
+            .star-rating {
+                font-size: 32px;
+            }
+        }
+    </style>
 @endsection

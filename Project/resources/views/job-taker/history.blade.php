@@ -1,18 +1,11 @@
-@extends('Master.master-job-taker')
+@extends('Master.master-job-req')
 
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
-    <div class="flex items-center space-x-4">
+        {{-- Page Title --}}
         <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">Riwayat Pemesanan
         </h1>
-    <a href="{{ route('monthly.report') }}"
-    class="btn btn-primary btn-lg mb-3 text-white"
-    style="text-decoration: none;">
-        Laporan Bulanan
-    </a>
 
-
-    </div>
         <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
             {{-- Desktop Tab Navigation --}}
             <div class="tabs-wrapper hidden md:flex">
@@ -46,61 +39,70 @@
             </div>
         </div>
 
-
         {{-- Main Order List Display Area --}}
-        <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
-            <div class="w-full bg-white rounded-lg">
-                {{-- Table Header Row --}}
-                <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
-                    style="height: 4rem;">
-                    {{-- Added 'ps-3' to the header column for consistency --}}
-                    <div class="col m-0 p-0 ps-3 text-start">Judul</div>
-                    <div class="col m-0 p-0">Status</div>
-                    <div class="col m-0 p-0">Tanggal Selesai</div>
-                    <div class="col m-0 p-0">Klien</div>
-                    <div class="col m-0 p-0">Lokasi</div>
-                    <div class="col m-0 p-0">Upah</div>
-                </div>
-                <hr class="mx-auto border-2 opacity-100 my-0 p-0" style="width: 98%; border-color: #294287;">
-                {{-- Order Rows Loop --}}
-                <div id="order-list-container" class="order-list-fade-in">
-                    @forelse ($allOrders as $order)
-                        <div class="order-row hoverable-row
-                            {{ str_replace(' ', '-', $order->status) }}-tab"
-                            @if ($order->status_text == 'Selesai') data-bs-toggle="modal" data-bs-target="#completionModal"
-                            @else
-                                data-redirect-url="{{ route('job-taker.accepted-work-request', ['id' => $order->id]) }}" @endif
-                            data-transaction-id="{{ $order->id }}" data-request-id="{{ $order->request->id ?? '' }}"
-                            data-request-title="{{ $order->request->title ?? '-' }}"
+        <div class="w-full bg-white rounded-lg">
+            {{-- Table Header Row for Order Details --}}
+            <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
+                style="height: 4rem;">
+                {{-- Added ps-3 for left padding on the header column --}}
+                <div class="col m-0 p-0 text-start ps-3">Judul</div>
+                <div class="col m-0 p-0">Status</div>
+                <div class="col m-0 p-0">Tanggal Selesai</div>
+                <div class="col m-0 p-0">Klien</div>
+                <div class="col m-0 p-0">Lokasi</div>
+                <div class="col m-0 p-0">Upah</div>
+            </div>
+            <hr class="mx-auto border-2 opacity-100 my-0 p-0" style="width: 98%; border-color: #294287;">
+
+            {{-- Loop to Display Individual Order Rows --}}
+            <div id="order-list-container" class="order-list-fade-in">
+                @forelse ($allOrders as $order)
+                    <div class="order-row hoverable-row
+                        {{ str_replace(' ', '-', $order->status) }}-tab"
+                        {{-- Determine whether to open modal or redirect based on status and user role --}}
+                        @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
+                                data-bs-target="#completionModal"
+                        @else
+                            {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
+                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}"
+                        @endif
+                            data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
                             data-order-number="{{ $order->order_number ?? '-' }}"
                             data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
                             data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
-                            data-requester-first-name="{{ $order->request->requester->first_name ?? '' }}"
-                            data-requester-last-name="{{ $order->request->requester->last_name ?? '' }}"
+                            data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
+                            data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
                             data-request-location="{{ $order->request->location ?? '-' }}"
                             data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
                             data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
                             data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
-                            data-start-work="{{ \Carbon\Carbon::parse($order->start_work)->format('H.i') ?? '-' }}"
-                            data-finish-work="{{ \Carbon\Carbon::parse($order->finish_work)->format('H.i') ?? '-' }}"
-                            data-worker-id="{{ $order->worker_id ?? '' }}"
-                            data-requester-id="{{ $order->request->requester->id ?? '' }}"
-                            data-order-status-text="{{ $order->status_text }}"
+                            data-start-work="{{ $order->start_work ? \Carbon\Carbon::parse($order->start_work)->format('H.i') : '-' }}"
+                            data-finish-work="{{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('H.i') : '-' }}"
+                            data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
                             data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
-                            @if ($order->has_review && $order->received_review) data-user-rating="{{ $order->received_review->rating }}"
-                                data-user-comment="{{ $order->received_review->comment }}" @endif>
-                            <div class="row text-center text-sm d-flex justify-content-center align-items-center m-0 p-0"
-                                style="min-height: 3.5rem;">
-                                {{-- Added ps-3 for left padding on the title column --}}
-                                <div class="col m-0 p-0 text-xxs text-start ps-3 title-col"> {{ $order->request->title ?? '-' }}</div>
-                                <div class="col m-0 p-0">
-                                    <span class="badge rounded-pill text-xxs status-badge-fixed"
-                                        style="
+                            data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
+                        @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
+                                data-user-comment="{{ $order->user_review->comment }}" @endif
+                        {{-- Pass decoded photo URLs if a report exists --}}
+                        @if ($order->has_user_report && $order->user_report->decoded_photo_urls) data-report-photo-urls="{{ json_encode($order->user_report->decoded_photo_urls) }}" @endif>
+                        {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
+                        <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
+                            style="min-height: 3.5rem;">
+                            {{-- Added ps-3 for left padding on the title column, and added 'title-col' class for specific responsive styling --}}
+                            <div class="col m-0 p-0 text-xxs text-start ps-3 title-col">
+                                {{ $order->request->title ?? '-' }}</div>
+                            <div class="col m-0 p-0">
+                                {{-- Added status-badge-fixed for fixed width --}}
+                                <span class="badge rounded-pill text-xxs status-badge-fixed"
+                                    style="
                                         padding: .5em .9em;
-                                        font-size: 14px;
+                                        font-size: 0.85em;
                                         @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
                                             color: #333;
-                                        @elseif(in_array($order->status_text, ['Dikerjain', 'Diterima', 'Ditinjau']))
+                                        @elseif ($order->status_text == 'Dikerjain')
+                                            background-color: #309FFF;
+                                            color: #FFF;
+                                        @elseif($order->status_text == 'Diterima' || $order->status_text == 'Ditinjau')
                                             background-color: #294287;
                                             color: #FFF;
                                         @elseif($order->status_text == 'Dibatalin')
@@ -110,31 +112,32 @@
                                             background-color: #6c757d;
                                             color: #FFF; @endif
                                         ">
-                                        {{ $order->status_text ?? '-' }}
-                                    </span>
-                                </div>
-                                <div class="col m-0 p-0 text-xxs">
-                                    {{ \Carbon\Carbon::parse($order->updated_at)->format('d - m - Y') ?? '-' }}</div>
-                                <div class="col m-0 p-0 text-xxs">{{ $order->request->requester->full_name ?? '-' }}</div>
-                                <div class="col m-0 p-0 text-xxs">{{ $order->request->location ?? '-' }}</div>
-                                <div class="col m-0 p-0 text-xxs">Rp
-                                    {{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}</div>
+                                    {{ $order->status_text ?? '-' }}
+                                </span>
                             </div>
+                            <div class="col m-0 p-0 text-xxs">
+                                {{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('d - m - Y') : '-' }}
+                            </div>
+                            <div class="col m-0 p-0 text-xxs">{{ $order->requester->full_name ?? '-' }}</div>
+                            <div class="col m-0 p-0 text-xxs">{{ $order->request->location ?? '-' }}</div>
+                            <div class="col m-0 p-0 text-xxs">Rp
+                                {{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}</div>
                         </div>
-                    @empty
-                        {{-- No Orders Message --}}
-                        <div id="no-transaction-message"
-                            class="my-0 py-6 px-6 text-center text-gray-500 justify-content-center flex items-center w-full"
-                            style="height: 3rem">
-                            Belum Ada Transaksi
-                        </div>
-                    @endforelse
-                </div>
+                    </div>
+                @empty
+                    {{-- Message displayed when no orders are found --}}
+
+                    <div id="no-transaction-message"
+                        class="mt-3 mb-0 py-6 px-6 text-center text-gray-500 justify-content-center flex items-center w-full"
+                        style="height: 3rem">
+                        Belum Ada Transaksi
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
 
-    {{-- Completion Modal --}}
+    {{-- Completion and Review Modal --}}
     <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
             <form id="reviewForm" method="POST">
@@ -147,61 +150,54 @@
 
                     <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 90vh;">
                         <div class="d-flex flex-column flex-lg-row gap-3">
-                            {{-- Order Details Display --}}
+                            {{-- Order details display section within the modal --}}
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Judul Pesanan
-                                        </p>
-                                        <p class="fw-medium" id="modalRequestTitle" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
+                                        <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Nomor Pesanan
-                                        </p>
-                                        <p class="fw-medium" id="modalOrderNumber" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
+                                        <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Nama Klien
-                                        </p>
-                                        <p class="fw-medium" id="modalRequesterName" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama Klien</p>
+                                        <p class="fw-medium" id="modalWorkerName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Lokasi</p>
-                                        <p class="fw-medium" id="modalRequestLocation" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
+                                        <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Tanggal
-                                            Pemesanan</p>
-                                        <p class="fw-medium" id="modalTransactionCreatedAt" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
+                                        <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Tanggal
-                                            Selesai</p>
-                                        <p class="fw-medium" id="modalTransactionUpdatedAt" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
+                                        <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Mulai Kerja
-                                        </p>
-                                        <p class="fw-medium" id="modalStartWork" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                        <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold" style="font-size: 14px;">Selesai
-                                            Kerja</p>
-                                        <p class="fw-medium" id="modalFinishWork" style="font-size: 16px;"></p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                        <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
                                 <hr class="my-1 border border-dark">
                                 <div class="d-flex mt-1">
                                     <div class="text d-flex justify-content-between align-items-center"
                                         style="width:50%;">
-                                        <p class="p-0 m-0 text-black-50 fw-semibold" style="font-size: 16px;">Total</p>
-                                        <p class="p-0 m-0 fw-medium text-end" style="font-size: 18px;">Rp
+                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
+                                        <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
                                             <span id="modalRequestPrice"></span>
                                         </p>
                                     </div>
@@ -214,7 +210,7 @@
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
                                                     fill="#294287" />
                                             </svg>
-                                            <div class="ms-2 fw-medium" style="font-size: 18px;">Invoice</div>
+                                            <div class="ms-2 fw-medium fs-5">Invoice</div>
                                         </a>
                                     </div>
                                 </div>
@@ -222,20 +218,23 @@
 
                             <div class="vr d-none d-lg-block mx-3"></div>
 
-                            {{-- Review and Report Section --}}
+                            {{-- Section for User Review and Report --}}
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
+                                {{-- The heading will now be dynamic --}}
                                 <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading"></h4>
 
+                                {{-- Container for existing review or review form --}}
                                 <div id="review-section-container" class="w-100">
+                                    {{-- This content will be dynamically populated by JavaScript --}}
                                 </div>
 
-                                {{-- Action Buttons --}}
+                                {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
-                                    <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                        onclick="submitReview()" id="submitReviewButton">Kirim</button>
-                                    <div class="m-1 text-center" style="font-size: 14px;">Atau</div>
+                                    <button type="submit" class="btn btn-primary fw-medium rounded-3"
+                                        id="submitReviewButton">Kirim</button>
+                                    <div class="m-1 text-center">Atau</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()">Laporkan masalah</button>
+                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
                                 </div>
                             </div>
                         </div>
@@ -249,146 +248,219 @@
     <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <form id="reportForm" method="POST" enctype="multipart/form-data" class="modal-content">
-                @csrf
-                <input type="hidden" name="transaction_id" id="reportTransactionId">
-                <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
-                <input type="hidden" name="reported_id" id="reportReportedId">
+            <div class="modal-content">
+                <form id="reportForm" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    {{-- Hidden inputs for report submission data --}}
+                    <input type="hidden" name="transaction_id" id="reportTransactionId">
+                    <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
+                    <input type="hidden" name="reported_id" id="reportReportedId">
 
-                <div class="modal-header border-0 justify-content-center">
-                    <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-                <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
-
-                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                    {{-- Transaction Details for Report --}}
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Judul Pesanan</p>
-                            <p class="fw-medium" id="reportModalRequestTitle" style="font-size: 16px;"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Nomor Pesanan</p>
-                            <p class="fw-medium" id="reportModalOrderNumber" style="font-size: 16px;"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Nama Klien</p>
-                            <p class="fw-medium" id="reportModalRequesterName" style="font-size: 16px;"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Lokasi</p>
-                            <p class="fw-medium" id="reportModalRequestLocation" style="font-size: 16px;"></p>
-                        </div>
+                    <div class="modal-header border-0 justify-content-center">
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Tanggal Pemesanan</p>
-                            <p class="fw-medium" id="reportModalTransactionCreatedAt" style="font-size: 16px;"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Tanggal Selesai</p>
-                            <p class="fw-medium" id="reportModalTransactionUpdatedAt" style="font-size: 16px;"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0" style="font-size: 14px;">Waktu Mulai</p>
-                            <p class="fw-medium" id="reportModalStartWork" style="font-size: 16px;"></p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="fw-medium" id="reportModalFinishWork" style="font-size: 16px;"></p>
-                        </div>
-                    </div>
+                    <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    {{-- Total Price for Report --}}
-                    <div class="d-flex justify-content-between mb-4">
-                        <p class="text-black-50 fw-semibold mb-0" style="font-size: 16px;">Total</p>
-                        <p class="fw-medium mb-0" style="font-size: 18px;">Rp <span id="reportModalRequestPrice"></span>
-                        </p>
-                    </div>
-
-                    {{-- Image Upload Section --}}
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold" style="font-size: 16px;">Upload Bukti (gambar):</label>
-                        <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
-                            <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
-                                style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
+                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="fw-medium" id="reportModalRequestTitle"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="fw-medium" id="reportModalOrderNumber"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                                <p class="fw-medium" id="reportModalRequesterName"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
+                                <p class="fw-medium" id="reportModalRequestLocation"></p>
                             </div>
                         </div>
-                        <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
-                            multiple>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="fw-medium" id="reportModalStartWork"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                                <p class="fw-medium" id="reportModalFinishWork"></p>
+                            </div>
+                        </div>
+
+                        {{-- Total price display in report modal --}}
+                        <div class="d-flex justify-content-between mb-4">
+                            <p class="text-black-50 fw-semibold mb-0">Total</p>
+                            <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
+                        </div>
+
+                        {{-- Image upload section for report proof --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                            <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
+                                {{-- Images will be appended here dynamically by JS --}}
+                                <div class="add-image-button pb-2"
+                                    onclick="document.getElementById('reportImageInput').click()"
+                                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
+                                </div>
+                                <span id="image-count"
+                                    class="text-secondary fw-medium align-self-center ms-auto">0/7</span>
+                            </div>
+                            <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
+                                multiple>
+                        </div>
+
+                        {{-- Textarea for reporting reasons --}}
+                        <div class="mb-4">
+                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                            <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
+                                placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
+                        </div>
                     </div>
 
-                    {{-- Reporting Reasons Textarea --}}
-                    <div class="mb-4">
-                        <label for="reportNote" class="form-label fw-semibold" style="font-size: 16px;">Keluh Kesah
-                            Anda</label>
-                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                            placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; font-size: 16px;"></textarea>
+                    {{-- Report submission button --}}
+                    <div class="modal-footer border-0 d-flex justify-content-end">
+                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
+                            Laporan</button>
                     </div>
-                </div>
-
-                {{-- Report Submission Button --}}
-                <div class="modal-footer border-0 d-flex justify-content-end">
-                    <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
-                        Laporan</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // Global Variables
+        // Global variables for managing transaction and worker IDs across modals
         let currentTransactionId = null;
-        let reportedRequesterId = null;
-        let selectedRating = 0;
+        let reportedWorkerId = null;
+        // Store uploaded files globally for the report modal
+        let reportFiles = []; // Array of File objects
+        const MAX_REPORT_IMAGES = 7; // Define max images constant
 
-        // Image Preview Logic for Report Modal
+        // --- Image Preview Logic for Report Modal ---
         const reportImageInput = document.getElementById('reportImageInput');
         const reportImagePreviewContainer = document.getElementById('reportImagePreviewContainer');
+        const addImageButton = reportImagePreviewContainer.querySelector('.add-image-button');
+        const imageCountSpan = document.getElementById('image-count');
+
+        /**
+         * Updates the display of uploaded report images and the image count.
+         * Newest image appears to the left of the '+' button.
+         * This function handles both newly added images and pre-existing images from a report.
+         */
+        function updateReportImagePreview() {
+            // Remove all current image preview wrappers to re-render them
+            reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el.remove());
+
+            // Iterate in reverse to add new images to the left, or in order for existing,
+            // and correctly place them relative to the addImageButton
+            reportFiles.forEach((fileOrUrl, index) => {
+                const isFileObject = fileOrUrl instanceof File;
+                const src = isFileObject ? URL.createObjectURL(fileOrUrl) : fileOrUrl;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-preview-wrapper position-relative';
+                wrapper.style.width = '80px';
+                wrapper.style.height = '80px';
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'rounded border img-thumbnail';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className =
+                    'btn-close position-absolute top-0 end-0 m-1'; // Removed btn-close-white
+                deleteButton.style.fontSize = '0.7rem';
+                deleteButton.style.backgroundColor = '#dc3545';
+                deleteButton.style.borderRadius = '50%';
+                deleteButton.style.padding = '0.25em';
+                deleteButton.type = 'button';
+                deleteButton.onclick = function() {
+                    deleteReportImage(index); // Use captured index for correct deletion
+                };
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(deleteButton);
+
+                // Insert the new image wrapper right before the 'add-image-button'
+                // This ensures new images stack to the right, and the '+' button remains at the end
+                reportImagePreviewContainer.insertBefore(wrapper, addImageButton);
+            });
+
+            // Update image count and add button visibility
+            imageCountSpan.textContent = `${reportFiles.length}/${MAX_REPORT_IMAGES}`;
+            if (reportFiles.length >= MAX_REPORT_IMAGES) {
+                addImageButton.style.display = 'none'; // Hide the add button
+            } else {
+                addImageButton.style.display = 'flex'; // Show the add button
+            }
+        }
+
+        /**
+         * Deletes an image from the reportFiles array at the specified index and updates the preview.
+         * @param {number} index - The index of the image to delete.
+         */
+        function deleteReportImage(index) {
+            reportFiles.splice(index, 1); // Remove the file from the array
+            updateReportImagePreview(); // Re-render previews to reflect deletion and update indices
+        }
 
         reportImageInput.addEventListener('change', function(event) {
-            reportImagePreviewContainer.innerHTML = `
-                <div class="pb-2" onclick="document.getElementById('reportImageInput').click()"
-                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
-                </div>
-            `;
+            // Iterate over selected files and apply validation
             Array.from(event.target.files).forEach(file => {
-                if (!file.type.startsWith('image/')) return;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'rounded border img-thumbnail';
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    img.style.objectFit = 'cover';
-                    reportImagePreviewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
+                // Client-side validation for file type
+                if (!file.type.startsWith('image/')) {
+                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    return; // Skip this file and continue to next
+                }
+                // Client-side validation for file size
+                const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                if (file.size > maxSizeBytes) {
+                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    return; // Skip this file and continue to next
+                }
+
+                // Add file to array if max limit not reached
+                if (reportFiles.length < MAX_REPORT_IMAGES) {
+                    reportFiles.push(file);
+                } else {
+                    window.showCustomAlert(
+                        `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`, 'error');
+                    // Stop processing further files if limit is hit
+                    return;
+                }
             });
+            event.target.value = ''; // Clear the input value to allow re-selection of same files
+            updateReportImagePreview(); // Update the visual display
         });
 
-        // Function to Open Report Modal
+        // --- Function to Open Report Modal ---
         function openReportModal() {
+            // Close the completion modal before opening the report modal
             var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
             if (completionModal) {
                 completionModal.hide();
             }
 
+            // Populate report modal fields with data from the selected order
             const reportModal = new bootstrap.Modal(document.getElementById('reportWorkModal'));
             const rowData = document.querySelector(`.order-row[data-transaction-id="${currentTransactionId}"]`);
 
@@ -396,7 +468,7 @@
                 document.getElementById('reportModalRequestTitle').textContent = rowData.dataset.requestTitle;
                 document.getElementById('reportModalOrderNumber').textContent = rowData.dataset.orderNumber;
                 document.getElementById('reportModalRequesterName').textContent =
-                    `${rowData.dataset.requesterFirstName} ${rowData.dataset.requesterLastName}`;
+                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`;
                 document.getElementById('reportModalRequestLocation').textContent = rowData.dataset.requestLocation;
                 document.getElementById('reportModalTransactionCreatedAt').textContent = rowData.dataset
                     .transactionCreatedAt;
@@ -406,18 +478,212 @@
                 document.getElementById('reportModalStartWork').textContent = rowData.dataset.startWork;
                 document.getElementById('reportModalFinishWork').textContent = rowData.dataset.finishWork;
 
+                // Set hidden form fields for submission
                 document.getElementById('reportTransactionId').value = currentTransactionId;
-                document.getElementById('reportReportedId').value = reportedRequesterId;
+                document.getElementById('reportReportedId').value = reportedWorkerId;
 
-                document.getElementById('reportForm').action = `/worker/submit-report/${currentTransactionId}`;
+                // Set form action for report submission
+                document.getElementById('reportForm').action = `/user/submit-report/${currentTransactionId}`;
+
+                // --- Populate existing report data if available ---
+                const hasUserReport = rowData.getAttribute('data-has-user-report') === 'true';
+                const reportPhotoUrlsJson = rowData.getAttribute('data-report-photo-urls');
+                const reportReasons = rowData.getAttribute(
+                    'data-user-report-reasons'); // Assuming you add this data attribute
+
+                if (hasUserReport && reportPhotoUrlsJson) {
+                    try {
+                        reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs into reportFiles
+                        document.getElementById('reportNote').value = reportReasons || ''; // Populate reasons
+                        // Disable fields if report already exists
+                        document.getElementById('reportNote').disabled = true;
+                        reportImageInput.disabled = true;
+                        document.getElementById('submitReportButton').style.display = 'none'; // Hide submit button
+                        addImageButton.style.display = 'none'; // Hide add image button
+                    } catch (e) {
+                        console.error('Error parsing report photo URLs:', e);
+                        reportFiles = []; // Fallback to empty
+                    }
+                } else {
+                    // Reset for new report
+                    reportFiles = [];
+                    document.getElementById('reportNote').value = '';
+                    document.getElementById('reportNote').disabled = false;
+                    reportImageInput.disabled = false;
+                    document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
+                }
+                updateReportImagePreview(); // Render initial state (either empty or existing images)
             }
 
+            // Show the report modal after a brief delay
             setTimeout(() => {
                 reportModal.show();
             }, 300);
         }
 
-        // Handle Invoice Link Click
+        // --- Star Rating Functionality for Review Modal ---
+        // Updates the visual fill of the stars
+        function updateStarDisplay(rating) {
+            const stars = document.querySelectorAll('#review-section-container .star-rating');
+            stars.forEach(star => {
+                const sVal = parseInt(star.getAttribute('data-value'));
+                if (sVal <= rating) {
+                    star.classList.add('star-blue');
+                    star.classList.remove('text-secondary');
+                } else {
+                    star.classList.remove('star-blue');
+                    star.classList.add('text-secondary');
+                }
+            });
+        }
+
+
+        // --- Function to Submit Review ---
+        function submitReview() {
+            const comment = document.getElementById('comment').value.trim();
+            const rating = document.getElementById('rating-input').value;
+
+            // Client-side validation for rating and comment
+            if (rating == 0) {
+                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
+                return;
+            }
+
+            if (comment == '') {
+                window.showCustomAlert('Silakan isi komentar.', 'error');
+                return;
+            }
+
+            // Submit the form normally. Laravel will handle the redirect with flashed data.
+            // Ensure the form's action is correctly set for review submission.
+            document.getElementById('reviewForm').submit();
+
+            // Optionally, disable button and show loading here, as page will reload
+            const submitBtn = document.getElementById('submitReviewButton');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+        }
+
+        // --- Function to Submit Report ---
+        function submitReport(event) {
+            event.preventDefault(); // Prevent default form submission to handle manually
+
+            const form = document.getElementById('reportForm');
+            const reasons = document.getElementById('reportNote').value.trim();
+
+            if (reportFiles.length === 0) {
+                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                return;
+            }
+            if (!reasons) {
+                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                return;
+            }
+
+            // Re-validate files in reportFiles array before submission, as user might delete/add
+            let hasInvalidFile = false;
+            // Filter out existing URLs and only send File objects
+            const filesToSend = reportFiles.filter(item => item instanceof File);
+
+            for (const file of filesToSend) { // Use for...of for easy breaking
+                if (!file.type.startsWith('image/')) {
+                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    hasInvalidFile = true;
+                    break; // Exit loop
+                }
+                const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                if (file.size > maxSizeBytes) {
+                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    hasInvalidFile = true;
+                    break; // Exit loop
+                }
+            }
+            if (hasInvalidFile) {
+                return;
+            }
+
+            const formData = new FormData(); // Create new FormData object for submission
+            // Append static form fields
+            formData.append('transaction_id', document.getElementById('reportTransactionId').value);
+            formData.append('reporter_id', document.getElementById('reportForm').querySelector('input[name="reporter_id"]')
+                .value);
+            formData.append('reported_id', document.getElementById('reportReportedId').value);
+            formData.append('reasons', reasons);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
+                'content')); // Manually add CSRF token
+
+            // Append all collected files from our `reportFiles` array
+            filesToSend.forEach((file, index) => {
+                formData.append(`photo[${index}]`, file);
+            });
+
+            const submitBtn = document.getElementById('submitReportButton');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim Laporan...';
+
+            // Submit the form using fetch, expecting a redirect
+            fetch(form.action, { // Use the form's action which includes transaction ID
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        // DO NOT set 'Content-Type': 'multipart/form-data' explicitly when using FormData,
+                        // the browser does it correctly with a boundary.
+                        'Accept': 'application/json, text/plain, */*' // Accept various response types
+                    },
+                    redirect: 'follow' // Instructs fetch to follow redirects
+                })
+                .then(response => {
+                    // This block will be executed if the initial response is NOT a redirect (e.g., validation error, 4xx/5xx status)
+                    // If the server successfully redirects (2xx status), this block might be skipped as the browser handles the redirect.
+                    if (!response.ok) {
+                        // Try to parse JSON errors from Laravel validation
+                        return response.json().then(errorData => {
+                            let errorMessage = '';
+                            if (errorData.errors) {
+                                for (let key in errorData.errors) {
+                                    errorMessage += `${errorData.errors[key].join(', ')}\n`;
+                                }
+                                window.showCustomAlert('Validasi Gagal:\n' + errorMessage, 'error');
+                            } else {
+                                // Fallback for non-validation errors
+                                throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                            }
+                        }).catch(jsonError => {
+                            // Catch errors from parsing JSON or from the throw new Error above
+                            console.error('Error parsing server response:', jsonError);
+                            window.showCustomAlert('Terjadi kesalahan saat memproses respons server: ' +
+                                jsonError.message, 'error');
+                        });
+                    }
+                    // If response is OK, but not a redirect (unlikely if backend redirects on success)
+                    // or if it's a successful JSON response we didn't expect,
+                    // it means the backend didn't redirect as planned.
+                    // We'll just return text to consume the response body if it's not a redirect.
+                    return response.text();
+                })
+                .then(text => {
+                    // This block is typically hit if the fetch promise resolves successfully
+                    // BUT the server did not issue a redirect (e.g., returned a success JSON or HTML directly).
+                    // If a redirect was successful, the page would have already navigated.
+                    console.log("Fetch completed, but no redirect occurred:", text);
+                })
+                .catch(error => {
+                    // Catch network errors or errors thrown from the .then(response => ...) block
+                    console.error('Error during report submission:', error);
+                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message,
+                        'error');
+                })
+                .finally(() => {
+                    // This finally block will always run.
+                    // For a successful redirect, the page will reload, making these UI updates moot.
+                    // But for client-side errors or server-side errors that don't redirect, they are important.
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Laporan';
+                });
+        }
+
+
+        // Handles click event for generating and downloading invoice
         function handleInvoiceLinkClick(e) {
             e.preventDefault();
             const transactionId = this.getAttribute('data-transaction-id');
@@ -430,151 +696,37 @@
             }
         }
 
-        // Function to Submit Review
-        function submitReview() {
-            const comment = document.getElementById('comment').value.trim();
-            const rating = document.getElementById('rating-input').value;
 
-            if (rating == 0) {
-                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
-                return;
-            }
-
-            if (comment == '') {
-                window.showCustomAlert('Silakan isi komentar.', 'error');
-                return;
-            }
-
-            fetch(`/reviews/${currentTransactionId}`, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        transaction_id: currentTransactionId,
-                        reviewer_id: "{{ auth()->id() }}",
-                        reviewee_id: reportedRequesterId,
-                        rating: rating,
-                        comment: comment,
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
-                        }).catch(() => {
-                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response
-                                .status);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        window.showCustomAlert('Review berhasil disimpan!', 'success');
-                        var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-                        completionModal.hide();
-                        location.reload();
-                    } else {
-                        window.showCustomAlert('Gagal menyimpan review, coba lagi. ' + (data.message || ''), 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting review:', error);
-                    window.showCustomAlert('Terjadi kesalahan saat mengirim review, coba lagi.\nDetails: ' + error.message, 'error');
-                });
-        }
-
-        // Function to Submit Report
-        function submitReport(event) {
-            event.preventDefault();
-
-            const form = document.getElementById('reportForm');
-            if (!form) {
-                console.error('reportForm not found!');
-                return;
-            }
-            const formData = new FormData(form);
-
-            const reasons = document.getElementById('reportNote').value.trim();
-            if (!reasons) {
-                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
-                return;
-            }
-            if (reportImageInput.files.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
-                return;
-            }
-
-            fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw new Error(errorData.message || 'Server error: ' + response.statusText);
-                        }).catch(() => {
-                            throw new Error('Network response was not ok or non-JSON error. Status: ' + response
-                                .status);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    window.showCustomAlert(data.message, 'info');
-                    location.reload();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message, 'error');
-                });
-        }
-
-        // DOM Content Loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // No longer checking URL parameters for success messages, Laravel's session will handle it.
+            // The global alert display in master-job-req.blade.php handles it.
+
             const orderRows = document.querySelectorAll('.order-row');
             const submitReviewButton = document.getElementById('submitReviewButton');
             const reviewSectionContainer = document.getElementById('review-section-container');
             const reviewSectionHeading = document.getElementById('reviewSectionHeading');
+            const reportProblemButton = document.getElementById('reportProblemButton');
+            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
 
-            // Function to update star display for reviews
-            function updateStarDisplay(rating) {
-                const stars = document.querySelectorAll('#review-section-container .star-rating');
-                stars.forEach(star => {
-                    const sVal = parseInt(star.getAttribute('data-value'));
-                    if (sVal <= rating) {
-                        star.classList.add('star-blue');
-                        star.classList.remove('text-secondary');
-                    } else {
-                        star.classList.remove('star-blue');
-                        star.classList.add('text-secondary');
-                    }
-                });
-            }
 
-            // Function to render the review form
+            let selectedRating = 0; // Local variable for selected rating within current modal view
+
+            // Function to render the review form (unchanged)
             function renderReviewForm() {
                 reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
                 reviewSectionContainer.innerHTML = `
-                    <div class="text-center mt-0 mb-3 w-100">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <i class="bi bi-star-fill text-secondary star-rating" style="font-size: 32px;" data-value="{{ $i }}"></i>
-                        @endfor
-                        <input type="hidden" name="rating" id="rating-input" value="0">
-                    </div>
-                    <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start" style="font-size: 16px;">Komentar</label>
-                        <textarea name="comment" id="comment" class="form-control" rows="3"
-                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; font-size: 16px;"></textarea>
-                    </div>
-                `;
+            <div class="text-center mt-0 mb-3 w-100">
+                @for ($i = 1; $i <= 5; $i++)
+                    <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
+                @endfor
+                <input type="hidden" name="rating" id="rating-input" value="0">
+            </div>
+            <div class="ps-3 flex-fill d-flex flex-column w-100">
+                <label for="comment" class="form-label text-start">Komentar</label>
+                <textarea name="comment" id="comment" class="form-control" rows="3"
+                    placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+            </div>
+        `;
                 const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
                 const newRatingInput = document.getElementById('rating-input');
                 newStars.forEach(star => {
@@ -583,7 +735,8 @@
                         updateStarDisplay(val);
                     });
                     star.addEventListener('mouseout', function() {
-                        updateStarDisplay(selectedRating);
+                        updateStarDisplay(
+                            selectedRating);
                     });
                     star.addEventListener('click', function() {
                         selectedRating = parseInt(this.getAttribute('data-value'));
@@ -596,31 +749,32 @@
                 }
             }
 
-            // Function to render existing review display
+            // Function to render the existing review display (unchanged)
             function renderExistingReview(rating, comment) {
                 reviewSectionHeading.textContent = 'Ini penilaianmu';
                 let starHtml = '';
                 for (let i = 1; i <= 5; i++) {
                     starHtml +=
-                        `<i class="bi bi-star-fill ${i <= rating ? 'star-blue' : 'text-secondary'}" style="font-size: 32px;"></i>`;
+                        `<i class="bi bi-star-fill fs-2 ${i <= rating ? 'star-blue' : 'text-secondary'} star-animate"></i>`;
                 }
 
                 reviewSectionContainer.innerHTML = `
-                    <div class="text-center mt-0 mb-3 w-100">
-                        ${starHtml}
-                    </div>
-                    <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start" style="font-size: 16px;">Komentar</label>
-                        <textarea id="comment" class="form-control" rows="3" disabled
-                            style="border-color:#8a8a8a; font-size: 16px;">${comment}</textarea>
-                    </div>
-                `;
+            <div class="text-center mt-0 mb-3 w-100">
+                ${starHtml}
+            </div>
+            <div class="ps-3 flex-fill d-flex flex-column w-100">
+                <label for="comment" class="form-label text-start">Komentar</label>
+                <textarea id="comment" class="form-control" rows="3" disabled
+                    style="border-color:#8a8a8a;">${comment}</textarea>
+            </div>
+        `;
                 if (submitReviewButton) {
                     submitReviewButton.style.display = 'none';
                 }
             }
 
-            // Order Row Click Listener
+
+            // Add click listener to each order row to handle redirection or modal display
             orderRows.forEach(row => {
                 row.addEventListener('click', function(event) {
                     event.preventDefault();
@@ -630,27 +784,33 @@
                     const hasReview = this.getAttribute('data-has-review') === 'true';
                     const userRating = this.getAttribute('data-user-rating');
                     const userComment = this.getAttribute('data-user-comment');
+                    const hasUserReport = this.getAttribute('data-has-user-report') === 'true';
 
+
+                    // Set global variables for use in modals
                     currentTransactionId = transactionId;
-                    reportedRequesterId = this.getAttribute('data-requester-id');
+                    reportedWorkerId = this.getAttribute('data-worker-id');
 
                     if (orderStatusText === 'Selesai') {
                         const completionModal = new bootstrap.Modal(document.getElementById(
                             'completionModal'));
                         completionModal.show();
 
+                        // Populate the completion modal with data
                         document.getElementById('modalRequestTitle').textContent = this.dataset
                             .requestTitle;
                         document.getElementById('modalOrderNumber').textContent = this.dataset
                             .orderNumber;
-                        document.getElementById('modalRequesterName').textContent =
+                        document.getElementById('modalWorkerName').textContent =
                             `${this.dataset.requesterFirstName} ${this.dataset.requesterLastName}`;
                         document.getElementById('modalRequestLocation').textContent = this.dataset
                             .requestLocation;
                         document.getElementById('modalTransactionCreatedAt').textContent = this
-                            .dataset.transactionCreatedAt;
+                            .dataset
+                            .transactionCreatedAt;
                         document.getElementById('modalTransactionUpdatedAt').textContent = this
-                            .dataset.transactionUpdatedAt;
+                            .dataset
+                            .transactionUpdatedAt;
                         document.getElementById('modalRequestPrice').textContent = this.dataset
                             .requestPrice;
                         document.getElementById('modalStartWork').textContent = this.dataset
@@ -658,16 +818,42 @@
                         document.getElementById('modalFinishWork').textContent = this.dataset
                             .finishWork;
 
+                        // Set form actions dynamically for the completion modal
+                        // This form will be submitted directly via .submit()
+                        // Ensure this route is correct for your ReviewController.store method
+                        // Or if `storeReview` is in TransactionController, adjust accordingly.
                         document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
 
+
+                        // Conditional rendering of review section
                         if (hasReview) {
                             renderExistingReview(userRating, userComment);
+                            // Set selectedRating to existing review
                             selectedRating = parseInt(userRating);
                         } else {
                             renderReviewForm();
-                            selectedRating = 0;
+                            selectedRating = 0; // Reset selectedRating for new review
                         }
 
+                        // --- Handle Report Button State ---
+                        if (reportProblemButton) {
+                            if (hasUserReport) {
+                                reportProblemButton.textContent = 'Laporan sudah terkirim';
+                                reportProblemButton.disabled = true;
+                                reportProblemButton.classList.remove('text-danger');
+                                reportProblemButton.classList.add('text-secondary');
+                                reportProblemButton.onclick = null; // Remove click listener
+                            } else {
+                                reportProblemButton.textContent = 'Laporkan masalah';
+                                reportProblemButton.disabled = false;
+                                reportProblemButton.classList.remove('text-secondary');
+                                reportProblemButton.classList.add('text-danger');
+                                reportProblemButton.onclick =
+                                    openReportModal; // Re-attach click listener
+                            }
+                        }
+
+                        // Setup invoice link
                         const invoiceLink = document.getElementById('modalInvoiceLink');
                         if (invoiceLink) {
                             invoiceLink.setAttribute('data-transaction-id', transactionId);
@@ -675,8 +861,11 @@
                             invoiceLink.addEventListener('click', handleInvoiceLinkClick);
                         }
 
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) {
-                        window.location.href = `/job-taker/accepted-work-request/${transactionId}`;
+
+                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
+                            orderStatusText)) {
+                        // For these specific statuses, redirect to the ongoing request page
+                        window.location.href = `/job-req/on-going-work-request/${transactionId}`;
                     } else {
                         console.log('Clicked on a row with status:', orderStatusText,
                             'No specific action defined.');
@@ -684,34 +873,58 @@
                 });
             });
 
-            // Attach submitReport to the "Kirim Laporan" button
-            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
+            // Attach submitReport to the "Kirim Laporan" button inside the report modal
             if (submitReportButtonForReportModal) {
                 submitReportButtonForReportModal.addEventListener('click', submitReport);
             }
 
+            // Attach submitReview to its button
+            if (submitReviewButton) {
+                // Changed from onclick in HTML to addEventListener for cleaner JS
+                submitReviewButton.addEventListener('click', submitReview);
+            }
+
+
             // Reset review form state when the completion modal is hidden
             const completionModalElement = document.getElementById('completionModal');
             completionModalElement.addEventListener('hidden.bs.modal', function() {
-                selectedRating = 0;
+                selectedRating = 0; // Reset selected rating
+                // The HTML content of reviewSectionContainer is rebuilt on modal open, so no need to clear its elements here.
             });
 
-            // Tab and Dropdown Filtering Functionality
+            // Clear report form state and re-enable button when the report modal is hidden
+            const reportWorkModalElement = document.getElementById('reportWorkModal');
+            reportWorkModalElement.addEventListener('hidden.bs.modal', function() {
+                document.getElementById('reportNote').value = ''; // Clear textarea
+                reportFiles = []; // Clear the global array of files
+                updateReportImagePreview
+                    (); // Reset preview container (removes all image wrappers and re-adds placeholder)
+                reportImageInput.value = ''; // Clear file input (important for re-selecting same files)
+                document.getElementById('submitReportButton').disabled = false;
+                document.getElementById('submitReportButton').textContent = 'Kirim Laporan';
+            });
+
+
+            // --- Tab and Dropdown Filtering Functionality ---
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabSelect = document.getElementById('tab-select');
             const orderRowsForTabs = document.querySelectorAll('.order-row');
             const noTransactionMessage = document.getElementById('no-transaction-message');
             const orderListContainer = document.getElementById('order-list-container');
 
+            // Filters and displays order rows based on the selected tab/dropdown option
             function updateTabContent(selectedTab) {
                 let hasVisibleOrders = false;
                 let visibleRows = [];
 
+                // Remove existing fade-in class to re-trigger animation
                 orderListContainer.classList.remove('order-list-fade-in');
-                void orderListContainer.offsetWidth;
+                void orderListContainer.offsetWidth; // Trigger reflow
                 orderListContainer.classList.add('order-list-fade-in');
 
+
                 orderRowsForTabs.forEach(row => {
+                    // Extract status from the badge text content
                     const badgeElement = row.querySelector('.badge');
                     let orderStatusText = badgeElement ? badgeElement.textContent.trim() : '';
 
@@ -723,7 +936,7 @@
                     } else if (orderStatusText === 'Dibatalin') {
                         orderStatusForTab = 'cancelled';
                     } else {
-                        orderStatusForTab = 'other';
+                        orderStatusForTab = 'other'; // Fallback for other statuses
                     }
 
                     if (selectedTab === 'all' || selectedTab === orderStatusForTab) {
@@ -735,9 +948,11 @@
                     }
                 });
 
+                // Remove existing separators between rows
                 const existingHrs = orderListContainer.querySelectorAll('.order-divider');
                 existingHrs.forEach(hr => hr.remove());
 
+                // Add separators only between currently visible rows
                 for (let i = 0; i < visibleRows.length - 1; i++) {
                     const hr = document.createElement('hr');
                     hr.classList.add('mx-auto', 'border-1', 'opacity-100', 'my-0', 'p-0', 'order-divider');
@@ -745,6 +960,7 @@
                     visibleRows[i].parentNode.insertBefore(hr, visibleRows[i].nextSibling);
                 }
 
+                // Toggle 'No Transaction' message visibility
                 if (noTransactionMessage) {
                     if (hasVisibleOrders) {
                         noTransactionMessage.style.display = 'none';
@@ -767,10 +983,12 @@
             if (tabSelect) {
                 tabSelect.addEventListener('change', function() {
                     updateTabContent(this.value);
+                    // Update dropdown border color
                     this.style.borderColor = '#bfff00';
                     this.style.borderWidth = '2px';
                 });
 
+                // Initialize dropdown border style on page load
                 if (window.innerWidth < 768) {
                     if (tabSelect.value === 'all' || !tabSelect.value) {
                         tabSelect.style.borderColor = '#bfff00';
@@ -782,30 +1000,48 @@
                 }
             }
 
-            // Initial load of tab content
+            // Initial load of tab content based on current screen size
             if (window.innerWidth < 768 && tabSelect) {
                 updateTabContent(tabSelect.value);
             } else if (document.querySelector('.tab-button.active')) {
                 updateTabContent(document.querySelector('.tab-button.active').dataset.tab);
             }
 
-            // Fix for persistent modal overlay
+            // === FIX FOR PERSISTENT OVERLAY ===
+            // Listen for any Bootstrap modal to be hidden and manually remove any remaining backdrops.
             document.querySelectorAll('.modal').forEach(modalElement => {
                 modalElement.addEventListener('hidden.bs.modal', function() {
                     const backdrops = document.querySelectorAll('.modal-backdrop');
                     backdrops.forEach(backdrop => backdrop.remove());
+
+                    // Also ensure body scrolling is re-enabled, as it sometimes gets stuck
                     document.body.classList.remove('modal-open');
                     document.body.style.overflow = '';
+                    // Clear any padding added by Bootstrap for scrollbar
                     document.body.style.paddingRight = '';
                 });
             });
+            // === END FIX ===
         });
     </script>
     <style>
         /* Star Rating Styles */
-        .star-rating {
+        .star-rating,
+        .star-animate {
             cursor: pointer;
             transition: color 0.2s ease-in-out;
+            margin-right: 0.1em;
+            /* Consistent right margin */
+            margin-left: 0.1em;
+            /* Consistent left margin */
+            display: inline-block;
+            /* Ensure margins are respected */
+        }
+
+        .star-rating:last-of-type,
+        .star-animate:last-of-type {
+            margin-right: 0;
+            /* No right margin for the last star */
         }
 
         .star-blue {
@@ -884,8 +1120,10 @@
         /* Fixed width for status badge */
         .status-badge-fixed {
             min-width: 90px;
+            /* Adjust this value as needed based on your longest status text */
             text-align: center;
             display: inline-flex;
+            /* Use flexbox to center content vertically and horizontally */
             align-items: center;
             justify-content: center;
         }
@@ -966,18 +1204,20 @@
             .order-row .col {
                 font-size: 12px !important;
                 padding-left: 0.3rem;
+                /* Default small padding */
                 padding-right: 0.3rem;
+                /* Default small padding */
                 white-space: normal !important;
             }
 
-            /* Adjust padding for the Judul column header */
+            /* Adjusted padding for the Judul column header on mobile */
             .tableHeader .col:first-child {
-                padding-left: 0.8rem !important; /* Adjusted for mobile header */
+                padding-left: 0.8rem !important;
             }
 
-            /* Adjust padding for the Judul column in order rows */
+            /* Adjusted padding for the Judul column in order rows on mobile */
             .order-row .title-col {
-                padding-left: 0.8rem !important; /* Adjusted for mobile rows */
+                padding-left: 0.8rem !important;
             }
 
             .order-row .badge {
@@ -987,6 +1227,12 @@
 
             .order-row .status-badge-fixed {
                 min-width: 70px !important;
+                /* Smaller width for mobile */
+                text-align: center;
+                display: inline-flex;
+                /* Use flexbox to center content vertically and horizontally */
+                align-items: center;
+                justify-content: center;
             }
 
             .order-row .col.m-0.p-0 {
@@ -1055,6 +1301,34 @@
 
             .order-row .status-badge-fixed {
                 min-width: 60px !important;
+                /* Even smaller width for very small screens */
+            }
+
+            /* You might also need to adjust modal font sizes if they become too large */
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
             }
         }
 
@@ -1130,17 +1404,19 @@
 
             /* Default padding for desktop Judul column header */
             .tableHeader .col:first-child {
-                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+                padding-left: 1rem;
+                /* Corresponds to Bootstrap's ps-3 */
             }
 
             .order-row .col {
                 font-size: 14px;
             }
+
             /* Default padding for desktop Judul column in order rows */
             .order-row .title-col {
-                padding-left: 1rem; /* Corresponds to Bootstrap's ps-3 */
+                padding-left: 1rem;
+                /* Corresponds to Bootstrap's ps-3 */
             }
-
 
             .order-row .badge {
                 font-size: 14px;
