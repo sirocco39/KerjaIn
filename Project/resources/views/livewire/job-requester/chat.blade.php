@@ -356,7 +356,7 @@
         @if ($activeOffer)
             <div class="modal fade" id="confirmAcceptOfferModal" tabindex="-1"
                 aria-labelledby="confirmAcceptOfferModalLabel" aria-hidden="true" wire:ignore.self>
-                <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-dialog">
                     <div class="modal-content border-0 rounded-4">
                         <div class="modal-header border-0 pb-0">
                             <h5 class="modal-title fw-bold" id="confirmAcceptOfferModalLabel">Konfirmasi Penerimaan

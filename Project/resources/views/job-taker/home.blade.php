@@ -1,6 +1,7 @@
 @extends('master.master-job-taker')
 
 @section('content')
+
     <div class="header-wrap" id="header-beranda-job_taker">
         <div class="container-fluid pembatas-x">
             @auth
@@ -60,17 +61,24 @@
                     <p>Anda belum pernah mengambil pekerjaan!</p>
                 @else
                     @foreach ($fiveLatestTransaction as $r)
+                        @php
+                            // NEW: Explicitly format dates/times in UTC for display consistency
+                            $startDateTimeUTC = \Carbon\Carbon::parse($r->request->start_time)->setTimezone('UTC');
+                            $endDateTimeUTC = \Carbon\Carbon::parse($r->request->end_time)->setTimezone('UTC');
+
+                            $formattedStartDate = $startDateTimeUTC->format('d M Y');
+                            $formattedStartTime = $startDateTimeUTC->format('H.i');
+                            $formattedEndTime = $endDateTimeUTC->format('H.i');
+
+                            $displayDateRange = $formattedStartDate;
+                            // Check if the job spans multiple UTC days
+                            if ($startDateTimeUTC->format('Y-m-d') !== $endDateTimeUTC->format('Y-m-d')) {
+                                $displayDateRange .= ' - ' . $endDateTimeUTC->format('d M Y');
+                            }
+                        @endphp
                         {{-- Tambahkan atribut data-url dengan route tujuan --}}
                         <div class="work-request p-4 d-flex flex-column"
                             data-url="{{ $r->status !== 'cancelled' ? route('job-taker.accepted-work-request', ['id' => $r->id]) : '' }}">
-                            <?php
-                            $startdatetime = strtotime($r->request->start_time);
-                            $enddatetime = strtotime($r->request->end_time);
-                            $startdate = date('d M Y', $startdatetime);
-                            $starttime = date('H.i', $startdatetime);
-                            $enddate = date('d M Y', $enddatetime);
-                            $endtime = date('H.i', $enddatetime);
-                            ?>
 
                             <h4 class="fw-bold mb-1">{{ $r->request->title }}</h4>
 
@@ -93,14 +101,16 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Date">
                                     </div>
-                                    <span>{{ $startdate }}</span>
+                                    {{-- Use the new variable for multi-day date display (UTC) --}}
+                                    <span>{{ $displayDateRange }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Clock">
                                     </div>
-                                    <span>{{ $starttime }} - {{ $endtime }}</span>
+                                    {{-- Use the formatted UTC times directly --}}
+                                    <span>{{ $formattedStartTime }} - {{ $formattedEndTime }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
@@ -289,19 +299,44 @@
                         const requests = data.request;
                         const requester = data.requester;
 
+                        // NEW: Parse dates as UTC
                         const startDatetime = new Date(requests.start_time);
                         const endDatetime = new Date(requests.end_time);
 
                         modalTitle.textContent = requests.title || '-';
                         modalLocation.textContent = requests.location || '-';
                         modalProfile.textContent = requester.first_name || '-'
-                        modalDate.textContent = startDatetime.toLocaleDateString('id-ID', {
+
+                        // NEW: Format date in UTC to match card's assumed behavior ---
+                        // Using 'en-GB' for 'd M Y' format, and timeZone: 'UTC'
+                        modalDate.textContent = startDatetime.toLocaleDateString('en-GB', {
                             day: '2-digit',
                             month: 'short',
-                            year: 'numeric'
+                            year: 'numeric',
+                            timeZone: 'UTC' // Display UTC date
                         });
-                        modalTime.textContent =
-                            `${startDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${endDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+                        // Add check for multi-day span in modal date (still in UTC)
+                        if (startDatetime.getUTCFullYear() !== endDatetime.getUTCFullYear() ||
+                            startDatetime.getUTCMonth() !== endDatetime.getUTCMonth() ||
+                            startDatetime.getUTCDate() !== endDatetime.getUTCDate()) {
+                            modalDate.textContent += ` - ${endDatetime.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                timeZone: 'UTC' // Display UTC end date
+                            })}`;
+                        }
+
+                        // NEW: Format time in UTC for consistency with card's assumed behavior ---
+                        // Function to format time in UTC (HH.ii format)
+                        function formatTimeInUTC(date) {
+                            const hours = date.getUTCHours().toString().padStart(2, '0');
+                            const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+                            return `${hours}.${minutes}`;
+                        }
+                        modalTime.textContent = `${formatTimeInUTC(startDatetime)} - ${formatTimeInUTC(endDatetime)}`;
+                        // --- END MODIFIED ---
+
                         modalPrice.textContent = parseFloat(requests.final_price || 0).toLocaleString(
                             'id-ID', {
                                 minimumFractionDigits: 2
@@ -341,6 +376,7 @@
                         const kembaliButton = document.getElementById('kembali-button-section');
                         kembaliButton.setAttribute('data-slug', slug);
                         kembaliButton.setAttribute('data-bs-target', '#detailModal');
+
                     })
                     .catch(error => {
                         console.error('Error loading job details:', error);
@@ -386,6 +422,7 @@
                     event.stopPropagation();
                 });
             });
+
 
             // 2. Logika untuk CARD (Pindah halaman)
             document.querySelectorAll('.work-request').forEach(card => {

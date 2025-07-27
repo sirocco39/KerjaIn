@@ -47,7 +47,6 @@
                                         value="{{ old('workStartTimeLabel') }}">
                                     <div class="text-danger small mt-1" id="workStartTimeLabel-error"></div>
                                     <div class="text-danger small mt-1" id="workStartTimeLabel-past-error"></div>
-                                    <!-- NEW ERROR DIV -->
                                 </div>
                             </div>
                         </div>
@@ -64,7 +63,6 @@
                                         value="{{ old('workEndTimeLabel') }}">
                                     <div class="text-danger small mt-1" id="workEndTimeLabel-error"></div>
                                     <div class="text-danger small mt-1" id="workEndTimeLabel-past-error"></div>
-                                    <!-- NEW ERROR DIV -->
                                 </div>
                             </div>
                         </div>
@@ -98,7 +96,7 @@
 
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold" id="confirmationModalLabel">Konfirmasi Pembuatan Pekerjaan</h5>
@@ -130,7 +128,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal">Batal</button>
                     <a href="{{ route('top-up.job-req') }}" id="modal-topup-button" class="btn btn-success"
                         style="display: none;">Isi Saldo</a>
                     <button type="button" id="modal-confirm-button" class="btn btn-primary">Ya, Konfirmasi & Tahan
@@ -161,8 +159,8 @@
             const workStartTimeInput = document.querySelector('input[name="workStartTimeLabel"]');
             const workEndTimeInput = document.querySelector('input[name="workEndTimeLabel"]');
             const datetimeErrorDiv = document.getElementById('datetime-error');
-            const workStartTimeLabelPastErrorDiv = document.getElementById('workStartTimeLabel-past-error'); // NEW
-            const workEndTimeLabelPastErrorDiv = document.getElementById('workEndTimeLabel-past-error'); // NEW
+            const workStartTimeLabelPastErrorDiv = document.getElementById('workStartTimeLabel-past-error');
+            const workEndTimeLabelPastErrorDiv = document.getElementById('workEndTimeLabel-past-error');
 
 
             const userBalance = parseFloat('{{ auth()->check() ? auth()->user()->balance : 0 }}');
@@ -175,92 +173,116 @@
                 }).format(number);
             };
 
-            function getFormattedCurrentTime() {
+            // NEW: Helper function to get current UTC time (HH:MM format)
+            function getFormattedCurrentTimeUTC() {
                 const now = new Date();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const hours = String(now.getUTCHours()).padStart(2, '0');
+                const minutes = String(now.getUTCMinutes()).padStart(2, '0');
                 return `${hours}:${minutes}`;
             }
 
-            function getFormattedCurrentDate() {
+            // NEW: Helper function to get current UTC date (YYYY-MM-DD format)
+            function getFormattedCurrentDateUTC() {
                 const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
+                const year = now.getUTCFullYear();
+                const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(now.getUTCDate()).padStart(2, '0');
                 return `${year}-${month}-${day}`;
             }
 
             function validateTimestamps() {
-                // Selalu bersihkan error lama sebelum validasi ulang
+                // Clear all error messages before re-validation
                 datetimeErrorDiv.textContent = '';
+                workStartTimeLabelPastErrorDiv.textContent = '';
+                workEndTimeLabelPastErrorDiv.textContent = '';
 
                 const startDate = workStartDateInput.value;
                 const startTime = workStartTimeInput.value;
                 const endDate = workEndDateInput.value;
                 const endTime = workEndTimeInput.value;
 
-                // Hanya validasi jika semua field sudah terisi untuk menghindari error prematur
+                // Only validate if all fields are filled to avoid premature errors
                 if (!startDate || !startTime || !endDate || !endTime) {
-                    return true; // Anggap valid jika belum lengkap
+                    return true; // Assume valid if not yet complete
                 }
 
-                const startDateTime = new Date(`${startDate}T${startTime}`);
-                const endDateTime = new Date(`${endDate}T${endTime}`);
-                const now = new Date();
+                // NEW: Parse input as UTC for client-side comparison
+                const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
+                const endDateTime = new Date(`${endDate}T${endTime}:00Z`);
+                // NEW: Get current UTC time for comparison
+                const nowUTCComparison = new Date(`${getFormattedCurrentDateUTC()}T${getFormattedCurrentTimeUTC()}:00Z`);
 
-                // 1. Cek apakah waktu mulai ada di masa lalu
-                // (Beri sedikit kelonggaran, misal 1 menit, untuk menghindari error karena jeda pengisian)
-                if (startDateTime < new Date(now.getTime() - 60000)) {
-                    datetimeErrorDiv.textContent = 'Waktu mulai pekerjaan tidak boleh di masa lalu.';
+
+                // 1. Check if start time is in the past (UTC comparison)
+                // (Allow a small buffer like 1 minute to account for input delay)
+                if (startDateTime < new Date(nowUTCComparison.getTime() - 60000)) {
+                    datetimeErrorDiv.textContent = 'Waktu mulai pekerjaan tidak boleh di masa lalu (UTC).';
                     return false;
                 }
 
-                // 2. Cek apakah waktu selesai sebelum atau sama dengan waktu mulai
+                // 2. Check if end time is before or equal to start time (UTC comparison)
                 if (endDateTime <= startDateTime) {
                     datetimeErrorDiv.textContent = 'Waktu selesai harus setelah waktu mulai.';
                     return false;
                 }
 
-                return true; // Semua validasi lolos
+                return true; // All validations passed
             }
 
             function updateDateTimeConstraints() {
-                const today = getFormattedCurrentDate();
-                const currentTime = getFormattedCurrentTime();
+                // NEW: Use current UTC date and time for constraints
+                const todayUTC = getFormattedCurrentDateUTC();
+                const currentTimeUTC = getFormattedCurrentTimeUTC();
 
                 // Clear all client-side specific date/time errors before updating constraints and re-validating
                 datetimeErrorDiv.textContent = '';
                 workStartTimeLabelPastErrorDiv.textContent = '';
                 workEndTimeLabelPastErrorDiv.textContent = '';
 
-                // Set min for end date: cannot be before start date
-                if (workStartDateInput.value) {
-                    workEndDateInput.min = workStartDateInput.value;
-                } else {
-                    workEndDateInput.min = today; // If start date is not set, min for end date is today
+                let minEndDate = workStartDateInput.value; // Default minimum end date is the start date
+
+                // Scenario: Start date and End date are currently the same
+                // And both Start Time and End Time are provided.
+                // If the End Time is earlier than or equal to Start Time on the same day,
+                // then the End Date must be forced to at least the next day.
+                if (workStartDateInput.value && workEndDateInput.value === workStartDateInput.value &&
+                    workStartTimeInput.value && workEndTimeInput.value) {
+
+                    // NEW: Parse as UTC for this specific proactive check
+                    const tempStartDateTime = new Date(`${workStartDateInput.value}T${workStartTimeInput.value}:00Z`);
+                    const tempEndDateTime = new Date(`${workEndDateInput.value}T${workEndTimeInput.value}:00Z`);
+
+                    if (tempEndDateTime <= tempStartDateTime) {
+                        const nextDay = new Date(tempStartDateTime);
+                        nextDay.setUTCDate(tempStartDateTime.getUTCDate() + 1); // Use setUTCDate
+                        minEndDate = nextDay.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                    }
                 }
 
-                // If end date is set and is earlier than start date, reset it to start date
-                if (workEndDateInput.value && workStartDateInput.value && workEndDateInput.value <
-                    workStartDateInput.value) {
-                    workEndDateInput.value = workStartDateInput.value;
+                // Apply the determined minimum end date
+                workEndDateInput.min = minEndDate || todayUTC; // Fallback to today UTC if minEndDate is somehow null/empty
+
+                // If end date is set and is earlier than the newly calculated minEndDate, reset it to minEndDate
+                if (workEndDateInput.value && workEndDateInput.value < workEndDateInput.min) {
+                    workEndDateInput.value = workEndDateInput.min;
                 }
 
-                // Dynamic min for start time
-                if (workStartDateInput.value === today) {
-                    workStartTimeInput.min = currentTime;
+
+                // Dynamic min for start time (relative to current UTC date/time)
+                if (workStartDateInput.value === todayUTC) {
+                    workStartTimeInput.min = currentTimeUTC;
                 } else {
                     workStartTimeInput.min = ''; // No minimum time for future dates
                 }
 
-                // Dynamic min for end time
-                if (workEndDateInput.value === today) {
-                    if (workStartDateInput.value === today && workStartTimeInput.value) {
-                        // If both start and end are today, end time must be after start time
+                // Dynamic min for end time (relative to current UTC date/time)
+                if (workEndDateInput.value === todayUTC) {
+                    if (workStartDateInput.value === todayUTC && workStartTimeInput.value) {
+                        // If both start and end are today UTC, end time must be after start time UTC
                         workEndTimeInput.min = workStartTimeInput.value;
                     } else {
-                        // If only end date is today (and start date is a past day), end time can be current time
-                        workEndTimeInput.min = currentTime;
+                        // If only end date is today UTC (and start date is a past day), end time can be current UTC time
+                        workEndTimeInput.min = currentTimeUTC;
                     }
                 } else {
                     workEndTimeInput.min = ''; // No minimum time for future dates

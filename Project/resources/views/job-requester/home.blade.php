@@ -26,18 +26,24 @@
                     @foreach ($fiveLatestRequests as $r)
                         @php
                             $hasTransaction = $r->transaction ? 'true' : 'false';
+
+                            // NEW: Explicitly format dates/times in UTC for display consistency
+                            $startDateTimeUTC = \Carbon\Carbon::parse($r->start_time)->setTimezone('UTC');
+                            $endDateTimeUTC = \Carbon\Carbon::parse($r->end_time)->setTimezone('UTC');
+
+                            $formattedStartDate = $startDateTimeUTC->format('d M Y');
+                            $formattedStartTime = $startDateTimeUTC->format('H.i');
+                            $formattedEndTime = $endDateTimeUTC->format('H.i');
+
+                            $displayDateRange = $formattedStartDate;
+                            // Check if the job spans multiple UTC days
+                            if ($startDateTimeUTC->format('Y-m-d') !== $endDateTimeUTC->format('Y-m-d')) {
+                                $displayDateRange .= ' - ' . $endDateTimeUTC->format('d M Y');
+                            }
                         @endphp
                         <div class="work-request p-4 d-flex flex-column"
                             data-url="{{ $r->transaction && $r->transaction->status !== 'cancelled' ? route('request.ongoing', ['transactionId' => $r->transaction->id]) : '' }}"
                             data-has-transaction="{{ $r->transaction ? 'true' : 'false' }}">
-                            <?php
-                            $startdatetime = strtotime($r->start_time);
-                            $enddatetime = strtotime($r->end_time);
-                            $startdate = date('d M Y', $startdatetime);
-                            $starttime = date('H.i', $startdatetime);
-                            $enddate = date('d M Y', $enddatetime);
-                            $endtime = date('H.i', $enddatetime);
-                            ?>
 
                             <h4 class="fw-bold mb-1">{{ $r->title }}</h4>
 
@@ -53,14 +59,16 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Date">
                                     </div>
-                                    <span>{{ $startdate }}</span>
+                                    {{-- Use the new variable for multi-day date display (UTC) --}}
+                                    <span>{{ $displayDateRange }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Clock">
                                     </div>
-                                    <span>{{ $starttime }} - {{ $endtime }}</span>
+                                    {{-- Use the formatted UTC times directly --}}
+                                    <span>{{ $formattedStartTime }} - {{ $formattedEndTime }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
@@ -250,13 +258,36 @@
 
                         modalTitle.textContent = data.title || '-';
                         modalLocation.textContent = data.location || '-';
-                        modalDate.textContent = startDatetime.toLocaleDateString('id-ID', {
+
+                        // NEW: Format date in UTC for consistency with card
+                        // Using 'en-GB' for 'd M Y' format, and timeZone: 'UTC'
+                        modalDate.textContent = startDatetime.toLocaleDateString('en-GB', {
                             day: '2-digit',
                             month: 'short',
-                            year: 'numeric'
+                            year: 'numeric',
+                            timeZone: 'UTC' // Display UTC date
                         });
-                        modalTime.textContent =
-                            `${startDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${endDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+                        // Add check for multi-day span in modal date (still in UTC)
+                        if (startDatetime.getUTCFullYear() !== endDatetime.getUTCFullYear() ||
+                            startDatetime.getUTCMonth() !== endDatetime.getUTCMonth() ||
+                            startDatetime.getUTCDate() !== endDatetime.getUTCDate()) {
+                            modalDate.textContent += ` - ${endDatetime.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                timeZone: 'UTC' // Display UTC end date
+                            })}`;
+                        }
+
+                        // NEW: Format time in UTC for consistency with card
+                        // Function to format time in UTC (HH.ii format)
+                        function formatTimeInUTC(date) {
+                            const hours = date.getUTCHours().toString().padStart(2, '0');
+                            const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+                            return `${hours}.${minutes}`;
+                        }
+                        modalTime.textContent = `${formatTimeInUTC(startDatetime)} - ${formatTimeInUTC(endDatetime)}`;
+
                         modalPrice.textContent = parseFloat(data.final_price || 0).toLocaleString('id-ID', {
                             minimumFractionDigits: 2
                         });
@@ -333,11 +364,11 @@
 
                         // Cek apakah yang diklik adalah tombol DETAIL itu sendiri atau ikon di dalamnya.
                         if (event.target.closest('.detail-req-button')) {
-                            // Jika ya, jangan lakukan apa-apa.
-                            // Biarkan Bootstrap yang bekerja membuka modal.
+                            // If yes, do nothing.
+                            // Let Bootstrap handle opening the modal.
                             return;
                         } else {
-                            // Jika yang diklik adalah area lain di kartu, baru pindah halaman.
+                            // If another area on the card is clicked, navigate to the page.
                             const url = this.dataset.url;
                             if (url) {
                                 window.location.href = url;
@@ -345,10 +376,10 @@
                         }
 
                     } else {
-                        // ---> KONDISI 2: Request TIDAK punya transaksi (mode pop-up)
+                        // ---> KONDISI 2: Request DOES NOT have a transaction (pop-up mode)
 
-                        // Pakai logika lama: seluruh kartu akan membuka modal.
-                        // Cari tombol detail di dalam kartu ini dan klik secara programmatic.
+                        // Use old logic: entire card opens modal.
+                        // Find the detail button within this card and click it programmatically.
                         const detailButton = this.querySelector('.detail-req-button');
                         if (detailButton) {
                             detailButton.click();

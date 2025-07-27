@@ -216,7 +216,7 @@
 
     <div class="modal" id="accept-job-confirmation-modal" tabindex="-1" aria-labelledby="acceptJobModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-body text-center p-4">
                     {{-- Pastikan icon-warning.svg ada di public/Image/Icon/ atau sesuaikan path --}}
