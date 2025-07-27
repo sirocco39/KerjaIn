@@ -278,7 +278,7 @@
                     @if ($activeOffer && $activeOffer->status === 'open' && auth()->id() === $activeOffer->requester_id && $chatRoom->request->status !== 'closed')
                         <div class="offer-panel d-flex justify-content-between align-items-center border">
                             <div>
-                                <span class="text-muted">Nominal Upah yang Anda Ajukan:</span>
+                                <span class="text-muted">Nominal Upah yang Diajukan:</span>
                                 <strong
                                     class="text-dark">Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}</strong>
                             </div>

@@ -270,7 +270,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         @if ($activeOffer)
-                                            <span class="text-muted">Nominal Upah yang Anda Ajukan:</span>
+                                            <span class="text-muted">Nominal Upah yang Diajukan:</span>
                                             <div class="d-flex align-items-center gap-2">
                                                 <strong class="text-dark fs-5">
                                                     Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}

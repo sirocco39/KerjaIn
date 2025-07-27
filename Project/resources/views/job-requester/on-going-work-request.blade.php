@@ -28,6 +28,7 @@
 
     @endphp
 
+
     <div class="container-fluid pembatas-x mb-5">
         <div class="row mb-3 p-1">
             <div class="col-12 mb-2 mt-5">
@@ -35,26 +36,31 @@
             </div>
             <div class="col-12 contain bg-light mt-2 px-4 py-3 rounded-4 d-flex align-items-center"
                 style="border: 1px solid #cacadd; ">
-                @if ($transaction->status == 'submitted')
-                    <div class="badge px-4 py-3 rounded-pill bg-primary text-light fs-6" style="background-color:#294287;">
-                        Ditinjau</div>
-                @elseif($transaction->status == 'cancelled')
-                    <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:crimson;">
-                        Dibatalin</div>
-                @elseif($transaction->status == 'accepted')
-                    <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:#294287;">
-                        Diterima</div>
-                @elseif($transaction->status == 'in progress')
-                    <div class="badge px-4 py-3 rounded-5 bg-info text-light fs-6" style="background-color:#309FFF;">
-                        Dikerjain</div>
-                @elseif($transaction->status == 'completed')
-                    <div class="badge px-4 py-3 rounded-pill bg-success text-dark fs-6" style="background-color:#D3FA0D;">
-                        Selesai</div>
-                @endif
+                <div id="transaction-status-badge"
+                    class="badge px-4 py-3 rounded-pill
+                    @if ($transaction->status == 'completed') text-dark @else text-light @endif fs-6"
+                    style="background-color:
+                        @if ($transaction->status == 'submitted') #294287
+                        @elseif($transaction->status == 'cancelled') crimson
+                        @elseif($transaction->status == 'accepted') #294287
+                        @elseif($transaction->status == 'in progress') #309FFF
+                        @elseif($transaction->status == 'completed') #D3FA0D @endif;">
+                    @if ($transaction->status == 'submitted')
+                        Ditinjau
+                    @elseif($transaction->status == 'cancelled')
+                        Dibatalin
+                    @elseif($transaction->status == 'accepted')
+                        Diterima
+                    @elseif($transaction->status == 'in progress')
+                        Dikerjain
+                    @elseif($transaction->status == 'completed')
+                        Selesai
+                    @endif
+                </div>
                 <h3 class="d-inline mx-3 mt-1" style="color:#294287; font-weight: 800;">{{ $request->title }}</h3>
             </div>
         </div>
-        <div class="one row">
+        <div class="one row align-items-stretch"> {{-- Changed h-100 to align-items-stretch --}}
             <div class="col-12 col-lg-3 d-flex flex-column order-0 order-lg-0">
                 <div class="two row gx-3 gy-3">
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
@@ -67,25 +73,6 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-lg-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center"
                             style="border: 1px solid #cacadd; height:100%;">
-                            <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
-                                <div class="separate d-flex align-items-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        {{-- Path untuk badan kalender --}}
-                                        <path
-                                            d="M19.5 3.75H4.5C3.80964 3.75 3.14707 4.02656 2.65165 4.52198C2.15623 5.01739 1.875 5.67996 1.875 6.375V19.5C1.875 20.1904 2.15623 20.8529 2.65165 21.3483C3.14707 21.8437 3.80964 22.125 4.5 22.125H19.5C20.1904 22.125 20.8529 21.8437 21.3483 21.3483C21.8437 20.8529 22.125 20.1904 22.125 19.5V6.375C22.125 5.67996 21.8437 5.01739 21.3483 4.52198C20.8529 4.02656 20.1904 3.75 19.5 3.75ZM15.75 1.875V5.625M8.25 1.875V5.625M1.875 9.375H22.125"
-                                            stroke="#133E87" stroke-width="1.5" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                        {{-- Path untuk titik-titik di dalam kalender --}}
-                                        <path
-                                            d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
-                                            fill="#133E87" />
-                                    </svg>
-
-                                    <div class="p-2">Mulai</div>
-                                </div>
-                                <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
-                            </div>
                             <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                                 <div class="separate d-flex align-items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -158,76 +145,177 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
-                        <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
-                            style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
-                            <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}"
-                                style="width: 50%; max-height: 150px; object-fit: cover;" class="me-3 py-2">
-                            <div class="info d-flex flex-column">
-                                <div id="name" class="fw-bold">{{ $worker->first_name . ' ' . $worker->last_name }}
-                                </div>
-                                <div id="rating" class="d-flex">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M8.99008 2.67508C9.36342 1.77758 10.6368 1.77758 11.0101 2.67508L12.7451 6.84675L17.2484 7.20841C18.2184 7.28591 18.6118 8.49591 17.8726 9.12924L14.4418 12.0684L15.4893 16.4626C15.7151 17.4092 14.6859 18.1567 13.8559 17.6501L10.0001 15.2951L6.14425 17.6501C5.31425 18.1567 4.28508 17.4084 4.51092 16.4626L5.55842 12.0684L2.12758 9.12924C1.38842 8.49591 1.78175 7.28591 2.75175 7.20841L7.25508 6.84675L8.99008 2.67508Z"
-                                            fill="#FFDD00" />
-                                    </svg>
+                        @if ($transaction->status !== 'cancelled')
+                            <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
+                                style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
+                                <div class="info d-flex flex-column">
+                                    @if ($transaction->status == 'accepted')
+                                        <div class="d-flex">
+                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
+                                                <svg width="16" height="111" viewBox="0 0 16 111" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <circle cx="8" cy="8" r="8" fill="#294287" />
+                                                    <circle cx="8" cy="103" r="8" fill="#D9D9D9" />
+                                                    <circle cx="8" cy="56" r="8" fill="#D9D9D9" />
+                                                    <path d="M7.99989 16L8 95" stroke="#D9D9D9" stroke-width="2" />
+                                                </svg>
+                                            </div>
+                                            <div class="column">
+                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
+                                                    style="">Diterima</div>
+                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
+                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
+                                            </div>
+                                        </div>
+                                    @elseif($transaction->status == 'in progress')
+                                        <div class="d-flex">
+                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
+                                                <path d="M8 64L8 95" stroke="#D9D9D9" stroke-width="2" />
+                                                <path d="M8 16L8 48" stroke="url(#paint0_linear_0_1)"
+                                                    stroke-width="2" />
+                                                <circle cx="8" cy="8" r="8" fill="#294287" />
+                                                <circle cx="8" cy="103" r="8" fill="#D9D9D9" />
+                                                <circle cx="8" cy="56" r="8" fill="#309FFF" />
+                                                <defs>
+                                                    <linearGradient id="paint0_linear_0_1" x1="8"
+                                                        y1="48" x2="8" y2="16"
+                                                        gradientUnits="userSpaceOnUse">
+                                                        <stop stop-color="#309FFF" />
+                                                        <stop offset="1" stop-color="#294287" />
+                                                    </linearGradient>
+                                                </defs>
+                                                </svg>
+                                            </div>
+                                            <div class="column">
+                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
+                                                    style="">Diterima</div>
+                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
+                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
+                                            </div>
+                                        </div>
+                                    @elseif($transaction->status == 'completed')
+                                        <div class="d-flex">
+                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
+                                                <svg width="16" height="111" viewBox="0 0 16 111" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M8 64L8 95" stroke="url(#paint0_linear_0_1)"
+                                                        stroke-width="2" />
+                                                    <path d="M8 16L8 48" stroke="url(#paint1_linear_0_1)"
+                                                        stroke-width="2" />
+                                                    <circle cx="8" cy="8" r="8" fill="#294287" />
+                                                    <circle cx="8" cy="103" r="8" fill="#D3FA0D" />
+                                                    <circle cx="8" cy="56" r="8" fill="#309FFF" />
+                                                    <defs>
+                                                        <linearGradient id="paint0_linear_0_1" x1="8"
+                                                            y1="95" x2="8" y2="64"
+                                                            gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color="#D3FA0D" />
+                                                            <stop offset="1" stop-color="#309FFF" />
+                                                        </linearGradient>
+                                                        <linearGradient id="paint1_linear_0_1" x1="8"
+                                                            y1="48" x2="8" y2="16"
+                                                            gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color="#309FFF" />
+                                                            <stop offset="1" stop-color="#294287" />
+                                                        </linearGradient>
+                                                    </defs>
+                                                </svg>
+                                            </div>
+                                            <div class="column">
+                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
+                                                    style="">Diterima</div>
+                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
+                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
+                                            </div>
+                                        </div>
+                                    @elseif($transaction->status == 'submitted')
+                                        <div class="d-flex">
+                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
+                                                <svg width="16" height="111" viewBox="0 0 16 111" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M8 64L8 95" stroke="url(#paint0_linear_1857_7195)"
+                                                        stroke-width="2" />
+                                                    <path d="M8 16L8 48" stroke="url(#paint1_linear_1857_7195)"
+                                                        stroke-width="2" />
+                                                    <circle cx="8" cy="8" r="8" fill="#294287" />
+                                                    <circle cx="8" cy="103" r="8" fill="#294287" />
+                                                    <circle cx="8" cy="56" r="8" fill="#309FFF" />
+                                                    <defs>
+                                                        <linearGradient id="paint0_linear_1857_7195" x1="8"
+                                                            y1="95" x2="8" y2="64"
+                                                            gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color="#294287" />
+                                                            <stop offset="1" stop-color="#309FFF" />
+                                                        </linearGradient>
+                                                        <linearGradient id="paint1_linear_1857_7195" x1="8"
+                                                            y1="48" x2="8" y2="16"
+                                                            gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color="#309FFF" />
+                                                            <stop offset="1" stop-color="#294287" />
+                                                        </linearGradient>
+                                                    </defs>
+                                                </svg>
 
-                                    <div class="rate fw-semibold">{{ $worker->rating }}</div>
-                                    <div class="banyak">
-                                        ({{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }})
-                                    </div>
-                                </div>
-                                <div id="join">
-                                    <p style="font-size: 9px;">Bergabung dengan Kerjain sejak
-                                        <span>{{ $year }}</span>
-                                    </p>
+                                            </div>
+                                            <div class="column">
+                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
+                                                    style="">Diterima</div>
+                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
+                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">Ditinjau</div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-lg-2">
                         @if ($transaction->status !== 'cancelled')
                             <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center"
                                 style="border: 1px solid #cacadd; height:100%;">
 
-                                @if ($transaction->status == 'submitted')
-                                    <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
-                                        data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
-                                        style="background-color:#294287; width:88%;">
-                                        Tandai Selesai
+                                @if ($transaction->status === 'accepted')
+                                    {{-- Tombol Mulai Kerja --}}
+                                    <form id="start-work-form" action="{{ route('worker.startWork', $transaction->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        <button type="submit" id="start-work-button"
+                                            class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
+                                            style="background-color:#294287;">
+                                            Mulai Kerja
+                                        </button>
+                                    </form>
+                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
+                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja
                                     </button>
-                                @endif
-
-                                @if ($transaction->status == 'completed')
+                                @elseif($transaction->status === 'completed')
+                                    {{-- Tombol Sudah Dikerjakan --}}
                                     <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                         style="width:88%;cursor: not-allowed;pointer-events: none;">
                                         Selesai
                                     </a>
-                                @endif
-
-                                {{-- Lihat Bukti Penyelesaian --}}
-                                @if ($transaction->status == 'in progress')
-                                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
-                                        style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
-                                        Lihat Bukti Penyelesaian
+                                @elseif($transaction->status === 'submitted')
+                                    <a class="text-decoration-none px-4 py-2 rounded-5 text-light fs-4 fw-bold"
+                                        style="background-color:#294287;">
+                                        Ditinjau
                                     </a>
-                                @elseif($transaction->status == 'submitted' || $transaction->status == 'completed')
-                                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
-                                        data-bs-toggle="modal" data-bs-target="#completionProofModal"
-                                        style="color: #0d6efd; text-decoration: none;">
-                                        Lihat Bukti Penyelesaian
-                                    </a>
+                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
+                                        data-bs-toggle="modal" data-bs-target="#completionModal">Berikan Penilaian
+                                    </button>
+                                @elseif($transaction->status === 'in progress')
+                                    {{-- Tombol untuk buka modal --}}
+                                    <button class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
+                                        style="background-color:#309FFF;" data-bs-toggle="modal"
+                                        data-bs-target="#completionProofModal">
+                                        Selesai Kerja
+                                    </button>
+                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">Batalkan Kerja
+                                    </div>
                                 @endif
-
-                                {{-- Batalkan --}}
-                                @if ($transaction->status == 'accepted')
-                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
-                                    <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
-                                @endif
-
                             </div>
                         @endif
                     </div>
@@ -283,7 +371,7 @@
     <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
-            <form id="reviewForm" action="{{ route('reviews.store', $transaction->id) }}" method="POST">
+            <form id="reviewForm" method="POST">
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
@@ -293,45 +381,46 @@
 
                     <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 90vh;">
                         <div class="d-flex flex-column flex-lg-row gap-3">
+                            {{-- Order details display section within the modal --}}
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
-                                        <p class="fw-medium">{{ $request->title }}</p>
+                                        <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
-                                        <p class="fw-medium">{{ $transaction->order_number }}</p>
+                                        <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
-                                        <p class="fw-medium">{{ $worker->first_name }} {{ $worker->last_name }}</p>
+                                        <p class="fw-medium" id="modalWorkerName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
-                                        <p class="fw-medium">{{ $request->location }}</p>
+                                        <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
-                                        <p class="fw-medium">{{ $transaction->created_at->format('d M Y') }}</p>
+                                        <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
-                                        <p class="fw-medium">{{ $transaction->updated_at->format('d M Y') }}</p>
+                                        <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
-                                        <p class="fw-medium">{{ \Carbon\Carbon::parse($transaction->start_work)->format('H.i') ?? '-' }}</p>
+                                        <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
-                                        <p class="fw-medium">{{ \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') ?? '-' }}</p>
+                                        <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
                                 <hr class="my-1 border border-dark">
@@ -340,16 +429,17 @@
                                         style="width:50%;">
                                         <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
                                         <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
-                                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
+                                            <span id="modalRequestPrice"></span>
+                                        </p>
                                     </div>
                                     <div class="text d-flex justify-content-end align-items-center" style="width:50%;">
-                                        <a href="/generate-invoice/{{ $transaction->id }}" target="_blank"
+                                        <a href="#" id="modalInvoiceLink"
                                             class="d-flex text-decoration-none justify-content-center align-items-center">
                                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
-                                                    fill="#309FFF" />
+                                                    fill="#294287" />
                                             </svg>
                                             <div class="ms-2 fw-medium fs-5">Invoice</div>
                                         </a>
@@ -359,57 +449,23 @@
 
                             <div class="vr d-none d-lg-block mx-3"></div>
 
+                            {{-- Section for User Review and Report --}}
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                                <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading">
-                                    @if ($hasReview)
-                                        Ini penilaianmu
-                                    @else
-                                        Kasih penilaian, yuk!
-                                    @endif
-                                </h4>
+                                {{-- The heading will now be dynamic --}}
+                                <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading"></h4>
+
+                                {{-- Container for existing review or review form --}}
                                 <div id="review-section-container" class="w-100">
-                                    @if ($hasReview)
-                                        <div class="text-center mt-0 mb-3 w-100">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <i
-                                                    class="bi bi-star-fill {{ $i <= $userReview->rating ? 'star-blue' : 'text-secondary' }} fs-2"></i>
-                                            @endfor
-                                        </div>
-                                        <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                            <label for="comment" class="form-label text-start">Komentar</label>
-                                            <textarea id="comment" class="form-control" rows="3" disabled
-                                                style="border-color:#8a8a8a;">{{ $userReview->comment }}</textarea>
-                                        </div>
-                                    @else
-                                        <div class="text-center mt-0 mb-3 w-100">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <i class="bi bi-star-fill text-secondary star-rating fs-2"
-                                                    data-value="{{ $i }}"></i>
-                                            @endfor
-                                            <input type="hidden" name="rating" id="rating-input" value="0">
-                                        </div>
-                                        <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                            <label for="comment" class="form-label text-start">Komentar</label>
-                                            <textarea name="comment" id="comment" class="form-control" rows="3"
-                                                placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
-                                        </div>
-                                    @endif
+                                    {{-- This content will be dynamically populated by JavaScript --}}
                                 </div>
 
+                                {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
-                                    @if (!$hasReview)
-                                        <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                            id="submitReviewButton">Kirim</button>
-                                        <div class="m-1 text-center">Atau</div>
-                                    @endif
-                                    @if ($hasUserReport) {{-- Assuming $hasUserReport is passed from controller --}}
-                                        <button type="button" class="m-0 p-0 fw-medium btn text-secondary" disabled>
-                                            Laporan sudah terkirim
-                                        </button>
-                                    @else
-                                        <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                            id="reportProblemButton">Laporkan masalah</button>
-                                    @endif
+                                    <button type="submit" class="btn btn-primary fw-medium rounded-3"
+                                        id="submitReviewButton">Kirim</button>
+                                    <div class="m-1 text-center">Atau</div>
+                                    <button type="button" class="m-0 p-0 fw-medium btn text-danger"
+                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
                                 </div>
                             </div>
                         </div>
@@ -418,8 +474,6 @@
             </form>
         </div>
     </div>
-
-
     <div class="modal fade" id="completionProofModal" tabindex="-1" aria-labelledby="completionProofModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 800px; width: 100%; margin-top: 5vh;">
@@ -508,11 +562,11 @@
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
                     class="d-flex flex-column flex-lg-row gap-3 mt-4">
                     @csrf
-                    <input type="hidden" name="redirect_to" value="job-req.home">
+                    <input type="hidden" name="redirect_to" value="job-req.beranda">
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
-                        Lanjut Kerja
-                    </button>
+                        Kembali
+                        </button>
                     <button type="submit" class="btn btn-danger rounded-4 flex-fill p-3 fw-semibold">
                         Ya, Tetap Batalin
                     </button>
@@ -521,576 +575,814 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+
+    <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <form id="reportForm" action="{{ route('user.submitReport', $transaction->id) }}" method="POST"
-                enctype="multipart/form-data" class="modal-content">
-                @csrf
-                <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
-                <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
-                <input type="hidden" name="reported_id" value="{{ $worker->id }}">
+            <div class="modal-content">
+                <form id="reportForm" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    {{-- Hidden inputs for report submission data --}}
+                    <input type="hidden" name="transaction_id" id="reportTransactionId">
+                    <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
+                    <input type="hidden" name="reported_id" id="reportReportedId">
 
-
-                <div class="modal-header border-0 justify-content-center">
-                    <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-                <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
-
-                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
-                            <p class="fw-medium">{{ $request->title }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
-                            <p class="fw-medium">{{ $transaction->order_number }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
-                            <p class="fw-medium">{{ $transaction->requester->first_name }}
-                                {{ $transaction->requester->last_name }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
-                            <p class="fw-medium">{{ $request->location }}</p>
-                        </div>
+                    <div class="modal-header border-0 justify-content-center">
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
-                            <p class="fw-medium">
-                                {{ $transaction->created_at->format('d M Y') }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
-                            <p class="fw-medium">
-                                {{ $transaction->updated_at->format('d M Y') }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
-                            <p class="fw-medium">{{ $start_work ?? '-' }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
-                            <p class="fw-medium">{{ $finish_work ?? '-' }}</p>
-                        </div>
-                    </div>
+                    <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    <div class="d-flex justify-content-between mb-4">
-                        <p class="text-black-50 fw-semibold mb-0">Total</p>
-                        <p class="fw-medium fs-5 mb-0">Rp
-                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Upload Bukti
-                            (gambar):</label>
-                        <div class="d-flex flex-wrap gap-3 align-items-start" id="previewContainerReport">
-                            <div class="pb-2" onclick="document.getElementById('photoInputReport').click()"
-                                style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
+                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="fw-medium" id="reportModalRequestTitle"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="fw-medium" id="reportModalOrderNumber"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                                <p class="fw-medium" id="reportModalRequesterName"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="fw-medium" id="reportModalRequestLocation">
+                                    <a href={{ $mapsLink }} target="_blank" class="text-end"
+                                        style="text-decoration: none; color: #007BFF;">
+                                        {{ $request->location }}
+                                    </a>
+                                </p>
                             </div>
                         </div>
-                        <input type="file" class="d-none" id="photoInputReport" name="photo[]" accept="image/*"
-                            multiple>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="fw-medium" id="reportModalStartWork"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                                <p class="fw-medium" id="reportModalFinishWork"></p>
+                            </div>
+                        </div>
+
+                        {{-- Total price display in report modal --}}
+                        <div class="d-flex justify-content-between mb-4">
+                            <p class="text-black-50 fw-semibold mb-0">Total</p>
+                            <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
+                        </div>
+
+                        {{-- Image upload section for report proof --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                            <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
+                                {{-- Images will be appended here dynamically by JS --}}
+                                <div class="add-image-button pb-2"
+                                    onclick="document.getElementById('reportImageInput').click()"
+                                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
+                                </div>
+                                <span id="image-count"
+                                    class="text-secondary fw-medium align-self-center ms-auto">0/7</span>
+                            </div>
+                            <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
+                                multiple>
+                        </div>
+
+                        {{-- Textarea for reporting reasons --}}
+                        <div class="mb-4">
+                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                            <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
+                                placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
+                        </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="reportNote" class="form-label fw-semibold">Keluh Kesah
-                            Anda</label>
-                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                            placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff;"></textarea>
+                    {{-- Report submission button --}}
+                    <div class="modal-footer border-0 d-flex justify-content-end">
+                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
+                            Laporan</button>
                     </div>
-                </div>
-
-                <div class="modal-footer border-0 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-danger px-4 py-2">Kirim
-                        Laporan</button>
-                </div>
-
-            </form>
+                </form>
+            </div>
         </div>
     </div>
     <script>
-        // ===================================================================
-        // >> GLOBAL VARIABLES
-        // These variables need to be accessible across multiple functions and modals.
-        // ===================================================================
-        let selectedRating = 0;
-        // Flag to prevent page reload when transitioning from Completion Modal to Report Modal
-        window.isOpeningReportModal = false;
+        // Global variables for managing transaction and worker IDs across modals
+        let currentTransactionId = `{{ $transaction->id }}`;
+        let reportedWorkerId = `{{ $worker->id }}`;
+        let reportFiles = []; // Array of File objects
+        const MAX_REPORT_IMAGES = 7; // Define max images constant
 
-        // ===================================================================
-        // >> MAIN FUNCTIONS (Called from HTML attributes or event listeners)
-        // ===================================================================
+        // --- Image Preview Logic for Report Modal ---
+        const reportImageInput = document.getElementById('reportImageInput');
+        const reportImagePreviewContainer = document.getElementById('reportImagePreviewContainer');
+        const addImageButton = reportImagePreviewContainer ? reportImagePreviewContainer.querySelector(
+            '.add-image-button') : null;
+        const imageCountSpan = document.getElementById('image-count');
 
         /**
-         * Function to handle the submission of the completion proof.
-         * Note: This function name `uploadProof` conflicts with the `submitReport` function logic,
-         * and the original HTML structure indicates `submitReport` is for the report modal.
-         * If 'uploadProof' is intended for the completion proof modal (not present in the provided HTML),
-         * its action and logic would need to be defined separately.
-         * I've kept it as is for now, but it might need review depending on your backend.
+         * Updates the display of uploaded report images and the image count.
+         * This function handles both newly added images and pre-existing images from a report.
          */
-        function uploadProof() {
-            var form = document.getElementById('proofForm'); // This ID is not present in the HTML provided.
-            if (!form) {
-                console.error("Form with ID 'proofForm' not found.");
-                return;
-            }
-            var formData = new FormData(form);
+        function updateReportImagePreview() {
+            if (!reportImagePreviewContainer || !imageCountSpan || !addImageButton) return;
 
-            // Assuming 'photoInputProof' is used for the completion proof upload.
-            if (document.getElementById('photoInputProof').files.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti pekerjaan.", "error");
-                return;
-            }
+            // Remove all current image preview wrappers to re-render them
+            reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el.remove());
 
-            fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.text().then(text => {
-                            throw new Error(text || 'Gagal menghubungi server.');
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('completionProofModal'));
-                    if (modal) modal.hide();
-                    // After successfully uploading proof, maybe show the completion modal or just reload
-                    // The original code was trying to open 'completionModal' after proof upload,
-                    // which seems counter-intuitive if proof is for a completed job.
-                    // If you want to show the completion/review modal, you'd need to ensure its data is fresh.
-                    // For now, let's assume successful proof upload should lead to a page reload if needed.
-                    location.reload();
-                })
-                .catch(error => {
-                    console.error("Error uploading proof:", error);
-                    window.showCustomAlert('Terjadi kesalahan saat upload foto bukti pekerjaan.', 'error');
-                });
-        }
+            // Iterate in order for existing, and correctly place them relative to the addImageButton
+            reportFiles.forEach((fileOrUrl, index) => {
+                const isFileObject = fileOrUrl instanceof File;
+                const src = isFileObject ? URL.createObjectURL(fileOrUrl) : fileOrUrl;
 
-        function submitReview() {
-            const comment = document.getElementById('comment').value.trim();
-            const ratingInput = document.getElementById('rating-input');
-            const currentRating = ratingInput ? parseInt(ratingInput.value) : selectedRating; // Use selectedRating if input doesn't exist (e.g., for existing review)
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-preview-wrapper position-relative';
+                wrapper.style.width = '80px';
+                wrapper.style.height = '80px';
 
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'rounded border img-thumbnail';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
 
-            if (currentRating === 0) {
-                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
-                return;
-            }
-            if (comment === '') {
-                window.showCustomAlert('Silakan isi komentar.', 'error');
-                return;
-            }
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn-close position-absolute top-0 end-0 m-1';
+                deleteButton.style.fontSize = '0.7rem';
+                deleteButton.style.backgroundColor = '#dc3545';
+                deleteButton.style.borderRadius = '50%';
+                deleteButton.style.padding = '0.25em';
+                deleteButton.type = 'button';
+                deleteButton.onclick = function() {
+                    deleteReportImage(index); // Use captured index for correct deletion
+                };
 
-            // Get the review form and submit it
-            const reviewForm = document.getElementById('reviewForm');
-            if (reviewForm) {
-                // Manually add the rating value to the form data for submission
-                const hiddenRatingInput = document.createElement('input');
-                hiddenRatingInput.type = 'hidden';
-                hiddenRatingInput.name = 'rating';
-                hiddenRatingInput.value = currentRating;
-                reviewForm.appendChild(hiddenRatingInput);
+                wrapper.appendChild(img);
+                wrapper.appendChild(deleteButton);
 
-                // Disable the submit button and show loading state
-                const submitBtn = document.getElementById('submitReviewButton');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Mengirim...';
-                }
+                // Insert the new image wrapper right before the 'add-image-button'
+                reportImagePreviewContainer.insertBefore(wrapper, addImageButton);
+            });
 
-                reviewForm.submit(); // Submit the form normally, Laravel handles the redirect/response
+            // Update image count and add button visibility
+            imageCountSpan.textContent = `${reportFiles.length}/${MAX_REPORT_IMAGES}`;
+            if (reportFiles.length >= MAX_REPORT_IMAGES) {
+                addImageButton.style.display = 'none'; // Hide the add button
             } else {
-                console.error("Review form not found.");
+                // Check if the report input is not disabled before showing the add button
+                if (reportImageInput && !reportImageInput.disabled) {
+                    addImageButton.style.display = 'flex'; // Show the add button
+                } else {
+                    addImageButton.style.display = 'none'; // Keep hidden if disabled
+                }
             }
         }
 
+        /**
+         * Deletes an image from the reportFiles array at the specified index and updates the preview.
+         * @param {number} index - The index of the image to delete.
+         */
+        function deleteReportImage(index) {
+            reportFiles.splice(index, 1); // Remove the file from the array
+            updateReportImagePreview(); // Re-render previews to reflect deletion and update indices
+        }
 
+        if (reportImageInput) {
+            reportImageInput.addEventListener('change', function(event) {
+                // Iterate over selected files and apply validation
+                Array.from(event.target.files).forEach(file => {
+                    // Client-side validation for file type
+                    if (!file.type.startsWith('image/')) {
+                        window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                        return; // Skip this file and continue to next
+                    }
+                    // Client-side validation for file size
+                    const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                    if (file.size > maxSizeBytes) {
+                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                        return; // Skip this file and continue to next
+                    }
+
+                    // Add file to array if max limit not reached
+                    if (reportFiles.length < MAX_REPORT_IMAGES) {
+                        reportFiles.push(file);
+                    } else {
+                        window.showCustomAlert(
+                            `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`, 'error');
+                        // Stop processing further files if limit is hit
+                        return;
+                    }
+                });
+                event.target.value = ''; // Clear the input value to allow re-selection of same files
+                updateReportImagePreview(); // Update the visual display
+            });
+        }
+
+
+        // --- Function to Open Report Modal ---
         function openReportModal() {
-            // Set flag to true when opening the report modal from the completion modal
-            window.isOpeningReportModal = true;
-
-            var completionModalInstance = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-            if (completionModalInstance) {
-                completionModalInstance.hide();
+            // Close the completion modal before opening the report modal
+            var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+            if (completionModal) {
+                completionModal.hide();
             }
 
-            // Populate report modal fields (if needed, based on your previous design)
-            // The provided HTML for #reportModal already uses Blade for data.
-            // If you need dynamic updates from JS, you'd populate these here:
-            // document.getElementById('reportModalRequestTitle').textContent = '...';
+            // Populate report modal fields with data from the current transaction
+            const reportModalElement = document.getElementById('reportWorkModal');
+            const reportModal = new bootstrap.Modal(reportModalElement);
 
-            // Give a slight delay for smooth transition between modals
+            // Fetch data directly from Blade variables (or assume they are available from the main view)
+            document.getElementById('reportModalRequestTitle').textContent = `{{ $request->title ?? '-' }}`;
+            document.getElementById('reportModalOrderNumber').textContent = `{{ $transaction->order_number ?? '-' }}`;
+            document.getElementById('reportModalRequesterName').textContent =
+                `{{ $transaction->worker->first_name ?? '' }} {{ $transaction->worker->last_name ?? '' }}`; // Worker is reported for requester
+            document.getElementById('reportModalRequestLocation').textContent =
+            `{{ $request->location ?? '-' }}`; // Keep current location display logic
+
+            document.getElementById('reportModalTransactionCreatedAt').textContent =
+                `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
+            document.getElementById('reportModalTransactionUpdatedAt').textContent =
+                `{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y') ?? '-' }}`;
+            document.getElementById('reportModalRequestPrice').textContent =
+                `{{ number_format($request->final_price ?? 0, 0, ',', '.') ?? '-' }}`;
+            document.getElementById('reportModalStartWork').textContent =
+                `{{ $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('H.i') : '-' }}`;
+            document.getElementById('reportModalFinishWork').textContent =
+                `{{ $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') : '-' }}`;
+
+
+            // Set hidden form fields for submission
+            document.getElementById('reportTransactionId').value = `{{ $transaction->id }}`;
+            document.getElementById('reportReportedId').value = `{{ $worker->id }}`; // Report about the worker
+
+            // Set form action for report submission
+            document.getElementById('reportForm').action =
+            `{{ route('user.submitReport', $transaction->id) }}`; // Correct route for requester reporting
+
+            // Check if a report already exists for this transaction
+            const hasUserReport = `{{ $hasUserReport ? 'true' : 'false' }}` === 'true';
+            const reportPhotoUrlsJson = `{{ json_encode($userReport->decoded_photo_urls ?? []) }}`;
+            const reportReasons = `{{ $userReport->reasons ?? '' }}`;
+
+            const reportNoteElement = document.getElementById('reportNote');
+            const submitReportButton = document.getElementById('submitReportButton');
+
+            if (hasUserReport) {
+                try {
+                    reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs
+                    if (reportNoteElement) reportNoteElement.value = reportReasons; // Populate reasons
+                    // Disable fields if report already exists
+                    if (reportNoteElement) reportNoteElement.disabled = true;
+                    if (reportImageInput) reportImageInput.disabled = true;
+                    if (submitReportButton) submitReportButton.style.display = 'none'; // Hide submit button
+                } catch (e) {
+                    console.error('Error parsing report photo URLs:', e);
+                    reportFiles = []; // Fallback to empty
+                }
+            } else {
+                // Reset for new report
+                reportFiles = [];
+                if (reportNoteElement) reportNoteElement.value = '';
+                if (reportNoteElement) reportNoteElement.disabled = false;
+                if (reportImageInput) reportImageInput.disabled = false;
+                if (submitReportButton) submitReportButton.style.display = 'block'; // Show submit button
+            }
+            updateReportImagePreview(); // Render initial state (either empty or existing images)
+
+
+            // Show the report modal after a brief delay
             setTimeout(() => {
-                var reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
                 reportModal.show();
             }, 300);
         }
 
-        // ===================================================================
-        // >> INITIALIZATION & EVENT LISTENERS (Executed after the DOM is ready)
-        // ===================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-
-            /**
-             * Function to initialize image preview for a given file input and preview container.
-             * This version only handles adding images and showing them. Deletion logic is not included here.
-             * @param {string} inputId The ID of the file input element.
-             * @param {string} previewContainerId The ID of the container where image previews will be shown.
-             */
-            function initPhotoPreview(inputId, previewContainerId) {
-                const input = document.getElementById(inputId);
-                const previewContainer = document.getElementById(previewContainerId);
-
-                // Clear previous previews and reset input when modal is opened for a new report
-                // This is specifically for the report modal, so it's placed here.
-                if (inputId === 'photoInputReport' && previewContainer) {
-                    const reportModalElement = document.getElementById('reportModal');
-                    if (reportModalElement) {
-                        reportModalElement.addEventListener('show.bs.modal', function() {
-                            previewContainer.innerHTML = `
-                                <div class="pb-2" onclick="document.getElementById('photoInputReport').click()"
-                                    style="width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                                    <span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>
-                                </div>
-                            `;
-                            input.value = ''; // Clear the file input
-                            // Ensure the report note is also cleared when opening for a new report
-                            const reportNote = document.getElementById('reportNote');
-                            if (reportNote) {
-                                reportNote.value = '';
-                            }
-                        });
-                    }
-                }
-
-
-                if (input && previewContainer) {
-                    input.addEventListener('change', function(event) {
-                        const files = event.target.files;
-                        // For the current setup, we clear and re-add for simplicity.
-                        // If multiple uploads are desired, you'd append to existing.
-                        // For single image upload, this is fine.
-                        // For 'photoInputProof', it might already be displaying one image, if so, this logic
-                        // will replace it.
-                        if (inputId !== 'photoInputReport') { // If it's not the report input, clear previous previews.
-                            previewContainer.innerHTML = '';
-                        }
-
-
-                        Array.from(files).forEach(file => {
-                            if (file && file.type.startsWith('image/')) {
-                                const reader = new FileReader();
-                                reader.onload = function(e) {
-                                    const img = document.createElement('img');
-                                    img.src = e.target.result;
-                                    img.className = "img-thumbnail me-2 mb-2";
-                                    img.style.cssText =
-                                        "max-width: 120px; max-height: 120px; object-fit: cover;";
-                                    previewContainer.appendChild(img);
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        });
-
-                        // Re-add the '+' button if it's the report modal's preview and not already there
-                        if (inputId === 'photoInputReport') {
-                            const addButtonExists = previewContainer.querySelector('.add-image-button');
-                            if (!addButtonExists) {
-                                const addButton = document.createElement('div');
-                                addButton.className = "pb-2 add-image-button"; // Add the class for the button
-                                addButton.setAttribute('onclick', `document.getElementById('${inputId}').click()`);
-                                addButton.style.cssText = "width: 80px; height: 80px; border: 2px dashed #309FFF; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;";
-                                addButton.innerHTML = `<span class="text-center" style="font-size: 32px; color:#309FFF;">+</span>`;
-                                previewContainer.appendChild(addButton);
-                            }
-                        }
-                    });
-                }
-            }
-
-
-            // Call init for all photo previews
-            // Note: `previewContainerReport` is used for the Report Modal
-            // `previewContainerProof` is used for the Completion Proof Modal
-            initPhotoPreview('photoInputReport', 'previewContainerReport');
-            initPhotoPreview('photoInputProof', 'previewContainerProof');
-
-
-            // Logic for Star Rating (for new reviews)
+        // --- Star Rating Functionality for Review Modal ---
+        // Updates the visual fill of the stars
+        function updateStarDisplay(rating) {
             const stars = document.querySelectorAll('#review-section-container .star-rating');
-            const ratingInput = document.getElementById('rating-input'); // This input exists only if `!$hasReview`
-
-            if (ratingInput) { // Only attach listeners if the rating input exists (i.e., user can give a review)
-                stars.forEach(star => {
-                    star.addEventListener('mouseover', function() {
-                        const hoverValue = parseInt(this.dataset.value);
-                        updateStarDisplay(hoverValue, 'hover');
-                    });
-
-                    star.addEventListener('mouseout', function() {
-                        // Revert to selected rating when mouse leaves stars
-                        updateStarDisplay(selectedRating, 'select');
-                    });
-
-                    star.addEventListener('click', function() {
-                        selectedRating = parseInt(this.dataset.value);
-                        ratingInput.value = selectedRating; // Update the hidden input value
-                        updateStarDisplay(selectedRating, 'select');
-                    });
-                });
-
-                // Set initial display for stars based on selectedRating (which is 0 initially)
-                updateStarDisplay(selectedRating, 'select');
-            }
+            stars.forEach(star => {
+                const sVal = parseInt(star.getAttribute('data-value'));
+                if (sVal <= rating) {
+                    star.classList.add('star-blue');
+                    star.classList.remove('text-secondary');
+                } else {
+                    star.classList.remove('star-blue');
+                    star.classList.add('text-secondary');
+                }
+            });
+        }
 
 
-            // Function to update star visual display
-            function updateStarDisplay(rating, type) {
-                const allStars = document.querySelectorAll('#review-section-container .bi-star-fill');
-                allStars.forEach(s => {
-                    const sVal = parseInt(s.dataset.value);
-                    if (sVal <= rating) {
-                        s.classList.remove('text-secondary');
-                        s.classList.add('star-blue'); // Always use star-blue for selected/hovered stars
-                    } else {
-                        s.classList.remove('star-blue');
-                        s.classList.add('text-secondary');
-                    }
-                });
-            }
+        // --- Function to Submit Review ---
+        function submitReview() {
+            const comment = document.getElementById('comment').value.trim();
+            const ratingInput = document.getElementById('rating-input'); // Get rating input element
+            const rating = ratingInput ? parseInt(ratingInput.value) : 0; // Get value from input
 
-            // Logic for "Ya, Selesaikan Pekerjaan" button
-            const completeButton = document.getElementById('completeWorkButton');
-            if (completeButton) {
-                completeButton.addEventListener('click', function() {
-                    const form = document.getElementById('markCompleteForm');
-                    if (!form) return;
-
-                    this.disabled = true;
-                    this.innerHTML = 'Memproses...';
-
-                    fetch(form.action, {
-                            method: 'POST',
-                            body: new FormData(form),
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content'),
-                                'X-Requested-With': 'XMLHttpRequest', // Crucial for Laravel AJAX detection
-                                'Accept': 'application/json',
-                            }
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                // If response is not OK, try to parse JSON error and throw it
-                                return response.json().then(errorData => {
-                                    throw errorData; // Throw the error data object
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log("Response data from markComplete:", data);
-                            if (data.success) {
-                                window.showCustomAlert(data.message, "success");
-                                const confirmModal = bootstrap.Modal.getInstance(document
-                                    .getElementById('completeJobModal'));
-                                if (confirmModal) confirmModal.hide();
-
-                                // When job is marked complete, open the completion/review modal
-                                const completionModal = new bootstrap.Modal(document.getElementById(
-                                    'completionModal'));
-                                completionModal.show();
-                                // No need to reload here. The review submission or report submission will handle the reload.
-                            } else {
-                                let errorMessage = data.message || 'Terjadi kesalahan.';
-                                if (data.errors) {
-                                    for (const key in data.errors) {
-                                        if (data.errors.errors.hasOwnProperty(key)) {
-                                            data.errors.errors[key].forEach(msg => {
-                                                errorMessage += `\n- ${msg}`;
-                                            });
-                                        }
-                                    }
-                                }
-                                window.showCustomAlert(errorMessage, "error");
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
-                            if (error.message) {
-                                errorMessage = error.message;
-                            } else if (error.errors) { // Handle Laravel validation errors
-                                errorMessage = 'Validasi gagal:';
-                                for (const key in error.errors) {
-                                    errorMessage += `\n- ${error.errors[key].join(', ')}`;
-                                }
-                            }
-                            window.showCustomAlert(errorMessage, "error");
-                        })
-                        .finally(() => {
-                            this.disabled = false;
-                            this.innerHTML = 'Ya, Selesaikan Pekerjaan';
-                        });
-                });
-            }
-
-            // --- Event Listeners for Modals Hiding ---
-            // Listener for `completionModal` when it is hidden
-            const completionModalElement = document.getElementById('completionModal');
-            if (completionModalElement) {
-                completionModalElement.addEventListener('hidden.bs.modal', function() {
-                    // Only reload if we are NOT in the process of opening the report modal
-                    if (!window.isOpeningReportModal) {
-                        location.reload();
-                    }
-                    // Reset the flag after the modal is hidden
-                    window.isOpeningReportModal = false;
-                });
-            }
-
-            // Listener for `reportModal` when it is hidden
-            const reportModalElement = document.getElementById('reportModal');
-            if (reportModalElement) {
-                reportModalElement.addEventListener('hidden.bs.modal', function() {
-                    // Always reload after the report modal is closed, regardless of how it was opened
-                    location.reload();
-                });
-            }
-
-            // Attach submitReview to its button
-            const submitReviewButton = document.getElementById('submitReviewButton');
-            if (submitReviewButton) {
-                submitReviewButton.addEventListener('click', submitReview);
-            }
-
-            // Attach openReportModal to its button
-            const reportProblemButton = document.getElementById('reportProblemButton');
-            if (reportProblemButton) {
-                reportProblemButton.addEventListener('click', openReportModal);
-            }
-
-            // Attach custom submit behavior to the report form
-            const reportForm = document.getElementById('reportForm');
-            if (reportForm) {
-                reportForm.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent default HTML form submission
-                    submitReport(); // Call your custom submit function
-                });
-            }
-        }); // End of DOMContentLoaded
-
-        // Function to submit the report via Fetch API
-        function submitReport() {
-            const form = document.getElementById('reportForm');
-            if (!form) {
-                console.error('Report form not found!');
+            // Client-side validation for rating and comment
+            if (rating == 0) {
+                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
                 return;
             }
 
-            const formData = new FormData(form);
-            const reportNote = document.getElementById('reportNote').value;
-            const photoInput = document.getElementById('photoInputReport');
-
-            if (photoInput && photoInput.files.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
-                return;
-            }
-            if (!reportNote.trim()) {
-                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+            if (comment == '') {
+                window.showCustomAlert('Silakan isi komentar.', 'error');
                 return;
             }
 
-            // Disable button and show loading
-            const submitBtn = form.querySelector('button[type="submit"]'); // Get the specific submit button
+            // Prepare FormData for submission
+            const formData = new FormData();
+            formData.append('transaction_id', currentTransactionId);
+            formData.append('reviewer_id', `{{ auth()->id() }}`);
+            formData.append('reviewee_id', `{{ $worker->id }}`); // Reviewing the worker
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+            const submitBtn = document.getElementById('submitReviewButton');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Mengirim Laporan...';
+                submitBtn.textContent = 'Mengirim...';
             }
 
-
-            fetch(form.action, {
+            fetch(`{{ route('reviews.store', $transaction->id) }}`, {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'X-Requested-With': 'XMLHttpRequest', // Crucial for Laravel AJAX detection
-                        'Accept': 'application/json' // Request JSON response
+                        'Accept': 'application/json',
                     },
                 })
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(errorData => {
-                            throw errorData; // Throw the parsed error object
+                            throw errorData;
                         });
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Report submission data:', data);
-                    window.showCustomAlert(data.message, 'success');
-                    var reportModal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-                    if (reportModal) {
-                        reportModal.hide();
+                    if (data.success) {
+                        window.showCustomAlert(data.message, 'success');
+                        const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                        if (completionModal) completionModal.hide();
+                        // Update UI to reflect review submitted state
+                        renderExistingReview(rating, comment); // Show the submitted review
+                        // updateReportButtonState(true); // Decide if reporting should be disabled after review
+                    } else {
+                        window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim ulasan.', 'error');
                     }
-                    // >>> GANTI BARIS INI <<<
-                    window.location.href = "{{ route('job-req.home') }}"; // Redirect ke beranda job requester
                 })
                 .catch(error => {
-                    console.error('Error submitting report:', error);
-                    let errorMessage = 'Terjadi kesalahan saat mengirim laporan.';
-
+                    console.error('Error submitting review:', error);
+                    let errorMessage = 'Terjadi kesalahan saat menyimpan ulasan.';
                     if (error.errors) {
                         errorMessage = 'Validasi gagal:';
                         for (const key in error.errors) {
-                            if (error.errors.hasOwnProperty(key)) {
-                                error.errors[key].forEach(msg => {
-                                    errorMessage += `\n- ${msg}`;
-                                });
-                            }
+                            errorMessage += `\n- ${error.errors[key].join(', ')}`;
                         }
                     } else if (error.message) {
                         errorMessage = error.message;
                     }
-
                     window.showCustomAlert(errorMessage, 'error');
                 })
                 .finally(() => {
-                    // Re-enable button regardless of success or failure
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = 'Kirim Laporan';
+                        submitBtn.textContent = 'Kirim';
                     }
                 });
         }
+
+        // --- Function to Submit Report ---
+        function submitReport(event) {
+            if (event) event.preventDefault(); // Prevent default form submission if called from an event listener
+
+            const form = document.getElementById('reportForm');
+            const reasons = document.getElementById('reportNote').value.trim();
+
+            if (reportFiles.length === 0) {
+                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                return;
+            }
+            if (!reasons) {
+                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                return;
+            }
+
+            // Re-validate files in reportFiles array before submission, as user might delete/add
+            let hasInvalidFile = false;
+            // Filter out existing URLs and only send File objects
+            const filesToSend = reportFiles.filter(item => item instanceof File);
+
+            for (const file of filesToSend) { // Use for...of for easy breaking
+                if (!file.type.startsWith('image/')) {
+                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    hasInvalidFile = true;
+                    break; // Exit loop
+                }
+                const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                if (file.size > maxSizeBytes) {
+                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    hasInvalidFile = true;
+                    break; // Exit loop
+                }
+            }
+            if (hasInvalidFile) {
+                return;
+            }
+
+            const formData = new FormData(); // Create new FormData object for submission
+            // Append static form fields
+            formData.append('transaction_id', document.getElementById('reportTransactionId').value);
+            formData.append('reporter_id', document.getElementById('reportForm').querySelector('input[name="reporter_id"]')
+                .value);
+            formData.append('reported_id', document.getElementById('reportReportedId').value);
+            formData.append('reasons', reasons);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
+                'content')); // Manually add CSRF token
+
+            // Append all collected files from our `reportFiles` array
+            filesToSend.forEach((file, index) => {
+                formData.append(`photo[${index}]`, file);
+            });
+
+            const submitBtn = document.getElementById('submitReportButton');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim Laporan...';
+
+            // Submit the form using fetch, expecting a redirect
+            fetch(form.action, { // Use the form's action which includes transaction ID
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        // DO NOT set 'Content-Type': 'multipart/form-data' explicitly when using FormData,
+                        // the browser does it correctly with a boundary.
+                        'Accept': 'application/json', // Expect JSON response
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw errorData;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.showCustomAlert(data.message, 'success');
+                        const reportModal = bootstrap.Modal.getInstance(document.getElementById('reportWorkModal'));
+                        if (reportModal) reportModal.hide();
+                        // Update UI to reflect report submitted state
+                        updateReportButtonState(true); // Assuming 'true' means report exists now
+                    } else {
+                        window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim laporan.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during report submission:', error);
+                    let errorMessage = 'Terjadi kesalahan saat mengirim laporan.\n';
+                    if (error.errors) {
+                        errorMessage += 'Validasi Gagal:\n';
+                        for (let key in error.errors) {
+                            errorMessage += `- ${error.errors[key].join(', ')}\n`;
+                        }
+                    } else if (error.message) {
+                        errorMessage += error.message;
+                    }
+                    window.showCustomAlert(errorMessage, 'error');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Laporan';
+                });
+        }
+
+        // Handles click event for generating and downloading invoice
+        function handleInvoiceLinkClick(e) {
+            e.preventDefault();
+            // The transaction ID is available via a Blade variable here
+            const transactionId = `{{ $transaction->id }}`;
+            if (transactionId) {
+                const invoiceUrl = `/generate-invoice/${transactionId}`;
+                window.open(invoiceUrl, '_blank');
+            } else {
+                console.error('Transaction ID not found for invoice generation.');
+                window.showCustomAlert('Terjadi kesalahan: ID transaksi tidak ditemukan untuk pembuatan invoice.', 'error');
+            }
+        }
+
+        // Function to update the main transaction status badge and buttons
+        function updateTransactionStatus(newStatus) {
+            const badge = document.getElementById('transaction-status-badge');
+            if (!badge) return;
+
+            let statusText = '';
+            let bgColor = '';
+            let textColor = 'text-light'; // Default text color
+
+            // Update status text and color
+            if (newStatus === 'submitted') {
+                statusText = 'Ditinjau';
+                bgColor = '#294287';
+            } else if (newStatus === 'completed') {
+                statusText = 'Selesai';
+                bgColor = '#D3FA0D';
+                textColor = 'text-dark'; // Changed for 'Selesai' status
+            } else if (newStatus === 'cancelled') {
+                statusText = 'Dibatalin';
+                bgColor = 'crimson';
+            } else if (newStatus === 'accepted') {
+                statusText = 'Diterima';
+                bgColor = '#294287';
+            } else if (newStatus === 'in progress') {
+                statusText = 'Dikerjain';
+                bgColor = '#309FFF';
+            }
+
+            badge.textContent = statusText;
+            badge.style.backgroundColor = bgColor;
+            badge.classList.remove('text-light', 'text-dark');
+            badge.classList.add(textColor);
+
+            // Update action buttons based on new status
+            const actionContainer = document.querySelector('.col-12.col-md-6.col-lg-12.px-0.pe-lg-2 > .contain');
+            if (!actionContainer) return;
+
+            actionContainer.innerHTML = ''; // Clear existing buttons
+
+            if (newStatus === 'submitted') {
+                actionContainer.innerHTML += `
+                    <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
+                        data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
+                        style="background-color:#294287; width:88%;">
+                        Tandai Selesai
+                    </button>
+                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                        data-bs-toggle="modal" data-bs-target="#completionProofModal"
+                        style="color: #0d6efd; text-decoration: none;">
+                        Lihat Bukti Penyelesaian
+                    </a>
+                `;
+            } else if (newStatus === 'completed') {
+                actionContainer.innerHTML += `
+                    <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
+                        style="width:88%;cursor: not-allowed;pointer-events: none;">
+                        Selesai
+                    </a>
+                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                        data-bs-toggle="modal" data-bs-target="#completionProofModal"
+                        style="color: #0d6efd; text-decoration: none;">
+                        Lihat Bukti Penyelesaian
+                    </a>
+                `;
+            } else if (newStatus === 'accepted') {
+                actionContainer.innerHTML += `
+                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
+                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                    <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
+                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                `;
+            } else if (newStatus === 'in progress') {
+                actionContainer.innerHTML += `
+                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                        style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
+                        Lihat Bukti Penyelesaian
+                    </a>
+                    <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
+                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                `;
+            }
+            // Re-attach event listeners for newly created elements
+            attachEventListeners();
+        }
+
+        // Function to update the report button state (text and disability)
+        function updateReportButtonState(hasReported) {
+            const reportProblemButton = document.getElementById('reportProblemButton');
+            if (reportProblemButton) {
+                if (hasReported) {
+                    reportProblemButton.textContent = 'Laporan sudah terkirim';
+                    reportProblemButton.disabled = true;
+                    reportProblemButton.classList.remove('text-danger');
+                    reportProblemButton.classList.add('text-secondary');
+                    reportProblemButton.onclick = null;
+                } else {
+                    reportProblemButton.textContent = 'Laporkan masalah';
+                    reportProblemButton.disabled = false;
+                    reportProblemButton.classList.remove('text-secondary');
+                    reportProblemButton.classList.add('text-danger');
+                    reportProblemButton.onclick = openReportModal;
+                }
+            }
+        }
+
+        function attachEventListeners() {
+            // Attach submitReport to the "Kirim Laporan" button inside the report modal
+            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
+            if (submitReportButtonForReportModal) {
+                submitReportButtonForReportModal.removeEventListener('click', submitReport); // Prevent duplicates
+                submitReportButtonForReportModal.addEventListener('click', submitReport);
+            }
+
+            // Attach submitReview to its button (if it exists)
+            const submitReviewButton = document.getElementById('submitReviewButton');
+            if (submitReviewButton) {
+                submitReviewButton.removeEventListener('click', submitReview); // Prevent duplicates
+                submitReviewButton.addEventListener('click', submitReview);
+            }
+
+            // Logic for "Ya, Selesaikan Pekerjaan" button
+            const completeButton = document.getElementById('completeWorkButton');
+            if (completeButton) {
+                completeButton.removeEventListener('click', handleCompleteButtonClick); // Prevent duplicates
+                completeButton.addEventListener('click', handleCompleteButtonClick);
+            }
+
+            // Setup invoice link
+            const invoiceLink = document.getElementById('modalInvoiceLink');
+            if (invoiceLink) {
+                invoiceLink.removeEventListener('click', handleInvoiceLinkClick); // Prevent duplicates
+                invoiceLink.addEventListener('click', handleInvoiceLinkClick);
+            }
+        }
+
+        // Centralized handler for complete button to keep `this` context for disabling
+        function handleCompleteButtonClick() {
+            const form = document.getElementById('markCompleteForm');
+            if (!form) return;
+
+            this.disabled = true;
+            this.innerHTML = 'Memproses...';
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content'),
+                        'X-Requested-With': 'XMLHttpRequest', // Crucial for Laravel AJAX detection
+                        'Accept': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw errorData; // Throw the error data object
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Response data from markComplete:", data);
+                    if (data.success) {
+                        window.showCustomAlert(data.message, "success");
+                        const confirmModal = bootstrap.Modal.getInstance(document
+                            .getElementById('completeJobModal'));
+                        if (confirmModal) confirmModal.hide();
+
+                        // When job is marked complete, open the completion/review modal
+                        const completionModal = new bootstrap.Modal(document.getElementById(
+                            'completionModal'));
+                        completionModal.show();
+                        // Update UI status
+                        updateTransactionStatus('completed'); // Update the main status badge
+                    } else {
+                        let errorMessage = data.message || 'Terjadi kesalahan.';
+                        if (data.errors) {
+                            for (const key in data.errors) {
+                                if (data.errors.errors.hasOwnProperty(key)) {
+                                    data.errors.errors[key].forEach(msg => {
+                                        errorMessage += `\n- ${msg}`;
+                                    });
+                                }
+                            }
+                        }
+                        window.showCustomAlert(errorMessage, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+                    if (error.message) {
+                        errorMessage = error.message;
+                    } else if (error.errors) { // Handle Laravel validation errors
+                        errorMessage = 'Validasi gagal:';
+                        for (const key in error.errors) {
+                            errorMessage += `\n- ${error.errors[key].join(', ')}`;
+                        }
+                    }
+                    window.showCustomAlert(errorMessage, "error");
+                })
+                .finally(() => {
+                    this.disabled = false;
+                    this.innerHTML = 'Ya, Selesaikan Pekerjaan';
+                });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial attachment of event listeners
+            attachEventListeners();
+
+            // Dynamic content and button states for Completion Modal
+            const completionModalElement = document.getElementById('completionModal');
+            if (completionModalElement) {
+                completionModalElement.addEventListener('show.bs.modal', function() {
+                    // Populate the completion modal with data from Blade variables
+                    document.getElementById('modalRequestTitle').textContent =
+                        `{{ $request->title ?? '-' }}`;
+                    document.getElementById('modalOrderNumber').textContent =
+                        `{{ $transaction->order_number ?? '-' }}`;
+                    document.getElementById('modalWorkerName').textContent =
+                        `{{ $worker->first_name ?? '' }} {{ $worker->last_name ?? '' }}`;
+                    document.getElementById('modalRequestLocation').textContent =
+                        `{{ $request->location ?? '-' }}`;
+                    document.getElementById('modalTransactionCreatedAt').textContent =
+                        `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
+                    document.getElementById('modalTransactionUpdatedAt').textContent =
+                        `{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y') ?? '-' }}`;
+                    document.getElementById('modalRequestPrice').textContent =
+                        `{{ number_format($request->final_price ?? 0, 0, ',', '.') ?? '-' }}`;
+                    document.getElementById('modalStartWork').textContent =
+                        `{{ $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('H.i') : '-' }}`;
+                    document.getElementById('modalFinishWork').textContent =
+                        `{{ $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') : '-' }}`;
+
+                    // Set form action dynamically for the review form (already done in submitReview)
+
+                    // Conditional rendering of review section
+                    const hasReview = `{{ $hasReview ? 'true' : 'false' }}` === 'true';
+                    if (hasReview) {
+                        const userRating = `{{ $userReview->rating ?? 0 }}`;
+                        const userComment = `{{ $userReview->comment ?? '' }}`;
+                        renderExistingReview(parseInt(userRating), userComment);
+                        selectedRating = parseInt(userRating);
+                    } else {
+                        renderReviewForm();
+                        selectedRating = 0; // Reset selectedRating for new review
+                    }
+
+                    // Handle Report Button State
+                    updateReportButtonState(`{{ $hasUserReport ? 'true' : 'false' }}` === 'true');
+                });
+
+                // Reset review form state when the completion modal is hidden
+                completionModalElement.addEventListener('hidden.bs.modal', function() {
+                    selectedRating = 0; // Reset selected rating
+                });
+            }
+
+            // Clear report form state and re-enable button when the report modal is hidden
+            const reportWorkModalElement = document.getElementById('reportWorkModal'); // Changed to new modal ID
+            if (reportWorkModalElement) {
+                reportWorkModalElement.addEventListener('hidden.bs.modal', function() {
+                    // When report modal is closed, re-open the completion modal
+                    const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+                    completionModal.show(); // This will re-trigger its show.bs.modal event and re-populate
+                    // Clear report form state
+                    document.getElementById('reportNote').value = ''; // Clear textarea
+                    reportFiles = []; // Clear the global array of files
+                    updateReportImagePreview(); // Reset preview container
+                    reportImageInput.value = ''; // Clear file input
+                    document.getElementById('submitReportButton').disabled = false;
+                    document.getElementById('submitReportButton').textContent = 'Kirim Laporan';
+                });
+            }
+
+
+            // === FIX FOR PERSISTENT OVERLAY ===
+            // Listen for any Bootstrap modal to be hidden and manually remove any remaining backdrops.
+            document.querySelectorAll('.modal').forEach(modalElement => {
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+
+                    // Also ensure body scrolling is re-enabled, as it sometimes gets stuck
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    // Clear any padding added by Bootstrap for scrollbar
+                    document.body.style.paddingRight = '';
+                });
+            });
+            // === END FIX ===
+
+        }); // End of DOMContentLoaded
     </script>
     <style>
         /* Star Rating Styles */
@@ -1282,7 +1574,7 @@
                 padding: .2em .4em !important;
             }
 
-            .order-row .status-badge-fixed {
+            .status-badge-fixed {
                 min-width: 70px !important;
                 text-align: center;
                 display: inline-flex;
@@ -1352,7 +1644,7 @@
                 font-size: 10px !important;
             }
 
-            .order-row .status-badge-fixed {
+            .status-badge-fixed {
                 min-width: 60px !important;
             }
 

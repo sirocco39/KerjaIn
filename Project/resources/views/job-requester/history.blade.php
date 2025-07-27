@@ -723,7 +723,7 @@
             <div class="ps-3 flex-fill d-flex flex-column w-100">
                 <label for="comment" class="form-label text-start">Komentar</label>
                 <textarea name="comment" id="comment" class="form-control" rows="3"
-                    placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"></textarea>
+                    placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; resize: none;"></textarea>
             </div>
         `;
                 const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
@@ -764,7 +764,7 @@
             <div class="ps-3 flex-fill d-flex flex-column w-100">
                 <label for="comment" class="form-label text-start">Komentar</label>
                 <textarea id="comment" class="form-control" rows="3" disabled
-                    style="border-color:#8a8a8a;">${comment}</textarea>
+                    style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
             </div>
         `;
                 if (submitReviewButton) {

@@ -38,7 +38,7 @@ class TransactionController extends Controller
             // NEW: Check for existing report and load report data
             $order->has_user_report = $order->userReport()->exists();
 
-            // Corrected logic: Ensure $order->user_report is an object before accessing its properties.
+            // Corrected logic: Ensure $order->userReport is an object before accessing its properties.
             // If userReport() returns null, assign a new StdClass object to it
             // and then set the properties on that new object.
             if ($order->userReport) { // Check if the relationship loaded an actual report
@@ -122,6 +122,8 @@ class TransactionController extends Controller
         $userReview = $transaction->userReview; // This will be null if no review exists
 
         // Add this to check for an existing user report
+        // Note: With multiple reports allowed, this only checks if *any* report by the user exists.
+        // You might need to adjust logic if you need to fetch a specific 'latest' report.
         $hasUserReport = $transaction->userReport()->exists();
         $userReport = $transaction->userReport; // This will be null if no report exists
 
@@ -269,13 +271,16 @@ class TransactionController extends Controller
             return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang melaporkan transaksi ini.');
         }
 
+        // REMOVED: This block prevents multiple reports.
+        /*
         $existingReport = Report::where('transaction_id', $transactionId)
             ->where('reporter_id', Auth::id())
             ->first();
         if ($existingReport) {
             // Changed to custom_error_alert for consistency
-            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda sudah mengajukan laporan untuk transaksi ini.');
+            return redirect()->route('job-req.history')->with('custom_error_alert', 'Anda sudah mengajukan laporan untuk transaksi ini.');
         }
+        */
 
         DB::transaction(function () use ($request, $transaction) {
             $photoUrls = []; // Array to store public URLs of uploaded photos
@@ -296,7 +301,7 @@ class TransactionController extends Controller
         });
 
         // Changed to custom_success_alert for consistency
-        return redirect()->route('job-req.home')->with('custom_success_alert', 'Laporan berhasil dikirim dan akan segera ditinjau.');
+        return redirect()->route('job-req.history')->with('custom_success_alert', 'Laporan berhasil dikirim dan akan segera ditinjau.');
     }
 
     public function getTransactionDetails($id)

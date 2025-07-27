@@ -19,7 +19,7 @@
                     <div class="mb-3">
                         <label for="work-detail-text" class="form-label fw-semibold">Detail Pekerjaan</label>
                         <textarea class="form-control rounded-3" id="work-detail-text" rows="3" name="workDetailLabel"
-                            placeholder="Contoh: Pasang AC 1 PK di ruang tamu bagian atas korden">{{ old('workDetailLabel') }}</textarea>
+                            placeholder="Contoh: Pasang AC 1 PK di ruang tamu bagian atas korden" style="background-color: #f7f7ff; resize: none;">{{ old('workDetailLabel') }}</textarea>
                         <div class="text-danger small mt-1" id="workDetailLabel-error"></div>
                     </div>
                     <div class="mb-3">
