@@ -42,6 +42,16 @@ use App\Livewire\jobTaker\JobTakerChatRoom;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
 use App\Models\ChatRoom;
 use Spatie\Activitylog\Models\Activity;
+use App\Http\Controllers\ProfileController;
+
+// =======================
+// PROFILE PAGE
+// =======================
+Route::get('/profile', function () {
+    return view('job-requester.profile');
+})->middleware('auth')->name('profile');
+
+
 
 // =======================
 // LANDING PAGE

@@ -23,6 +23,18 @@
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+    <!-- Optional: Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
+    <!-- AdminLTE v3 Assets via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <style>
         .dropdown-profile-custom {
             min-width: 250px;
@@ -298,8 +310,23 @@
                             </li>
                             @endguest
                             @auth
-
+                            
                             <li>
+                                @if(auth()->user()->is_worker)
+                                    {{-- Jika sudah menjadi worker, tampilkan profil tapi tidak bisa diklik --}}
+                                    <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
+                                        <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : asset('Image/Icon/default-profile.png') }}"
+                                            alt="Foto Profil" class="navIcon rounded-circle" width="24" height="24">
+                                        <span>{{ auth()->user()->name }}</span>
+                                    </div>
+                                @else
+                                    {{-- Jika user biasa, bisa diklik dan diarahkan ke halaman profile --}}
+                                    <a href="{{ route('profile') }}" class="dropdown-item d-flex align-items-center gap-2">
+                                        <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : asset('Image/Icon/default-profile.png') }}"
+                                            alt="Foto Profil" class="navIcon rounded-circle" width="24" height="24">
+                                        <span>{{ auth()->user()->name }}</span>
+                                    </a>
+                                @endif
                                 {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
                                 <a class="dropdown-item d-flex align-items-center"
                                     href="{{ route('balance.job-req') }}">
@@ -1122,7 +1149,16 @@
             }
         });
         // --- AKHIR SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
-    </script>
+
+    <!-- jQuery -->
+    <script src="../../plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="../../dist/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="../../dist/js/demo.js"></script>
+
 </body>
 
 </html>
