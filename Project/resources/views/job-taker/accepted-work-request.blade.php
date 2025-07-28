@@ -12,6 +12,15 @@
         $end = new DateTime($end_time);
         $interval = $start->diff($end);
 
+        $days = $interval->d;
+        $hours = $interval->h;
+        $minutes = $interval->i;
+
+        $total_hours = $days * 24 + $hours;
+
+        // Format durasi baru
+        $duration = $total_hours . ' jam ' . $minutes . ' menit';
+
         $amount = $request->final_price;
         $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
 
@@ -19,7 +28,6 @@
         $alamatEncoded = urlencode($alamat);
         $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
 
-        $duration = $interval->format('%h jam %i menit');
         $created_at = $worker->created_at;
         $year = date('F Y', strtotime($created_at));
         $start_work = $transaction->start_work ? date('d M Y H:i', strtotime($transaction->start_work)) : null;
@@ -654,7 +662,8 @@
             // --- Image Preview Logic for Report Modal ---
             const reportImageInput = document.getElementById('reportImageInput');
             const reportImagePreviewContainer = document.getElementById('reportImagePreviewContainer');
-            const addImageButton = reportImagePreviewContainer ? reportImagePreviewContainer.querySelector('.add-image-button') : null;
+            const addImageButton = reportImagePreviewContainer ? reportImagePreviewContainer.querySelector(
+                '.add-image-button') : null;
             const imageCountSpan = document.getElementById('image-count');
 
             /**
@@ -665,7 +674,8 @@
             function updateReportImagePreview() {
                 // Clear all current image preview wrappers to re-render them
                 if (reportImagePreviewContainer) {
-                    reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el.remove());
+                    reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el
+                    .remove());
 
                     // Iterate in order for existing, and correctly place them relative to the addImageButton
                     reportFiles.forEach((fileOrUrl, index) => {
@@ -729,13 +739,15 @@
                     Array.from(event.target.files).forEach(file => {
                         // Client-side validation for file type
                         if (!file.type.startsWith('image/')) {
-                            window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                            window.showCustomAlert('File yang diunggah harus berupa gambar.',
+                                'error');
                             return; // Skip this file and continue to next
                         }
                         // Client-side validation for file size
                         const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                         if (file.size > maxSizeBytes) {
-                            window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                            window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.',
+                                'error');
                             return; // Skip this file and continue to next
                         }
 
@@ -744,7 +756,8 @@
                             reportFiles.push(file);
                         } else {
                             window.showCustomAlert(
-                                `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`, 'error');
+                                `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`,
+                                'error');
                             // Stop processing further files if limit is hit
                             return;
                         }
@@ -768,11 +781,14 @@
                 const reportModal = new bootstrap.Modal(reportModalElement);
 
                 // Populate report modal fields with data from the current transaction
-                document.getElementById('reportModalRequestTitle').textContent = `{{ $request->title ?? '-' }}`;
-                document.getElementById('reportModalOrderNumber').textContent = `{{ $transaction->order_number ?? '-' }}`;
+                document.getElementById('reportModalRequestTitle').textContent =
+                `{{ $request->title ?? '-' }}`;
+                document.getElementById('reportModalOrderNumber').textContent =
+                    `{{ $transaction->order_number ?? '-' }}`;
                 document.getElementById('reportModalRequesterName').textContent =
                     `{{ $request->requester->first_name ?? '' }} {{ $request->requester->last_name ?? '' }}`;
-                document.getElementById('reportModalRequestLocation').textContent = `{{ $request->location ?? '-' }}`;
+                document.getElementById('reportModalRequestLocation').textContent =
+                    `{{ $request->location ?? '-' }}`;
                 document.getElementById('reportModalTransactionCreatedAt').textContent =
                     `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
                 document.getElementById('reportModalTransactionUpdatedAt').textContent =
@@ -790,7 +806,8 @@
                 document.getElementById('reportReportedId').value = `{{ $transaction->requester->id }}`;
 
                 // Set form action for report submission
-                document.getElementById('reportForm').action = `{{ route('worker.submitReport', $transaction->id) }}`;
+                document.getElementById('reportForm').action =
+                    `{{ route('worker.submitReport', $transaction->id) }}`;
 
                 // Check if a report already exists for this transaction
                 const hasWorkerReport = `{{ $hasWorkerReport ? 'true' : 'false' }}` === 'true';
@@ -804,7 +821,8 @@
                         // Disable fields if report already exists
                         document.getElementById('reportNote').disabled = true;
                         if (reportImageInput) reportImageInput.disabled = true;
-                        if (document.getElementById('submitReportButton')) document.getElementById('submitReportButton').style.display = 'none'; // Hide submit button
+                        if (document.getElementById('submitReportButton')) document.getElementById(
+                            'submitReportButton').style.display = 'none'; // Hide submit button
                         if (addImageButton) addImageButton.style.display = 'none'; // Hide add image button
                     } catch (e) {
                         console.error('Error parsing report photo URLs:', e);
@@ -816,7 +834,8 @@
                     document.getElementById('reportNote').value = '';
                     document.getElementById('reportNote').disabled = false;
                     if (reportImageInput) reportImageInput.disabled = false;
-                    if (document.getElementById('submitReportButton')) document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
+                    if (document.getElementById('submitReportButton')) document.getElementById(
+                        'submitReportButton').style.display = 'block'; // Show submit button
                     if (addImageButton) addImageButton.style.display = 'flex'; // Show add image button
                 }
                 updateReportImagePreview(); // Render initial state (either empty or existing images)
@@ -868,7 +887,8 @@
 
                 // Prepare FormData for submission
                 const formData = new FormData();
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
+                    'content'));
                 formData.append('transaction_id', `{{ $transaction->id }}`);
                 formData.append('reviewer_id', `{{ auth()->id() }}`);
                 formData.append('reviewee_id', `{{ $transaction->requester_id }}`);
@@ -905,7 +925,8 @@
                         if (data.success) {
                             window.showCustomAlert(data.message, "success");
                             // Close the completion modal
-                            const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                            const completionModal = bootstrap.Modal.getInstance(document.getElementById(
+                                'completionModal'));
                             if (completionModal) completionModal.hide();
                             // Reload the page to reflect the new state (review submitted)
                             location.reload();
@@ -946,7 +967,8 @@
 
             // --- Function to Submit Report ---
             window.submitReport = function(event) {
-                if (event) event.preventDefault(); // Prevent default form submission if called from an event listener
+                if (event) event
+            .preventDefault(); // Prevent default form submission if called from an event listener
 
                 const form = document.getElementById('reportForm');
                 const reasons = document.getElementById('reportNote').value.trim();
@@ -985,7 +1007,8 @@
                 const formData = new FormData(); // Create new FormData object for submission
                 // Append static form fields
                 formData.append('transaction_id', document.getElementById('reportTransactionId').value);
-                formData.append('reporter_id', document.getElementById('reportForm').querySelector('input[name="reporter_id"]')
+                formData.append('reporter_id', document.getElementById('reportForm').querySelector(
+                        'input[name="reporter_id"]')
                     .value);
                 formData.append('reported_id', document.getElementById('reportReportedId').value);
                 formData.append('reasons', reasons);
@@ -1022,9 +1045,11 @@
                                     for (let key in errorData.errors) {
                                         errorMessage += `${errorData.errors[key].join(', ')}\n`;
                                     }
-                                    window.showCustomAlert('Validasi Gagal:\n' + errorMessage, 'error');
+                                    window.showCustomAlert('Validasi Gagal:\n' + errorMessage,
+                                        'error');
                                 } else {
-                                    throw new Error(errorData.message || 'Server error: ' + response.statusText);
+                                    throw new Error(errorData.message || 'Server error: ' + response
+                                        .statusText);
                                 }
                             });
                         }
@@ -1081,7 +1106,8 @@
                         updateStarDisplay(val);
                     });
                     star.addEventListener('mouseout', function() {
-                        updateStarDisplay(currentSelectedRating); // Revert to selected rating on mouseout
+                        updateStarDisplay(
+                        currentSelectedRating); // Revert to selected rating on mouseout
                     });
                     star.addEventListener('click', function() {
                         currentSelectedRating = parseInt(this.getAttribute('data-value'));
@@ -1129,11 +1155,14 @@
             if (completionModalElement) {
                 completionModalElement.addEventListener('show.bs.modal', function() {
                     // Populate the completion modal with data from Blade variables
-                    document.getElementById('modalRequestTitle').textContent = `{{ $request->title ?? '-' }}`;
-                    document.getElementById('modalOrderNumber').textContent = `{{ $transaction->order_number ?? '-' }}`;
+                    document.getElementById('modalRequestTitle').textContent =
+                        `{{ $request->title ?? '-' }}`;
+                    document.getElementById('modalOrderNumber').textContent =
+                        `{{ $transaction->order_number ?? '-' }}`;
                     document.getElementById('modalRequesterName').textContent =
                         `{{ $transaction->requester->first_name ?? '' }} {{ $transaction->requester->last_name ?? '' }}`;
-                    document.getElementById('modalRequestLocation').textContent = `{{ $request->location ?? '-' }}`;
+                    document.getElementById('modalRequestLocation').textContent =
+                        `{{ $request->location ?? '-' }}`;
                     document.getElementById('modalTransactionCreatedAt').textContent =
                         `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
                     document.getElementById('modalTransactionUpdatedAt').textContent =
@@ -1170,7 +1199,8 @@
                             reportProblemButton.disabled = false;
                             reportProblemButton.classList.remove('text-secondary');
                             reportProblemButton.classList.add('text-danger');
-                            reportProblemButton.onclick = window.openReportModal; // Re-attach click listener
+                            reportProblemButton.onclick = window
+                            .openReportModal; // Re-attach click listener
                         }
                     }
                 });

@@ -10,7 +10,16 @@
         $time = date('H:i', strtotime($start_time));
         $start = new DateTime($start_time);
         $end = new DateTime($end_time);
-        $interval = $start->diff($end);
+        $interval = $start_time->diff($end_time);
+
+        $days = $interval->d;
+        $hours = $interval->h;
+        $minutes = $interval->i;
+
+        $total_hours = $days * 24 + $hours;
+
+        // Format durasi baru
+        $duration = $total_hours . ' jam ' . $minutes . ' menit';
 
         $amount = $request->final_price;
         $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
@@ -19,7 +28,6 @@
         $alamatEncoded = urlencode($alamat);
         $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
 
-        $duration = $interval->format('%h jam %i menit');
         $created_at = $worker->created_at;
         $year = date('F Y', strtotime($created_at));
 
@@ -36,31 +44,26 @@
             </div>
             <div class="col-12 contain bg-light mt-2 px-4 py-3 rounded-4 d-flex align-items-center"
                 style="border: 1px solid #cacadd; ">
-                <div id="transaction-status-badge"
-                    class="badge px-4 py-3 rounded-pill
-                    @if ($transaction->status == 'completed') text-dark @else text-light @endif fs-6"
-                    style="background-color:
-                        @if ($transaction->status == 'submitted') #294287
-                        @elseif($transaction->status == 'cancelled') crimson
-                        @elseif($transaction->status == 'accepted') #294287
-                        @elseif($transaction->status == 'in progress') #309FFF
-                        @elseif($transaction->status == 'completed') #D3FA0D @endif;">
-                    @if ($transaction->status == 'submitted')
-                        Ditinjau
-                    @elseif($transaction->status == 'cancelled')
-                        Dibatalin
-                    @elseif($transaction->status == 'accepted')
-                        Diterima
-                    @elseif($transaction->status == 'in progress')
-                        Dikerjain
-                    @elseif($transaction->status == 'completed')
-                        Selesai
-                    @endif
-                </div>
+                @if ($transaction->status == 'submitted')
+                    <div class="badge px-4 py-3 rounded-pill bg-primary text-light fs-6" style="background-color:#294287;">
+                        Ditinjau</div>
+                @elseif($transaction->status == 'cancelled')
+                    <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:crimson;">
+                        Dibatalin</div>
+                @elseif($transaction->status == 'accepted')
+                    <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:#294287;">
+                        Diterima</div>
+                @elseif($transaction->status == 'in progress')
+                    <div class="badge px-4 py-3 rounded-5 bg-info text-light fs-6" style="background-color:#309FFF;">
+                        Dikerjain</div>
+                @elseif($transaction->status == 'completed')
+                    <div class="badge px-4 py-3 rounded-pill bg-success text-dark fs-6" style="background-color:#D3FA0D;">
+                        Selesai</div>
+                @endif
                 <h3 class="d-inline mx-3 mt-1" style="color:#294287; font-weight: 800;">{{ $request->title }}</h3>
             </div>
         </div>
-        <div class="one row align-items-stretch"> {{-- Changed h-100 to align-items-stretch --}}
+        <div class="one row">
             <div class="col-12 col-lg-3 d-flex flex-column order-0 order-lg-0">
                 <div class="two row gx-3 gy-3">
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
@@ -73,6 +76,25 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-lg-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center"
                             style="border: 1px solid #cacadd; height:100%;">
+                            <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
+                                <div class="separate d-flex align-items-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        {{-- Path untuk badan kalender --}}
+                                        <path
+                                            d="M19.5 3.75H4.5C3.80964 3.75 3.14707 4.02656 2.65165 4.52198C2.15623 5.01739 1.875 5.67996 1.875 6.375V19.5C1.875 20.1904 2.15623 20.8529 2.65165 21.3483C3.14707 21.8437 3.80964 22.125 4.5 22.125H19.5C20.1904 22.125 20.8529 21.8437 21.3483 21.3483C21.8437 20.8529 22.125 20.1904 22.125 19.5V6.375C22.125 5.67996 21.8437 5.01739 21.3483 4.52198C20.8529 4.02656 20.1904 3.75 19.5 3.75ZM15.75 1.875V5.625M8.25 1.875V5.625M1.875 9.375H22.125"
+                                            stroke="#133E87" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        {{-- Path untuk titik-titik di dalam kalender --}}
+                                        <path
+                                            d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
+                                            fill="#133E87" />
+                                    </svg>
+
+                                    <div class="p-2">Mulai</div>
+                                </div>
+                                <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
+                            </div>
                             <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                                 <div class="separate d-flex align-items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -145,177 +167,78 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
-                        @if ($transaction->status !== 'cancelled')
-                            <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
-                                style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
-                                <div class="info d-flex flex-column">
-                                    @if ($transaction->status == 'accepted')
-                                        <div class="d-flex">
-                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
-                                                <svg width="16" height="111" viewBox="0 0 16 111" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <circle cx="8" cy="8" r="8" fill="#294287" />
-                                                    <circle cx="8" cy="103" r="8" fill="#D9D9D9" />
-                                                    <circle cx="8" cy="56" r="8" fill="#D9D9D9" />
-                                                    <path d="M7.99989 16L8 95" stroke="#D9D9D9" stroke-width="2" />
-                                                </svg>
-                                            </div>
-                                            <div class="column">
-                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
-                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
-                                            </div>
-                                        </div>
-                                    @elseif($transaction->status == 'in progress')
-                                        <div class="d-flex">
-                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
-                                                <path d="M8 64L8 95" stroke="#D9D9D9" stroke-width="2" />
-                                                <path d="M8 16L8 48" stroke="url(#paint0_linear_0_1)"
-                                                    stroke-width="2" />
-                                                <circle cx="8" cy="8" r="8" fill="#294287" />
-                                                <circle cx="8" cy="103" r="8" fill="#D9D9D9" />
-                                                <circle cx="8" cy="56" r="8" fill="#309FFF" />
-                                                <defs>
-                                                    <linearGradient id="paint0_linear_0_1" x1="8"
-                                                        y1="48" x2="8" y2="16"
-                                                        gradientUnits="userSpaceOnUse">
-                                                        <stop stop-color="#309FFF" />
-                                                        <stop offset="1" stop-color="#294287" />
-                                                    </linearGradient>
-                                                </defs>
-                                                </svg>
-                                            </div>
-                                            <div class="column">
-                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
-                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
-                                            </div>
-                                        </div>
-                                    @elseif($transaction->status == 'completed')
-                                        <div class="d-flex">
-                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
-                                                <svg width="16" height="111" viewBox="0 0 16 111" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8 64L8 95" stroke="url(#paint0_linear_0_1)"
-                                                        stroke-width="2" />
-                                                    <path d="M8 16L8 48" stroke="url(#paint1_linear_0_1)"
-                                                        stroke-width="2" />
-                                                    <circle cx="8" cy="8" r="8" fill="#294287" />
-                                                    <circle cx="8" cy="103" r="8" fill="#D3FA0D" />
-                                                    <circle cx="8" cy="56" r="8" fill="#309FFF" />
-                                                    <defs>
-                                                        <linearGradient id="paint0_linear_0_1" x1="8"
-                                                            y1="95" x2="8" y2="64"
-                                                            gradientUnits="userSpaceOnUse">
-                                                            <stop stop-color="#D3FA0D" />
-                                                            <stop offset="1" stop-color="#309FFF" />
-                                                        </linearGradient>
-                                                        <linearGradient id="paint1_linear_0_1" x1="8"
-                                                            y1="48" x2="8" y2="16"
-                                                            gradientUnits="userSpaceOnUse">
-                                                            <stop stop-color="#309FFF" />
-                                                            <stop offset="1" stop-color="#294287" />
-                                                        </linearGradient>
-                                                    </defs>
-                                                </svg>
-                                            </div>
-                                            <div class="column">
-                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
-                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
-                                            </div>
-                                        </div>
-                                    @elseif($transaction->status == 'submitted')
-                                        <div class="d-flex">
-                                            <div class="svg align-items-center d-flex py-2 px-1 ms-2">
-                                                <svg width="16" height="111" viewBox="0 0 16 111" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M8 64L8 95" stroke="url(#paint0_linear_1857_7195)"
-                                                        stroke-width="2" />
-                                                    <path d="M8 16L8 48" stroke="url(#paint1_linear_1857_7195)"
-                                                        stroke-width="2" />
-                                                    <circle cx="8" cy="8" r="8" fill="#294287" />
-                                                    <circle cx="8" cy="103" r="8" fill="#294287" />
-                                                    <circle cx="8" cy="56" r="8" fill="#309FFF" />
-                                                    <defs>
-                                                        <linearGradient id="paint0_linear_1857_7195" x1="8"
-                                                            y1="95" x2="8" y2="64"
-                                                            gradientUnits="userSpaceOnUse">
-                                                            <stop stop-color="#294287" />
-                                                            <stop offset="1" stop-color="#309FFF" />
-                                                        </linearGradient>
-                                                        <linearGradient id="paint1_linear_1857_7195" x1="8"
-                                                            y1="48" x2="8" y2="16"
-                                                            gradientUnits="userSpaceOnUse">
-                                                            <stop stop-color="#309FFF" />
-                                                            <stop offset="1" stop-color="#294287" />
-                                                        </linearGradient>
-                                                    </defs>
-                                                </svg>
+                        <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
+                            style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
+                            <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}"
+                                style="width: 50%; max-height: 150px; object-fit: cover;" class="me-3 py-2">
+                            <div class="info d-flex flex-column">
+                                <div id="name" class="fw-bold">{{ $worker->first_name . ' ' . $worker->last_name }}
+                                </div>
+                                <div id="rating" class="d-flex">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M8.99008 2.67508C9.36342 1.77758 10.6368 1.77758 11.0101 2.67508L12.7451 6.84675L17.2484 7.20841C18.2184 7.28591 18.6118 8.49591 17.8726 9.12924L14.4418 12.0684L15.4893 16.4626C15.7151 17.4092 14.6859 18.1567 13.8559 17.6501L10.0001 15.2951L6.14425 17.6501C5.31425 18.1567 4.28508 17.4084 4.51092 16.4626L5.55842 12.0684L2.12758 9.12924C1.38842 8.49591 1.78175 7.28591 2.75175 7.20841L7.25508 6.84675L8.99008 2.67508Z"
+                                            fill="#FFDD00" />
+                                    </svg>
 
-                                            </div>
-                                            <div class="column">
-                                                <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
-                                                <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Ditinjau</div>
-                                            </div>
-                                        </div>
-                                    @endif
+                                    <div class="rate fw-semibold">{{ $worker->rating }}</div>
+                                    <div class="banyak">
+                                        ({{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }})
+                                    </div>
+                                </div>
+                                <div id="join">
+                                    <p style="font-size: 9px;">Bergabung dengan Kerjain sejak
+                                        <span>{{ $year }}</span>
+                                    </p>
                                 </div>
                             </div>
-                        @endif
+                        </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-lg-2">
                         @if ($transaction->status !== 'cancelled')
                             <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center"
                                 style="border: 1px solid #cacadd; height:100%;">
 
-                                @if ($transaction->status === 'accepted')
-                                    {{-- Tombol Mulai Kerja --}}
-                                    <form id="start-work-form" action="{{ route('worker.startWork', $transaction->id) }}"
-                                        method="POST">
-                                        @csrf
-                                        <button type="submit" id="start-work-button"
-                                            class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
-                                            style="background-color:#294287;">
-                                            Mulai Kerja
-                                        </button>
-                                    </form>
-                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja
+                                @if ($transaction->status == 'submitted')
+                                    <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
+                                        data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
+                                        style="background-color:#294287; width:88%;">
+                                        Tandai Selesai
                                     </button>
-                                @elseif($transaction->status === 'completed')
-                                    {{-- Tombol Sudah Dikerjakan --}}
+                                @endif
+
+                                @if ($transaction->status == 'completed')
                                     <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                         style="width:88%;cursor: not-allowed;pointer-events: none;">
                                         Selesai
                                     </a>
-                                @elseif($transaction->status === 'submitted')
-                                    <a class="text-decoration-none px-4 py-2 rounded-5 text-light fs-4 fw-bold"
-                                        style="background-color:#294287;">
-                                        Ditinjau
-                                    </a>
-                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#completionModal">Berikan Penilaian
-                                    </button>
-                                @elseif($transaction->status === 'in progress')
-                                    {{-- Tombol untuk buka modal --}}
-                                    <button class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
-                                        style="background-color:#309FFF;" data-bs-toggle="modal"
-                                        data-bs-target="#completionProofModal">
-                                        Selesai Kerja
-                                    </button>
-                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">Batalkan Kerja
-                                    </div>
                                 @endif
+
+                                {{-- Lihat Bukti Penyelesaian --}}
+                                @if ($transaction->status == 'in progress')
+                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
+                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                                        style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
+                                        Lihat Bukti Penyelesaian
+                                    </a>
+                                @elseif($transaction->status == 'submitted' || $transaction->status == 'completed')
+                                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                                        data-bs-toggle="modal" data-bs-target="#completionProofModal"
+                                        style="color: #0d6efd; text-decoration: none;">
+                                        Lihat Bukti Penyelesaian
+                                    </a>
+                                @endif
+
+                                {{-- Batalkan --}}
+                                @if ($transaction->status == 'accepted')
+                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
+                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                    <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
+                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                                @endif
+
                             </div>
                         @endif
                     </div>
@@ -492,8 +415,16 @@
                             <h6 class="fw-bold">Lampiran Bukti Pekerjaan</h6>
                             <div class="rounded-3 my-2 p-2 d-flex justify-content-center align-items-center"
                                 style="border: 1px solid #8a8a8a; height: 40vh; background-color: #f9f9f9; overflow: hidden;">
-                                @if (!empty($completionProof) && $completionProof->photo_url)
-                                    <img src="{{ $completionProof->photo_url }}" alt="Bukti Foto"
+                                @php
+                                    // Decode string JSON menjadi array
+                                    $photoUrls = !empty($completionProof)
+                                        ? json_decode($completionProof->photo_url, true)
+                                        : [];
+                                @endphp
+
+                                @if (!empty($photoUrls) && isset($photoUrls[0]))
+                                    {{-- Ambil URL gambar pertama dari array --}}
+                                    <img src="{{ $photoUrls[0] }}" alt="Bukti Foto"
                                         class="img-fluid h-100 w-100 rounded" style="object-fit: cover;">
                                 @else
                                     <div
@@ -566,7 +497,7 @@
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
                         Kembali
-                        </button>
+                    </button>
                     <button type="submit" class="btn btn-danger rounded-4 flex-fill p-3 fw-semibold">
                         Ya, Tetap Batalin
                     </button>
@@ -810,7 +741,7 @@
             document.getElementById('reportModalRequesterName').textContent =
                 `{{ $transaction->worker->first_name ?? '' }} {{ $transaction->worker->last_name ?? '' }}`; // Worker is reported for requester
             document.getElementById('reportModalRequestLocation').textContent =
-            `{{ $request->location ?? '-' }}`; // Keep current location display logic
+                `{{ $request->location ?? '-' }}`; // Keep current location display logic
 
             document.getElementById('reportModalTransactionCreatedAt').textContent =
                 `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
@@ -830,7 +761,7 @@
 
             // Set form action for report submission
             document.getElementById('reportForm').action =
-            `{{ route('user.submitReport', $transaction->id) }}`; // Correct route for requester reporting
+                `{{ route('user.submitReport', $transaction->id) }}`; // Correct route for requester reporting
 
             // Check if a report already exists for this transaction
             const hasUserReport = `{{ $hasUserReport ? 'true' : 'false' }}` === 'true';
@@ -1170,6 +1101,77 @@
             }
             // Re-attach event listeners for newly created elements
             attachEventListeners();
+        }
+
+        function renderReviewForm() {
+            reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+            const reviewSectionContainer = document.getElementById('review-section-container');
+            if (!reviewSectionContainer) return;
+
+            reviewSectionContainer.innerHTML = `
+                    <div class="text-center mt-0 mb-3 w-100">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
+                        @endfor
+                        <input type="hidden" name="rating" id="rating-input" value="0">
+                    </div>
+                    <div class="ps-3 flex-fill d-flex flex-column w-100">
+                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="3"
+                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; resize: none;"></textarea>
+                    </div>
+                `;
+            const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
+            const newRatingInput = document.getElementById('rating-input');
+            let currentSelectedRating = 0; // Local state for new review form interaction
+
+            newStars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const val = parseInt(this.getAttribute('data-value'));
+                    updateStarDisplay(val);
+                });
+                star.addEventListener('mouseout', function() {
+                    updateStarDisplay(
+                        currentSelectedRating); // Revert to selected rating on mouseout
+                });
+                star.addEventListener('click', function() {
+                    currentSelectedRating = parseInt(this.getAttribute('data-value'));
+                    if (newRatingInput) newRatingInput.value = currentSelectedRating;
+                    updateStarDisplay(currentSelectedRating);
+                });
+            });
+            const submitReviewButton = document.getElementById('submitReviewButton');
+            if (submitReviewButton) {
+                submitReviewButton.style.display = 'block';
+            }
+        }
+
+        // Function to render the existing review display
+        function renderExistingReview(rating, comment) {
+            reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+            const reviewSectionContainer = document.getElementById('review-section-container');
+            if (!reviewSectionContainer) return;
+
+            let starHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starHtml +=
+                    `<i class="bi bi-star-fill fs-2 ${i <= rating ? 'star-blue' : 'text-secondary'} star-animate"></i>`;
+            }
+
+            reviewSectionContainer.innerHTML = `
+                    <div class="text-center mt-0 mb-3 w-100">
+                        ${starHtml}
+                    </div>
+                    <div class="ps-3 flex-fill d-flex flex-column w-100">
+                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <textarea id="comment" class="form-control" rows="3" disabled
+                            style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
+                    </div>
+                `;
+            const submitReviewButton = document.getElementById('submitReviewButton');
+            if (submitReviewButton) {
+                submitReviewButton.style.display = 'none';
+            }
         }
 
         // Function to update the report button state (text and disability)
