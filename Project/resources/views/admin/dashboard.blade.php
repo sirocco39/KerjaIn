@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <h1 class="mb-4">Dashboard Admin</h1>
+    <h1 class="mb-4">{{ __('dashboard.dasbor') }}</h1>
 
     {{-- Alert Messages (tetap) --}}
     @if (session('success'))

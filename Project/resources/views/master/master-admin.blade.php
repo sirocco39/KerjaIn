@@ -71,11 +71,15 @@
                         <span class="nav-link-text ms-1">Notifikasi</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.settings') }}" id="settings-link">
-                        <i class="material-symbols-rounded opacity-5">settings</i>
-                        <span class="nav-link-text ms-1">Settings</span>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-dark" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="material-symbols-rounded opacity-5">language</i>
+                        <span class="nav-link-text ms-1">Language</span>
                     </a>
+                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'id') }}">Bahasa Indonesia</a></li>
+                        <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">English</a></li>
+                    </ul>
                 </li>
             </ul>
         </div>

@@ -8,7 +8,7 @@
             <div class="row">
                 {{-- Total Pengguna --}}
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.all') }}" class="card-link" id="totalPengguna">  {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.all') }}" class="card-link" id="totalPengguna"> {{-- Tambah link ini --}}
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
@@ -124,7 +124,7 @@
                 </div>
                 <div class="card-body p-3">
                     @if($searchQuery && $searchedUser)
-                    <div class="alert alert-success d-flex align-items-center mb-3" role="alert"  style="color:white">
+                    <div class="alert alert-success d-flex align-items-center mb-3" role="alert" style="color:white">
                         <i class="material-symbols-rounded me-2">check_circle</i>
                         <div>
                             Pengguna <strong>{{ $searchedUser->first_name }} {{ $searchedUser->last_name }}</strong> ditemukan.
@@ -161,7 +161,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if($searchedUser)
+                                @if($activityLogs)
                                 @forelse($activityLogs as $log)
                                 <tr>
                                     <td class="align-middle">
@@ -194,7 +194,7 @@
                         </table>
                     </div>
                     <div class="mt-4">
-                        @if($searchedUser)
+                        @if($activityLogs)
                         {{ $activityLogs->links() }}
                         @endif
                     </div>
