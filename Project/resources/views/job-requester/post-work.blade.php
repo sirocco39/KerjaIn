@@ -4,28 +4,28 @@
     <div class="container-fluid pembatas-x pembatas-y">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h2 class="fw-bold mb-2">Buat tawaran kerja</h2>
-                <p class="mb-4">Yuk, mulai! Isi detail pekerjaan agar mitra kami bisa segera membantumu.</p>
+                <h2 class="fw-bold mb-2">{{ __('post-work.judul_halaman') }}</h2>
+                <p class="mb-4">{{ __('post-work.deskripsi_halaman') }}</p>
 
                 <form action="{{ route('request.store') }}" method="post" id="create-work-form">
                     @csrf
                     {{-- Judul, Detail, Alamat (Tidak ada perubahan) --}}
                     <div class="mb-3">
-                        <label for="work-title-text" class="form-label fw-semibold">Judul Pekerjaan</label>
+                        <label for="work-title-text" class="form-label fw-semibold">{{ __('post-work.label_judul') }}</label>
                         <input type="text" class="form-control rounded-3" id="work-title-text" name="workTitleLabel"
-                            placeholder="Contoh: Masangin AC Ruang Tamu" value="{{ old('workTitleLabel') }}">
+                            placeholder="{{ __('post-work.placeholder_judul') }}" value="{{ old('workTitleLabel') }}">
                         <div class="text-danger small mt-1" id="workTitleLabel-error"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="work-detail-text" class="form-label fw-semibold">Detail Pekerjaan</label>
+                        <label for="work-detail-text" class="form-label fw-semibold">{{ __('post-work.label_detail') }}</label>
                         <textarea class="form-control rounded-3" id="work-detail-text" rows="3" name="workDetailLabel"
-                            placeholder="Contoh: Pasang AC 1 PK di ruang tamu bagian atas korden" style="background-color: #f7f7ff; resize: none;">{{ old('workDetailLabel') }}</textarea>
+                            placeholder="{{ __('post-work.placeholder_detail') }}" style="background-color: #f7f7ff; resize: none;">{{ old('workDetailLabel') }}</textarea>
                         <div class="text-danger small mt-1" id="workDetailLabel-error"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="work-address-text" class="form-label fw-semibold">Alamat</label>
+                        <label for="work-address-text" class="form-label fw-semibold">{{ __('post-work.label_alamat') }}</label>
                         <input type="text" class="form-control rounded-3" id="work-address-text" name="workAddressLabel"
-                            placeholder="Contoh: Jalan Pakuan No3, Sentul" value="{{ old('workAddressLabel') }}">
+                            placeholder="{{ __('post-work.placeholder_alamat') }}" value="{{ old('workAddressLabel') }}">
                         <div class="text-danger small mt-1" id="workAddressLabel-error"></div>
                     </div>
 
@@ -34,7 +34,7 @@
                     {{-- ========================================================== --}}
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Waktu mulai pekerjaan</label>
+                            <label class="form-label fw-semibold">{{ __('post-work.label_waktu_mulai') }}</label>
                             <div class="d-flex gap-2">
                                 <div class="flex-fill">
                                     <input type="date" class="form-control rounded-3" name="workStartDateLabel"
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mt-3 mt-md-0">
-                            <label class="form-label fw-semibold">Waktu selesai pekerjaan</label>
+                            <label class="form-label fw-semibold">{{ __('post-work.label_waktu_selesai') }}</label>
                             <div class="d-flex gap-2">
                                 <div class="flex-fill">
                                     <input type="date" class="form-control rounded-3" name="workEndDateLabel"
@@ -74,17 +74,16 @@
 
                     {{-- Harga --}}
                     <div class="mb-4">
-                        <label for="work-price-text" class="form-label fw-semibold">Upah</label>
+                        <label for="work-price-text" class="form-label fw-semibold">{{ __('post-work.label_upah') }}</label>
                         <div class="input-group">
                             <span class="input-group-text rounded-start-3">Rp</span>
                             <input type="number" class="form-control rounded-end-3" min="5000" id="work-price-text"
-                                name="workPriceLabel" placeholder="Contoh: 150.000" value="{{ old('workPriceLabel') }}">
+                                name="workPriceLabel" placeholder="{{ __('post-work.placeholder_upah') }}" value="{{ old('workPriceLabel') }}">
                         </div>
                         <div class="text-danger small mt-1" id="workPriceLabel-error"></div>
                     </div>
 
-                    <button type="button" id="show-confirmation-button" class="btn btn-primary px-4 py-2 rounded-3">Buat
-                        Tawaran Kerja</button>
+                    <button type="button" id="show-confirmation-button" class="btn btn-primary px-4 py-2 rounded-3">{{ __('post-work.tombol_buat_tawaran') }}</button>
                 </form>
             </div>
             <div class="col-lg-6 text-center mt-5 mt-lg-0">
@@ -99,40 +98,38 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="confirmationModalLabel">Konfirmasi Pembuatan Pekerjaan</h5>
+                    <h5 class="modal-title fw-bold" id="confirmationModalLabel">{{ __('post-work.modal.judul') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Dana akan ditahan (escrow) dari saldo Anda untuk menjamin pembayaran kepada mitra. Dana hanya akan
-                        dilepaskan setelah pekerjaan selesai.</p>
+                    <p>{{ __('post-work.modal.deskripsi_escrow') }}</p>
 
                     <div class="mb-2 d-flex justify-content-between">
-                        <span>Upah tawaran kerja:</span>
+                        <span>{{ __('post-work.modal.upah_tawaran') }}</span>
                         <span class="fw-bold" id="modal-job-cost">Rp0</span>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <span>Biaya layanan aplikasi:</span>
+                        <span>{{ __('post-work.modal.biaya_layanan') }}</span>
                         <span class="fw-bold">Rp 2500</span>
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <span>Total yang harus dibayar:</span>
+                        <span>{{ __('post-work.modal.total_bayar') }}</span>
                         <span class="fw-bold" id="modal-total-cost">Rp0</span>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span>Saldo Anda saat ini:</span>
+                        <span>{{ __('post-work.modal.saldo_anda') }}</span>
                         <span class="fw-bold" id="modal-user-balance">Rp0</span>
                     </div>
 
                     <div id="modal-warning-message" class="alert alert-danger mt-3" style="display: none;">
-                        Saldo Anda tidak cukup. Silakan isi saldo terlebih dahulu.
+                        {{ __('post-work.modal.peringatan_saldo_kurang') }}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal">{{ __('post-work.modal.tombol_batal') }}</button>
                     <a href="{{ route('top-up.job-req') }}" id="modal-topup-button" class="btn btn-success"
-                        style="display: none;">Isi Saldo</a>
-                    <button type="button" id="modal-confirm-button" class="btn btn-primary">Ya, Konfirmasi & Tahan
-                        Dana</button>
+                        style="display: none;">{{ __('post-work.modal.tombol_isi_saldo') }}</a>
+                    <button type="button" id="modal-confirm-button" class="btn btn-primary">{{ __('post-work.modal.tombol_konfirmasi') }}</button>
                 </div>
             </div>
         </div>
