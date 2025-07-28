@@ -50,7 +50,8 @@ use App\Http\Controllers\ProfileController;
 Route::get('/profile', function () {
     return view('job-requester.profile');
 })->middleware('auth')->name('profile');
-
+Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
+Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
 
 // =======================

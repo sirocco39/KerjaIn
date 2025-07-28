@@ -36,6 +36,7 @@
               <div class="card-header">
                 <h3 class="card-title">About Me</h3>
               </div>
+
                 <!-- /.card-header -->
                 <div class="card-body">
                         <li style="list-style: none;">
@@ -75,7 +76,7 @@
                             <span class="ms-auto fw-bold">
                                 {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
                                 {{-- Fungsi number_format untuk format Rupiah --}}
-                                Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                Rp{{ number_format(auth()->user()->locked_balance, 0, ',', '.') }}
                             </span>
                         </a>
                     </li>
@@ -89,17 +90,17 @@
           <div class="col-md-9">
             <div class="card card-primary card-outline">
                 <div class="tab-pane" id="settings" style="padding: 20px;">
-                    <h3 class="profile-username">Nama</h3>
+                    <h3 class="profile-username">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</h3>
 
                     <ul class="list-group list-group-unbordered mb-3">
                         <li class="list-group-item">
                             <b>Tempat/Tanggal Lahir</b> <a class="float-right">1,322</a>
                         </li>
                         <li class="list-group-item">
-                            <b>Email</b> <a class="float-right">543</a>
+                            <b>Email</b> <a class="float-right">{{auth()->user()->email}}</a>
                         </li>
                         <li class="list-group-item">
-                            <b>No Handphone</b> <a class="float-right">13,287</a>
+                            <b>No Handphone</b> <a class="float-right">{{auth()->user()->phone_number}}</a>
                         </li>
                     </ul>
 
@@ -107,11 +108,20 @@
 
                     <!-- FORM EDIT -->
                     <div id="formEdit" style="display: none; margin-top: 20px;">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" method="POST" action="{{ route('profile.update') }}">
+                            @csrf
+                            @method('PUT')
                             <div class="form-group row">
-                                <label for="inputName" class="col-sm-2 col-form-label">Nama</label>
+                                <label for="inputName" class="col-sm-2 col-form-label">Nama Depan</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputName" placeholder="Name">
+                                    <input type="text" class="form-control" id="inputName" placeholder="Name Depan" name="first_name" value="{{ old('first_name', auth()->user()->first_name) }}">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="inputTTL" class="col-sm-2 col-form-label">Nama Belakang</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputTTL" placeholder="Nama Belakang" name="last_name" value="{{ old('last_name', auth()->user()->last_name) }}">
                                 </div>
                             </div>
 
@@ -125,14 +135,14 @@
                             <div class="form-group row">
                                 <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                                 <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                                    <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="email" value="{{ auth()->user()->email }}">
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="inputPhone" class="col-sm-2 col-form-label">No Handphone</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputPhone" placeholder="No Handphone">
+                                    <input type="text" class="form-control" id="inputPhone" placeholder="No Handphone" name="phone_number" value="{{ auth()->user()->phone_number }}">
                                 </div>
                             </div>
 
