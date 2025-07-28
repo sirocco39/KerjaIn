@@ -14,7 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -194,7 +194,6 @@
         {{-- <source src="{{ asset('audio/kerjain_soundtrack.ogg') }}" type="audio/ogg"> --}}
         Your browser does not support the audio element.
     </audio>
-    <!-- Custom Alert Container (Non-Modal) -->
     <div id="custom-alert-container">
         <div id="custom-alert">
             <span id="custom-alert-message"></span>
@@ -494,14 +493,14 @@
                     @csrf
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                         <label for="email-login" class="form-label">Email</label>
-                        <input id="email-login" class="form-control is-invalid" type="email" name="email"
+                        <input id="email-login" class="form-control" type="email" name="email"
                             autocomplete="new-email" required>
                         <div id="Loginemail-error" class="popup-error-card d-none"></div>
                     </div>
 
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                         <label for="password-login" class="form-label">Kata Sandi</label>
-                        <input id="password-login" class="form-control is-invalid" type="password" name="password"
+                        <input id="password-login" class="form-control" type="password" name="password"
                             autocomplete="new-password" required>
                         <div id="Loginpassword-error" class="popup-error-card d-none"></div>
                     </div>
@@ -552,22 +551,22 @@
                         <div class="col-md-6 mb-4">
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="first_name">Nama Depan</label>
-                                <input type="text" id="first_name" class="form-control is-invalid"
-                                    name="first_name" required />
+                                <input type="text" id="first_name" class="form-control" name="first_name"
+                                    required />
                                 <div id="first_name-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="last_name">Nama Belakang</label>
-                                <input type="text" id="last_name" class="form-control is-invalid"
-                                    name="last_name" required />
+                                <input type="text" id="last_name" class="form-control" name="last_name"
+                                    required />
                                 <div id="last_name-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label for="email-register" class="form-label">Email</label>
-                                <input id="email-register" class="form-control is-invalid" type="email"
-                                    name="email" autocomplete="new-email" required>
+                                <input id="email-register" class="form-control" type="email" name="email"
+                                    autocomplete="new-email" required>
                                 <div id="email-error" class="popup-error-card d-none"></div>
                             </div>
                         </div>
@@ -575,14 +574,14 @@
                         <div class="col-md-6 mb-4">
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="password">Kata Sandi</label>
-                                <input id="password" class="form-control is-invalid" type="password"
-                                    name="password" required />
+                                <input id="password" class="form-control" type="password" name="password"
+                                    required />
                                 <div id="password-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="password_confirmation">Konfirmasi Kata Sandi</label>
-                                <input class="form-control is-invalid" id="password_confirmation" type="password"
+                                <input class="form-control" id="password_confirmation" type="password"
                                     name="password_confirmation" required />
                                 <div id="confirm_password-error" class="popup-error-card d-none"></div>
                             </div>
@@ -590,8 +589,8 @@
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
                                 <label class="form-label" for="otp">Kode OTP</label>
                                 <div class="d-flex align-items-center gap-2 otp-container">
-                                    <input id="otp" class="form-control is-invalid" type="text"
-                                        name="otp" maxlength="6" placeholder="Masukkan Kode OTP" required />
+                                    <input id="otp" class="form-control" type="text" name="otp"
+                                        maxlength="6" placeholder="Masukkan Kode OTP" required />
                                     <button type="button" id="send-otp-button"
                                         class="btn btn-primary send-otp-button"
                                         onmouseover="this.style.backgroundColor='#D3FA0D'; this.style.color='#000000';"
@@ -685,19 +684,17 @@
             }
         };
 
-        // Modified validateInput: Now it ONLY handles the 'is-invalid' class.
-        // Error message visibility will be handled by blur/focus directly.
+        // Modified validateInput: Now it ONLY handles the 'is-invalid' class and error text.
+        // It returns true if valid, false if invalid.
         function validateInput(inputElement, errorDiv, validationLogic) {
             const errors = validationLogic(inputElement.value.trim());
             if (errors.length > 0) {
                 errorDiv.innerHTML = `<ul class="mb-0">${errors.map(err => `<li>${err}</li>`).join('')}</ul>`;
-                // errorDiv.classList.remove('d-none'); // Removed: Handled by focus
-                inputElement.classList.add('is-invalid');
+                inputElement.classList.add('is-invalid'); // Add red border
                 return false;
             } else {
                 errorDiv.innerHTML = '';
-                errorDiv.classList.add('d-none'); // Keep hidden if no errors
-                inputElement.classList.remove('is-invalid');
+                inputElement.classList.remove('is-invalid'); // Remove red border
                 return true;
             }
         }
@@ -767,22 +764,23 @@
         // Function to set up common blur/focus/input listeners
         function setupValidationListeners(inputElement, errorDiv, validationLogic) {
             inputElement.addEventListener('blur', function() {
-                validateInput(inputElement, errorDiv,
-                    validationLogic); // Re-validate to ensure red border if still invalid
-                errorDiv.classList.add('d-none'); // ALWAYS hide error text on blur
+                // Validate on blur. If invalid, keep red border. Always hide text on blur.
+                validateInput(inputElement, errorDiv, validationLogic);
+                errorDiv.classList.add('d-none');
             });
 
             inputElement.addEventListener('focus', function() {
-                // Re-validate on focus to ensure the error text is up-to-date
-                validateInput(inputElement, errorDiv, validationLogic);
-                if (inputElement.classList.contains('is-invalid')) {
-                    errorDiv.classList.remove('d-none'); // Show error text if invalid
+                // Validate on focus. If invalid, show error text.
+                const isValid = validateInput(inputElement, errorDiv, validationLogic);
+                if (!isValid) {
+                    errorDiv.classList.remove('d-none');
                 }
             });
 
             inputElement.addEventListener('input', function() {
-                validateInput(inputElement, errorDiv, validationLogic); // Live validation
-                if (inputElement.classList.contains('is-invalid')) {
+                // Live validation. If invalid, show error text. If valid, hide error text.
+                const isValid = validateInput(inputElement, errorDiv, validationLogic);
+                if (!isValid) {
                     errorDiv.classList.remove('d-none'); // Keep error text visible while typing if invalid
                 } else {
                     errorDiv.classList.add('d-none'); // Hide error text if it becomes valid while typing
@@ -793,9 +791,9 @@
         // --- Apply listeners to Login Form Inputs ---
         setupValidationListeners(loginEmailInput, loginEmailErrorDiv, (value) => {
             const errors = [];
-            if (value === '') {
+            if (value.trim() === '') { // Use trim() for consistency
                 errors.push('Email harus diisi.');
-            } else if (!emailRegex.test(value)) {
+            } else if (!emailRegex.test(value.trim())) {
                 errors.push('Silakan masukkan alamat email yang valid.');
             }
             return errors;
@@ -847,7 +845,15 @@
 
             // Special handling for passwordInput's input event to re-validate confirmPasswordInput
             passwordInput.addEventListener('input', function() {
+                // First, validate the password input itself
                 validateInput(passwordInput, passwordErrorDiv, validatePasswordStrength);
+                if (passwordInput.classList.contains('is-invalid')) {
+                    passwordErrorDiv.classList.remove('d-none');
+                } else {
+                    passwordErrorDiv.classList.add('d-none');
+                }
+
+                // Then, re-validate confirm password if it has a value, to reflect password changes
                 if (confirmPasswordInput.value.trim() !== '') {
                     validateInput(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
                     if (confirmPasswordInput.classList.contains('is-invalid') && document.activeElement ===
@@ -857,11 +863,6 @@
                     } else {
                         confirmPasswordErrorDiv.classList.add('d-none'); // Hide if not focused
                     }
-                }
-                if (passwordInput.classList.contains('is-invalid')) {
-                    passwordErrorDiv.classList.remove('d-none');
-                } else {
-                    passwordErrorDiv.classList.add('d-none');
                 }
             });
 
@@ -1067,6 +1068,53 @@
                 }, 300);
             };
         }
+
+        // ***** NEW / MODIFIED CODE BELOW *****
+
+        // Function to reset a single input field's state
+        function resetInputField(inputElement, errorDiv) {
+            inputElement.value = ''; // Clear input value
+            inputElement.classList.remove('is-invalid'); // Remove red border
+            errorDiv.innerHTML = ''; // Clear error message text
+            errorDiv.classList.add('d-none'); // Hide error message div
+        }
+
+        // Get modal elements
+        const loginModalElement = document.getElementById('loginModal');
+        const registerModalElement = document.getElementById('logoutModal'); // Still referring to this as logoutModal, but it's register
+
+        // Add event listener for Login Modal close
+        loginModalElement.addEventListener('hidden.bs.modal', function() {
+            resetInputField(loginEmailInput, loginEmailErrorDiv);
+            resetInputField(loginPasswordInput, loginPasswordErrorDiv);
+            rememberMeCheckbox.checked = false; // Uncheck "Remember Me"
+            loginForm.reset(); // Also good practice to reset the form itself
+        });
+
+        // Add event listener for Register Modal close
+        registerModalElement.addEventListener('hidden.bs.modal', function() {
+            resetInputField(firstNameInput, firstNameErrorDiv);
+            resetInputField(lastNameInput, lastNameErrorDiv);
+            resetInputField(emailInput, emailErrorDiv);
+            resetInputField(passwordInput, passwordErrorDiv);
+            resetInputField(confirmPasswordInput, confirmPasswordErrorDiv);
+            resetInputField(otpInput, otpErrorDiv);
+
+            // Also reset OTP message and button state if countdown is active
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            sendButton.disabled = false;
+            sendButton.textContent = 'Kirim OTP';
+            otpMessage.classList.add('hidden'); // Ensure OTP success/error message is hidden
+            otpMessage.textContent = ''; // Clear OTP message text
+
+            registerForm.reset(); // Reset the form itself
+        });
+
+
+        // ***** END NEW / MODIFIED CODE *****
     </script>
 
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
@@ -1096,25 +1144,29 @@
 
         // --- SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
         document.addEventListener('DOMContentLoaded', function() {
-            const logoLink = document.getElementById('dropdownLang');
+            // CORRECTED: changed logoLink to logoNavbarLink
+            const logoLink = document.getElementById('logoNavbarLink'); // Corrected ID
             const logoSoundtrack = document.getElementById('logoSoundtrack');
 
             if (logoLink && logoSoundtrack) {
                 logoLink.addEventListener('click', function(event) {
-                    // Mencegah redirect default langsung terjadi
-                    // Kita akan melakukan redirect secara manual setelah audio ditangani
+                    // If you want to prevent the default navigation immediately, uncomment this line:
+                    // event.preventDefault();
 
                     if (logoSoundtrack.paused) {
                         logoSoundtrack.play().catch(e => {
                             console.error("Autoplay diblokir atau error saat memutar:", e);
-                            // Jika autoplay diblokir, tetap lanjutkan ke href
-                            window.location.href = logoLink.href;
+                            // If autoplay is blocked, still navigate to the link
+                            // window.location.href = logoLink.href; // Only if you prevented default above
                         });
                     } else {
                         logoSoundtrack.pause();
-                        logoSoundtrack.currentTime = 0; // Reset ke awal
+                        logoSoundtrack.currentTime = 0; // Reset to start
                     }
 
+                    // If you prevented default, you might want to navigate after a short delay
+                    // to allow sound to start, or not at all depending on UX.
+                    // For now, it will navigate as normal if event.preventDefault() is commented out.
                 });
             }
         });
