@@ -52,6 +52,7 @@ Route::get('/profile', function () {
 })->middleware('auth')->name('profile');
 Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
 Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
 
 
 // =======================

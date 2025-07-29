@@ -294,7 +294,13 @@
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
+                            <img 
+                                src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                alt="Profil" 
+                                id="profileIcon"
+                                onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                            />
                             <span class="d-lg-none">Profil</span>
                         </a>
 
@@ -315,23 +321,34 @@
                                 @if(auth()->user()->is_worker)
                                     {{-- Jika sudah menjadi worker, tampilkan profil tapi tidak bisa diklik --}}
                                     <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
-                                        <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : asset('Image/Icon/default-profile.png') }}"
-                                            alt="Foto Profil" class="navIcon rounded-circle" width="24" height="24">
-                                        <span>{{ auth()->user()->name }}</span>
+                                        <img 
+                                            src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                            alt="Profil" 
+                                            id="profileIcon"
+                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                                        />
+                                        <span>{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</span>
                                     </div>
                                 @else
                                     {{-- Jika user biasa, bisa diklik dan diarahkan ke halaman profile --}}
+                                
                                     <a href="{{ route('profile') }}" class="dropdown-item d-flex align-items-center gap-2">
-                                        <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : asset('Image/Icon/default-profile.png') }}"
-                                            alt="Foto Profil" class="navIcon rounded-circle" width="24" height="24">
-                                        <span>{{ auth()->user()->name }}</span>
+                                        <img 
+                                            src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                            alt="Profil" 
+                                            id="profileIcon"
+                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                                        />
+                                        <span>{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</span>
                                     </a>
                                 @endif
                                 {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
                                 <a class="dropdown-item d-flex align-items-center"
                                     href="{{ route('balance.job-req') }}">
                                     {{-- Sisi Kiri: Ikon dan Teks --}}
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2" style="margin-left: 5px">
                                         {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
                                         <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
                                             class="navIcon">
@@ -352,7 +369,7 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">
+                                        onclick="event.preventDefault(); this.closest('form').submit();" style="margin-left: 5px">
                                         <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
                                             class="navIcon">
                                         Keluar
@@ -364,7 +381,7 @@
                                 <a class="dropdown-item d-flex align-items-center gap-1"
                                     href="{{ route('admin.dashboard') }}">
                                     <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                        alt="Icon Ganti Peran" class="navIcon">
+                                        alt="Icon Ganti Peran" class="navIcon" style="margin-left: 5px">
                                     Admin
                                 </a>
                             </li>
@@ -375,7 +392,7 @@
                                 <a class="dropdown-item d-flex align-items-center gap-1"
                                     href="{{ route('job-taker.home') }}">
                                     <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                        alt="Icon Ganti Peran" class="navIcon">
+                                        alt="Icon Ganti Peran" class="navIcon" style="margin-left: 5px">
                                     Ganti Peran
                                 </a>
                             </li>
@@ -385,7 +402,7 @@
                                 <a class="dropdown-item d-flex align-items-center gap-1"
                                     href="{{ route('worker.register.step1') }}">
                                     <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                        class="navIcon">
+                                        class="navIcon" style="margin-left: 5px">
                                     Menjadi Mitra
                                 </a>
                             </li>

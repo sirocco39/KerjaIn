@@ -18,146 +18,130 @@
 
     <!-- Main content -->
     <section class="content">
-      <div class="container-fluid">
+      <div class="container">
         <div class="row">
-          <div class="col-md-3">
+          <div class="col-12 col-md-4 mb-4">
+            <form method="POST" action="{{ route('profile.update.photo') }}" enctype="multipart/form-data">
+                @csrf
+                <!-- Profile Image Upload -->
+                <div class="text-center">
+                    <input type="file" id="profileImageInput" name="photo" accept="image/*" style="display: none;" onchange="previewImage(event)">
 
-            <!-- Profile Image -->
-            <div class="text-center mb-3">
-                <div style="width: 300px; height: 300px; margin: 0 auto; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center;">
-                <img class="img-fluid"
-                    src="../../dist/img/user4-128x128.jpg"
-                    alt="User profile picture" style="max-width: 100%; max-height: 100%; object-fit: cover;">
-                </div style="position: absolute; bottom: 10px; right: 10px;">
-            </div>
-
-            <!-- About Me Box -->
-            <div class="card card-primary" style="width: 300px; margin-left: 10px;">
-              <div class="card-header">
-                <h3 class="card-title">About Me</h3>
-              </div>
-
-                <!-- /.card-header -->
-                <div class="card-body">
-                        <li style="list-style: none;">
-                        {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                        <a class="dropdown-item d-flex align-items-center"
-                            href="{{ route('balance.job-req') }}">
-                            {{-- Sisi Kiri: Ikon dan Teks --}}
-                            <div class="d-flex align-items-center gap-2">
-                                {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
-                                    class="navIcon">
-                                <span>Saldo</span>
-                            </div>
-                            {{-- Sisi Kanan: Jumlah Saldo --}}
-                            <span class="ms-auto fw-bold">
-                                {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                {{-- Fungsi number_format untuk format Rupiah --}}
-                                Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
-                            </span>
-                        </a>
-                    </li>
-
-                    <hr>
-
-                        <li style="list-style: none;">
-                        {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                        <a class="dropdown-item d-flex align-items-center"
-                            href="{{ route('balance.job-req') }}">
-                            {{-- Sisi Kiri: Ikon dan Teks --}}
-                            <div class="d-flex align-items-center gap-2">
-                                {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
-                                    class="navIcon">
-                                <span>Saldo Tertahan</span>
-                            </div>
-                            {{-- Sisi Kanan: Jumlah Saldo --}}
-                            <span class="ms-auto fw-bold">
-                                {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                {{-- Fungsi number_format untuk format Rupiah --}}
-                                Rp{{ number_format(auth()->user()->locked_balance, 0, ',', '.') }}
-                            </span>
-                        </a>
-                    </li>
-                </div>
-                <!-- /.card-body -->
-                
-                            
-            </div>
-          </div>
-          
-          <div class="col-md-9">
-            <div class="card card-primary card-outline">
-                <div class="tab-pane" id="settings" style="padding: 20px;">
-                    <h3 class="profile-username">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</h3>
-
-                    <ul class="list-group list-group-unbordered mb-3">
-                        <li class="list-group-item">
-                            <b>Tempat/Tanggal Lahir</b> <a class="float-right">1,322</a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>Email</b> <a class="float-right">{{auth()->user()->email}}</a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>No Handphone</b> <a class="float-right">{{auth()->user()->phone_number}}</a>
-                        </li>
-                    </ul>
-
-                    <a href="#" class="btn btn-primary btn-block" id="btnEdit" style="margin-bottom: 10px"><b>Edit</b></a>
-
-                    <!-- FORM EDIT -->
-                    <div id="formEdit" style="display: none; margin-top: 20px;">
-                        <form class="form-horizontal" method="POST" action="{{ route('profile.update') }}">
-                            @csrf
-                            @method('PUT')
-                            <div class="form-group row">
-                                <label for="inputName" class="col-sm-2 col-form-label">Nama Depan</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputName" placeholder="Name Depan" name="first_name" value="{{ old('first_name', auth()->user()->first_name) }}">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="inputTTL" class="col-sm-2 col-form-label">Nama Belakang</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputTTL" placeholder="Nama Belakang" name="last_name" value="{{ old('last_name', auth()->user()->last_name) }}">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="inputTTL" class="col-sm-2 col-form-label">Tempat/Tanggal Lahir</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputTTL" placeholder="Tempat/Tanggal Lahir">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-                                <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="email" value="{{ auth()->user()->email }}">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="inputPhone" class="col-sm-2 col-form-label">No Handphone</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="inputPhone" placeholder="No Handphone" name="phone_number" value="{{ auth()->user()->phone_number }}">
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="offset-sm-2 col-sm-10">
-                                    <button type="submit" class="btn btn-danger">Submit</button>
-                                </div>
-                            </div>
-                        </form>
+                    <div onclick="document.getElementById('profileImageInput').click();" 
+                        style="cursor: pointer; width: 300px; height: 300px; margin: 0 auto; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center;">
+                        <img id="profileImagePreview" 
+                            class="img-fluid"
+                            src="{{ auth()->user()->photo_url_user ? asset(auth()->user()->photo_url_user) : asset('dist/img/user4-128x128.jpg') }}"
+                            alt="User profile picture" 
+                            style="max-width: 100%; max-height: 100%; object-fit: cover;">
                     </div>
-                    <!-- END FORM EDIT -->
+                    <small class="text-muted d-block mt-2">Klik gambar untuk mengunggah foto baru</small>
+
+                    <button type="submit" class="btn btn-primary mt-2">Simpan Foto</button>
+                </div>
+            </form>
+
+
+           <!-- About Me Box -->
+        <div class="card card-primary mt-4">
+          <div class="card-header">
+            <h3 class="card-title">About Me</h3>
+          </div>
+          <div class="card-body p-3">
+            <ul class="list-unstyled">
+              <li class="mb-3">
+                <a class="dropdown-item d-flex align-items-center" href="{{ route('balance.job-req') }}">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo" class="navIcon">
+                    <span>Saldo</span>
+                  </div>
+                  <span class="ms-auto fw-bold">Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{{ route('balance.job-req') }}">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo" class="navIcon">
+                    <span>Saldo Tertahan</span>
+                  </div>
+                  <span class="ms-auto fw-bold">Rp{{ number_format(auth()->user()->locked_balance, 0, ',', '.') }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+          
+           <!-- Kolom Info User -->
+      <div class="col-12 col-md-8">
+        <div class="card card-primary card-outline">
+          <div class="p-4">
+            <h3 class="profile-username">{{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</h3>
+            <ul class="list-group list-group-unbordered mb-3">
+              <li class="list-group-item d-flex justify-content-between">
+                <b>Tanggal Lahir</b>
+                <span>{{ auth()->user()->birth_date }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <b>Email</b>
+                <span>{{ auth()->user()->email }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <b>No Handphone</b>
+                <span>{{ auth()->user()->phone_number }}</span>
+              </li>
+            </ul>
+
+            <a href="#" class="btn btn-primary btn-block mb-3" id="btnEdit"><b>Edit</b></a>
+
+            <!-- FORM EDIT -->
+            <div id="formEdit" style="display: none;">
+              <form class="form-horizontal" method="POST" action="{{ route('profile.update') }}">
+                @csrf
+                @method('PUT')
+
+                <div class="form-group row mb-3">
+                  <label class="col-sm-4 col-form-label">Nama Depan</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="first_name" value="{{ old('first_name', auth()->user()->first_name) }}">
+                  </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                  <label class="col-sm-4 col-form-label">Nama Belakang</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="last_name" value="{{ old('last_name', auth()->user()->last_name) }}">
+                  </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                  <label class="col-sm-4 col-form-label">Tanggal Lahir</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="birth_date" value="{{ old('birth_date', optional(auth()->user()->birth_date)->format('Y-m-d')) }}">
+                  </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                  <label class="col-sm-4 col-form-label">No Handphone</label>
+                  <div class="col-sm-8">
+                    <input type="text" class="form-control" name="phone_number" value="{{ auth()->user()->phone_number }}">
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <div class="offset-sm-4 col-sm-8">
+                    <button type="submit" class="btn btn-outline-danger">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- END FORM EDIT -->
                 </div>
             </div>
         </div>
-
+    </div>
+  </div>
     </section>
     <!-- /.content -->
 </div>
@@ -170,6 +154,18 @@
       $('#formEdit').slideToggle(); // bisa juga pakai .show() kalau mau langsung
     });
   });
+</script>
+
+<!-- JS untuk preview -->
+<script>
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+        const preview = document.getElementById('profileImagePreview');
+        preview.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
 </script>
 
 @endsection
