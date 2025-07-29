@@ -21,7 +21,7 @@
                 <div class="col tab-button" data-tab="completed">
                     {{ __('history-job-taker.tab_selesai') }} ({{ $completedOrders->count() }})
                 </div>
-                <div class="col tab-button" data-tab="cancelled">
+            <div class="col tab-button" data-tab="cancelled">
                     {{ __('history-job-taker.tab_dibatalkan') }} ({{ $cancelledOrders->count() }})
                 </div>
             </div>
@@ -60,10 +60,10 @@
             {{-- Loop to Display Individual Order Rows --}}
             <div id="order-list-container" class="order-list-fade-in">
                 @forelse ($allOrders as $order)
-                    <div class="order-row hoverable-row
-                        {{ str_replace(' ', '-', $order->status) }}-tab"
+                    <div class="order-row hoverable-row"
+                       data-status="{{ $order->status }}"
                         {{-- Determine whether to open modal or redirect based on status and user role --}}
-                        @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
+                        @if ($order->status == 'completed') data-bs-toggle="modal"
                                 data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
@@ -101,15 +101,15 @@
                                     style="
                                         padding: .5em .9em;
                                         font-size: 0.85em;
-                                        @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
+                                        @if ($order->status == 'completed') background-color: #D3FA0D;
                                             color: #333;
-                                        @elseif ($order->status_text == 'Dikerjain')
+                                        @elseif ($order->status == 'in progress')
                                             background-color: #309FFF;
                                             color: #FFF;
-                                        @elseif($order->status_text == 'Diterima' || $order->status_text == 'Ditinjau')
+                                        @elseif($order->status == 'accepted' || $order->status == 'submitted')
                                             background-color: #294287;
                                             color: #FFF;
-                                        @elseif($order->status_text == 'Dibatalin')
+                                        @elseif($order->status == 'cancelled')
                                             background-color: #E63C3C;
                                             color: #FFF;
                                         @else
@@ -162,7 +162,7 @@
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">N{{ __('history-job-taker.modal_nomor_pesanan') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_nomor_pesanan') }}</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
@@ -841,14 +841,13 @@
                     const receivedReviewRating = this.getAttribute('data-received-review-rating');
                     const receivedReviewComment = this.getAttribute('data-received-review-comment');
                     const hasWorkerReport = this.getAttribute('data-has-worker-report') === 'true';
-
-
+                    const orderStatus = row.dataset.status;
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
                     reportedRequesterId = this.getAttribute(
                         'data-requester-id'); // Changed to requester ID
 
-                    if (orderStatusText === 'Selesai') {
+                    if (orderStatus === 'completed') {
                         const completionModal = new bootstrap.Modal(document.getElementById(
                             'completionModal'));
                         completionModal.show();
@@ -911,12 +910,12 @@
                         }
 
 
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
-                            orderStatusText)) {
+                    } else if (['in progress', 'accepted', 'submitted'].includes(
+                            orderStatus)) {
                         // For these specific statuses, redirect to the ongoing request page
                         window.location.href = `/job-taker/accepted-work-request/${transactionId}`;
                     } else {
-                        console.log('Clicked on a row with status:', orderStatusText,
+                        console.log('Clicked on a row with status:', orderStatus,
                             'No specific action defined.');
                     }
                 });
@@ -974,14 +973,14 @@
                 orderRowsForTabs.forEach(row => {
                     // Extract status from the badge text content
                     const badgeElement = row.querySelector('.badge');
-                    let orderStatusText = badgeElement ? badgeElement.textContent.trim() : '';
+                    const orderStatus = row.dataset.status;
 
                     let orderStatusForTab = '';
-                    if (orderStatusText == 'Selesai') {
+                    if (orderStatus == 'completed') {
                         orderStatusForTab = 'completed';
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) {
+                    } else if (['in progress', 'accepted', 'submitted'].includes(orderStatus)) {
                         orderStatusForTab = 'pending';
-                    } else if (orderStatusText == 'Dibatalin') {
+                    } else if (orderStatus == 'cancelled') {
                         orderStatusForTab = 'cancelled';
                     } else {
                         orderStatusForTab = 'other'; // Fallback for other statuses

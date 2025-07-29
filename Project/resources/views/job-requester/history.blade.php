@@ -38,7 +38,7 @@
                         {{ __('history-job-req.tab_selesai') }}
                         ({{ $completedOrders->count() }})</option>
                     <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>
-                        {{ __('history-job-req.tab_dibatalka ') }}
+                        {{ __('history-job-req.tab_dibatalkan ') }}
                         ({{ $cancelledOrders->count() }})</option>
                 </select>
             </div>
@@ -62,10 +62,8 @@
             {{-- Loop to Display Individual Order Rows --}}
             <div id="order-list-container" class="order-list-fade-in">
                 @forelse ($allOrders as $order)
-                    <div class="order-row hoverable-row
-                        {{ str_replace(' ', '-', $order->status) }}-tab"
-                        {{-- Determine whether to open modal or redirect based on status and user role --}}
-                        @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
+                    <div class="order-row hoverable-row" data-status="{{ $order->status }}" {{-- Determine whether to open modal or redirect based on status and user role --}}
+                        @if ($order->status == 'completed') data-bs-toggle="modal"
                                 data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
@@ -102,20 +100,15 @@
                                     style="
                                         padding: .5em .9em;
                                         font-size: 0.85em;
-                                        @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
-                                            color: #333;
-                                        @elseif ($order->status_text == 'Dikerjain')
-                                            background-color: #309FFF;
-                                            color: #FFF;
-                                        @elseif($order->status_text == 'Diterima' || $order->status_text == 'Ditinjau')
-                                            background-color: #294287;
-                                            color: #FFF;
-                                        @elseif($order->status_text == 'Dibatalin')
-                                            background-color: #E63C3C;
-                                            color: #FFF;
-                                        @else
-                                            background-color: #6c757d;
-                                            color: #FFF; @endif
+                                       @if ($order->status == 'completed') background-color: #D3FA0D; color: #333;
+        @elseif ($order->status == 'in progress')
+            background-color: #309FFF; color: #FFF;
+        @elseif($order->status == 'accepted' || $order->status == 'submitted')
+            background-color: #294287; color: #FFF;
+        @elseif($order->status == 'cancelled')
+            background-color: #E63C3C; color: #FFF;
+        @else
+            background-color: #6c757d; color: #FFF; @endif
                                         ">
                                     {{ $order->status_text ?? '-' }}
                                 </span>
@@ -870,13 +863,15 @@
                     const userRating = this.getAttribute('data-user-rating');
                     const userComment = this.getAttribute('data-user-comment');
                     const hasUserReport = this.getAttribute('data-has-user-report') === 'true';
+                    const orderStatus = row.dataset.status;
+
 
 
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
                     reportedWorkerId = this.getAttribute('data-worker-id');
 
-                    if (orderStatusText === 'Selesai') {
+                    if (orderStatus === 'completed') {
                         const completionModal = new bootstrap.Modal(document.getElementById(
                             'completionModal'));
                         completionModal.show();
@@ -937,12 +932,12 @@
                         }
 
 
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
-                            orderStatusText)) {
+                    } else if (['in progress', 'accepted', 'submitted'].includes(
+                            orderStatus)) {
                         // For these specific statuses, redirect to the ongoing request page
                         window.location.href = `/job-req/on-going-work-request/${transactionId}`;
                     } else {
-                        console.log('Clicked on a row with status:', orderStatusText,
+                        console.log('Clicked on a row with status:', orderStatus,
                             'No specific action defined.');
                     }
                 });
@@ -991,29 +986,29 @@
                 let hasVisibleOrders = false;
                 let visibleRows = [];
 
-                // Remove existing fade-in class to re-trigger animation
+                const orderListContainer = document.getElementById('order-list-container');
+                const orderRowsForTabs = document.querySelectorAll('.order-row');
+                const noTransactionMessage = document.getElementById('no-transaction-message');
+
                 orderListContainer.classList.remove('order-list-fade-in');
-                void orderListContainer.offsetWidth; // Trigger reflow
+                void orderListContainer.offsetWidth;
                 orderListContainer.classList.add('order-list-fade-in');
 
-
                 orderRowsForTabs.forEach(row => {
-                    // Extract status from the badge text content
-                    const badgeElement = row.querySelector('.badge');
-                    let orderStatusText = badgeElement ? badgeElement.textContent.trim() : '';
+                    // PERUBAHAN UTAMA: Membaca status asli dari data-status
+                    const orderStatus = row.dataset.status;
+                    let tabCategory = '';
 
-                    let orderStatusForTab = '';
-                    if (orderStatusText === 'Selesai') {
-                        orderStatusForTab = 'completed';
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) {
-                        orderStatusForTab = 'pending';
-                    } else if (orderStatusText === 'Dibatalin') {
-                        orderStatusForTab = 'cancelled';
-                    } else {
-                        orderStatusForTab = 'other'; // Fallback for other statuses
+                    // Menentukan kategori tab berdasarkan status asli
+                    if (orderStatus === 'completed') {
+                        tabCategory = 'completed';
+                    } else if (['accepted', 'in progress', 'submitted'].includes(orderStatus)) {
+                        tabCategory = 'pending';
+                    } else if (orderStatus === 'cancelled') {
+                        tabCategory = 'cancelled';
                     }
 
-                    if (selectedTab === 'all' || selectedTab === orderStatusForTab) {
+                    if (selectedTab === 'all' || selectedTab === tabCategory) {
                         row.style.display = '';
                         hasVisibleOrders = true;
                         visibleRows.push(row);
@@ -1022,25 +1017,17 @@
                     }
                 });
 
-                // Remove existing separators between rows
+                // (Sisa logika untuk menampilkan pesan "No Transaction" dan garis pemisah tetap sama)
                 const existingHrs = orderListContainer.querySelectorAll('.order-divider');
                 existingHrs.forEach(hr => hr.remove());
-
-                // Add separators only between currently visible rows
                 for (let i = 0; i < visibleRows.length - 1; i++) {
                     const hr = document.createElement('hr');
                     hr.classList.add('mx-auto', 'border-1', 'opacity-100', 'my-0', 'p-0', 'order-divider');
                     hr.style.cssText = 'width: 98%; border-color: #294287;';
                     visibleRows[i].parentNode.insertBefore(hr, visibleRows[i].nextSibling);
                 }
-
-                // Toggle 'No Transaction' message visibility
                 if (noTransactionMessage) {
-                    if (hasVisibleOrders) {
-                        noTransactionMessage.style.display = 'none';
-                    } else {
-                        noTransactionMessage.style.display = '';
-                    }
+                    noTransactionMessage.style.display = hasVisibleOrders ? 'none' : '';
                 }
             }
 

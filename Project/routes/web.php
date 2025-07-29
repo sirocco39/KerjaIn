@@ -264,11 +264,11 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
-// Route::get('/admin/activity-log', function () {
-//     // Kode yang benar untuk urutan kronologis
-//     $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
-//     return view('admin-test-iwan.activity-log', compact('activities'));
-// })->name('admin.activity');
+Route::get('/admin/activity-log', function () {
+    // Kode yang benar untuk urutan kronologis
+    $activities = Activity::orderBy('id', 'desc')->take(50)->get(); // Urutkan berdasarkan ID dari yang terkecil
+    return view('admin-test-iwan.activity-log', compact('activities'));
+})->name('admin.activity');
 
 // Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 // Route::get('/admin/verifikasi/{status?}', [VerificationController::class, 'index'])->name('admin.verifications.index');

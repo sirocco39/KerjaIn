@@ -266,14 +266,10 @@ class TransactionController extends Controller
                 ->on($transaction)
                 ->causedBy(Auth::user())
                 ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan requester.");
-<<<<<<< HEAD
-           return redirect()->route('job-req.home')->with('custom_error_alert', __('alerts.anda_tidak_berwenang'));
-=======
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
+                'message' => __('alerts.anda_tidak_berwenang')
             ], 403);
->>>>>>> bc6473c83551e4a826bfbbfa94a386bbf017ff1d
         }
 
         DB::transaction(function () use ($request, $transaction) {
@@ -295,16 +291,11 @@ class TransactionController extends Controller
             ]);
         });
 
-<<<<<<< HEAD
-        // Changed to custom_success_alert for consistency
-       return redirect()->route('job-req.history')->with('custom_success_alert', __('alerts.laporan_berhasil_dikirim'));
-=======
         // Changed from redirect()->route() to return response()->json() for AJAX consistency
         return response()->json([
             'success' => true,
-            'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+            'message' => __('alerts.laporan_berhasil_dikirim')
         ]);
->>>>>>> bc6473c83551e4a826bfbbfa94a386bbf017ff1d
     }
 
     public function getTransactionDetails($id)

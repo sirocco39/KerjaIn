@@ -47,7 +47,7 @@
                 <h4 class="fw-bold title-detail m-0 mb-2"> {{ __('home-job-taker.rating_rata_rata') }}</h4>
                 <p class="mb-0"></p>
                 @auth
-                    <p class="mb-0 text-p"><b class="bold-point">{{ auth()->user()->rating }}</b></p>
+                    <p class="mb-0 text-p"><b class="bold-point">{{ number_format(auth()->user()->rating, 2, ',', '.') }}</b></p>
                 @else
                     <p class="mb-0 text-p"><b class="bold-point">0</b></p>
                 @endauth

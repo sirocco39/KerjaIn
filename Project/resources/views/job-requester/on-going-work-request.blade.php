@@ -9,7 +9,9 @@
         $start = new DateTime($request->start_time);
         $end = new DateTime($request->end_time);
         $interval = $start->diff($end);
-
+        $days = $interval->d;
+        $hours = $interval->h;
+        $minutes = $interval->i;
         $total_hours = $days * 24 + $hours;
 
         // Format durasi baru

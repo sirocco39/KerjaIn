@@ -38,25 +38,25 @@
     <div class="container-fluid pembatas-x mb-5">
         <div class="row mb-3 p-1">
             <div class="col-12 mb-2 mt-5">
-                <h2 style="font-weight: 800;">Kerjaan Kamu</h2>
+                <h2 style="font-weight: 800;">{{ __('accepted.kerjaan_kamu') }}</h2>
             </div>
             <div class="col-12 contain bg-light mt-2 px-4 py-3 rounded-4 d-flex align-items-center"
                 style="border: 1px solid #cacadd; ">
                 @if ($transaction->status == 'submitted')
                     <div class="badge px-4 py-3 rounded-pill bg-primary text-light fs-6" style="background-color:#294287;">
-                        Ditinjau</div>
+                        {{ __('accepted.status.ditinjau') }}</div>
                 @elseif($transaction->status == 'cancelled')
                     <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:crimson;">
-                        Dibatalin</div>
+                        {{ __('accepted.status.dibatalkan') }}</div>
                 @elseif($transaction->status == 'accepted')
                     <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:#294287;">
-                        Diterima</div>
+                        {{ __('accepted.status.diterima') }}</div>
                 @elseif($transaction->status == 'in progress')
                     <div class="badge px-4 py-3 rounded-5 bg-info text-light fs-6" style="background-color:#309FFF;">
-                        Dikerjain</div>
+                        {{ __('accepted.status.dikerjakan') }}</div>
                 @elseif($transaction->status == 'completed')
                     <div class="badge px-4 py-3 rounded-pill bg-success text-dark fs-6" style="background-color:#D3FA0D;">
-                        Selesai</div>
+                        {{ __('accepted.status.selesai') }}</div>
                 @endif
                 <h3 class="d-inline mx-3 mt-1" style="color:#294287; font-weight: 800;">{{ $request->title }}</h3>
             </div>
@@ -67,7 +67,7 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column"
                             style="border: 1px solid #cacadd; height:100%;">
-                            <div class="fw-bold text-start">Deskripsi</div>
+                            <div class="fw-bold text-start">{{ __('accepted.deskripsi') }}</div>
                             <div class="text-justify" style="font-size: 12px;">{{ $request->description }}</div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Mulai</div>
+                                    <div class="p-2">{{ __('accepted.mulai') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
                             </div>
@@ -108,7 +108,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Selesai</div>
+                                    <div class="p-2">{{ __('accepted.selesai') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $end_time_detail }}</div>
                             </div>
@@ -121,7 +121,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Durasi</div>
+                                    <div class="p-2">{{ __('accepted.durasi') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $duration }}</div>
                             </div>
@@ -140,7 +140,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Upah</div>
+                                    <div class="p-2">{{ __('accepted.upah') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $formatted }}</div>
                             </div>
@@ -153,7 +153,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Lokasi</div>
+                                    <div class="p-2">{{ __('accepted.lokasi') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">
                                     <a href={{ $mapsLink }} target="_blank" class="text-end"
@@ -182,10 +182,12 @@
                                             </div>
                                             <div class="column">
                                                 <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
+                                                    style="">{{ __('accepted.timeline.diterima') }}</div>
                                                 <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
+                                                    style="margin-top:25px; margin-bottom: 25px;">
+                                                    {{ __('accepted.timeline.dikerjakan') }}</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">
+                                                    {{ __('accepted.timeline.selesai') }}</div>
                                             </div>
                                         </div>
                                     @elseif($transaction->status == 'in progress')
@@ -211,10 +213,12 @@
                                             </div>
                                             <div class="column">
                                                 <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
+                                                    style="">{{ __('accepted.timeline.diterima') }}</div>
                                                 <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
+                                                    style="margin-top:25px; margin-bottom: 25px;">
+                                                    {{ __('accepted.timeline.dikerjain') }}</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">
+                                                    {{ __('accepted.timeline.selesai') }}</div>
                                             </div>
                                         </div>
                                     @elseif($transaction->status == 'completed')
@@ -247,10 +251,12 @@
                                             </div>
                                             <div class="column">
                                                 <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
+                                                    style="">{{ __('accepted.timeline.diterima') }}</div>
                                                 <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Selesai</div>
+                                                    style="margin-top:25px; margin-bottom: 25px;">
+                                                    {{ __('accepted.timeline.dikerjakan') }}</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">
+                                                    {{ __('accepted.timeline.selesai') }}</div>
                                             </div>
                                         </div>
                                     @elseif($transaction->status == 'submitted')
@@ -284,10 +290,12 @@
                                             </div>
                                             <div class="column">
                                                 <div class="px-4 rounded-pill bg-warning text-dark fs-6 mt-1"
-                                                    style="">Diterima</div>
+                                                    style="">{{ __('accepted.timeline.diterima') }}</div>
                                                 <div class="px-4 rounded-5 bg-info text-dark fs-6"
-                                                    style="margin-top:25px; margin-bottom: 25px;">Dikerjain</div>
-                                                <div class="px-4 rounded-pill text-dark fs-6">Ditinjau</div>
+                                                    style="margin-top:25px; margin-bottom: 25px;">
+                                                    {{ __('accepted.timeline.dikerjakan') }}</div>
+                                                <div class="px-4 rounded-pill text-dark fs-6">
+                                                    {{ __('accepted.timeline.ditinjau') }}</div>
                                             </div>
                                         </div>
                                     @endif
@@ -308,7 +316,7 @@
                                         <button type="submit" id="start-work-button"
                                             class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
                                             style="background-color:#294287;">
-                                            Mulai Kerja
+                                            {{ __('accepted.tombol.mulai_kerja') }}
                                         </button>
                                     </form>
                                     <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
@@ -318,25 +326,27 @@
                                     {{-- Tombol Sudah Dikerjakan --}}
                                     <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                         style="width:88%;cursor: not-allowed;pointer-events: none;">
-                                        Selesai
+                                        {{ __('accepted.status.selesai') }}
                                     </a>
                                 @elseif($transaction->status === 'submitted')
                                     <a class="text-decoration-none px-4 py-2 rounded-5 text-light fs-4 fw-bold"
                                         style="background-color:#294287;">
-                                        Ditinjau
+                                        {{ __('accepted.status.ditinjau') }}
                                     </a>
                                     <button type="button"
                                         class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#completionModal">Berikan Penilaian
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#completionModal">{{ __('accepted.tombol.berikan_penilaian') }}
                                     </button>
                                 @elseif($transaction->status === 'in progress')
                                     {{-- Tombol untuk buka modal --}}
                                     <button class="btn px-4 py-2 rounded-5 text-light fs-4 fw-bold"
                                         style="background-color:#309FFF;" data-bs-toggle="modal"
                                         data-bs-target="#completionProofModal">
-                                        Selesai Kerja
+                                        {{ __('accepted.tombol.selesai_kerja') }}
                                     </button>
-                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">Batalkan Kerja
+                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-black-50 fs-5">
+                                        {{ __('accepted.tombol.batalkan_kerja') }}
                                     </div>
                                 @endif
                             </div>
@@ -356,7 +366,7 @@
                 <div class="modal-content p-3">
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">
-                            Detail Penyelesaian</h5>
+                            {{ __('accepted.modal_penilaian.judul') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -365,24 +375,25 @@
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul
-                                            Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.judul_pesanan') }}</p>
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor
-                                            Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.nomor_pesanan') }}</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama
-                                            Klien</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.nama_klien') }}</p>
                                         <p class="fw-medium" id="modalRequesterName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.lokasi') }}
                                         </p>
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
@@ -390,24 +401,24 @@
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">
-                                            Tanggal Pemesanan</p>
+                                            {{ __('accepted.modal_penilaian.tgl_pesan') }}</p>
                                         <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">
-                                            Tanggal Selesai</p>
+                                            {{ __('accepted.modal_penilaian.tgl_selesai') }}</p>
                                         <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai
-                                            Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.mulai_kerja') }}</p>
                                         <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">
-                                            Selesai Kerja</p>
+                                            {{ __('accepted.modal_penilaian.selesai_kerja') }}</p>
                                         <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
@@ -439,10 +450,11 @@
                                 {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
                                     <button type="submit" class="btn btn-primary fw-medium rounded-3"
-                                        id="submitReviewButton">Kirim</button>
-                                    <div class="m-1 text-center">Atau</div>
+                                        id="submitReviewButton">{{ __('accepted.modal_penilaian.tombol_kirim') }}</button>
+                                    <div class="m-1 text-center">{{ __('accepted.modal_penilaian.atau') }}</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
+                                        onclick="openReportModal()"
+                                        id="reportProblemButton">{{ __('accepted.modal_penilaian.judul') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -464,7 +476,8 @@
 
                 <div class="modal-content">
                     <div class="modal-header border-0 justify-content-center">
-                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">
+                            {{ __('accepted.modal_laporan.judul') }}</h3>
                         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -474,38 +487,45 @@
                     <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">
+                                    {{ __('accepted.modal_penilaian.judul_pesanan') }}</p>
                                 <p class="fw-medium" id="reportModalRequestTitle"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">
+                                    {{ __('accepted.modal_penilaian.nomor_pesanan') }}</p>
                                 <p class="fw-medium" id="reportModalOrderNumber"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('accepted.modal_penilaian.nama_klien') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('accepted.modal_penilaian.lokasi') }}</p>
                                 <p class="fw-medium" id="reportModalRequestLocation"></p>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('accepted.modal_penilaian.tgl_pesan') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('accepted.modal_penilaian.tgl_selesai') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('accepted.modal_penilaian.mulai_kerja') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalStartWork"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                                <p class="text-black-50 fw-semibold mb-0">
+                                    {{ __('accepted.modal_penilaian.selesai_kerja') }}</p>
                                 <p class="fw-medium" id="reportModalFinishWork"></p>
                             </div>
                         </div>
@@ -518,7 +538,7 @@
 
                         {{-- Image upload section for report proof --}}
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                            <label class="form-label fw-semibold">{{ __('accepted.modal_laporan.upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
                                 <div class="add-image-button pb-2"
@@ -535,16 +555,18 @@
 
                         {{-- Textarea for reporting reasons --}}
                         <div class="mb-4">
-                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                            <label for="reportNote"
+                                class="form-label fw-semibold">{{ __('accepted.modal_laporan.keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                                placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
+                                placeholder="{{ __('accepted.modal_laporan.placeholder_keluh_kesah') }}"
+                                style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
                     </div>
 
                     {{-- Report submission button --}}
                     <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
-                            Laporan</button>
+                        <button type="button" id="submitReportButton"
+                            class="btn btn-danger px-4 py-2">{{ __('accepted.modal_laporan.tombol_kirim') }}</button>
                     </div>
                 </div>
             </form>
@@ -562,7 +584,7 @@
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
                             fill="#B02A37" />
                     </svg>
-                    <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">Batalkan Pekerjaan?</h4>
+                    <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">{{ __('accepted.modal_batal.judul') }}</h4>
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -572,8 +594,8 @@
                 </div>
 
                 <div class="text-center my-4 fw-semibold">
-                    <div>Apakah kamu yakin ingin membatalkan pekerjaan ini?</div>
-                    <div>Tindakan ini bisa mempengaruhi reputasimu di platform KerjaIn.</div>
+                    <div>{{ __('accepted.modal_batal.pesan1') }}</div>
+                    <div>{{ __('accepted.modal_batal.pesan2') }}</div>
                 </div>
 
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
@@ -582,10 +604,10 @@
                     <input type="hidden" name="redirect_to" value="job-taker.home">
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
-                        Lanjut Kerja
+                        {{ __('accepted.modal_batal.tombol_kembali') }}
                     </button>
                     <button type="submit" class="btn btn-danger rounded-4 flex-fill p-3 fw-semibold">
-                        Ya, Tetap Batalin
+                        {{ __('accepted.modal_batal.tombol_konfirmasi') }}
                     </button>
                 </form>
 
@@ -597,7 +619,7 @@
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 800px;">
             <div class="modal-content p-4">
-                <div class="flex-fill text-center fs-4 mb-3">Konfirmasi Penyelesaian Pekerjaan</div>
+                <div class="flex-fill text-center fs-4 mb-3">{{ __('accepted.modal_bukti.judul') }}</div>
                 <form id="proofForm" action="{{ route('worker.uploadProof', $transaction->id) }}" method="POST"
                     enctype="multipart/form-data">
                     @csrf
@@ -605,7 +627,8 @@
                     <div class="d-flex flex-column flex-lg-row gap-3">
 
                         <div class="w-100">
-                            <label for="photo" class="form-label fw-semibold">Upload Foto Bukti Pekerjaan</label>
+                            <label for="photo"
+                                class="form-label fw-semibold">{{ __('accepted.modal_bukti.label_foto') }}</label>
                             <div id="uploadAreaProof"
                                 class="rounded p-4 text-center d-flex flex-column align-items-center justify-content-center"
                                 style="cursor: pointer; min-height: 200px; border-style: dashed; border-color:#cacadd; background-color: #F4f4f4;">
@@ -623,7 +646,8 @@
                         <div class="vr d-none d-lg-block mx-3"></div>
 
                         <div class="w-100">
-                            <label for="note" class="form-label fw-semibold">Catatan (Opsional)</label>
+                            <label for="note"
+                                class="form-label fw-semibold">{{ __('accepted.modal_bukti.label_catatan') }}</label>
                             <textarea name="note" id="note" rows="3" class="form-control form-control-sm"
                                 style="border-color:#b4b4b4; height:70%;"></textarea>
                             {{-- Error message display area for note input --}}
@@ -633,11 +657,11 @@
                                 <button type="button" class="btn flex-fill fw-semibold"
                                     style="color:#294287; border-color:#294287; border-width: 2px;"
                                     data-bs-dismiss="modal">
-                                    Kembali
+                                    {{ __('accepted.modal_bukti.tombol_kembali') }}
                                 </button>
                                 <button type="button" class="btn flex-fill fw-semibold text-light"
                                     style="background-color:#309FFF;" onclick="uploadProof()">
-                                    Selesaikan Pekerjaan
+                                    {{ __('accepted.modal_bukti.tombol_selesaikan') }}
                                 </button>
                             </div>
                         </div>
@@ -651,6 +675,9 @@
 
     {{-- JavaScript section --}}
     <script>
+        const lang = @json(__('accepted.js_messages'));
+        const reviewLang = @json(__('accepted.modal_penilaian'));
+        const proofLang = @json(__('accepted.modal_bukti'));
         window.isOpeningReportModal = false; // Initialize global flag
 
         // Global variables for managing report images
@@ -766,14 +793,14 @@
                     Array.from(event.target.files).forEach(file => {
                         // Client-side validation for file type
                         if (!file.type.startsWith('image/')) {
-                            window.showCustomAlert('File yang diunggah harus berupa gambar.',
+                            window.showCustomAlert(lang.file_harus_gambar,
                                 'error');
                             return; // Skip this file and continue to next
                         }
                         // Client-side validation for file size
                         const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                         if (file.size > maxSizeBytes) {
-                            window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.',
+                            window.showCustomAlert(lang.ukuran_file_maksimal,
                                 'error');
                             return; // Skip this file and continue to next
                         }
@@ -782,9 +809,8 @@
                         if (reportFiles.length < MAX_REPORT_IMAGES) {
                             reportFiles.push(file);
                         } else {
-                            window.showCustomAlert(
-                                `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`,
-                                'error');
+                            window.showCustomAlert(lang.maksimal_upload_gambar.replace(':max',
+                                MAX_REPORT_IMAGES), 'error');
                             // Stop processing further files if limit is hit
                             return;
                         }
@@ -881,12 +907,12 @@
 
                 // Client-side validation for rating and comment
                 if (rating == 0) {
-                    window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
+                    window.showCustomAlert(lang.pilih_rating_dulu, 'error');
                     return;
                 }
 
                 if (comment == '') {
-                    window.showCustomAlert('Silakan isi komentar.', 'error');
+                    window.showCustomAlert(lang.isi_komentar_dulu, 'error');
                     return;
                 }
 
@@ -905,7 +931,7 @@
                 const submitBtn = document.getElementById('submitReviewButton');
                 if (submitBtn) {
                     submitBtn.disabled = true;
-                    submitBtn.textContent = 'Mengirim...';
+                    submitBtn.textContent = lang.mengirim_laporan;
                 }
 
                 // Get the form action from the HTML form element
@@ -971,7 +997,7 @@
                     .finally(() => {
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.textContent = 'Kirim';
+                            submitBtn.textContent = lang.mengirim;
                         }
                     });
             }
@@ -985,11 +1011,11 @@
                 const reasons = document.getElementById('reportNote').value.trim();
 
                 if (reportFiles.length === 0) {
-                    window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                    window.showCustomAlert(lang.upload_bukti_dulu, 'error');
                     return;
                 }
                 if (!reasons) {
-                    window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                    window.showCustomAlert(lang.isi_keluhan_dulu, 'error');
                     return;
                 }
 
@@ -1000,15 +1026,14 @@
 
                 for (const file of filesToSend) { // Use for...of for easy breaking
                     if (!file.type.startsWith('image/')) {
-                        window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
-                        hasInvalidFile = true;
-                        break; // Exit loop
+                        window.showCustomAlert(lang.isi_keluhan_dulu, 'error');
+                        return;
                     }
                     const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                     if (file.size > maxSizeBytes) {
-                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.',
+                        window.showCustomAlert(lang.ukuran_file_maksimal,
                             'error');
-                        return; // Skip this file and continue to next
+                        return; // Lewp this file and continue to next
                     }
                 }
                 if (hasInvalidFile) {
@@ -1034,7 +1059,7 @@
                 const submitBtn = document.getElementById('submitReportButton');
                 if (submitBtn) {
                     submitBtn.disabled = true;
-                    submitBtn.textContent = 'Mengirim Laporan...';
+                    submitBtn.textContent = reviewLang.tombol_kirim;
                 }
 
                 // Submit the form using fetch, expecting a redirect
@@ -1056,7 +1081,8 @@
                                     for (let key in errorData.errors) {
                                         errorMessage += `${errorData.errors[key].join(', ')}\n`;
                                     }
-                                    window.showCustomAlert('Validasi Gagal:\n' + errorMessage,
+                                    window.showCustomAlert(lang.kesalahan_umum + ':\n' +
+                                        errorMessage,
                                         'error');
                                 } else {
                                     throw new Error(errorData.message || 'Server error: ' + response
@@ -1079,7 +1105,7 @@
                                 location.reload(); // Explicit reload if modal hide doesn't
                             } else {
                                 window.showCustomAlert(data.message ||
-                                    'Terjadi kesalahan saat mengirim laporan.', "error");
+                                    lang.kesalahan_umum, "error");
                             }
                         } catch (e) {
                             console.warn(
@@ -1089,19 +1115,19 @@
                     })
                     .catch(error => {
                         console.error('Error during report submission:', error);
-                        window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error
+                        window.showCustomAlert(lang.kesalahan_umum + '.\nDetail: ' + error
                             .message, 'error');
                     })
                     .finally(() => {
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.textContent = 'Kirim Laporan';
+                            submitBtn.textContent = lang.mengirim_laporan;
                         }
                     });
             }
             // Function to render the review form
             function renderReviewForm() {
-                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+                reviewSectionHeading.textContent = reviewLang.penilaian_heading_baru;
                 const reviewSectionContainer = document.getElementById('review-section-container');
                 if (!reviewSectionContainer) return;
 
@@ -1113,9 +1139,9 @@
                         <input type="hidden" name="rating" id="rating-input" value="0">
                     </div>
                     <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <label for="comment" class="form-label text-start">${reviewLang.label_komentar}</label>
                         <textarea name="comment" id="comment" class="form-control" rows="3"
-                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; resize: none;"></textarea>
+                            placeholder="${reviewLang.placeholder_komentar}" style="border-color:#8a8a8a; resize: none;"></textarea>
                     </div>
                 `;
                 const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
@@ -1161,7 +1187,7 @@
 
             // Function to render the existing review display
             function renderExistingReview(rating, comment) {
-                reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+                reviewSectionHeading.textContent = reviewLang.penilaian_heading_sudah;
                 const reviewSectionContainer = document.getElementById('review-section-container');
                 if (!reviewSectionContainer) return;
 
@@ -1176,7 +1202,7 @@
                         ${starHtml}
                     </div>
                     <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <label for="comment" class="form-label text-start">${reviewLang.label_komentar}</label>
                         <textarea id="comment" class="form-control" rows="3" disabled
                             style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
                     </div>
@@ -1231,7 +1257,7 @@
                     // Handle Report Button State (Removed hasWorkerReport check)
                     const reportProblemButton = document.getElementById('reportProblemButton');
                     if (reportProblemButton) {
-                        reportProblemButton.textContent = 'Laporkan masalah';
+reportProblemButton.textContent = reviewLang.laporkan_masalah;
                         reportProblemButton.disabled = false; // Always enabled
                         reportProblemButton.classList.remove('text-secondary');
                         reportProblemButton.classList.add('text-danger');
@@ -1324,7 +1350,7 @@
                     if (reportImageInput) reportImageInput.value = ''; // Clear file input
                     if (document.getElementById('submitReportButton')) {
                         document.getElementById('submitReportButton').disabled = false;
-                        document.getElementById('submitReportButton').textContent = 'Kirim Laporan';
+                          document.getElementById('submitReportButton').textContent = lang.mengirim_laporan;
                     }
                 });
             }
@@ -1360,7 +1386,7 @@
             if (noteErrorDiv) noteErrorDiv.textContent = '';
 
             if (photoInput && photoInput.files.length === 0) {
-                if (photoErrorDiv) photoErrorDiv.textContent = 'Minimal satu foto diperlukan.';
+                 if (photoErrorDiv) photoErrorDiv.textContent = proofLang.error_foto_diperlukan;
                 return;
             }
 
@@ -1452,9 +1478,9 @@
                     placeholder.className =
                         'text-center text-muted d-flex flex-column align-items-center justify-content-center w-100 h-100';
                     placeholder.innerHTML = `
-                        <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 65.625 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
-                        <p class="mb-0 mt-2 small">Klik untuk upload bukti pekerjaan</p>
-                    `;
+        <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 65.625 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
+        <p class="mb-0 mt-2 small">${proofLang.label_foto}</p>
+    `;
                 }
                 return placeholder;
             };
