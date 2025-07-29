@@ -13,7 +13,8 @@
                         <input type="file" name="photo_url" id="selfie_photo" accept="image/png, image/jpeg, image/jpg">
 
                         {{-- Ganti icon upload unicode jadi gambar --}}
-                        <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon" class="upload-icon">
+                        <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon"
+                            class="upload-icon">
 
                         <span class="upload-text">Max 5 MB, PNG, JPEG</span>
                         <span class="browse-button">Browse File</span>
@@ -34,7 +35,8 @@
                         {{-- Menggunakan name="id_card_url" dan ID "id_card_photo" sesuai panggilan JS --}}
                         <input type="file" name="id_card_url" id="id_card_photo"
                             accept="image/png, image/jpeg, image/jpg">
-                        <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon" class="upload-icon">
+                        <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon"
+                            class="upload-icon">
                         <span class="upload-text">Max 5 MB, PNG, JPEG</span>
                         <span class="browse-button">Browse File</span>
                         <img src="" alt="KTP Preview" class="upload-preview" id="ktp-preview">
@@ -51,7 +53,8 @@
                         {{-- Menggunakan name="selfie_with_id_card_url" dan ID "selfie_with_id_card_photo" --}}
                         <input type="file" name="selfie_with_id_card_url" id="selfie_with_id_card_photo"
                             accept="image/png, image/jpeg, image/jpg">
-                        <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon" class="upload-icon">
+                        <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon"
+                            class="upload-icon">
                         <span class="upload-text">Max 5 MB, PNG, JPEG</span>
                         <span class="browse-button">Browse File</span>
                         <img src="" alt="Selfie with KTP Preview" class="upload-preview" id="selfie-ktp-preview">
@@ -95,12 +98,58 @@
     </x-join-worker.join-template>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Function to handle file preview
-            function setupImagePreview(inputId, previewId, uploadAreaId, overlayTextId) {
+            // Auto OCR when user uploads KTP
+            const ktpImageInput = document.getElementById('id_card_photo'); // Correct ID for KTP input
+
+            ktpImageInput.addEventListener('change', function(event) {
+                const file = this.files[0];
+
+                if (!file) {
+                    // Removed: window.showCustomAlert('info', 'Unggah foto KTP untuk memindai NIK.');
+                    // Also clear the preview if the file is removed
+                    document.getElementById('ktp-preview').src = "";
+                    document.getElementById('ktp-upload-area').classList.remove('has-image');
+                    return;
+                }
+
+                // Removed: window.showCustomAlert('info', 'Memindai NIK dari KTP, mohon tunggu...');
+
+                const formData = new FormData();
+                formData.append('ktp_image', file);
+                formData.append('_token', '{{ csrf_token() }}'); // Laravel CSRF token
+
+                fetch('{{ route('ktp.ocr.ajax') }}', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Removed: window.showCustomAlert('success', data.message);
+                            // NIK is now saved to session on backend, no need for frontend alert
+                        } else {
+                            // Removed: window.showCustomAlert('error', data.message);
+                            // Clear file input and preview on failure
+                            ktpImageInput.value = ''; // Reset file input
+                            document.getElementById('ktp-preview').src = "";
+                            document.getElementById('ktp-upload-area').classList.remove('has-image');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error during OCR:', error);
+                        // Removed: window.showCustomAlert('error', 'Terjadi kesalahan saat memproses gambar. Silakan coba lagi.');
+                        // Clear file input and preview on error
+                        ktpImageInput.value = '';
+                        document.getElementById('ktp-preview').src = "";
+                        document.getElementById('ktp-upload-area').classList.remove('has-image');
+                    });
+            });
+
+            // Function to handle file preview (remains the same)
+            function setupImagePreview(inputId, previewId, uploadAreaId) {
                 const inputElement = document.getElementById(inputId);
                 const previewElement = document.getElementById(previewId);
                 const uploadArea = document.getElementById(uploadAreaId);
-                const overlayText = document.getElementById(overlayTextId);
 
                 inputElement.addEventListener('change', function(event) {
                     const file = event.target.files[0];
@@ -116,24 +165,12 @@
                         uploadArea.classList.remove('has-image');
                     }
                 });
-
-                // Optional: Show overlay text on hover if an image exists
-                uploadArea.addEventListener('mouseenter', function() {
-                    if (uploadArea.classList.contains('has-image')) {
-                        overlayText.style.display = 'block';
-                    }
-                });
-                uploadArea.addEventListener('mouseleave', function() {
-                    overlayText.style.display = 'none';
-                });
             }
 
             // Pastikan ID ini cocok dengan atribut 'id' pada elemen input file di HTML
-            setupImagePreview('selfie_photo', 'selfie-preview', 'selfie-upload-area', 'selfie-overlay-text');
-            setupImagePreview('id_card_photo', 'ktp-preview', 'ktp-upload-area',
-            'ktp-overlay-text'); // ID input berubah menjadi 'id_card_photo'
-            setupImagePreview('selfie_with_id_card_photo', 'selfie-ktp-preview', 'selfie-ktp-upload-area',
-                'selfie-ktp-overlay-text');
+            setupImagePreview('selfie_photo', 'selfie-preview', 'selfie-upload-area');
+            setupImagePreview('id_card_photo', 'ktp-preview', 'ktp-upload-area');
+            setupImagePreview('selfie_with_id_card_photo', 'selfie-ktp-preview', 'selfie-ktp-upload-area');
         });
     </script>
 @endsection

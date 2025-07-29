@@ -9,13 +9,56 @@ use App\Models\VerificationRequest;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use thiagoalessio\TesseractOCR\TesseractOCR;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Log; // Import Log facade
 
 class WorkerRegistrationController extends Controller
 {
     use ValidatesRequests;
+
+    public function ocrKtpAjax(Request $request)
+    {
+        $request->validate([
+            'ktp_image' => 'required|image|mimes:jpeg,png,jpg|max:5120'
+        ]);
+
+        try {
+            $path = $request->file('ktp_image')->store('ktp_images', 'public');
+            $fullPath = storage_path('app/public/' . $path);
+
+            $ocrText = (new TesseractOCR($fullPath)) // Use imported TesseractOCR
+                ->lang('ind')
+                ->psm(6)
+                ->run();
+
+            preg_match('/\b\d{16}\b/', $ocrText, $matches);
+            $nik = $matches[0] ?? null;
+
+            // Delete the temporary uploaded image after OCR
+            Storage::disk('public')->delete($path);
+
+            if ($nik) {
+                // Store the scanned NIK in the session
+                Session::put('worker_registration.scanned_nik', $nik);
+                Log::info("OCR KTP Success: NIK {$nik} stored in session for user " . Auth::id());
+                return response()->json(['success' => true, 'message' => 'NIK ' . $nik . ' dari KTP berhasil dipindai dan disimpan ke sesi.']);
+            } else {
+                // Clear scanned_nik from session if not found
+                Session::forget('worker_registration.scanned_nik');
+                Log::warning("OCR KTP Failed: NIK not found in image for user " . Auth::id());
+                return response()->json(['success' => false, 'message' => 'NIK tidak ditemukan pada gambar. Silakan unggah ulang.']);
+            }
+        } catch (\Exception $e) {
+            // Log the error for debugging purposes
+            Log::error("OCR KTP Error for user " . Auth::id() . ": " . $e->getMessage());
+            // Clear scanned_nik from session on error
+            Session::forget('worker_registration.scanned_nik');
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memproses gambar KTP.']);
+        }
+    }
+
 
     // Method untuk menampilkan form langkah 1 (Data Pribadi)
     public function createStep1()
@@ -150,11 +193,6 @@ class WorkerRegistrationController extends Controller
 
     public function finalizeRegistration(Request $request)
     {
-        // Pastikan pengguna sudah login
-        // if (!Auth::check()) {
-        //     return redirect()->route('login')->with('error', 'Anda harus login untuk menyelesaikan pendaftaran.'); // Ubah 'login' ke route login Anda
-        // }
-
         // Pastikan langkah 1 dan 2 sudah selesai sebelum melanjutkan
         if (!Session::has('worker_registration.step1') || !Session::has('worker_registration.step2')) {
             return redirect()->route('worker.register.step1')->with('custom_error_alert', 'Silakan lengkapi langkah sebelumnya terlebih dahulu.');
@@ -162,6 +200,9 @@ class WorkerRegistrationController extends Controller
 
         // Ambil data langkah 1 dari sesi
         $step1Data = Session::get('worker_registration.step1');
+        // Retrieve scanned_nik from session
+        $scannedNik = Session::get('worker_registration.scanned_nik');
+
 
         // Validasi input untuk unggahan file dan detail pembayaran
         $this->validate($request, [
@@ -204,12 +245,12 @@ class WorkerRegistrationController extends Controller
 
         // Siapkan array data untuk model VerificationRequest
         $verificationData = [
-            // 'user_id' => Auth::id(), // user_id pasti ada karena sudah divalidasi Auth::check()
             'user_id' => $userId,
             'status' => 'pending',
             'first_name' => $step1Data['first_name'],
             'last_name' => $step1Data['last_name'],
             'nik' => $step1Data['nik'],
+            'scanned_nik' => $scannedNik, // Now using scannedNik from session
             'birthdate' => $step1Data['birthdate'],
             'gender' => $step1Data['gender'],
             'address' => $step1Data['address'],
@@ -221,21 +262,19 @@ class WorkerRegistrationController extends Controller
             'account_number' => $request->input('account_number'),
         ];
 
-        // dd($request->all(), $verificationData);
-
-        // Cari record VerificationRequest berdasarkan NIK
-        $verificationRequest = VerificationRequest::where('nik', $step1Data['nik'])->first();
+        // Cari record VerificationRequest berdasarkan user_id
+        $verificationRequest = VerificationRequest::where('user_id', $userId)->first();
 
         if ($verificationRequest) {
             $verificationRequest->update($verificationData);
         } else {
+            // This case should ideally not happen if OCR is done after step1,
+            // but for robustness, we create if not found.
             VerificationRequest::create($verificationData);
         }
 
         // Bersihkan data sesi pendaftaran setelah finalisasi berhasil
-        // User::where('id', Auth::id())->update(['is_worker' => 1]);
         Session::forget('worker_registration');
-        // update is_worker user jadi 1
         return redirect()->route('worker.register.success')->with('custom_blue_alert', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
     }
 

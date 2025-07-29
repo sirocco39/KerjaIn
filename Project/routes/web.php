@@ -173,6 +173,8 @@ Route::middleware('auth')->group(function () {
     // Grup route untuk pendaftaran pekerja tanpa autentikasi
 
     Route::middleware(['auth', PreventReRegistration::class])->group(function () {
+        Route::post('/ktp/ocr', [workerRegistrationController::class, 'ocrKtpAjax'])->name('ktp.ocr.ajax');
+
         Route::prefix('joinWorker')->name('worker.register.')->group(function () {
             // Langkah 1: Data Pribadi (Form GET, Proses POST)
             // URL: /joinWorker/join
