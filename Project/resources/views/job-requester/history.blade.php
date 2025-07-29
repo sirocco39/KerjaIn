@@ -3,7 +3,8 @@
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
         {{-- Page Title --}}
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">{{__('history-job-req.judul_halaman') }}
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">
+            {{ __('history-job-req.judul_halaman') }}
         </h1>
 
         <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
@@ -27,13 +28,17 @@
             <div class="tabs-dropdown-wrapper md:hidden w-full mb-4">
                 <select id="tab-select"
                     class="form-select w-full border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500">
-                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>{{ __('history-job-req.tab_semua') }}
+                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>
+                        {{ __('history-job-req.tab_semua') }}
                         ({{ $allOrders->count() }})</option>
-                    <option value="pending" @if (request('tab') == 'pending') selected @endif>{{ __('history-job-req.tab_berlangsung') }}
+                    <option value="pending" @if (request('tab') == 'pending') selected @endif>
+                        {{ __('history-job-req.tab_berlangsung') }}
                         ({{ $pendingOrders->count() }})</option>
-                    <option value="completed" @if (request('tab') == 'completed') selected @endif>{{ __('history-job-req.tab_selesai') }}
+                    <option value="completed" @if (request('tab') == 'completed') selected @endif>
+                        {{ __('history-job-req.tab_selesai') }}
                         ({{ $completedOrders->count() }})</option>
-                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>{{ __('history-job-req.tab_dibatalka ') }}
+                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>
+                        {{ __('history-job-req.tab_dibatalka ') }}
                         ({{ $cancelledOrders->count() }})</option>
                 </select>
             </div>
@@ -64,27 +69,27 @@
                                 data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
-                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}"
-                        @endif
-                            data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
-                            data-order-number="{{ $order->order_number ?? '-' }}"
-                            data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
-                            data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
-                            data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
-                            data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
-                            data-request-location="{{ $order->request->location ?? '-' }}"
-                            data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
-                            data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
-                            data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
-                            data-start-work="{{ $order->start_work ? \Carbon\Carbon::parse($order->start_work)->format('H.i') : '-' }}"
-                            data-finish-work="{{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('H.i') : '-' }}"
-                            data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
-                            data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
-                            data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
+                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}" @endif
+                        data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
+                        data-order-number="{{ $order->order_number ?? '-' }}"
+                        data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
+                        data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
+                        data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
+                        data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
+                        data-request-location="{{ $order->request->location ?? '-' }}"
+                        data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
+                        data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
+                        data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
+                        data-start-work="{{ $order->start_work ? \Carbon\Carbon::parse($order->start_work)->format('H.i') : '-' }}"
+                        data-finish-work="{{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('H.i') : '-' }}"
+                        data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
+                        data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
+                        data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
                         @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
                                 data-user-comment="{{ $order->user_review->comment }}" @endif
-                        {{-- Pass decoded photo URLs if a report exists --}}
-                        @if ($order->has_user_report && $order->user_report->decoded_photo_urls) data-report-photo-urls="{{ json_encode($order->user_report->decoded_photo_urls) }}" @endif>
+                        {{-- Pass decoded photo URLs if a report exists, using the new property from controller --}}
+                        @if ($order->has_user_report) data-report-photo-urls="{{ json_encode($order->report_decoded_photo_urls) }}"
+                                data-user-report-reasons="{{ $order->report_reasons }}" @endif>
                         {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
                         <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
                             style="min-height: 3.5rem;">
@@ -143,7 +148,8 @@
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">{{ __('history-job-req.modal_detail_penyelesaian') }}</h5>
+                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">
+                            {{ __('history-job-req.modal_detail_penyelesaian') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -153,41 +159,49 @@
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_judul_pesanan') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_judul_pesanan') }}</p>
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_nomor_pesanan') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_nomor_pesanan') }}</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_nama_pekerja') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_nama_pekerja') }}</p>
                                         <p class="fw-medium" id="modalWorkerName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_lokasi') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_lokasi') }}</p>
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_tgl_pesan') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_tgl_pesan') }}</p>
                                         <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_tgl_selesai') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_tgl_selesai') }}</p>
                                         <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_mulai_kerja') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_mulai_kerja') }}</p>
                                         <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_selesai_kerja') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('history-job-req.modal_selesai_kerja') }}</p>
                                         <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
@@ -195,7 +209,8 @@
                                 <div class="d-flex mt-1">
                                     <div class="text d-flex justify-content-between align-items-center"
                                         style="width:50%;">
-                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">{{ __('history-job-req.modal_total') }}</p>
+                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">
+                                            {{ __('history-job-req.modal_total') }}</p>
                                         <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
                                             <span id="modalRequestPrice"></span>
                                         </p>
@@ -209,7 +224,8 @@
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
                                                     fill="#294287" />
                                             </svg>
-                                            <div class="ms-2 fw-medium fs-5">{{ __('history-job-req.modal_invoice') }}</div>
+                                            <div class="ms-2 fw-medium fs-5">{{ __('history-job-req.modal_invoice') }}
+                                            </div>
                                         </a>
                                     </div>
                                 </div>
@@ -233,7 +249,8 @@
                                         id="submitReviewButton">{{ __('history-job-req.tombol_kirim') }}</button>
                                     <div class="m-1 text-center">{{ __('history-job-req.atau') }}</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()" id="reportProblemButton">{{ __('history-job-req.laporkan_masalah') }}</button>
+                                        onclick="openReportModal()"
+                                        id="reportProblemButton">{{ __('history-job-req.laporkan_masalah') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -256,25 +273,29 @@
                     <input type="hidden" name="reported_id" id="reportReportedId">
 
                     <div class="modal-header border-0 justify-content-center">
-                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">{{ __('history-job-req.modal_laporan_judul') }}</h3>
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">
+                            {{ __('history-job-req.modal_laporan_judul') }}</h3>
                         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_judul_pesanan') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_judul_pesanan') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalRequestTitle"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_nomor_pesanan') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_nomor_pesanan') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalOrderNumber"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_laporan_nama_klien') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">
+                                    {{ __('history-job-req.modal_laporan_nama_klien') }}</p>
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
@@ -289,15 +310,18 @@
                                 <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_tgl_selesai') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_tgl_selesai') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_mulai_kerja') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_mulai_kerja') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalStartWork"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_selesai_kerja') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_selesai_kerja') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalFinishWork"></p>
                             </div>
                         </div>
@@ -310,7 +334,8 @@
 
                         {{-- Image upload section for report proof --}}
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_upload_bukti') }}</label>
+                            <label
+                                class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
                                 <div class="add-image-button pb-2"
@@ -327,15 +352,23 @@
 
                         {{-- Textarea for reporting reasons --}}
                         <div class="mb-4">
-                            <label for="reportNote" class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_keluh_kesah') }}</label>
+                            <label for="reportNote"
+                                class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                                placeholder="{{ __('history-job-req.placeholder_keluh_kesah') }}" style="background-color: #f7f7ff; resize: none;"></textarea>
+                                placeholder="{{ __('history-job-req.placeholder_keluh_kesah') }}"
+                                style="background-color: #f7f7ff; resize: none;"></textarea>
+                        </div>
+
+                        <div class="modal-footer border-0 d-flex justify-content-end m-0 p-0">
+                            <button type="button" id="submitReportButton" class="btn btn-danger px-4">Kirim
+                                Laporan</button>
                         </div>
                     </div>
 
                     {{-- Report submission button --}}
                     <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">{{ __('history-job-req.tombol_kirim_laporan') }}</button>
+                        <button type="button" id="submitReportButton"
+                            class="btn btn-danger px-4 py-2">{{ __('history-job-req.tombol_kirim_laporan') }}</button>
                     </div>
                 </form>
             </div>
@@ -343,7 +376,7 @@
     </div>
 
     <script>
-         const lang = {
+        const lang = {
             penilaian_heading_baru: "{{ __('history-job-req.penilaian_heading_baru') }}",
             penilaian_heading_sudah: "{{ __('history-job-req.penilaian_heading_sudah') }}",
             label_komentar: "{{ __('history-job-req.label_komentar') }}",
@@ -492,34 +525,15 @@
                 // Set form action for report submission
                 document.getElementById('reportForm').action = `/user/submit-report/${currentTransactionId}`;
 
-                // --- Populate existing report data if available ---
-                const hasUserReport = rowData.getAttribute('data-has-user-report') === 'true';
-                const reportPhotoUrlsJson = rowData.getAttribute('data-report-photo-urls');
-                const reportReasons = rowData.getAttribute(
-                    'data-user-report-reasons'); // Assuming you add this data attribute
+                // Reset for new report (always allow new report)
+                reportFiles = [];
+                document.getElementById('reportNote').value = '';
+                document.getElementById('reportNote').disabled = false;
+                reportImageInput.disabled = false;
+                document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
+                addImageButton.style.display = 'flex'; // Show add image button
 
-                if (hasUserReport && reportPhotoUrlsJson) {
-                    try {
-                        reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs into reportFiles
-                        document.getElementById('reportNote').value = reportReasons || ''; // Populate reasons
-                        // Disable fields if report already exists
-                        document.getElementById('reportNote').disabled = true;
-                        reportImageInput.disabled = true;
-                        document.getElementById('submitReportButton').style.display = 'none'; // Hide submit button
-                        addImageButton.style.display = 'none'; // Hide add image button
-                    } catch (e) {
-                        console.error('Error parsing report photo URLs:', e);
-                        reportFiles = []; // Fallback to empty
-                    }
-                } else {
-                    // Reset for new report
-                    reportFiles = [];
-                    document.getElementById('reportNote').value = '';
-                    document.getElementById('reportNote').disabled = false;
-                    reportImageInput.disabled = false;
-                    document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
-                }
-                updateReportImagePreview(); // Render initial state (either empty or existing images)
+                updateReportImagePreview(); // Render initial state (empty for new report)
             }
 
             // Show the report modal after a brief delay
@@ -561,19 +575,85 @@
                 return;
             }
 
-            // Submit the form normally. Laravel will handle the redirect with flashed data.
-            // Ensure the form's action is correctly set for review submission.
-            document.getElementById('reviewForm').submit();
+            // Prepare FormData for submission
+            const formData = new FormData();
+            formData.append('transaction_id', currentTransactionId);
+            formData.append('reviewer_id', `{{ auth()->id() }}`);
+            formData.append('reviewee_id', reportedWorkerId); // Reviewing the worker
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 
-            // Optionally, disable button and show loading here, as page will reload
             const submitBtn = document.getElementById('submitReviewButton');
-            submitBtn.disabled = true;
-            submitBtn.textContent = lang.mengirim;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Mengirim...';
+            }
+
+            fetch(document.getElementById('reviewForm').action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw errorData;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem('reviewSuccessMessage', data.message); // Store success message
+                        // Close the completion modal (optional, but good UX before reload)
+                        const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                        if (completionModal) completionModal.hide();
+                        location.reload(); // Reload the page to display the alert
+                    } else {
+                        let errorMessage = data.message || 'Terjadi kesalahan saat menyimpan ulasan.';
+                        if (data.errors) {
+                            errorMessage = 'Validasi gagal:';
+                            for (const key in data.errors) {
+                                if (data.errors.hasOwnProperty(key)) {
+                                    data.errors[key].forEach(msg => {
+                                        errorMessage += `\n- ${msg}`;
+                                    });
+                                }
+                            }
+                        }
+                        window.showCustomAlert(errorMessage, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting review:', error);
+                    let errorMessage = 'Terjadi kesalahan saat menyimpan ulasan.';
+                    if (error.message) {
+                        errorMessage = error.message;
+                    } else if (error.errors) { // Handle Laravel validation errors
+                        errorMessage = 'Validasi gagal:';
+                        for (const key in error.errors) {
+                            errorMessage += `\n- ${error.errors[key].join(', ')}`;
+                        }
+                    }
+                    window.showCustomAlert(errorMessage, "error");
+                    // NO RELOAD ON ERROR
+                })
+                .finally(() => {
+                    const submitBtn = document.getElementById('submitReviewButton');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Kirim';
+                    }
+                });
         }
 
         // --- Function to Submit Report ---
-        function submitReport(event) {
-            event.preventDefault(); // Prevent default form submission to handle manually
+        function submitReport(event) { // Keep it as 'function submitReport(event)'
+            if (event) event.preventDefault(); // Prevent default form submission to handle manually
 
             const form = document.getElementById('reportForm');
             const reasons = document.getElementById('reportNote').value.trim();
@@ -628,62 +708,50 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Mengirim Laporan...';
 
-            // Submit the form using fetch, expecting a redirect
+            // Submit the form using fetch, expecting a JSON response
             fetch(form.action, { // Use the form's action which includes transaction ID
                     method: 'POST',
                     body: formData,
                     headers: {
                         // DO NOT set 'Content-Type': 'multipart/form-data' explicitly when using FormData,
                         // the browser does it correctly with a boundary.
-                        'Accept': 'application/json, text/plain, */*' // Accept various response types
+                        'Accept': 'application/json', // Expect JSON response
+                        'X-Requested-With': 'XMLHttpRequest',
                     },
-                    redirect: 'follow' // Instructs fetch to follow redirects
                 })
                 .then(response => {
-                    // This block will be executed if the initial response is NOT a redirect (e.g., validation error, 4xx/5xx status)
-                    // If the server successfully redirects (2xx status), this block might be skipped as the browser handles the redirect.
                     if (!response.ok) {
-                        // Try to parse JSON errors from Laravel validation
                         return response.json().then(errorData => {
-                            let errorMessage = '';
-                            if (errorData.errors) {
-                                for (let key in errorData.errors) {
-                                    errorMessage += `${errorData.errors[key].join(', ')}\n`;
-                                }
-                                window.showCustomAlert('Validasi Gagal:\n' + errorMessage, 'error');
-                            } else {
-                                // Fallback for non-validation errors
-                                throw new Error(errorData.message || 'Server error: ' + response.statusText);
-                            }
-                        }).catch(jsonError => {
-                            // Catch errors from parsing JSON or from the throw new Error above
-                            console.error('Error parsing server response:', jsonError);
-                            window.showCustomAlert('Terjadi kesalahan saat memproses respons server: ' +
-                                jsonError.message, 'error');
+                            throw errorData;
                         });
                     }
-                    // If response is OK, but not a redirect (unlikely if backend redirects on success)
-                    // or if it's a successful JSON response we didn't expect,
-                    // it means the backend didn't redirect as planned.
-                    // We'll just return text to consume the response body if it's not a redirect.
-                    return response.text();
+                    return response.json();
                 })
-                .then(text => {
-                    // This block is typically hit if the fetch promise resolves successfully
-                    // BUT the server did not issue a redirect (e.g., returned a success JSON or HTML directly).
-                    // If a redirect was successful, the page would have already navigated.
-                    console.log("Fetch completed, but no redirect occurred:", text);
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem('reportSuccessMessage', data.message); // Store success message
+                        const reportModal = bootstrap.Modal.getInstance(document.getElementById('reportWorkModal'));
+                        if (reportModal) reportModal.hide();
+                        location.reload(); // Reload the page to display the alert
+                    } else {
+                        window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim laporan.', 'error');
+                    }
                 })
                 .catch(error => {
-                    // Catch network errors or errors thrown from the .then(response => ...) block
                     console.error('Error during report submission:', error);
-                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message,
-                        'error');
+                    let errorMessage = 'Terjadi kesalahan saat mengirim laporan.\n';
+                    if (error.errors) {
+                        errorMessage += 'Validasi Gagal:\n';
+                        for (let key in error.errors) {
+                            errorMessage += `- ${error.errors[key].join(', ')}\n`;
+                        }
+                    } else if (error.message) {
+                        errorMessage += error.message;
+                    }
+                    window.showCustomAlert(errorMessage, 'error');
+                    // NO RELOAD ON ERROR
                 })
                 .finally(() => {
-                    // This finally block will always run.
-                    // For a successful redirect, the page will reload, making these UI updates moot.
-                    // But for client-side errors or server-side errors that don't redirect, they are important.
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Kirim Laporan';
                 });
@@ -705,9 +773,6 @@
 
 
         document.addEventListener('DOMContentLoaded', function() {
-            // No longer checking URL parameters for success messages, Laravel's session will handle it.
-            // The global alert display in master-job-req.blade.php handles it.
-
             const orderRows = document.querySelectorAll('.order-row');
             const submitReviewButton = document.getElementById('submitReviewButton');
             const reviewSectionContainer = document.getElementById('review-section-container');
@@ -715,10 +780,23 @@
             const reportProblemButton = document.getElementById('reportProblemButton');
             const submitReportButtonForReportModal = document.getElementById('submitReportButton');
 
+            // Check for success messages in localStorage on page load
+            const reviewSuccessMessage = localStorage.getItem('reviewSuccessMessage');
+            if (reviewSuccessMessage) {
+                window.showCustomAlert(reviewSuccessMessage, 'success');
+                localStorage.removeItem('reviewSuccessMessage'); // Clear the message
+            }
+
+            const reportSuccessMessage = localStorage.getItem('reportSuccessMessage');
+            if (reportSuccessMessage) {
+                window.showCustomAlert(reportSuccessMessage, 'success');
+                localStorage.removeItem('reportSuccessMessage'); // Clear the message
+            }
+
 
             let selectedRating = 0; // Local variable for selected rating within current modal view
 
-            // Function to render the review form (unchanged)
+            // Function to render the review form
             function renderReviewForm() {
                 reviewSectionHeading.textContent = lang.penilaian_heading_baru;
                 reviewSectionContainer.innerHTML = `
@@ -756,7 +834,7 @@
                 }
             }
 
-            // Function to render the existing review display (unchanged)
+            // Function to render the existing review display
             function renderExistingReview(rating, comment) {
                 reviewSectionHeading.textContent = lang.penilaian_heading_sudah;
                 let starHtml = '';
@@ -826,10 +904,7 @@
                             .finishWork;
 
                         // Set form actions dynamically for the completion modal
-                        // This form will be submitted directly via .submit()
-                        // Ensure this route is correct for your ReviewController.store method
-                        // Or if `storeReview` is in TransactionController, adjust accordingly.
-                        document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
+                        document.getElementById('reviewForm').action = `/reviews`;
 
 
                         // Conditional rendering of review section
@@ -844,20 +919,13 @@
 
                         // --- Handle Report Button State ---
                         if (reportProblemButton) {
-                            if (hasUserReport) {
-                                reportProblemButton.textContent = lang.laporan_sudah_terkirim;
-                                reportProblemButton.disabled = true;
-                                reportProblemButton.classList.remove('text-danger');
-                                reportProblemButton.classList.add('text-secondary');
-                                reportProblemButton.onclick = null; // Remove click listener
-                            } else {
-                                reportProblemButton.textContent = lang.laporkan_masalah;
-                                reportProblemButton.disabled = false;
-                                reportProblemButton.classList.remove('text-secondary');
-                                reportProblemButton.classList.add('text-danger');
-                                reportProblemButton.onclick =
-                                    openReportModal; // Re-attach click listener
-                            }
+                            // Always enable report button and reset its text
+                            reportProblemButton.textContent = lang.laporkan_masalah;
+                            reportProblemButton.disabled = false;
+                            reportProblemButton.classList.remove('text-secondary');
+                            reportProblemButton.classList.add('text-danger');
+                            reportProblemButton.onclick =
+                                openReportModal; // Re-attach click listener
                         }
 
                         // Setup invoice link
@@ -887,7 +955,6 @@
 
             // Attach submitReview to its button
             if (submitReviewButton) {
-                // Changed from onclick in HTML to addEventListener for cleaner JS
                 submitReviewButton.addEventListener('click', submitReview);
             }
 
@@ -1233,7 +1300,7 @@
             }
 
             .order-row .status-badge-fixed {
-                min-width: 70px !important;
+                min-width: 70px;
                 /* Smaller width for mobile */
                 text-align: center;
                 display: inline-flex;

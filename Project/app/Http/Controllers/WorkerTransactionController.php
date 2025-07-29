@@ -59,6 +59,28 @@ class WorkerTransactionController extends Controller
             $transaction->has_review = $transaction->reviewAboutWorker()->exists();
             $transaction->received_review = $transaction->reviewAboutWorker; // Get the review object itself
 
+            // NEW: Load worker's report about the requester for this transaction
+            // The `userReport` relationship is a HasOne, so it will fetch the first report found.
+            // For allowing multiple reports, the frontend will simply present a fresh form.
+            $workerReportForTransaction = Report::where('transaction_id', $transaction->id)
+                ->where('reporter_id', $userId) // Reporter is the current worker
+                ->where('reported_id', $transaction->requester_id) // Reported is the requester of this transaction
+                ->first();
+
+            $transaction->workerReport = $workerReportForTransaction;
+            $transaction->has_worker_report = ($workerReportForTransaction !== null);
+
+            // Ensure workerReport object is available and its properties are decoded for Blade
+            if ($transaction->workerReport) {
+                $transaction->workerReport->decoded_photo_urls = json_decode($transaction->workerReport->photo_url, true) ?? [];
+            } else {
+                // Create a dummy object if no report exists, to prevent errors in Blade
+                $transaction->workerReport = (object)[
+                    'decoded_photo_urls' => [],
+                    'reasons' => null,
+                ];
+            }
+
             return $transaction;
         });
 
@@ -110,13 +132,15 @@ class WorkerTransactionController extends Controller
 
         // NEW: Check if a review already exists for this worker on this transaction (from requester)
         $hasReview = $transaction->reviewAboutWorker()->exists(); // Review given by requester about worker
-        $receivedReview = $transaction->reviewAboutWorker; // This will be null if no review exists
+        $receivedReview = $transaction->reviewAboutWorker; // Get the review object itself
 
         // NEW: Check if a review already exists FROM this worker ABOUT the requester for this transaction
         $hasReviewRequester = $transaction->reviewAboutRequester()->exists(); // Review given by worker about requester
         $receivedReviewRequester = $transaction->reviewAboutRequester; // This will be null if no review exists
 
         // NEW: Check if a report already exists FROM this worker ABOUT the requester for this transaction
+        // The `userReport` relationship is a HasOne, so it will fetch the first report found.
+        // For allowing multiple reports, the frontend will simply present a fresh form.
         $hasWorkerReport = Report::where('transaction_id', $transaction->id)
             ->where('reporter_id', Auth::id())
             ->where('reported_id', $transaction->requester_id)
@@ -343,25 +367,11 @@ class WorkerTransactionController extends Controller
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja.");
+                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number}.");
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
             ], 403);
-        }
-
-        // Check if a report by this worker for this transaction already exists (optional, based on your REMOVED comment)
-        // If you want to prevent multiple reports, re-enable and adapt this check
-        $existingReport = Report::where('transaction_id', $transactionId)
-            ->where('reporter_id', Auth::id())
-            ->where('reported_id', $request->reported_id) // Ensure it's about the correct reported party
-            ->first();
-
-        if ($existingReport) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda sudah mengajukan laporan untuk transaksi ini.'
-            ], 409); // Conflict
         }
 
         try {
@@ -372,13 +382,14 @@ class WorkerTransactionController extends Controller
                 $photoUrls[] = Storage::url($path); // Get public URL for storage
             }
 
+            // Always create a new report entry
             Report::create([
                 'transaction_id' => $transaction->id,
                 'reporter_id' => $request->reporter_id,
                 'reported_id' => $request->reported_id,
                 'reasons' => $request->reasons,
                 'photo_url' => json_encode($photoUrls), // Store JSON encoded array of URLs
-                'status' => 'pending', // Default status for a new report
+                'status' => 'Not Reviewed', // Default status for a new report
             ]);
 
             activity()
@@ -481,3 +492,4 @@ class WorkerTransactionController extends Controller
         }
     }
 }
+

@@ -1,4 +1,4 @@
-@extends('master.master-job-req')
+@extends('master.master-job-taker')
 
 @section('content')
     <div class="topup-page-container">
