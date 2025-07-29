@@ -264,7 +264,7 @@ class RequestController extends Controller
                         'amount' => $refundAmount,
                         'type' => 'debit',
                         'description_id' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
-                        'description_id' => 'Balance refund on hold due to price adjustment on: ' . $workRequest->title,
+                        'description_en' => 'Balance refund on hold due to price adjustment on: ' . $workRequest->title,
                     ]);
                     activity()->inLog('Finance')->causedBy($user)->on($user)
                         ->log("Dana sebesar Rp" . number_format($refundAmount) . " dikembalikan ke {$user->first_name} karena perubahan harga.");
