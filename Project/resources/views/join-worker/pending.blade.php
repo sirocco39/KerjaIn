@@ -1,4 +1,5 @@
 @extends('master.master-job-req')
+<!-- This file name is pending.blade.php -->
 
 @section('content')
 {{-- Link ke Tailwind CSS sudah dihapus, diasumsikan Bootstrap sudah ada di master layout --}}
@@ -21,14 +22,13 @@
                 </div>
 
                 {{-- Judul menggunakan kelas 'display' Bootstrap agar lebih besar dan menonjol --}}
-                <h1 class="display-6 fw-bold text-dark mb-3">Pengajuan Verifikasi Diterima!</h1>
+                <h1 class="display-6 fw-bold text-dark mb-3">{{ __('join-worker.verification_submission_received') }}</h1>
 
                 {{-- Ukuran teks paragraf menggunakan 'fs-5' (font-size 5) --}}
-                <p class="fs-5 mb-4 text-body-secondary">Terima kasih telah mengajukan verifikasi identitas untuk menjadi Mitra KerjaIn.</p>
+                <p class="fs-5 mb-4 text-body-secondary">{{ __('join-worker.thanks_for_submitting_verification') }}</p>
 
                 <p class="mb-5">
-                    Tim kami sedang memproses pengajuan verifikasi Anda. Proses ini biasanya memakan waktu <strong>1–3 hari kerja</strong>. Anda akan menerima notifikasi melalui WhatsApp atau email setelah proses verifikasi selesai.
-                </p>
+                    {!! __('join-worker.processing_submission_time') !!} </p>
 
                 {{-- Tombol utama menggunakan kelas 'btn', 'btn-primary', dan 'btn-lg' --}}
                 <a href="{{ url('/') }}"
@@ -38,12 +38,12 @@
                     <svg class="me-2" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0v-9l-2 2M9 5h6m-6 0H9"></path>
                     </svg>
-                    Kembali ke Beranda
+                    {{ __('join-worker.back_to_homepage') }}
                 </a>
 
                 {{-- Teks catatan kaki di bagian bawah --}}
                 <div class="mt-5 text-muted small">
-                    Jika ada pertanyaan, silakan hubungi kami di <a href="mailto:support@kerjain.com">support@kerjain.com</a>.
+                    {{ __('join-worker.questions_contact_us_at') }} <a href="mailto:support@kerjain.com">support@kerjain.com</a>.
                 </div>
 
             </div>

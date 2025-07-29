@@ -46,7 +46,7 @@ return [
 
     'status' => [
         'accepted' => 'Diterima',
-        'in_progress' => 'Dikerjakan',
+        'in progress' => 'Dikerjakan',
         'completed' => 'Selesai',
         'cancelled' => 'Dibatalkan',
         'submitted' => 'Ditinjau',

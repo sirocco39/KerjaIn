@@ -46,7 +46,7 @@ return [
 
     'status' => [
         'accepted' => 'Accepted',
-        'in_progress' => 'In Progress',
+        'in progress' => 'In Progress',
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
         'submitted' => 'Submitted',
