@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'company_profit' => 'Keuntungan Perusahaan',
+    'from_service_fee' => 'dari Biaya Layanan',
+    'from_completed_jobs' => 'dari pekerjaan yang diselesaikan.',
+    'total_active_user_balance' => 'Total Saldo Aktif Pengguna',
+    'total_available_balance_desc' => 'Jumlah seluruh saldo yang dapat digunakan oleh user.',
+    'total_held_balance' => 'Total Saldo Tertahan',
+    'funds_held_escrow_desc' => 'Dana yang dipegang sebagai escrow untuk pekerjaan.',
+    'list_of_all_requests' => 'Daftar Semua Request',
+    'displaying_all_requests_desc' => 'Menampilkan semua request, termasuk yang sudah selesai atau dibatalkan.',
+    'request_id' => 'ID Request',
+    'service' => 'Layanan',
+    'client' => 'Client',
+    'worker' => 'Worker',
+    'total_price' => 'Harga Total',
+    'service_fee' => 'Biaya Layanan',
+    'request_status' => 'Status Request',
+    'created_at' => 'Dibuat pada',
+    'deleted' => 'Dihapus',
+    'no_requests_found' => 'Tidak ada request yang ditemukan.',
+    'n_a' => 'N/A',
+    'open' => 'Open',
+    'closed' => 'Closed',
+];

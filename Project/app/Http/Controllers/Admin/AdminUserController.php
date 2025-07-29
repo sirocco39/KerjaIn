@@ -34,6 +34,7 @@ class AdminUserController extends Controller
 
         // --- Pencarian Pengguna dan Filtering Log ---
         $searchedUser = null;
+        $selectedUserId = null;
         $searchQuery = $request->input('search_query'); // Ini akan digunakan untuk menampilkan nilai di input
         $selectedUserId = $request->input('user_id'); // Ini ID pengguna yang dipilih dari autocomplete
 
@@ -58,8 +59,6 @@ class AdminUserController extends Controller
             // Kita masih ingin menampilkan hasil yang relevan, tapi tanpa memilih satu user spesifik
             $searchedUser = User::where('id', $searchQuery)
                 ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
-                ->orWhere('first_name', 'like', '%' . $searchQuery . '%')
-                ->orWhere('last_name', 'like', '%' . $searchQuery . '%')
                 ->first();
 
             if ($searchedUser) {
@@ -73,9 +72,9 @@ class AdminUserController extends Controller
                 $activityLogs = Activity::whereRaw('1 = 0');
             }
         } else {
-            $activityLogs = Activity::latest()->paginate(10)
-                // === PENTING: Tambahkan ini juga ===
-                ->appends(request()->query());
+            $activityLogs = $activityLogs->paginate(10);
+            // dd($activityLogs);
+            // ->appends(request()->query());
         }
 
         // $activityLogs = $activityLogs->paginate(10);

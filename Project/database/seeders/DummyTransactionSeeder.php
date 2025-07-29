@@ -32,7 +32,7 @@ class DummyTransactionSeeder extends Seeder
             [
                 'first_name' => 'Admin',
                 'last_name' => 'User',
-                'password' => bcrypt('*Password123'), // A common test password for admin
+                'password' => bcrypt('@Super645!'), // A common test password for admin
                 'role' => 'admin', // Assuming 'admin' is a valid role from your schema
                 'phone_number' => '081122334455',
                 'balance' => 0.00, // Admins typically don't have balance
