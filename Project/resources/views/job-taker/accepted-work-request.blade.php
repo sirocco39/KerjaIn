@@ -216,7 +216,7 @@
                                                     style="">{{ __('accepted.timeline.diterima') }}</div>
                                                 <div class="px-4 rounded-5 bg-info text-dark fs-6"
                                                     style="margin-top:25px; margin-bottom: 25px;">
-                                                    {{ __('accepted.timeline.dikerjain') }}</div>
+                                                    {{ __('accepted.timeline.dikerjakan') }}</div>
                                                 <div class="px-4 rounded-pill text-dark fs-6">
                                                     {{ __('accepted.timeline.selesai') }}</div>
                                             </div>
@@ -320,7 +320,7 @@
                                         </button>
                                     </form>
                                     <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja
+                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal"> {{ __('accepted.tombol.batalkan_kerja') }}
                                     </button>
                                 @elseif($transaction->status === 'completed')
                                     {{-- Tombol Sudah Dikerjakan --}}

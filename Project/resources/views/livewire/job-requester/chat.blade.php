@@ -312,7 +312,7 @@
                                 <div
                                     class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
                                     <div
-                                        class="chat-bubble {{ $msg->sender_id === auth()->id() ? 'chat-bubble-receiver' : 'chat-bubble-sender' }}">
+                                        class="chat-bubble {{ $msg->sender_id === auth()->id() ? 'bubble-sender' : 'bubble-receiver' }}">
                                         {{ $msg->message }}
                                     </div>
                                     <div class="small text-muted mt-1 px-2 d-flex align-items-center">

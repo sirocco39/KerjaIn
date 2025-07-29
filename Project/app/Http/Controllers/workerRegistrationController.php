@@ -275,7 +275,12 @@ class WorkerRegistrationController extends Controller
 
         // Bersihkan data sesi pendaftaran setelah finalisasi berhasil
         Session::forget('worker_registration');
+<<<<<<< HEAD
+        // update is_worker user jadi 1
+        return redirect()->route('worker.register.success')->with('custom_blue_alert', __('alerts.pendaftaran_berhasil_disubmit'));
+=======
         return redirect()->route('worker.register.success')->with('custom_blue_alert', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
+>>>>>>> 3fb39c43f4580d5c123eed18d6e8f3ac0dfdaded
     }
 
     public function showSuccessPage()

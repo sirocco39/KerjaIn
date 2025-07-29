@@ -6,12 +6,13 @@
         <div class="container-fluid pembatas-x">
             @auth
                 <h1 class="fw-bold mb-1">
-                    {{ __('home-job-taker.sapaan', ['nama' => auth()->user()->first_name . ' ' . auth()->user()->last_name]) }}</h1>
+                    {{ __('home-job-taker.sapaan', ['nama' => auth()->user()->first_name . ' ' . auth()->user()->last_name]) }}
+                </h1>
             @else
                 <h1 class="fw-bold mb-1">Halo, Nama Pengguna</h1>
             @endauth
             <p class="mb-0">
-               {{ __('home-job-taker.deskripsi_sapaan') }}
+                {{ __('home-job-taker.deskripsi_sapaan') }}
             </p>
         </div>
         <x-search></x-search>
@@ -26,9 +27,10 @@
                 <h4 class="fw-bold title-detail m-0 mb-2"> {{ __('home-job-taker.lama_bekerja') }}</h4>
                 @auth
                     <p class="mb-0 text-p"><b class="bold-point">{{ floor(auth()->user()->created_at->diffInYears(now())) }}</b>
-                         {{ __('home-job-taker.tahun') }}</p>
+                        {{ __('home-job-taker.tahun') }}
+                    </p>
                 @else
-                    <p class="mb-0 text-p"><b class="bold-point">0</b>  {{ __('home-job-taker.tahun') }}</p>
+                    <p class="mb-0 text-p"><b class="bold-point">0</b> {{ __('home-job-taker.tahun') }}</p>
                 @endauth
             </div>
 
@@ -37,9 +39,10 @@
                 @auth
                     <p class="mb-0 text-p"><b
                             class="bold-point">{{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }}</b>
-                         {{ __('home-job-taker.pekerjaan') }}</p>
+                        {{ __('home-job-taker.pekerjaan') }}
+                    </p>
                 @else
-                    <p class="mb-0 text-p"><b class="bold-point">0</b>  {{ __('home-job-taker.pekerjaan') }}</p>
+                    <p class="mb-0 text-p"><b class="bold-point">0</b> {{ __('home-job-taker.pekerjaan') }}</p>
                 @endauth
             </div>
 
@@ -47,7 +50,8 @@
                 <h4 class="fw-bold title-detail m-0 mb-2"> {{ __('home-job-taker.rating_rata_rata') }}</h4>
                 <p class="mb-0"></p>
                 @auth
-                    <p class="mb-0 text-p"><b class="bold-point">{{ number_format(auth()->user()->rating, 2, ',', '.') }}</b></p>
+                    <p class="mb-0 text-p"><b class="bold-point">{{ number_format(auth()->user()->rating, 2, ',', '.') }}</b>
+                    </p>
                 @else
                     <p class="mb-0 text-p"><b class="bold-point">0</b></p>
                 @endauth
@@ -90,7 +94,8 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                                     </div>
-                                    <span> {{ __('home-job-taker.card.klien_prefix') }} {{ $r->requester->first_name }}</span>
+                                    <span> {{ __('home-job-taker.card.klien_prefix') }}
+                                        {{ $r->requester->first_name }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-3 col-lg-4 gap-2 me-2">
@@ -170,13 +175,15 @@
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div id="modal-content-container" class="p-3">
-                    <h1 class="fw-bold mb-3" id="modal-detail-title"> {{ __('home-job-taker.modal.judul_placeholder') }}</h1>
+                    <h1 class="fw-bold mb-3" id="modal-detail-title"> {{ __('home-job-taker.modal.judul_placeholder') }}
+                    </h1>
                     <ul class="job-card-details">
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                             </div>
-                            <span>{{ __('home-job-taker.modal.klien_prefix') }} <span id="modal-detail-profile"></span></span>
+                            <span>{{ __('home-job-taker.modal.klien_prefix') }} <span
+                                    id="modal-detail-profile"></span></span>
                         </li>
 
                         <li class="gap-2">
@@ -220,6 +227,32 @@
                         <a id="button-action-2"></a>
                         <a id="button-action-3"></a>
                     </div> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <img src="{{ asset('Image/Icon/icon-danger.svg') }}" alt="Danger Icon">
+                    <h1 class="fw-bold mb-0" style="color: #B02A37">Hapus Tawaran</h1>
+                    <img src="{{ asset('Image/Icon/icon-danger.svg') }}" alt="Danger Icon">
+                </div>
+                <div id="modal-content-container" class="p-3">
+                    <p class="mb-3 text-center fw-medium fs-5">Apakah kamu yakin menghapus tawaran?</p>
+                </div>
+                <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
+                    <a class="details-button-item btn-tawar-modal text-decoration-none" data-bs-target="#detailModal"
+                        data-bs-toggle="modal" id="kembali-button-section">Tidak</a>
+                    <form id="delete-request-form" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="details-button-item btn-hapus-modal text-decoration-none">Ya</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -380,15 +413,15 @@
             function getStatusText(status) {
                 switch (status?.toLowerCase()) {
                     case 'accepted':
-                        return 'Diterima';
+                        return '{{ __('home-job-taker.card.status_diterima') }}';
                     case 'in progress':
-                        return 'Dikerjain';
+                        return '{{ __('home-job-taker.card.status_dikerjakan') }}';
                     case 'submitted':
-                        return 'Ditinjau';
+                        return '{{ __('home-job-taker.card.status_ditinjau') }}';
                     case 'completed':
-                        return 'Selesai';
+                        return '{{ __('home-job-taker.card.status_selesai') }}';
                     case 'cancelled':
-                        return 'Dibatalin';
+                        return '{{ __('home-job-taker.card.status_dibatalkan') }}';
                     default:
                         return '-';
                 }

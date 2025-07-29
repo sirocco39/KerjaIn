@@ -25,8 +25,12 @@
 
         $workerCreatedAtYear = date('F Y', strtotime($worker->created_at));
 
-        $transactionStartWorkFormatted = $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('d M Y H:i') : '-';
-        $transactionFinishWorkFormatted = $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('d M Y H:i') : '-';
+        $transactionStartWorkFormatted = $transaction->start_work
+            ? \Carbon\Carbon::parse($transaction->start_work)->format('d M Y H:i')
+            : '-';
+        $transactionFinishWorkFormatted = $transaction->finish_work
+            ? \Carbon\Carbon::parse($transaction->finish_work)->format('d M Y H:i')
+            : '-';
 
         $transactionCreatedAtFormatted = \Carbon\Carbon::parse($transaction->created_at)->format('d M Y');
         $transactionUpdatedAtFormatted = \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y');
@@ -202,37 +206,38 @@
                                 <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
                                     data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
                                     style="background-color:#294287; width:88%;">
-                                    Tandai Selesai
+                                    {{ __('ongoing.tombol_tandai_selesai') }}
                                 </button>
                                 <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                     data-bs-toggle="modal" data-bs-target="#completionProofModal"
                                     style="color: #0d6efd; text-decoration: none;">
-                                    Lihat Bukti Penyelesaian
+                                    {{ __('ongoing.tombol_lihat_bukti') }}
                                 </a>
                             @elseif($transaction->status == 'completed')
                                 <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                     style="width:88%;cursor: not-allowed;pointer-events: none;">
-                                    Selesai
+                                    {{ __('ongoing.status_selesai') }}
                                 </a>
                                 <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                     data-bs-toggle="modal" data-bs-target="#completionProofModal"
                                     style="color: #0d6efd; text-decoration: none;">
-                                    Lihat Bukti Penyelesaian
+                                    {{ __('ongoing.tombol_lihat_bukti') }}
                                 </a>
                             @elseif($transaction->status == 'in progress')
                                 <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                    style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                    style="background-color:#9d9d9d; width:88%;">
+                                    {{ __('ongoing.tombol_tandai_selesai') }}</div>
                                 <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                     style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
-                                    Lihat Bukti Penyelesaian
+                                    {{ __('ongoing.tombol_lihat_bukti') }}
                                 </a>
-                                <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
                             @elseif($transaction->status == 'accepted')
                                 <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                    style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                    style="background-color:#9d9d9d; width:88%;">
+                                    {{ __('ongoing.tombol_tandai_selesai') }}</div>
                                 <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">
+                                    {{ __('ongoing.tombol_batalkan_kerja') }}</div>
                             @endif
                         </div>
                     </div>
@@ -246,7 +251,8 @@
     <div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form id="markCompleteForm" action="{{ route('transaction.markComplete', $transaction->id) }}" method="POST">
+            <form id="markCompleteForm" action="{{ route('transaction.markComplete', $transaction->id) }}"
+                method="POST">
                 @csrf
                 <div class="modal-content p-4">
                     <div class="d-flex flex-md-row align-items-center justify-content-center text-center text-md-start">
@@ -468,14 +474,14 @@
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
-                                fill="#B02A37" />
+                            fill="#B02A37" />
                     </svg>
                     <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">{{ __('ongoing.modal_batal_judul') }}</h4>
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
-                                fill="#B02A37" />
+                            fill="#B02A37" />
                     </svg>
                 </div>
 
@@ -1247,7 +1253,7 @@
             if (!form) return;
 
             this.disabled = true;
-            this.innerHTML = 'Memproses...';
+            this.innerHTML = '{{ __('accepted.memproses') }}';
 
             fetch(form.action, {
                     method: 'POST',

@@ -81,7 +81,7 @@
         <div class="send-layout d-flex align-items-center justify-content-between" style="flex:1; height:10%;">
             <form wire:submit.prevent="send" class="d-flex flex-fill">
                 @csrf
-                <input type="text" class="me-2 form-control rounded-5 flex-grow-1" wire:model.defer="newMessage" placeholder="T{{ __('chat-job-req.placeholder_pesan') }}">
+                <input type="text" class="me-2 form-control rounded-5 flex-grow-1" wire:model.defer="newMessage" placeholder="{{ __('chat-job-req.placeholder_pesan') }}">
                 <button type="submit" class="btn rounded-5 d-flex align-items-center justify-content-center" style="background-color:#309FFF; height:100%; aspect-ratio: 1/1;">
                     <svg width="29" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7.80209 15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644 12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />

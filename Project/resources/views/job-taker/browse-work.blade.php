@@ -33,7 +33,7 @@
 
                         <li class="gap-2">
                             <div class="icon-wrapper">
-                                <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Address">
+                                <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Address">
                             </div>
                             <span>{{ $request->end_time->format('d M Y, H:i') }}</span>
                         </li>
