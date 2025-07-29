@@ -7,7 +7,7 @@ use App\Models\Review;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Support\Facades\Auth; // Import Auth facade
 
 class ReviewController extends Controller
 {
@@ -23,12 +23,32 @@ class ReviewController extends Controller
                 'comment' => 'required|string',
             ]);
 
+            // Authorization check: Ensure the reviewer is the authenticated user
+            if (Auth::id() != $validated['reviewer_id']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak berwenang untuk memberikan ulasan ini.'
+                ], 403); // Forbidden
+            }
+
+            // Prevent duplicate reviews from the same reviewer for the same transaction
+            $existingReview = Review::where('transaction_id', $validated['transaction_id'])
+                                    ->where('reviewer_id', $validated['reviewer_id'])
+                                    ->first();
+
+            if ($existingReview) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda sudah memberikan ulasan untuk transaksi ini.'
+                ], 409); // Conflict
+            }
+
             // Create the review record
             Review::create([
                 'transaction_id' => $validated['transaction_id'],
                 'reviewer_id' => $validated['reviewer_id'],
                 'reviewee_id' => $validated['reviewee_id'],
-                'rating' => $validated['rating'], // Use validated['rating']
+                'rating' => $validated['rating'],
                 'comment' => $validated['comment'],
             ]);
 
@@ -58,3 +78,4 @@ class ReviewController extends Controller
         }
     }
 }
+

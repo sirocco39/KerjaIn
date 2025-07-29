@@ -134,7 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'storeReport'])->name('user.submitReport');
 
     // Avoid duplicates — keep only one valid review route
-    Route::post('/reviews/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store'); // Corrected route
     Route::get('/transaction-details/{id}', [TransactionController::class, 'getTransactionDetails'])->name('transaction.details');
 
     // =======================

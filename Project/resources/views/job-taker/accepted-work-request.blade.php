@@ -26,7 +26,7 @@
 
         $alamat = $request->location; // Menggunakan $request->location dari model
         $alamatEncoded = urlencode($alamat);
-        $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
+        $mapsLink = 'http://maps.google.com/maps?q=' . $alamatEncoded;
 
         $created_at = $worker->created_at;
         $year = date('F Y', strtotime($created_at));
@@ -88,6 +88,7 @@
                                             d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
                                             fill="#133E87" />
                                     </svg>
+
                                     <div class="p-2">Mulai</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
@@ -324,7 +325,8 @@
                                         style="background-color:#294287;">
                                         Ditinjau
                                     </a>
-                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
+                                    <button type="button"
+                                        class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
                                         data-bs-toggle="modal" data-bs-target="#completionModal">Berikan Penilaian
                                     </button>
                                 @elseif($transaction->status === 'in progress')
@@ -349,7 +351,7 @@
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
             {{-- Form for review submission will be dynamically handled by JS --}}
-            <form id="reviewForm" method="POST">
+            <form id="reviewForm" method="POST" action="{{ route('reviews.store') }}">
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
@@ -655,7 +657,32 @@
         let reportFiles = []; // Array of File objects or URLs for the report modal
         const MAX_REPORT_IMAGES = 7; // Define max images constant
 
+        // Global variables for managing transaction and requester IDs across modals
+        let currentTransactionId = null;
+        let reportedRequesterId = null;
+
+
         document.addEventListener('DOMContentLoaded', function() {
+            const startWorkSuccessMessage = localStorage.getItem('startWorkSuccessMessage');
+            if (startWorkSuccessMessage) {
+                window.showCustomAlert(startWorkSuccessMessage, 'success');
+                localStorage.removeItem('startWorkSuccessMessage'); // Clear the message after displaying it
+            }
+
+            // Check for success message after reload for reports
+            const reportSuccessMessage = localStorage.getItem('reportSuccessMessage');
+            if (reportSuccessMessage) {
+                window.showCustomAlert(reportSuccessMessage, 'success');
+                localStorage.removeItem('reportSuccessMessage'); // Clear the message after displaying it
+            }
+
+            // Check for success message after reload for reviews
+            const reviewSuccessMessage = localStorage.getItem('reviewSuccessMessage');
+            if (reviewSuccessMessage) {
+                window.showCustomAlert(reviewSuccessMessage, 'success');
+                localStorage.removeItem('reviewSuccessMessage'); // Clear the message after displaying it
+            }
+
             // Initialize upload area for "Completion Proof" (image placeholder)
             initPhotoPreview('photoInputProof', 'previewContainerProof', 'uploadAreaProof', 'image');
 
@@ -675,7 +702,7 @@
                 // Clear all current image preview wrappers to re-render them
                 if (reportImagePreviewContainer) {
                     reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el
-                    .remove());
+                        .remove());
 
                     // Iterate in order for existing, and correctly place them relative to the addImageButton
                     reportFiles.forEach((fileOrUrl, index) => {
@@ -770,23 +797,24 @@
 
             // --- Function to Open Report Modal ---
             window.openReportModal = function() {
+                // Set flag to true as we are intentionally opening the report modal
                 window.isOpeningReportModal = true;
+
                 // Close the completion modal before opening the report modal
-                const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
                 if (completionModal) {
                     completionModal.hide();
                 }
 
-                const reportModalElement = document.getElementById('reportWorkModal');
-                const reportModal = new bootstrap.Modal(reportModalElement);
-
                 // Populate report modal fields with data from the current transaction
+                const reportModal = new bootstrap.Modal(document.getElementById('reportWorkModal'));
+
                 document.getElementById('reportModalRequestTitle').textContent =
-                `{{ $request->title ?? '-' }}`;
+                    `{{ $request->title ?? '-' }}`;
                 document.getElementById('reportModalOrderNumber').textContent =
                     `{{ $transaction->order_number ?? '-' }}`;
                 document.getElementById('reportModalRequesterName').textContent =
-                    `{{ $request->requester->first_name ?? '' }} {{ $request->requester->last_name ?? '' }}`;
+                    `{{ $transaction->requester->full_name ?? '-' }}`;
                 document.getElementById('reportModalRequestLocation').textContent =
                     `{{ $request->location ?? '-' }}`;
                 document.getElementById('reportModalTransactionCreatedAt').textContent =
@@ -800,52 +828,31 @@
                 document.getElementById('reportModalFinishWork').textContent =
                     `{{ $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') : '-' }}`;
 
-
                 // Set hidden form fields for submission
                 document.getElementById('reportTransactionId').value = `{{ $transaction->id }}`;
-                document.getElementById('reportReportedId').value = `{{ $transaction->requester->id }}`;
+                document.getElementById('reportReportedId').value = `{{ $transaction->requester_id }}`;
 
                 // Set form action for report submission
                 document.getElementById('reportForm').action =
-                    `{{ route('worker.submitReport', $transaction->id) }}`;
+                    `/job-taker/submit-report/{{ $transaction->id }}`; // Correct route for worker reporting
 
-                // Check if a report already exists for this transaction
-                const hasWorkerReport = `{{ $hasWorkerReport ? 'true' : 'false' }}` === 'true';
-                const reportPhotoUrlsJson = `{{ json_encode($workerReport->decoded_photo_urls ?? []) }}`;
-                const reportReasons = `{{ $workerReport->reasons ?? '' }}`;
+                // Always reset for new report (allow multiple reports)
+                reportFiles = []; // Clear any previously loaded report files
+                document.getElementById('reportNote').value = '';
+                document.getElementById('reportNote').disabled = false;
+                if (reportImageInput) reportImageInput.disabled = false;
+                if (document.getElementById('submitReportButton')) document.getElementById('submitReportButton')
+                    .style.display = 'block'; // Show submit button
+                if (addImageButton) addImageButton.style.display = 'flex'; // Show add image button
 
-                if (hasWorkerReport) {
-                    try {
-                        reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs
-                        document.getElementById('reportNote').value = reportReasons; // Populate reasons
-                        // Disable fields if report already exists
-                        document.getElementById('reportNote').disabled = true;
-                        if (reportImageInput) reportImageInput.disabled = true;
-                        if (document.getElementById('submitReportButton')) document.getElementById(
-                            'submitReportButton').style.display = 'none'; // Hide submit button
-                        if (addImageButton) addImageButton.style.display = 'none'; // Hide add image button
-                    } catch (e) {
-                        console.error('Error parsing report photo URLs:', e);
-                        reportFiles = []; // Fallback to empty
-                    }
-                } else {
-                    // Reset for new report
-                    reportFiles = [];
-                    document.getElementById('reportNote').value = '';
-                    document.getElementById('reportNote').disabled = false;
-                    if (reportImageInput) reportImageInput.disabled = false;
-                    if (document.getElementById('submitReportButton')) document.getElementById(
-                        'submitReportButton').style.display = 'block'; // Show submit button
-                    if (addImageButton) addImageButton.style.display = 'flex'; // Show add image button
-                }
-                updateReportImagePreview(); // Render initial state (either empty or existing images)
-
+                updateReportImagePreview(); // Render initial state (empty for new report)
 
                 // Show the report modal after a brief delay
                 setTimeout(() => {
                     reportModal.show();
                 }, 300);
-            };
+            }
+
 
             // --- Star Rating Functionality for Review Modal ---
             // Updates the visual fill of the stars
@@ -864,8 +871,10 @@
             }
 
 
-            // --- Function to Submit Review ---
-            window.submitReview = function() {
+            // --- Main function to handle review submission (now triggered by form.onsubmit) ---
+            function handleReviewFormSubmit(event) {
+                event.preventDefault(); // <-- CRUCIAL: Prevent the default form submission
+
                 const comment = document.getElementById('comment').value.trim();
                 const ratingInput = document.getElementById('rating-input');
                 const rating = ratingInput ? parseInt(ratingInput.value) : 0;
@@ -881,20 +890,16 @@
                     return;
                 }
 
-                // Set the form action dynamically (important for when reviewForm is rendered)
-                const reviewForm = document.getElementById('reviewForm');
-                reviewForm.action = `{{ route('reviews.store', $transaction->id) }}`;
-
                 // Prepare FormData for submission
                 const formData = new FormData();
                 formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
                     'content'));
-                formData.append('transaction_id', `{{ $transaction->id }}`);
+                // Use the Blade-provided transaction ID directly from the context
+                formData.append('transaction_id', '{{ $transaction->id }}');
                 formData.append('reviewer_id', `{{ auth()->id() }}`);
-                formData.append('reviewee_id', `{{ $transaction->requester_id }}`);
+                formData.append('reviewee_id', `{{ $transaction->requester_id }}`); // Reviewing the requester
                 formData.append('rating', rating);
                 formData.append('comment', comment);
-
 
                 // Optionally, disable button and show loading here, as page will reload
                 const submitBtn = document.getElementById('submitReviewButton');
@@ -903,7 +908,12 @@
                     submitBtn.textContent = 'Mengirim...';
                 }
 
-                fetch(reviewForm.action, {
+                // Get the form action from the HTML form element
+                const reviewForm = document.getElementById('reviewForm');
+                const formAction = reviewForm
+                    .action; // This should be already set to route('reviews.store') in HTML
+
+                fetch(formAction, {
                         method: 'POST',
                         body: formData,
                         headers: {
@@ -923,7 +933,8 @@
                     .then(data => {
                         console.log("Review submission response:", data);
                         if (data.success) {
-                            window.showCustomAlert(data.message, "success");
+                            localStorage.setItem('reviewSuccessMessage', data
+                                .message); // Store success message
                             // Close the completion modal
                             const completionModal = bootstrap.Modal.getInstance(document.getElementById(
                                 'completionModal'));
@@ -968,7 +979,7 @@
             // --- Function to Submit Report ---
             window.submitReport = function(event) {
                 if (event) event
-            .preventDefault(); // Prevent default form submission if called from an event listener
+                    .preventDefault(); // Prevent default form submission if called from an event listener
 
                 const form = document.getElementById('reportForm');
                 const reasons = document.getElementById('reportNote').value.trim();
@@ -995,9 +1006,9 @@
                     }
                     const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                     if (file.size > maxSizeBytes) {
-                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
-                        hasInvalidFile = true;
-                        break; // Exit loop
+                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.',
+                            'error');
+                        return; // Skip this file and continue to next
                     }
                 }
                 if (hasInvalidFile) {
@@ -1053,30 +1064,41 @@
                                 }
                             });
                         }
-                        return response.text(); // Consume response body, even if it's a redirect
+                        return response
+                            .json(); // Use .json() here as you explicitly set 'Accept': 'application/json'
                     })
-                    .then(text => {
-                        // This block is generally only hit if the server did NOT redirect, but responded with success.
-                        // If a redirect happens, the page will reload and this block won't be reached.
-                        console.log("Fetch completed, but no redirect occurred:", text);
+                    .then(data => {
+                        try {
+                            if (data.success) {
+                                localStorage.setItem('reportSuccessMessage', data
+                                    .message); // Store success message
+                                const reportModal = bootstrap.Modal.getInstance(document.getElementById(
+                                    'reportWorkModal'));
+                                if (reportModal) reportModal
+                                    .hide(); // Hide the modal, which will trigger its hidden.bs.modal listener for reload
+                                location.reload(); // Explicit reload if modal hide doesn't
+                            } else {
+                                window.showCustomAlert(data.message ||
+                                    'Terjadi kesalahan saat mengirim laporan.', "error");
+                            }
+                        } catch (e) {
+                            console.warn(
+                                'Response not JSON, assuming backend handles redirect or modal close reloads.'
+                            );
+                        }
                     })
                     .catch(error => {
                         console.error('Error during report submission:', error);
-                        window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' +
-                            error.message,
-                            'error');
+                        window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error
+                            .message, 'error');
                     })
                     .finally(() => {
-                        // This finally block will always run.
-                        // For a successful redirect, the page will reload, making these UI updates moot.
-                        // But for client-side errors or server-side errors that don't redirect, they are important.
                         if (submitBtn) {
                             submitBtn.disabled = false;
                             submitBtn.textContent = 'Kirim Laporan';
                         }
                     });
             }
-
             // Function to render the review form
             function renderReviewForm() {
                 reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
@@ -1107,7 +1129,7 @@
                     });
                     star.addEventListener('mouseout', function() {
                         updateStarDisplay(
-                        currentSelectedRating); // Revert to selected rating on mouseout
+                            currentSelectedRating); // Revert to selected rating on mouseout
                     });
                     star.addEventListener('click', function() {
                         currentSelectedRating = parseInt(this.getAttribute('data-value'));
@@ -1115,10 +1137,26 @@
                         updateStarDisplay(currentSelectedRating);
                     });
                 });
+
+                // Get the submit button and the form
                 const submitReviewButton = document.getElementById('submitReviewButton');
+                const reviewForm = document.getElementById('reviewForm');
+
                 if (submitReviewButton) {
                     submitReviewButton.style.display = 'block';
+                    // Remove existing click listener from the button to prevent duplicates
+                    submitReviewButton.removeEventListener('click', handleReviewFormSubmit);
+                    // Attach click listener to the button to trigger the form's submit event.
+                    // This ensures that the form's submit event listener (handleReviewFormSubmit) is always called.
+                    submitReviewButton.addEventListener('click', function() {
+                        reviewForm.requestSubmit(
+                            submitReviewButton); // Modern way to trigger form submission via button
+                    });
                 }
+
+                // Ensure the form's submit event is handled. This is the MOST RELIABLE way to intercept.
+                reviewForm.removeEventListener('submit', handleReviewFormSubmit); // Prevent duplicates
+                reviewForm.addEventListener('submit', handleReviewFormSubmit);
             }
 
             // Function to render the existing review display
@@ -1153,7 +1191,12 @@
             // Dynamic content and button states for Completion Modal
             const completionModalElement = document.getElementById('completionModal');
             if (completionModalElement) {
-                completionModalElement.addEventListener('show.bs.modal', function() {
+                completionModalElement.addEventListener('show.bs.modal', function(event) {
+                    // This is where currentTransactionId and reportedRequesterId should be set
+                    // for accepted-work-request.blade.php, they are available as Blade variables
+                    currentTransactionId = '{{ $transaction->id }}';
+                    reportedRequesterId = '{{ $transaction->requester_id }}';
+
                     // Populate the completion modal with data from Blade variables
                     document.getElementById('modalRequestTitle').textContent =
                         `{{ $request->title ?? '-' }}`;
@@ -1176,32 +1219,24 @@
 
                     // Conditional rendering of review section
                     const hasReviewRequester = `{{ $hasReviewRequester ? 'true' : 'false' }}` === 'true';
+                    const receivedReviewRequester = @json($receivedReviewRequester); // Pass the whole object
                     if (hasReviewRequester) {
-                        const requesterRating = `{{ $receivedReviewRequester->rating ?? 0 }}`;
-                        const requesterComment = `{{ $receivedReviewRequester->comment ?? '' }}`;
+                        const requesterRating = receivedReviewRequester.rating ?? 0;
+                        const requesterComment = receivedReviewRequester.comment ?? '';
                         renderExistingReview(parseInt(requesterRating), requesterComment);
                     } else {
                         renderReviewForm();
                     }
 
-                    // Handle Report Button State
+                    // Handle Report Button State (Removed hasWorkerReport check)
                     const reportProblemButton = document.getElementById('reportProblemButton');
-                    const hasWorkerReport = `{{ $hasWorkerReport ? 'true' : 'false' }}` === 'true';
                     if (reportProblemButton) {
-                        if (hasWorkerReport) {
-                            reportProblemButton.textContent = 'Laporan sudah terkirim';
-                            reportProblemButton.disabled = true;
-                            reportProblemButton.classList.remove('text-danger');
-                            reportProblemButton.classList.add('text-secondary');
-                            reportProblemButton.onclick = null; // Remove click listener
-                        } else {
-                            reportProblemButton.textContent = 'Laporkan masalah';
-                            reportProblemButton.disabled = false;
-                            reportProblemButton.classList.remove('text-secondary');
-                            reportProblemButton.classList.add('text-danger');
-                            reportProblemButton.onclick = window
-                            .openReportModal; // Re-attach click listener
-                        }
+                        reportProblemButton.textContent = 'Laporkan masalah';
+                        reportProblemButton.disabled = false; // Always enabled
+                        reportProblemButton.classList.remove('text-secondary');
+                        reportProblemButton.classList.add('text-danger');
+                        reportProblemButton.onclick = window
+                            .openReportModal; // Always attach click listener
                     }
                 });
 
@@ -1223,6 +1258,7 @@
             }
 
             // Logic for "Mulai Kerja" button
+            // Logic for "Mulai Kerja" button
             const startWorkForm = document.getElementById('start-work-form');
             if (startWorkForm) {
                 startWorkForm.addEventListener('submit', function(event) {
@@ -1237,8 +1273,8 @@
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
                                     .getAttribute('content'),
-                                'X-Requested-With': 'XMLHttpRequest', // Important for Laravel to detect AJAX
-                                'Accept': 'application/json' // Explicitly ask for JSON response
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
                             },
                             credentials: 'same-origin'
                         })
@@ -1253,8 +1289,9 @@
                         .then(data => {
                             console.log('Start work response:', data);
                             if (data.success) {
-                                window.showCustomAlert(data.message, "success");
-                                // Reload the page to reflect the new status
+                                // Store the success message in localStorage
+                                localStorage.setItem('startWorkSuccessMessage', data.message);
+                                // Reload the page
                                 location.reload();
                             } else {
                                 window.showCustomAlert(data.message, "error");
@@ -1415,7 +1452,7 @@
                     placeholder.className =
                         'text-center text-muted d-flex flex-column align-items-center justify-content-center w-100 h-100';
                     placeholder.innerHTML = `
-                        <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
+                        <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 65.625 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
                         <p class="mb-0 mt-2 small">Klik untuk upload bukti pekerjaan</p>
                     `;
                 }
@@ -1456,6 +1493,7 @@
             uploadArea.dataset.initialized = 'true'; // Mark as initialized
         }
     </script>
+
     <style>
         /* Star Rating Styles */
         .star-rating,
