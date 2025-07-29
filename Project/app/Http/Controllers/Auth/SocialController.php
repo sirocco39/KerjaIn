@@ -53,6 +53,6 @@ class SocialController extends Controller
         $firstName = Auth::user()->first_name ?? 'Pengguna';
 
         // Changed to custom alert
-        return redirect('/job-req/beranda')->with('custom_blue_alert', "Login berhasil! Selamat datang, {$firstName}!");
+        return redirect('/job-req/beranda')->with('custom_blue_alert', __('alerts.login_berhasil', ['nama' => $firstName]));
     }
 }

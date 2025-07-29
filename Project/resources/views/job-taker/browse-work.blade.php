@@ -14,7 +14,7 @@
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                             </div>
-                            <span>Kak {{ $request->requester->first_name }} {{ $request->id }}</span>
+                            <span>{{ __('browse-work.klien_prefix') }} {{ $request->requester->first_name }}</span>
                         </li>
 
                         <li class="gap-2">
@@ -48,7 +48,7 @@
                     </ul>
                 </div>
             @empty
-                <p>Tidak ada lowongan kerja yang ditemukan.</p>
+                <p>{{ __('browse-work.pekerjaan_tidak_ditemukan') }}</p>
             @endforelse
 
             {{-- Pagination Links --}}
@@ -56,7 +56,7 @@
                 @if ($workRequests->currentPage() > 1)
                     <a href="{{ $workRequests->previousPageUrl() }}" class="pagination-nav" id="prev-page">
                         <img src="{{ asset('Image/Icon/icon-previous.svg') }}" alt="Previous" class="pagination-icon">
-                        <span>Sebelumnya</span>
+                        <span>{{ __('browse-work.paginasi_sebelumnya') }}</span>
                     </a>
                 @endif
 
@@ -71,7 +71,7 @@
 
                 @if ($workRequests->hasMorePages())
                     <a href="{{ $workRequests->nextPageUrl() }}" class="pagination-nav" id="next-page">
-                        <span>Selanjutnya</span>
+                        <span>{{ __('browse-work.paginasi_selanjutnya') }}</span>
                         <img src="{{ asset('Image/Icon/icon-next.svg') }}" alt="Next" class="pagination-icon">
                     </a>
                 @endif
@@ -84,9 +84,9 @@
             <div class="title-job-detail-placeholder d-flex align-item-center mb-3">
                 <img src="{{ asset('Image/Icon/icon-left-arrow.svg') }}" alt="Left Arrow" class="left-arrow"
                     id="left-arrow-icon">
-                <h1 class="fw-bold m-0" id="detail-title">Pilih Lowongan Kerja di Kiri</h1>
+                <h1 class="fw-bold m-0" id="detail-title">{{ __('browse-work.detail_pilih_lowongan') }}</h1>
             </div>
-            <p id="detail-instruction">Tampilkan Detail Di sini</p>
+            <p id="detail-instruction">{{ __('browse-work.detail_tampilkan_disini') }}</p>
             <div class="img-job-detail-placeholder align-items-center justify-content-center"
                 id="detail-image-placeholder-wrapper">
                 <img src="{{ asset('Image/Icon/people-search.svg') }}" alt="People Search" class="placeholder-img"
@@ -101,7 +101,7 @@
                         <div class="icon-wrapper">
                             <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                         </div>
-                        <span>Kak <span id="detail-profile"></span></span>
+                        <span>{{ __('browse-work.klien_prefix') }} <span id="detail-profile"></span></span>
                     </li>
 
                     <li class="gap-2">
@@ -132,17 +132,19 @@
                         Rp<span id="detail-price-value"></span>
                     </li>
                 </ul>
-                <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
+            <h5 class="detail-description fw-bold d-flex mt-3">{{ __('browse-work.detail_deskripsi') }}</h5>
                 <div class="wrapDesc_ori">
                     <p class="mb-3" id="detail-description-text"></p>
                 </div>
 
                 <div class="detail-buttons-placeholder d-flex gap-2 justify-content-end mt-auto align-items-center">
-                    <input type="number" id="offer-amount-input" class="form-control" placeholder="Rp Tawarkan"
+                    <input type="number" id="offer-amount-input" class="form-control" placeholder="{{ __('browse-work.placeholder_tawarkan') }}"
                         style="max-width: 150px; height: 38px;">
-                    <button class="details-button-item" id="submit-offer-button">Kirim</button>
-                    <a href="#" class="details-button-item" id="button-hubungi">Hubungi</a>
-                    <button class="details-button-item btn-terima-modal">Terima</button>
+                    <button class="details-button-item"
+                        id="submit-offer-button">{{ __('browse-work.tombol_kirim') }}</button>
+                    <a href="#" class="details-button-item text-decoration-none"
+                        id="button-hubungi">{{ __('browse-work.tombol_hubungi') }}</a>
+                    <button class="details-button-item btn-terima-modal">{{ __('browse-work.tombol_terima') }}</button>
                     {{-- <form action="{{ route('job-taker.accept-request', $request->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="details-button-item" id="button-terima">Terima</button>
@@ -160,13 +162,13 @@
                     <button type="button" class="btn-close" id="modal-close-button" aria-label="Close"></button>
                 </div>
                 <div id="modal-content-container" class="p-3">
-                    <h1 class="fw-bold mb-3" id="modal-detail-title">Pilih Lowongan Kerja di Kiri</h1>
+                    <h1 class="fw-bold mb-3" id="modal-detail-title">{{ __('browse-work.detail_pilih_lowongan') }}</h1>
                     <ul class="job-card-details">
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                             </div>
-                            <span>Kak <span id="modal-detail-profile"></span></span>
+                            <span>{{ __('browse-work.klien_prefix') }} <span id="modal-detail-profile"></span></span>
                         </li>
 
                         <li class="gap-2">
@@ -197,7 +199,7 @@
                             Rp<span id="modal-detail-price-value"></span>
                         </li>
                     </ul>
-                    <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
+                    <h5 class="detail-description fw-bold d-flex mt-3">{{ __('browse-work.detail_deskripsi') }}</h5>
                     <div class="wrapDesc mb-3">
                         <p class="mb-0" id="modal-detail-description-text"></p>
                     </div>
@@ -205,9 +207,12 @@
                     <div class="detail-buttons-placeholder d-flex gap-2 justify-content-center mt-auto align-items-center">
                         <input type="number" id="modal-offer-amount-input" class="form-control"
                             placeholder="Rp Tawarkan" style="max-width: 150px; height: 38px;">
-                        <button class="details-button-item" id="modal-submit-offer-button">Kirim</button>
-                        <a href="#" class="details-button-item btn-hubungi-modal">Hubungi</a>
-                        <button class="details-button-item btn-terima-modal">Terima</button>
+                        <button class="details-button-item"
+                            id="modal-submit-offer-button">{{ __('browse-work.tombol_kirim') }}</button>
+                        <a href="#"
+                            class="details-button-item btn-hubungi-modal">{{ __('browse-work.tombol_hubungi') }}</a>
+                        <button
+                            class="details-button-item btn-terima-modal">{{ __('browse-work.tombol_terima') }}</button>
                     </div>
                 </div>
             </div>
@@ -222,13 +227,13 @@
                     {{-- Pastikan icon-warning.svg ada di public/Image/Icon/ atau sesuaikan path --}}
                     <img src="{{ asset('Image/Icon/icon-warning.svg') }}" alt="Warning Icon"
                         style="width: 60px; height: 60px; margin-bottom: 20px;">
-                    <h2 class="fw-bold mb-3">Menerima Pekerjaan</h2>
-                    <p>Apakah anda yakin ingin menerima pekerjaan ini?</p>
+                    <h2 class="fw-bold mb-3">{{ __('browse-work.modal_konfirmasi_judul') }}</h2>
+                    <p>{{ __('browse-work.modal_konfirmasi_pesan') }}</p>
                     <div class="d-flex justify-content-center gap-3 mt-4">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                            id="cancel-accept-job">Kembali</button>
-                        <button type="button" class="btn btn-primary" id="confirm-accept-job">Ya, Saya
-                            Yakin</button>
+                            id="cancel-accept-job">{{ __('browse-work.modal_tombol_kembali') }}</button>
+                        <button type="button" class="btn btn-primary"
+                            id="confirm-accept-job">{{ __('browse-work.modal_tombol_yakin') }}</button>
                     </div>
                 </div>
             </div>
@@ -236,6 +241,8 @@
     </div>
 
     <script>
+        const lang = @json(__('browse-work.js_messages'));
+
         // Fungsi untuk format mata uang Rupiah
         const formatRupiah = (amount) => {
             return new Intl.NumberFormat('id-ID', {
@@ -248,13 +255,11 @@
         // Fungsi untuk mengirim tawaran
         function submitOffer(amount) {
             if (!currentRequestId) {
-                let errorMessage = 'Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.';
-                window.showCustomAlert(errorMessage, 'error');
+                window.showCustomAlert(lang.gagal_dapatkan_id, 'error');
                 return;
             }
             if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-                let errorMessage = 'Harap masukkan jumlah tawaran yang valid.';
-                window.showCustomAlert(errorMessage, 'error');
+                window.showCustomAlert(lang.tawaran_tidak_valid, 'error');
                 return;
             }
 
@@ -276,15 +281,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showCustomAlert(data.message || 'Tawaran berhasil dikirim!', 'success');
+                        window.showCustomAlert(data.message || lang.tawaran_berhasil_dikirim, 'success');
                         window.location.href = data.redirect_url;
                     } else {
-                        window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim tawaran.', 'error');
+                        window.showCustomAlert(data.message || lang.kesalahan_mengirim_tawaran, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    window.showCustomAlert('Terjadi kesalahan koneksi.' + error.message, 'error');
+                    window.showCustomAlert(lang.kesalahan_koneksi, 'error');
                 });
         }
 
@@ -293,6 +298,7 @@
         function showRequestDetails(requestId) {
             currentRequestId = requestId;
             // Hapus class 'active' dari semua job-card
+
             const leftArrowIcon = document.getElementById('left-arrow-icon');
             leftArrowIcon.style.display = 'none'; // tampilkan panah
 
@@ -313,8 +319,8 @@
             const dynamicContent = document.getElementById('dynamic-details-content');
 
             // Show loading state or clear previous content
-            detailTitle.textContent = 'Memuat Detail...';
-            detailInstruction.textContent = 'Silakan tunggu.';
+            detailTitle.textContent = lang.memuat_detail;
+            detailInstruction.textContent = lang.silakan_tunggu;
             detailInstruction.style.display = 'block'; // Ensure instruction is visible during loading
             detailImage.style.display = 'block'; // Show placeholder image
             detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
@@ -375,9 +381,8 @@
                 })
                 .catch(error => {
                     console.error('Error fetching request details:', error);
-                    detailTitle.textContent = 'Gagal Memuat Detail';
-                    detailInstruction.textContent =
-                        'Terjadi kesalahan saat memuat detail pekerjaan. Silakan coba lagi.';
+                    detailTitle.textContent = lang.gagal_memuat_detail;
+                    detailInstruction.textContent = lang.gagal_memuat_detail_pesan;
                     detailInstruction.style.display = 'block';
                     detailImage.style.display = 'block';
                     detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
@@ -410,8 +415,8 @@
                 card.classList.remove('choosed');
             });
 
-            detailTitle.textContent = 'Pilih Lowongan Kerja di Kiri';
-            detailInstruction.textContent = 'Tampilkan Detail Di sini';
+            detailTitle.textContent = "{{ __('browse-work.detail_pilih_lowongan') }}";
+            detailInstruction.textContent = "{{ __('browse-work.detail_tampilkan_disini') }}";
             detailInstruction.style.display = 'block';
             detailImage.style.display = 'block'; // Show placeholder image
             detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
@@ -481,8 +486,7 @@
                 acceptButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         if (!currentRequestId) {
-                            window.showCustomAlert('Silakan pilih pekerjaan terlebih dahulu.',
-                                'error');
+                            window.showCustomAlert(lang.pilih_pekerjaan_dulu, 'error');
                             return;
                         }
                         // Show the confirmation modal instead of direct confirm()
@@ -494,9 +498,7 @@
                 if (confirmAcceptJobButton) { // Tambahkan cek null
                     confirmAcceptJobButton.addEventListener('click', function() {
                         if (!currentRequestId) {
-                            window.showCustomAlert(
-                                'Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.', 'error'
-                                );
+                            window.showCustomAlert(lang.gagal_dapatkan_id, 'error');
                             acceptJobConfirmationModal.hide(); // Hide modal if no ID
                             return;
                         }
@@ -525,14 +527,13 @@
                                     // alert(data.message);
                                     window.location.href = data.redirect_url;
                                 } else {
-                                    window.showCustomAlert(data.message ||
-                                        'Terjadi kesalahan saat memproses permintaan.', 'error');
+                                    window.showCustomAlert(data.message || lang.kesalahan_memproses,
+                                        'error');
                                 }
                             })
                             .catch(error => {
                                 console.error('Error:', error);
-                                window.showCustomAlert('Terjadi kesalahan koneksi babi.' + error
-                                    .message, 'error');
+                                window.showCustomAlert(lang.kesalahan_koneksi, 'error');
                             })
                             .finally(() => {
                                 acceptJobConfirmationModal

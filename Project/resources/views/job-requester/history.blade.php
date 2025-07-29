@@ -3,7 +3,7 @@
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
         {{-- Page Title --}}
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">Riwayat Pemesanan
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">{{__('history-job-req.judul_halaman') }}
         </h1>
 
         <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
@@ -167,7 +167,7 @@
                                         <p class="fw-medium" id="modalWorkerName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modaL_lokasi') }}</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-req.modal_lokasi') }}</p>
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
@@ -568,7 +568,7 @@
             // Optionally, disable button and show loading here, as page will reload
             const submitBtn = document.getElementById('submitReviewButton');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim...';
+            submitBtn.textContent = lang.mengirim;
         }
 
         // --- Function to Submit Report ---
@@ -758,7 +758,7 @@
 
             // Function to render the existing review display (unchanged)
             function renderExistingReview(rating, comment) {
-                reviewSectionHeading.textContent = 'Ini penilaianmu';
+                reviewSectionHeading.textContent = lang.penilaian_heading_sudah;
                 let starHtml = '';
                 for (let i = 1; i <= 5; i++) {
                     starHtml +=
@@ -770,7 +770,7 @@
                 ${starHtml}
             </div>
             <div class="ps-3 flex-fill d-flex flex-column w-100">
-                <label for="comment" class="form-label text-start">Komentar</label>
+                <label for="comment" class="form-label text-start">${lang.label_komentar}</label>
                 <textarea id="comment" class="form-control" rows="3" disabled
                     style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
             </div>
@@ -845,13 +845,13 @@
                         // --- Handle Report Button State ---
                         if (reportProblemButton) {
                             if (hasUserReport) {
-                                reportProblemButton.textContent = 'Laporan sudah terkirim';
+                                reportProblemButton.textContent = lang.laporan_sudah_terkirim;
                                 reportProblemButton.disabled = true;
                                 reportProblemButton.classList.remove('text-danger');
                                 reportProblemButton.classList.add('text-secondary');
                                 reportProblemButton.onclick = null; // Remove click listener
                             } else {
-                                reportProblemButton.textContent = 'Laporkan masalah';
+                                reportProblemButton.textContent = lang.laporkan_masalah;
                                 reportProblemButton.disabled = false;
                                 reportProblemButton.classList.remove('text-secondary');
                                 reportProblemButton.classList.add('text-danger');

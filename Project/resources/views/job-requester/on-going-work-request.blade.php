@@ -19,7 +19,7 @@
         $total_hours = $days * 24 + $hours;
 
         // Format durasi baru
-        $duration = $total_hours . ' jam ' . $minutes . ' menit';
+        $duration = $total_hours . ' ' . __('ongoing.jam') . ' ' . $minutes . ' ' . __('ongoing.menit'); // <-- GANTI DENGAN INI
 
         $amount = $request->final_price;
         $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
@@ -40,25 +40,25 @@
     <div class="container-fluid pembatas-x mb-5">
         <div class="row mb-3 p-1">
             <div class="col-12 mb-2 mt-5">
-                <h2 style="font-weight: 800;">Pesanan Kamu</h2>
+                <h2 style="font-weight: 800;">{{ __('ongoing.pesanan_kamu') }}</h2>
             </div>
             <div class="col-12 contain bg-light mt-2 px-4 py-3 rounded-4 d-flex align-items-center"
                 style="border: 1px solid #cacadd; ">
                 @if ($transaction->status == 'submitted')
                     <div class="badge px-4 py-3 rounded-pill bg-primary text-light fs-6" style="background-color:#294287;">
-                        Ditinjau</div>
+                        {{ __('ongoing.status_ditinjau') }}</div>
                 @elseif($transaction->status == 'cancelled')
                     <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:crimson;">
-                        Dibatalin</div>
+                        {{ __('ongoing.status_dibatalkan') }}</div>
                 @elseif($transaction->status == 'accepted')
                     <div class="badge px-4 py-3 rounded-pill bg-warning text-light fs-6" style="background-color:#294287;">
-                        Diterima</div>
+                        {{ __('ongoing.status_diterima') }}</div>
                 @elseif($transaction->status == 'in progress')
                     <div class="badge px-4 py-3 rounded-5 bg-info text-light fs-6" style="background-color:#309FFF;">
-                        Dikerjain</div>
+                        {{ __('ongoing.status_dikerjakan') }}</div>
                 @elseif($transaction->status == 'completed')
                     <div class="badge px-4 py-3 rounded-pill bg-success text-dark fs-6" style="background-color:#D3FA0D;">
-                        Selesai</div>
+                        {{ __('ongoing.status_selesai') }}</div>
                 @endif
                 <h3 class="d-inline mx-3 mt-1" style="color:#294287; font-weight: 800;">{{ $request->title }}</h3>
             </div>
@@ -69,7 +69,7 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column"
                             style="border: 1px solid #cacadd; height:100%;">
-                            <div class="fw-bold text-start">Deskripsi</div>
+                            <div class="fw-bold text-start">{{ __('ongoing.deskripsi') }}</div>
                             <div class="text-justify" style="font-size: 12px;">{{ $request->description }}</div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Mulai</div>
+                                    <div class="p-2">{{ __('ongoing.mulai') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
                             </div>
@@ -110,7 +110,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Selesai</div>
+                                    <div class="p-2">{{ __('ongoing.selesai') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $end_time_detail }}</div>
                             </div>
@@ -123,7 +123,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Durasi</div>
+                                    <div class="p-2">{{ __('ongoing.durasi') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $duration }}</div>
                             </div>
@@ -142,7 +142,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Upah</div>
+                                    <div class="p-2">{{ __('ongoing.upah') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $formatted }}</div>
                             </div>
@@ -155,7 +155,7 @@
                                             fill="#133E87" />
                                     </svg>
 
-                                    <div class="p-2">Lokasi</div>
+                                    <div class="p-2">{{ __('ongoing.lokasi') }}</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">
                                     <a href={{ $mapsLink }} target="_blank" class="text-end"
@@ -188,7 +188,7 @@
                                     </div>
                                 </div>
                                 <div id="join">
-                                    <p style="font-size: 9px;">Bergabung dengan Kerjain sejak
+                                    <p style="font-size: 9px;">{{ __('ongoing.bergabung_sejak') }}
                                         <span>{{ $year }}</span>
                                     </p>
                                 </div>
@@ -204,39 +204,42 @@
                                     <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
                                         data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
                                         style="background-color:#294287; width:88%;">
-                                        Tandai Selesai
+                                        {{ __('ongoing.tombol_tandai_selesai') }}
                                     </button>
                                 @endif
 
                                 @if ($transaction->status == 'completed')
                                     <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                         style="width:88%;cursor: not-allowed;pointer-events: none;">
-                                        Selesai
+                                        {{ __('ongoing.status_selesai') }}
                                     </a>
                                 @endif
 
                                 {{-- Lihat Bukti Penyelesaian --}}
                                 @if ($transaction->status == 'in progress')
                                     <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                        style="background-color:#9d9d9d; width:88%;">
+                                        {{ __('ongoing.tombol_tandai_selesai') }}</div>
                                     <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                         style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
-                                        Lihat Bukti Penyelesaian
+                                        {{ __('ongoing.tombol_lihat_bukti') }}
                                     </a>
                                 @elseif($transaction->status == 'submitted' || $transaction->status == 'completed')
                                     <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                         data-bs-toggle="modal" data-bs-target="#completionProofModal"
                                         style="color: #0d6efd; text-decoration: none;">
-                                        Lihat Bukti Penyelesaian
+                                        {{ __('ongoing.tombol_lihat_bukti') }}
                                     </a>
                                 @endif
 
                                 {{-- Batalkan --}}
                                 @if ($transaction->status == 'accepted')
                                     <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                        style="background-color:#9d9d9d; width:88%;">
+                                        {{ __('ongoing.tombol_tandai_selesai') }}</div>
                                     <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">
+                                        {{ __('ongoing.tombol_batalkan_kerja') }}</div>
                                 @endif
 
                             </div>
@@ -263,7 +266,8 @@
                                 d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
                                 fill="#D3FA0D" />
                         </svg>
-                        <h4 class="mx-3 fw-bold fs-2 mt-1" style="color:#309FFF;">Selesaikan Pekerjaan?</h4>
+                        <h4 class="mx-3 fw-bold fs-2 mt-1" style="color:#309FFF;">{{ __('ongoing.modal_selesai_judul') }}
+                        </h4>
                         <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -272,18 +276,18 @@
                         </svg>
                     </div>
                     <div class="text-center my-4 fw-semibold" style="font-size: 16px;">
-                        <div>Apakah kamu yakin pekerjaan ini sudah benar-benar selesai?</div>
-                        <div>Setelah pekerjaan diselesaikan, kamu tidak dapat mengubah statusnya kembali.</div>
+                        <div>{{ __('ongoing.modal_selesai_pesan1') }}</div>
+                        <div>{{ __('ongoing.modal_selesai_pesan2') }}</div>
                     </div>
                     <div class="d-flex flex-column flex-md-row justify-content-center gap-2 gap-md-4 mt-4">
                         <button type="button" class="btn py-3 fw-semibold rounded-4"
                             style="color:#294287; border-color:#294287; border-width: 2px; width:100%;"
                             data-bs-dismiss="modal">
-                            Kembali
+                            {{ __('ongoing.tombol_kembali') }}
                         </button>
                         <button type="button" id="completeWorkButton" class="btn py-3 text-light fw-semibold rounded-4"
                             style="background-color:#309FFF; width:100%;">
-                            Ya, Selesaikan Pekerjaan
+                            {{ __('ongoing.modal_selesai_tombol_konfirmasi') }}
                         </button>
                     </div>
                 </div>
@@ -298,10 +302,10 @@
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">Detail Penyelesaian</h5>
+                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">
+                            {{ __('ongoing.modal_bukti_judul') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
                     <div class="modal-body overflow-auto overflow-lg-visible" style="max-height: 90vh;">
                         <div class="d-flex flex-column flex-lg-row gap-3">
                             {{-- Order details display section within the modal --}}
@@ -403,7 +407,7 @@
             <div class="modal-content p-3">
                 <div class="modal-header">
                     <h3 class="modal-title text-center flex-fill fw-semibold" id="completionProofModalLabel">
-                        Bukti Penyelesaian Pekerjaan
+                        {{ __('ongoing.modal_bukti_judul') }}
                     </h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -412,7 +416,7 @@
                     <div class="d-flex flex-column flex-lg-row gap-3">
 
                         <div class="d-flex flex-column flex-grow-1">
-                            <h6 class="fw-bold">Lampiran Bukti Pekerjaan</h6>
+                            <h6 class="fw-bold">{{ __('ongoing.modal_bukti_lampiran') }}</h6>
                             <div class="rounded-3 my-2 p-2 d-flex justify-content-center align-items-center"
                                 style="border: 1px solid #8a8a8a; height: 40vh; background-color: #f9f9f9; overflow: hidden;">
                                 @php
@@ -435,7 +439,7 @@
                                                 d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z"
                                                 fill="#294287" />
                                         </svg>
-                                        <div class="fw-semibold">Tidak ada bukti foto dari pekerja.</div>
+                                        <div class="fw-semibold">{{ __('ongoing.modal_bukti_tidak_ada') }}</div>
                                     </div>
                                 @endif
                             </div>
@@ -444,7 +448,7 @@
                         <div class="vr d-none d-lg-block mx-3"></div>
 
                         <div class="d-flex flex-column flex-grow-1">
-                            <h6 class="fw-bold">Catatan dari Pekerja</h6>
+                            <h6 class="fw-bold">{{ __('ongoing.modal_bukti_catatan') }}</h6>
                             <div class="rounded-3 mt-2 mb-4 p-2"
                                 style="border-color:#8a8a8a; border-style:solid; width:100%; height:64%; border-width:1px;">
                                 <p class="m-0">
@@ -454,7 +458,7 @@
                             <div class="flex-fill" style="width:100%; height:10%;">
                                 <button type="button" class="flex-fill rounded-4 py-3 px-4 fw-bold bg-light"
                                     data-bs-dismiss="modal"
-                                    style="border-width:2px; border-color:#294287; color:#294287; width:100%;">Kembali</button>
+                                    style="border-width:2px; border-color:#294287; color:#294287; width:100%;">{{ __('ongoing.tombol_kembali') }}</button>
                             </div>
                         </div>
 
@@ -476,7 +480,7 @@
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
                             fill="#B02A37" />
                     </svg>
-                    <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">Batalkan Pekerjaan?</h4>
+                    <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">{{ __('ongoing.modal_batal_judul') }}</h4>
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -486,8 +490,8 @@
                 </div>
 
                 <div class="text-center my-4 fw-semibold">
-                    <div>Apakah kamu yakin ingin membatalkan pekerjaan ini?</div>
-                    <div>Tindakan ini bisa mempengaruhi reputasimu di platform KerjaIn.</div>
+                    <div>{{ __('ongoing.modal_batal_pesan1') }}</div>
+                    <div>{{ __('ongoing.modal_batal_pesan2') }}</div>
                 </div>
 
                 <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST"
@@ -496,10 +500,10 @@
                     <input type="hidden" name="redirect_to" value="job-req.beranda">
                     <button type="button" class="btn btn-outline-primary rounded-4 flex-fill p-3 fw-semibold"
                         data-bs-dismiss="modal" style="border-width:2px;">
-                        Kembali
+                        {{ __('ongoing.modal_batal_tombol_kembali') }}
                     </button>
                     <button type="submit" class="btn btn-danger rounded-4 flex-fill p-3 fw-semibold">
-                        Ya, Tetap Batalin
+                        {{ __('ongoing.modal_batal_tombol_konfirmasi') }}
                     </button>
                 </form>
 
@@ -519,7 +523,8 @@
                     <input type="hidden" name="reported_id" id="reportReportedId">
 
                     <div class="modal-header border-0 justify-content-center">
-                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">
+                            {{ __('ongoing.modal_laporan_judul') }}</h3>
                         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -529,15 +534,15 @@
                     <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_judul_pesanan') }}</p>
                                 <p class="fw-medium" id="reportModalRequestTitle"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_nomor_pesanan') }}</p>
                                 <p class="fw-medium" id="reportModalOrderNumber"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_nama_pekerja') }}</p>
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
@@ -552,32 +557,32 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_tgl_pesan') }}</p>
                                 <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_tgl_selesai') }}</p>
                                 <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_mulai_kerja') }}</p>
                                 <p class="fw-medium" id="reportModalStartWork"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_selesai_kerja') }}</p>
                                 <p class="fw-medium" id="reportModalFinishWork"></p>
                             </div>
                         </div>
 
                         {{-- Total price display in report modal --}}
                         <div class="d-flex justify-content-between mb-4">
-                            <p class="text-black-50 fw-semibold mb-0">Total</p>
+                            <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_total') }}</p>
                             <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
                         </div>
 
                         {{-- Image upload section for report proof --}}
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                            <label class="form-label fw-semibold">{{ __('ongoing.modal_laporan_upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
                                 <div class="add-image-button pb-2"
@@ -594,16 +599,17 @@
 
                         {{-- Textarea for reporting reasons --}}
                         <div class="mb-4">
-                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                            <label for="reportNote"
+                                class="form-label fw-semibold">{{ __('ongoing.modal_laporan_keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                                placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
+                                placeholder="{{ __('ongoing.placeholder_keluh_kesah') }}" style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
                     </div>
 
                     {{-- Report submission button --}}
                     <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
-                            Laporan</button>
+                        <button type="button" id="submitReportButton"
+                            class="btn btn-danger px-4 py-2">{{ __('ongoing.tombol_kirim_laporan') }}</button>
                     </div>
                 </form>
             </div>

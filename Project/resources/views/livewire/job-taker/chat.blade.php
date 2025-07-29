@@ -211,7 +211,7 @@
                     @empty
                         <div class="text-center text-muted mt-5">
                             <i class="bi bi-chat-left-dots fs-1"></i>
-                            <p>Tidak ada pekerjaan dengan percakapan aktif.</p>
+                            <p>{{ __('chat-job-taker.tidak_ada_percakapan') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -250,15 +250,15 @@
                                         <div class="input-group" style="max-width: 250px;">
                                             <span class="input-group-text">Rp</span>
                                             <input type="number" wire:model.defer="offerAmount" class="form-control"
-                                                placeholder="Masukkan nominal...">
+                                                placeholder="{{ __('chat-job-taker.panel_tawaran.placeholder_nominal') }}">
                                         </div>
 
                                         {{-- Bagian Kanan: Tombol Aksi --}}
                                         <div class="d-flex gap-2">
                                             <button wire:click="toggleOfferForm"
-                                                class="btn btn-outline-secondary btn-pill">Batal</button>
-                                            <button wire:click="makeOffer" class="btn btn-success btn-pill">Kirim
-                                                Tawaran</button>
+                                                class="btn btn-outline-secondary btn-pill">{{ __('chat-job-taker.panel_tawaran.tombol_batal') }}</button>
+                                            <button wire:click="makeOffer"
+                                                class="btn btn-success btn-pill">{{ __('chat-job-taker.panel_tawaran.tombol_kirim_tawaran') }}</button>
                                         </div>
                                     </div>
                                     @error('offerAmount')
@@ -270,30 +270,39 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         @if ($activeOffer)
-                                            <span class="text-muted">Nominal Upah yang Diajukan:</span>
+                                            <span
+                                                class="text-muted">{{ __('chat-job-taker.panel_tawaran.nominal_diajukan') }}</span>
                                             <div class="d-flex align-items-center gap-2">
                                                 <strong class="text-dark fs-5">
                                                     Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}
                                                 </strong>
                                                 <span
                                                     class="badge @if ($activeOffer->status == 'open') bg-warning text-dark @elseif($activeOffer->status == 'accepted') bg-success @else bg-danger @endif">
-                                                    Status:
-                                                    {{ $activeOffer->status == 'open' ? 'Menunggu Respon' : 'Tawaran ' . ucfirst($activeOffer->status) }}
+                                                    {{ __('chat-job-taker.panel_tawaran.status') }}
+                                                    @if ($activeOffer->status == 'open')
+                                                        {{ __('chat-job-taker.panel_tawaran.menunggu_respon') }}
+                                                    @elseif($activeOffer->status == 'accepted')
+                                                        {{ __('chat-job-taker.panel_tawaran.tawaran_diterima') }}
+                                                    @else
+                                                        {{ __('chat-job-taker.panel_tawaran.tawaran_ditolak') }}
+                                                    @endif
                                                 </span>
+
                                             </div>
                                         @else
-                                            <span class="text-muted">Anda belum mengajukan penawaran.</span>
+                                            <span
+                                                class="text-muted">{{ __('chat-job-taker.panel_tawaran.belum_mengajukan_penawaran') }}</span>
                                         @endif
                                     </div>
                                     <div class="d-flex gap-2">
                                         @if (!$activeOffer || $activeOffer->status === 'rejected')
                                             <button wire:click="toggleOfferForm" class="btn btn-primary btn-pill">
-                                                {{ $activeOffer ? 'Tawar Lagi' : 'Tawar Upah' }}
+                                                {{ $activeOffer ? __('chat-job-taker.panel_tawaran.tombol_tawar_lagi') : __('chat-job-taker.panel_tawaran.tombol_tawar_upah') }}
                                             </button>
                                         @endif
                                         @if ($activeOffer && $activeOffer->status === 'open')
                                             <button wire:click="deleteOffer" class="btn btn-outline-danger btn-pill">
-                                                Batal Ajukan
+                                                {{ __('chat-job-taker.panel_tawaran.tombol_batal_ajukan') }}
                                             </button>
                                         @endif
                                     </div>
@@ -338,7 +347,7 @@
                                 </div>
                             @endforeach
                         @empty
-                            <div class="text-center text-muted mt-5">Belum ada pesan.</div>
+                            <div class="text-center text-muted mt-5">{{ __('chat-job-taker.belum_ada_pesan') }}</div>
                         @endforelse
                     </div>
 
@@ -347,7 +356,7 @@
                         <div class="input-group">
                             <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''"
                                 type="text" class="form-control chat-input border rounded-5"
-                                placeholder="Tulis pesan..." autocomplete="off">
+                                placeholder="{{ __('chat-job-taker.placeholder_pesan') }}" autocomplete="off">
                             <button type="submit" class="btn btn-send-circle ms-2 rounded-circle">
                                 <img src="{{ asset('Image/Icon/icon-send.svg') }}" alt="">
                             </button>
@@ -357,7 +366,7 @@
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
                         <div class="text-center">
                             <i class="bi bi-chat-left-text" style="font-size: 3rem;"></i>
-                            <p class="mt-2">Pilih percakapan untuk ditampilkan.</p>
+                            <p class="mt-2">{{ __('chat-job-taker.pilih_percakapan') }}</p>
                         </div>
                     </div>
                 @endif

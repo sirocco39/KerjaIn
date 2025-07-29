@@ -88,7 +88,7 @@ class WorkerTransactionController extends Controller
                 ->on($transaction)
                 ->causedBy(Auth::user())
                 ->log("Percobaan akses tidak sah ke halaman pekerjaan yang diterima #{$transaction->order_number}.");
-            return redirect()->route('job-taker.home')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
+            return redirect()->route('job-taker.home')->with('custom_error_alert', __('alerts.anda_tidak_berwenang_melihat'));
         }
 
         $request = JobRequest::findOrFail($transaction->request_id);
