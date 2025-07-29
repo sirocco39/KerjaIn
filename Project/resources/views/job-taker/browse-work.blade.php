@@ -28,15 +28,14 @@
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Address">
                             </div>
-                            <span>{{ $request->start_time->format('d M Y') }}</span>
+                            <span>{{ $request->start_time->format('d M Y, H:i') }}</span>
                         </li>
 
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Address">
                             </div>
-                            <span>{{ $request->start_time->format('H.i') }} -
-                                {{ $request->end_time->format('H.i') }}</span>
+                            <span>{{ $request->end_time->format('d M Y, H:i') }}</span>
                         </li>
 
                         <li class="gap-2">
@@ -217,7 +216,7 @@
 
     <div class="modal" id="accept-job-confirmation-modal" tabindex="-1" aria-labelledby="acceptJobModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-body text-center p-4">
                     {{-- Pastikan icon-warning.svg ada di public/Image/Icon/ atau sesuaikan path --}}
@@ -226,7 +225,7 @@
                     <h2 class="fw-bold mb-3">Menerima Pekerjaan</h2>
                     <p>Apakah anda yakin ingin menerima pekerjaan ini?</p>
                     <div class="d-flex justify-content-center gap-3 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal"
                             id="cancel-accept-job">Kembali</button>
                         <button type="button" class="btn btn-primary" id="confirm-accept-job">Ya, Saya
                             Yakin</button>
@@ -482,7 +481,8 @@
                 acceptButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         if (!currentRequestId) {
-                            window.showCustomAlert('Silakan pilih pekerjaan terlebih dahulu.', 'error');
+                            window.showCustomAlert('Silakan pilih pekerjaan terlebih dahulu.',
+                                'error');
                             return;
                         }
                         // Show the confirmation modal instead of direct confirm()
@@ -494,7 +494,9 @@
                 if (confirmAcceptJobButton) { // Tambahkan cek null
                     confirmAcceptJobButton.addEventListener('click', function() {
                         if (!currentRequestId) {
-                            window.showCustomAlert('Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.', 'error');
+                            window.showCustomAlert(
+                                'Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.', 'error'
+                                );
                             acceptJobConfirmationModal.hide(); // Hide modal if no ID
                             return;
                         }
@@ -529,7 +531,8 @@
                             })
                             .catch(error => {
                                 console.error('Error:', error);
-                                window.showCustomAlert('Terjadi kesalahan koneksi babi.' + error.message, 'error');
+                                window.showCustomAlert('Terjadi kesalahan koneksi babi.' + error
+                                    .message, 'error');
                             })
                             .finally(() => {
                                 acceptJobConfirmationModal

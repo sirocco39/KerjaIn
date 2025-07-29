@@ -64,13 +64,24 @@ class RequestController extends Controller
         //from getting data from other
         $workRequest->requester_id = Auth::id();
 
-        $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}:00");
-        $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}:00");
+        // NEW: Parse input strings directly as UTC
+        $startDateTimeString = "{$request->workStartDateLabel} {$request->workStartTimeLabel}";
+        $endDateTimeString = "{$request->workEndDateLabel} {$request->workEndTimeLabel}";
 
-        // Check if start is after end
-        if ($startDatetime > $endDatetime) {
+        $startDatetime = Carbon::createFromFormat('Y-m-d H:i', $startDateTimeString, 'UTC');
+        $endDatetime = Carbon::createFromFormat('Y-m-d H:i', $endDateTimeString, 'UTC');
+
+        // NEW: Check if start_time is in the past (UTC comparison)
+        if ($startDatetime->isPast('UTC')) {
             return back()->withErrors([
-                'datetime' => 'Start time must not be after end time.'
+                'workStartDateLabel' => 'Waktu mulai tidak boleh di masa lalu (UTC).'
+            ])->withInput();
+        }
+
+        // Check if start is after or equal to end time (UTC comparison)
+        if ($startDatetime->gte($endDatetime)) {
+            return back()->withErrors([
+                'datetime' => 'Waktu mulai harus sebelum waktu selesai.'
             ])->withInput();
         }
 
@@ -78,16 +89,22 @@ class RequestController extends Controller
         $jobCost = $request->workPriceLabel + 2500;
         $escrowAmount = $request->workPriceLabel;
 
+        // Ensure user has sufficient balance for jobCost + service_fee (2500)
+        if ($user->balance < $jobCost) {
+            return back()->withErrors([
+                'workPriceLabel' => 'Saldo Anda tidak cukup untuk membuat pekerjaan ini.'
+            ])->withInput();
+        }
+
         $user->balance -= $jobCost;
         $user->locked_balance += $escrowAmount;
         $user->save();
 
-        // --- 👇 GANTI LOG LAMA DENGAN YANG INI 👇 ---
         activity()
             ->inLog('Finance')
             ->on($user)
             ->causedBy($user)
-            ->withProperties(['amount' => $escrowAmount, 'request_title' => $request->workTitleLabel]) // Menambahkan judul request ke properti
+            ->withProperties(['amount' => $escrowAmount, 'request_title' => $request->workTitleLabel])
             ->log("Dana dari {$user->first_name} sebesar Rp" . number_format($escrowAmount) . " telah ditahan untuk pekerjaan baru '{$request->workTitleLabel}'.");
 
 
@@ -99,8 +116,8 @@ class RequestController extends Controller
         $workRequest->final_price = $request->workPriceLabel;
         $workRequest->service_fee = 2500;
         $workRequest->location = $request->workAddressLabel;
-        $workRequest->start_time = $startDatetime;
-        $workRequest->end_time = $endDatetime;
+        $workRequest->start_time = $startDatetime; // Carbon instance (UTC)
+        $workRequest->end_time = $endDatetime;   // Carbon instance (UTC)
 
         WalletTransaction::create([
             'user_id' => $user->id,
@@ -109,8 +126,6 @@ class RequestController extends Controller
             'description' => 'Penahanan saldo untuk pekerjaan: ' . $workRequest->title,
         ]);
 
-        // d. Buat catatan di tabel payments untuk escrow
-
         $result = $workRequest->save();
         Payment::create([
             'request_id' => $workRequest->id,
@@ -118,10 +133,8 @@ class RequestController extends Controller
             'status' => 'holding',
         ]);
         if ($result) {
-            // Changed to custom alert
-            return redirect()->to('/job-req/beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
+            return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
         } else {
-            // Changed to custom alert
             return back()->with('custom_error_alert', 'Terjadi kesalahan saat membuat permintaan pekerjaan.');
         }
     }
@@ -149,6 +162,17 @@ class RequestController extends Controller
     {
         // Find the request by slug
         $workRequest = RequestModel::where('slug', $slug)->firstOrFail();
+
+        // NEW: Prevent editing if the original start_time has passed (UTC comparison)
+        if (Carbon::parse($workRequest->start_time)->isPast('UTC')) {
+            activity()
+                ->inLog('Security')
+                ->on($workRequest)
+                ->causedBy(Auth::user())
+                ->log("Percobaan akses tidak sah ke halaman edit pekerjaan '{$workRequest->id}'. Pekerjaan sudah dimulai/lewat waktu.");
+            return redirect()->route('job-req.home')->with('custom_error_alert', 'Pekerjaan ini sudah dimulai atau telah melewati waktu mulai (UTC) dan tidak dapat diubah.');
+        }
+
         if (Auth::id() !== $workRequest->requester_id) {
             // Buat log keamanan
             activity()
@@ -158,7 +182,7 @@ class RequestController extends Controller
                 ->log("Percobaan akses tidak sah ke halaman edit pekerjaan '{$workRequest->id}'.");
 
             // Alihkan dengan pesan error
-            return redirect()->route('job-req.beranda')->with('custom_error_alert', 'Anda tidak berwenang mengubah pekerjaan ini.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang mengubah pekerjaan ini.');
         }
         // If the request is not found, it will throw a 404 error
         if (!$workRequest || $workRequest->deleted_at) {
@@ -183,15 +207,28 @@ class RequestController extends Controller
                     throw new \Exception('Anda tidak berwenang untuk mengubah pekerjaan ini.');
                 }
 
-                // 3. Validasi Status: Jangan izinkan edit jika pekerjaan sudah tidak 'open'
+                // 3. Prevent editing if the original start_time has passed (UTC comparison)
+                if (Carbon::parse($workRequest->start_time)->isPast('UTC')) {
+                    throw new \Exception('Pekerjaan ini sudah dimulai atau telah melewati waktu mulai (UTC) dan tidak dapat diubah.');
+                }
+
+                // Existing validation for status: Don't allow editing if not 'open'
                 if ($workRequest->status !== 'open') {
                     throw new \Exception('Pekerjaan yang sudah berjalan tidak dapat diubah.');
                 }
 
-                // Add check for past end_time
-                if ($workRequest->end_time && $workRequest->end_time < Carbon::now()) {
-                    throw new \Exception('Pekerjaan ini sudah melewati batas waktu dan tidak dapat diubah.');
-                }
+                // Validate new inputs for the update
+                $request->validate([
+                    'workTitleLabel' => 'required|string|max:255',
+                    'workDetailLabel' => 'required|string',
+                    'workPriceLabel' => 'required|numeric|min:5000',
+                    'workAddressLabel' => 'required|string',
+                    'workStartDateLabel' => 'required|date',
+                    'workEndDateLabel' => 'required|date',
+                    'workStartTimeLabel' => 'required',
+                    'workEndTimeLabel' => 'required',
+                ]);
+
 
                 // 4. Logika Penyesuaian Saldo
                 $user = User::findOrFail(Auth::id());
@@ -233,9 +270,19 @@ class RequestController extends Controller
                 }
 
                 // 5. Update Detail Pekerjaan (Request)
-                $startDatetime = new \DateTime("{$request->workStartDateLabel} {$request->workStartTimeLabel}");
-                $endDatetime = new \DateTime("{$request->workEndDateLabel} {$request->workEndTimeLabel}");
-                if ($startDatetime >= $endDatetime) {
+                // NEW: Parse updated input strings directly as UTC
+                $startDateTimeString = "{$request->workStartDateLabel} {$request->workStartTimeLabel}";
+                $endDateTimeString = "{$request->workEndDateLabel} {$request->workEndTimeLabel}";
+
+                $startDatetime = Carbon::createFromFormat('Y-m-d H:i', $startDateTimeString, 'UTC');
+                $endDatetime = Carbon::createFromFormat('Y-m-d H:i', $endDateTimeString, 'UTC');
+
+                // NEW: The *updated* start time must not be in the past (UTC comparison)
+                if ($startDatetime->isPast('UTC')) {
+                    throw new \Exception('Waktu mulai yang diperbarui tidak boleh di masa lalu (UTC).');
+                }
+
+                if ($startDatetime->gte($endDatetime)) {
                     throw new \Exception('Waktu mulai harus sebelum waktu selesai.');
                 }
 
@@ -245,20 +292,19 @@ class RequestController extends Controller
                 $workRequest->price = $newPrice;
                 $workRequest->final_price = $newPrice; // Update juga final_amount
                 $workRequest->location = $request->workAddressLabel;
-                $workRequest->start_time = $startDatetime;
-                $workRequest->end_time = $endDatetime;
+                $workRequest->start_time = $startDatetime; // Carbon instance (UTC)
+                $workRequest->end_time = $endDatetime;   // Carbon instance (UTC)
                 $workRequest->save();
 
                 // 6. Update Catatan Escrow (Payment)
                 $workRequest->payment->update(['amount' => $newPrice]);
             });
         } catch (\Exception $e) {
-            // Changed to custom alert
             return back()->with('custom_error_alert', $e->getMessage())->withInput();
         }
 
         // 7. Redirect jika berhasil
-        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
+        return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
     }
     /**
      * Remove the specified resource from storage.
@@ -272,15 +318,18 @@ class RequestController extends Controller
 
                 // 1. Otorisasi: Pastikan yang menghapus adalah pemilik request
                 if (Auth::id() !== $workRequest->requester_id) {
-                    // Changed to custom alert
                     return back()->with('custom_error_alert', 'Anda tidak berwenang untuk membatalkan pekerjaan ini.');
                 }
 
                 // 2. Validasi: Jangan biarkan request dihapus jika sudah ada offer diterima atau sedang berjalan
-                // Anda bisa sesuaikan logika ini sesuai kebutuhan
+                // This logic is important to prevent deletion of active/completed jobs.
                 if ($workRequest->status !== 'open') {
                     throw new \Exception('Pekerjaan yang sedang berjalan atau sudah selesai tidak dapat dibatalkan.');
                 }
+
+                // Note: Since the Request model uses SoftDeletes, calling ->delete() here will
+                // always perform a soft delete, which fulfills the requirement for
+                // requests with times that have passed.
 
                 // 3. Ambil data yang dibutuhkan untuk proses refund
                 $user = $workRequest->requester; // Ambil user melalui relasi
@@ -317,15 +366,13 @@ class RequestController extends Controller
                 session()->flash('refund_amount', $refundAmount);
             });
         } catch (\Exception $e) {
-            // Changed to custom alert
             return back()->with('custom_error_alert', $e->getMessage());
         }
 
         // 8. Jika semua berhasil, redirect dengan pesan sukses
-        // Changed to custom alert, using the flashed refund_amount
         $refundAmount = session('refund_amount', 0); // Get the flashed amount, default to 0
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
-        return redirect()->route('job-req.beranda')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
+        return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
     }
 
     public function showOngoing($id)
@@ -374,9 +421,6 @@ class RequestController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
 
-        // ==========================================================
-        // LOGIKA KUSTOM YANG DIPERBAIKI
-        // ==========================================================
         $validator->after(function ($validator) use ($request) {
             $startDate = $request->input('workStartDateLabel');
             $startTime = $request->input('workStartTimeLabel');
@@ -385,13 +429,23 @@ class RequestController extends Controller
 
             // HANYA jalankan validasi perbandingan jika SEMUA field sudah diisi
             if ($startDate && $startTime && $endDate && $endTime) {
-                $startDateTime = Carbon::parse($startDate . ' ' . $startTime);
-                $endDateTime = Carbon::parse($endDate . ' ' . $endTime);
+                // NEW: Parse as UTC for validation
+                $startDateTime = Carbon::createFromFormat('Y-m-d H:i', "{$startDate} {$startTime}", 'UTC');
+                $endDateTime = Carbon::createFromFormat('Y-m-d H:i', "{$endDate} {$endTime}", 'UTC');
 
+                // NEW: Check if start_time is in the past (UTC comparison)
+                if ($startDateTime->isPast('UTC')) {
+                    $validator->errors()->add(
+                        'workStartDateLabel',
+                        'Waktu mulai tidak boleh di masa lalu (UTC).'
+                    );
+                }
+
+                // Ensure start time is strictly before end time (UTC comparison)
                 if ($startDateTime->gte($endDateTime)) { // gte = greater than or equal
                     $validator->errors()->add(
                         'datetime',
-                        __('validation.custom.datetime.after_start_time')
+                        __('validation.custom.datetime.after_start_time') // Assuming this exists for custom validation messages
                     );
                 }
             }

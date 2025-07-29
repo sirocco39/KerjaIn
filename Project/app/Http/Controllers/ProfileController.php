@@ -64,7 +64,8 @@ class ProfileController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = Auth::user();
+        $user = Auth::id(); // Ambil user yang sedang login
+        $user = User::find($user);
 
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
@@ -78,6 +79,30 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('error', 'Foto tidak valid.');
     }
+
+    public function uploadWorkerPhoto(Request $request)
+    {
+        $request->validate([
+            'photo_url' => 'required|image|mimes:jpg,jpeg,png|max:5120', // max 5MB
+        ]);
+
+        $user = Auth::id(); // Ambil user yang sedang login
+        $user = User::find($user);
+
+        // Simpan file
+        if ($request->hasFile('photo_url')) {
+            $file = $request->file('photo_url');
+            $filename = 'worker_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/uploads/worker_photos', $filename); // simpan di storage/app/public/uploads/worker_photos
+
+            // Simpan ke database
+            $user->photo_url_worker = 'storage/uploads/worker_photos/' . $filename;
+            $user->save();
+        }
+
+        return redirect()->back()->with('success', 'Foto berhasil diunggah!');
+    }
+
 
 }
 

@@ -22,7 +22,7 @@
                     {{-- End Search Bar --}}
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
-                    @if(request('search_query') && $blockedUsers->isEmpty()) 
+                    @if(request('search_query') && $blockedUsers->isEmpty())
                     <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert"  style="color:white">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
@@ -86,7 +86,7 @@
 </div>
 
 <div class="modal fade" id="confirmUnblockModal" tabindex="-1" role="dialog" aria-labelledby="confirmUnblockModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmUnblockModalLabel">Konfirmasi Batal Blokir Pengguna</h5>

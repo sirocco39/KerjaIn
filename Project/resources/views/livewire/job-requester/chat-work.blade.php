@@ -46,7 +46,7 @@
             <div class="profile d-flex">
                 <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}" alt="" style="width: 48px; height: 48px;" class="rounded-5">
                 <div class="container-name-status ms-2 d-flex align-items-center">
-                    
+
                     <div class="fw-bold">{{ $selectedRoom->worker->first_name . ' ' . $selectedRoom->worker->last_name }}</div>
                 </div>
             </div>

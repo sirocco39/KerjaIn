@@ -24,6 +24,28 @@
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
+        .dropdown-profile-custom {
+            min-width: 250px;
+            /* Lebar minimum agar tidak sempit */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Ini adalah perbaikan utamanya */
+        .dropdown-profile-custom .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            /* Tambah padding kanan-kiri */
+            font-weight: 500;
+        }
+
+        .dropdown-profile-custom .navIcon {
+            width: 20px;
+            /* Pastikan ukuran ikon seragam */
+        }
+
         .popup-error-card {
             position: absolute;
             top: calc(100% + 0.25rem);
@@ -162,7 +184,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 
-
+@php
+    $user = Auth::id(); // Ambil user yang sedang login
+    $user = \App\Models\User::find($user);
+@endphp
 <body>
     <!-- Custom Alert Container (Non-Modal) -->
     <div id="custom-alert-container">
@@ -216,16 +241,38 @@
                                         class="flag"> English</a></li>
                         </ul>
                     </li>
+                    
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
+                            <img 
+                                src="{{ Storage::url($user->photo_url_worker) }}" 
+                                alt="Profil" 
+                                id="profileIcon"
+                                onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                            />
                             <span class="d-lg-none">Profil</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @auth
+                            
                             <li>
+                                <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
+                                        <img 
+                                            src="{{ Storage::url($user->photo_url_worker) }}" 
+                                            alt="Profil" 
+                                            id="profileIcon"
+                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                                        />
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 16px;">{{ auth()->user()->verificationRequests->first()?->first_name. ' ' . auth()->user()->verificationRequests->first()?->last_name}}</div>
+                                            <div style="font-size: 13px; color: gray;">Peran: Pekerja</div>
+                                        </div>
+                                    </div>
+
                                 {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
                                 <a class="dropdown-item d-flex align-items-center"
                                     href="{{ route('balance.job-taker') }}">
@@ -271,7 +318,7 @@
                             {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('job-req.home') }}">
+                                    href="{{ route('switch.to.requester') }}">
                                     <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                         class="navIcon">
                                     Ganti Peran
@@ -290,6 +337,7 @@
 
     {{-- Main Section --}}
     <main class="main-content">
+        
         @yield('content')
     </main>
     {{-- End Main Section --}}
@@ -395,30 +443,6 @@
     </footer>
     {{-- End Footer --}}
 
-    <style>
-        .dropdown-profile-custom {
-            min-width: 250px;
-            /* Lebar minimum agar tidak sempit */
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: none;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-
-        /* Ini adalah perbaikan utamanya */
-        .dropdown-profile-custom .dropdown-item {
-            padding: 0.75rem 1.25rem;
-            /* Tambah padding kanan-kiri */
-            font-weight: 500;
-        }
-
-        .dropdown-profile-custom .navIcon {
-            width: 20px;
-            /* Pastikan ukuran ikon seragam */
-        }
-    </style>
-
     <script defer>
         // Custom Alert function (copied from master-job-req.blade.php's original)
         window.showCustomAlert = function(message, type = 'info', duration = 3000) {
@@ -437,6 +461,8 @@
                 customAlert.classList.add('alert-success-bg');
             } else if (type === 'error') {
                 customAlert.classList.add('alert-error-bg');
+            } else if (type === 'blue') {
+                customAlert.classList.add('alert-blue-bg');
             } else if (type === 'info') {
                 customAlert.classList.add('alert-info-bg');
             }

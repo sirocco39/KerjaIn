@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\Request as JobRequest; // Alias Request to JobRequest
-use App\Models\Report;
+use App\Models\Report; // Add this import
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException; // Import ValidationException
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class WorkerTransactionController extends Controller
 {
@@ -58,6 +59,28 @@ class WorkerTransactionController extends Controller
             $transaction->has_review = $transaction->reviewAboutWorker()->exists();
             $transaction->received_review = $transaction->reviewAboutWorker; // Get the review object itself
 
+            // NEW: Load worker's report about the requester for this transaction
+            // The `userReport` relationship is a HasOne, so it will fetch the first report found.
+            // For allowing multiple reports, the frontend will simply present a fresh form.
+            $workerReportForTransaction = Report::where('transaction_id', $transaction->id)
+                ->where('reporter_id', $userId) // Reporter is the current worker
+                ->where('reported_id', $transaction->requester_id) // Reported is the requester of this transaction
+                ->first();
+
+            $transaction->workerReport = $workerReportForTransaction;
+            $transaction->has_worker_report = ($workerReportForTransaction !== null);
+
+            // Ensure workerReport object is available and its properties are decoded for Blade
+            if ($transaction->workerReport) {
+                $transaction->workerReport->decoded_photo_urls = json_decode($transaction->workerReport->photo_url, true) ?? [];
+            } else {
+                // Create a dummy object if no report exists, to prevent errors in Blade
+                $transaction->workerReport = (object)[
+                    'decoded_photo_urls' => [],
+                    'reasons' => null,
+                ];
+            }
+
             return $transaction;
         });
 
@@ -82,7 +105,6 @@ class WorkerTransactionController extends Controller
 
         // Authorization check: only the worker of the transaction can view this page
         if (Auth::id() !== $transaction->worker_id) {
-            // Changed to custom alert
             activity()
                 ->inLog('Security')
                 ->on($transaction)
@@ -108,9 +130,34 @@ class WorkerTransactionController extends Controller
             ]);
         }
 
-        // NEW: Check if a review already exists for this worker on this transaction
-        $hasReview = $transaction->reviewAboutWorker()->exists();
-        $receivedReview = $transaction->reviewAboutWorker; // This will be null if no review exists
+        // NEW: Check if a review already exists for this worker on this transaction (from requester)
+        $hasReview = $transaction->reviewAboutWorker()->exists(); // Review given by requester about worker
+        $receivedReview = $transaction->reviewAboutWorker; // Get the review object itself
+
+        // NEW: Check if a review already exists FROM this worker ABOUT the requester for this transaction
+        $hasReviewRequester = $transaction->reviewAboutRequester()->exists(); // Review given by worker about requester
+        $receivedReviewRequester = $transaction->reviewAboutRequester; // This will be null if no review exists
+
+        // NEW: Check if a report already exists FROM this worker ABOUT the requester for this transaction
+        // The `userReport` relationship is a HasOne, so it will fetch the first report found.
+        // For allowing multiple reports, the frontend will simply present a fresh form.
+        $hasWorkerReport = Report::where('transaction_id', $transaction->id)
+            ->where('reporter_id', Auth::id())
+            ->where('reported_id', $transaction->requester_id)
+            ->first();
+
+        $workerReport = null;
+        if ($hasWorkerReport) {
+            $workerReport = $hasWorkerReport;
+            // Decode photo_url if it's stored as JSON
+            $workerReport->decoded_photo_urls = json_decode($workerReport->photo_url, true) ?? [];
+        } else {
+            // Create a dummy object if no report exists, to prevent errors in Blade
+            $workerReport = (object)[
+                'decoded_photo_urls' => [],
+                'reasons' => null,
+            ];
+        }
 
         // Kirim ke view
         return view('job-taker.accepted-work-request', compact(
@@ -119,8 +166,12 @@ class WorkerTransactionController extends Controller
             'worker',
             'completionProof',
             'room',
-            'hasReview', // Pass this flag
-            'receivedReview' // Pass the review object if it exists
+            'hasReview',
+            'receivedReview',
+            'hasReviewRequester', // Pass this flag
+            'receivedReviewRequester', // Pass the review about requester if it exists
+            'hasWorkerReport', // Pass this flag for worker's own report
+            'workerReport' // Pass the worker's report object if it exists
         ));
     }
 
@@ -128,9 +179,30 @@ class WorkerTransactionController extends Controller
     {
         $transaction = Transaction::findOrFail($id);
 
+        // Ensure only the assigned worker can start the job
+        if (Auth::id() !== $transaction->worker_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak berwenang untuk memulai pekerjaan ini.'
+            ], 403); // Forbidden
+        }
+
+        if ($transaction->status !== 'accepted') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pekerjaan tidak dalam status "Diterima" dan tidak dapat dimulai.'
+            ], 400); // Bad Request
+        }
+
         $transaction->status = 'in progress';
         $transaction->start_work = Carbon::now();
         $transaction->save();
+
+        activity()
+            ->inLog('Transaction')
+            ->performedOn($transaction)
+            ->causedBy(Auth::user())
+            ->log("Pekerja telah memulai pekerjaan untuk transaksi #{$transaction->order_number}.");
 
         // Return JSON response for AJAX requests
         return response()->json([
@@ -144,17 +216,32 @@ class WorkerTransactionController extends Controller
     /**
      * Handles the upload of completion proof for a transaction.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Transaction  $transaction
+     * @param   \Illuminate\Http\Request  $request
+     * @param   \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function uploadProof(Request $request, Transaction $transaction)
     {
         try {
+            // Ensure only the assigned worker can upload proof
+            if (Auth::id() !== $transaction->worker_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak berwenang untuk mengunggah bukti pekerjaan ini.'
+                ], 403);
+            }
+
+            if ($transaction->status !== 'in progress') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pekerjaan tidak dalam status "Dikerjain" dan tidak dapat mengunggah bukti.'
+                ], 400);
+            }
+
             $request->validate([
                 'photo' => 'required|array',
-                'photo.*' => 'image|max:2048', // Max 2MB per image
-                'note' => 'nullable|string',
+                'photo.*' => 'image|max:5120', // Max 5MB per image, consistent with previous context
+                'note' => 'nullable|string|max:2000', // Added max length for note
             ]);
 
             $uploadedPhotoUrls = [];
@@ -164,15 +251,17 @@ class WorkerTransactionController extends Controller
                 // Get the public URL for the stored file
                 $photoUrl = Storage::url($path);
                 $uploadedPhotoUrls[] = $photoUrl;
-
-                // Create a CompletionProof record for each uploaded photo
-                CompletionProof::create([
-                    'transaction_id' => $transaction->id,
-                    'photo_url' => $photoUrl,
-                    'note' => $request->note, // Note will be the same for all photos in this submission
-                    'submitted_at' => now(),
-                ]);
             }
+
+            // Create a single CompletionProof record with JSON-encoded photo_url
+            CompletionProof::updateOrCreate(
+                ['transaction_id' => $transaction->id], // Find by transaction_id
+                [
+                    'photo_url' => json_encode($uploadedPhotoUrls), // Store as JSON array
+                    'note' => $request->note,
+                    'submitted_at' => now(),
+                ]
+            );
 
             // Update the transaction status to 'submitted' and set finish_work timestamp
             $transaction->status = 'submitted';
@@ -185,6 +274,7 @@ class WorkerTransactionController extends Controller
                 ->causedBy(Auth::user())    // Pelakunya adalah pekerja yang login
                 ->withProperties(['uploaded_photos' => $uploadedPhotoUrls, 'note' => $request->note]) // Simpan URL foto & catatan
                 ->log("Pekerja telah mengunggah bukti penyelesaian pekerjaan.");
+
             // Return a JSON success response for AJAX requests
             return response()->json([
                 'success' => true,
@@ -198,10 +288,13 @@ class WorkerTransactionController extends Controller
             // Return JSON response for validation errors
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal: ' . $e->getMessage(),
+                'message' => 'Validasi gagal.',
                 'errors' => $e->errors()
             ], 422); // 422 Unprocessable Entity for validation errors
         } catch (\Exception $e) {
+            // Log the actual error for debugging
+            Log::error("Error uploading proof for transaction {$transaction->id}: " . $e->getMessage());
+
             // Return JSON response for other general errors
             return response()->json([
                 'success' => false,
@@ -210,74 +303,113 @@ class WorkerTransactionController extends Controller
         }
     }
 
+    // This `markComplete` method in WorkerTransactionController is likely for when a worker marks it complete.
+    // However, the payment release logic usually happens from the requester's side.
+    // If this method is indeed for worker to mark as "submitted", keep it simple.
+    // If it's intended to finalize, it needs more robust logic.
+    // Assuming it's for worker to set status to 'submitted'
     public function markComplete(Transaction $transaction)
     {
-        // This method seems to be for worker marking complete, but the requester actually finalizes.
-        // Based on the `on-going-work-request.blade.php` (requester side), the requester calls `markComplete`.
-        // This method might be redundant or named incorrectly if it's strictly for worker actions.
-        // Assuming for now it's still intended for worker to mark as 'submitted'
-        if ($transaction->status === 'in progress') {
-            $transaction->status = 'submitted';
-            $transaction->save();
+        // This method in WorkerTransactionController should perhaps not finalize the payment,
+        // but merely transition the status to 'submitted' from the worker's perspective.
+        // The actual 'completed' status and payment release should ideally be triggered by the requester.
+        // If this method is called, it means the worker is confirming completion, awaiting requester's finalization.
+
+        if (Auth::id() !== $transaction->worker_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak berwenang untuk menandai pekerjaan ini selesai.'
+            ], 403);
         }
 
-        // Ambil data yang dibutuhkan untuk pop-up rating
-        $job = JobRequest::find($transaction->request_id); // Corrected to use JobRequest alias
-        $requester = $transaction->requester; // Corrected to use requester relation
+        if ($transaction->status === 'in progress') {
+            $transaction->status = 'submitted';
+            $transaction->finish_work = Carbon::now(); // Ensure finish_work is set here
+            $transaction->save();
 
-        // Kirim data ke view via session flash
-        return back()->with([
-            'show_rating_modal' => true,
-            'rating_data' => [
-                'title' => $job->title,
-                'order_number' => $transaction->order_number,
-                'client_name' => $requester->first_name . ' ' . $requester->last_name,
-                'location' => $job->location,
-                'order_date' => $job->start_time->format('Y-m-d'),
-                'completion_date' => $job->end_time->format('Y-m-d'),
-                'start_time' => $job->start_time->format('H.i'),
-                'end_time' => $job->end_time->format('H.i'),
-                'price' => $job->final_price,
-            ],
-        ]);
+            activity()
+                ->inLog('Transaction')
+                ->performedOn($transaction)
+                ->causedBy(Auth::user())
+                ->log("Pekerja telah menandai pekerjaan #{$transaction->order_number} sebagai 'submitted'.");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pekerjaan berhasil ditandai selesai dan sedang menunggu konfirmasi dari klien.',
+                'new_status' => $transaction->status,
+                'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Status pekerjaan tidak memungkinkan untuk ditandai selesai.'
+        ], 400);
     }
 
 
-    public function storeReport(Request $request)
+    public function storeReport(Request $request, $transactionId) // Changed method name to avoid conflict, used 'Request' alias
     {
+        // Validate the incoming request data
         $request->validate([
-            'transaction_id' => 'required|exists:transactions,id',
+            'reasons' => 'required|string|max:2000',
+            'photo' => 'required|array|min:1|max:7', // At least 1, max 7 photos
+            'photo.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120', // Each photo max 5MB
             'reporter_id' => 'required|exists:users,id',
             'reported_id' => 'required|exists:users,id',
-            'reasons' => 'required|string',
-            'photo' => 'required|array',
-            'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
+        $transaction = Transaction::findOrFail($transactionId);
+
+        // Authorization check: only the worker of the transaction can report about the requester
+        if (Auth::id() !== $transaction->worker_id || $request->reporter_id != Auth::id()) {
+            activity()
+                ->inLog('Security')
+                ->on($transaction)
+                ->causedBy(Auth::user())
+                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number}.");
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
+            ], 403);
+        }
+
         try {
-            $photoUrls = [];
+            $photoUrls = []; // Array to store public URLs of uploaded photos
 
             foreach ($request->file('photo') as $file) {
-                $path = $file->store('report_photos', 'public');
-                $photoUrls[] = Storage::url($path);
+                $path = $file->store('reports/photos', 'public'); // Store in storage/app/public/reports/photos
+                $photoUrls[] = Storage::url($path); // Get public URL for storage
             }
 
+            // Always create a new report entry
             Report::create([
-                'transaction_id' => $request->transaction_id,
+                'transaction_id' => $transaction->id,
                 'reporter_id' => $request->reporter_id,
                 'reported_id' => $request->reported_id,
                 'reasons' => $request->reasons,
-                'photo_url' => json_encode($photoUrls),
-                'status' => 'Not Reviewed',
+                'photo_url' => json_encode($photoUrls), // Store JSON encoded array of URLs
+                'status' => 'Not Reviewed', // Default status for a new report
             ]);
 
-            // Changed from JSON response to redirect with custom alert
+            activity()
+                ->inLog('Report')
+                ->performedOn($transaction)
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'transaction_id' => $transaction->id,
+                    'reported_user_id' => $request->reported_id,
+                    'reasons' => $request->reasons,
+                    'photo_count' => count($photoUrls)
+                ])
+                ->log("Pekerja telah mengajukan laporan untuk transaksi #{$transaction->order_number} mengenai klien.");
+
             return response()->json([
                 'success' => true,
                 'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
             ]);
         } catch (\Exception $e) {
-            // Changed from JSON response to redirect with custom alert
+            Log::error("Error submitting report for worker transaction {$transactionId}: " . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage()
@@ -285,34 +417,79 @@ class WorkerTransactionController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function storeReview(Request $request, Transaction $transaction) // Changed method name to avoid conflict
     {
+        // Validate the incoming request data
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
             'reviewer_id' => 'required|exists:users,id',
             'reviewee_id' => 'required|exists:users,id',
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string',
+            'comment' => 'required|string|max:1000', // Added max length for comment
         ]);
 
-        $ratingGiven = $request->rating ?? 5; // Use $request->rating directly
+        // Authorization check: only the worker of the transaction can review the requester
+        if (Auth::id() !== $transaction->worker_id || $request->reviewer_id != Auth::id() || $request->reviewee_id != $transaction->requester_id) {
+            activity()
+                ->inLog('Security')
+                ->on($transaction)
+                ->causedBy(Auth::user())
+                ->log("Percobaan ulasan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja.");
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak berwenang untuk memberikan ulasan ini.'
+            ], 403);
+        }
 
-        Review::create([
-            'transaction_id' => $request->transaction_id,
-            'reviewer_id' => $request->reviewer_id,
-            'reviewee_id' => $request->reviewee_id,
-            'rating' => $request->rating,
-            'comment' => $request->comment,
-        ]);
+        // Check if a review already exists from this worker about this requester for this transaction
+        $existingReview = Review::where('transaction_id', $transaction->id)
+            ->where('reviewer_id', Auth::id())
+            ->where('reviewee_id', $transaction->requester_id)
+            ->first();
 
-        $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
+        if ($existingReview) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah memberikan ulasan untuk transaksi ini.'
+            ], 409); // Conflict
+        }
 
-        User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
+        try {
+            Review::create([
+                'transaction_id' => $request->transaction_id,
+                'reviewer_id' => $request->reviewer_id,
+                'reviewee_id' => $request->reviewee_id,
+                'rating' => $request->rating,
+                'comment' => $request->comment,
+            ]);
 
-        // Changed from JSON response to redirect with custom alert
-        return response()->json([
-            'success' => true,
-            'message' => 'Ulasan Anda berhasil disimpan!'
-        ]);
+            // Update the average rating for the reviewee (requester in this case)
+            $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
+            User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
+
+            activity()
+                ->inLog('Review')
+                ->performedOn($transaction)
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'transaction_id' => $transaction->id,
+                    'reviewed_user_id' => $request->reviewee_id,
+                    'rating' => $request->rating,
+                    'comment' => $request->comment
+                ])
+                ->log("Pekerja telah memberikan ulasan ({$request->rating} bintang) untuk klien transaksi #{$transaction->order_number}.");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ulasan Anda berhasil disimpan!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error storing review for worker transaction {$transaction->id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan ulasan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
+

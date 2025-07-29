@@ -18,6 +18,7 @@ class Transaction extends Model
 {
     /** @use HasFactory<\Database\Factories\TransactionFactory> */
     use HasFactory, SoftDeletes, LogsActivity;
+
     protected $fillable = [
         'order_number',
         'request_id',
@@ -26,15 +27,18 @@ class Transaction extends Model
         'status',
         'accepted_at',
     ];
+
     protected $attributes = [
         'status' => 'accepted',
     ];
+
     protected $casts = [
         'accepted_at' => 'datetime',
         'price' => 'decimal:2',
         'start_work' => 'datetime',
         'finish_work' => 'datetime',
     ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -80,10 +84,12 @@ class Transaction extends Model
     {
         return $this->belongsTo(Request::class, 'request_id');
     }
+
     public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
+
     public function worker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'worker_id');
@@ -111,15 +117,30 @@ class Transaction extends Model
             ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
     }
 
+    public function reviewAboutRequester(): HasOne
+    {
+        return $this->hasOne(Review::class, 'transaction_id', 'id')
+            ->where('reviewee_id', $this->requester_id); // Reviewee is the requester
+    }
 
     public function completionProof(): HasOne
     {
         return $this->hasOne(CompletionProof::class, 'transaction_id');
     }
+
+    // This is the general report relationship (if a transaction has one main report)
     public function report(): HasOne
     {
         return $this->hasOne(Report::class, 'transaction_id');
     }
+
+    // --- ADDED THIS RELATIONSHIP TO FIX THE ERROR ---
+    // This relationship retrieves a single report made by the *current authenticated user* for this transaction
+    public function userReport(): HasOne
+    {
+        return $this->hasOne(Report::class, 'transaction_id', 'id')->where('reporter_id', Auth::id());
+    }
+    // --- END ADDED RELATIONSHIP ---
 
     protected static function boot()
     {
