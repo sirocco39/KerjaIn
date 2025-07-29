@@ -164,19 +164,10 @@ class Transaction extends Model
 
     public function getStatusTextAttribute()
     {
-        switch ($this->status) {
-            case 'accepted':
-                return 'Diterima';
-            case 'in progress':
-                return 'Dikerjain';
-            case 'completed':
-                return 'Selesai';
-            case 'cancelled':
-                return 'Dibatalin';
-            case 'submitted':
-                return 'Ditinjau';
-            default:
-                return ucfirst($this->status); // Fallback to capitalized status
-        }
+        // Membuat key lokalisasi secara dinamis, contoh: 'history-job-req.status.completed'
+        $key = 'history-job-req.status.' . $this->status;
+
+        // Menggunakan helper __() dengan fallback ke status asli jika terjemahan tidak ditemukan
+        return __($key, [], app()->getLocale()) ?? ucfirst($this->status);
     }
 }

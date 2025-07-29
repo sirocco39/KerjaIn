@@ -47,7 +47,8 @@ class WebhookController extends Controller
                     'user_id' => $order->user_id,
                     'amount' => $order->amount,
                     'type' => 'debit',
-                    'description' => 'Top up via Xendit (' . $payload['payment_channel'] . ')',
+                    'description_en' => 'Top up via Xendit (' . $payload['payment_channel'] . ')',
+                    'description_id' => 'Isi saldo melalui Xendit (' . $payload['payment_channel'] . ')',
                 ]);
 
                 // d. Logging (dipindah ke dalam transaction agar konsisten)

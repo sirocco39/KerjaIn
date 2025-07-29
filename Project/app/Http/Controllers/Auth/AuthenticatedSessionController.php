@@ -55,7 +55,7 @@ class AuthenticatedSessionController extends Controller
             }
 
             // Changed to custom alert
-            return back()->with('custom_error_alert', 'Email atau kata sandi salah.')->onlyInput('email');
+            return back()->with('custom_error_alert', __('alerts.email_atau_kata_sandi_salah'))->onlyInput('email');
         }
         // --- Tambahan Logika untuk Memeriksa Status Blokir ---
         /** @var \App\Models\User $user */
@@ -83,7 +83,7 @@ class AuthenticatedSessionController extends Controller
                 ], 403); // Menggunakan status 403 Forbidden
             }
 
-            return back()->with('custom_error_alert', $errorMessage)->onlyInput('email');
+            return back()->with('custom_error_alert', __('alerts.akun_diblokir'))->onlyInput('email');
         }
         // --- Akhir Tambahan Logika ---
 
@@ -103,7 +103,7 @@ class AuthenticatedSessionController extends Controller
             }
 
             // Arahkan admin ke halaman pilihan
-            return redirect()->route('admin.pilihan')->with('custom_info_alert', "Selamat datang, Admin {$user->first_name}! Silakan pilih tujuan Anda.");
+            return redirect()->route('admin.pilihan')->with('custom_info_alert', __('alerts.admin_selamat_datang', ['nama' => $user->first_name]));
         }
         // --- Akhir Logika Baru ---
         // Login success
@@ -125,7 +125,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Changed to custom alert
-        return redirect()->route('job-req.home')->with('custom_blue_alert', "Login berhasil! Selamat datang, {$firstName}!");
+       return redirect()->route('job-req.home')->with('custom_blue_alert', __('alerts.login_berhasil', ['nama' => $firstName]));
     }
 
 
@@ -146,6 +146,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         // Changed to custom alert
-        return redirect('/')->with('custom_blue_alert', 'Anda telah berhasil keluar.');
+      return redirect('/')->with('custom_blue_alert', __('alerts.logout_berhasil'));
     }
 }

@@ -5,12 +5,13 @@
     <div class="header-wrap" id="header-beranda-job_taker">
         <div class="container-fluid pembatas-x">
             @auth
-                <h1 class="fw-bold mb-1">Halo, {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h1>
+                <h1 class="fw-bold mb-1">
+                    {{ __('home-job-taker.sapaan', ['nama' => auth()->user()->first_name . ' ' . auth()->user()->last_name]) }}</h1>
             @else
                 <h1 class="fw-bold mb-1">Halo, Nama Pengguna</h1>
             @endauth
             <p class="mb-0">
-                Setiap langkah kecil menuju tujuan adalah kemajuan yang berharga.
+               {{ __('home-job-taker.deskripsi_sapaan') }}
             </p>
         </div>
         <x-search></x-search>
@@ -18,33 +19,35 @@
 
 
     <div class="container-fluid pembatas-x pembatas-y d-flex flex-column gap-4">
-        <h3 class="fw-bold mb-0">Ringkasan Pengalaman Anda</h3>
+        <h3 class="fw-bold mb-0">{{ __('home-job-taker.ringkasan_pengalaman') }}</h3>
 
         <div class="container-fluid d-flex row p-0 m-0 align-items-center justify-content-center" id="shortDetail">
             <div class="col d-flex flex-column align-items-center p-0">
-                <h4 class="fw-bold title-detail m-0 mb-2">Lama Bekerja</h4>
+                <h4 class="fw-bold title-detail m-0 mb-2"> {{ __('home-job-taker.lama_bekerja') }}</h4>
                 @auth
                     <p class="mb-0 text-p"><b class="bold-point">{{ floor(auth()->user()->created_at->diffInYears(now())) }}</b>
-                        Tahun</p>
+                         {{ __('home-job-taker.tahun') }}</p>
                 @else
-                    <p class="mb-0 text-p"><b class="bold-point">0</b> Tahun</p>
+                    <p class="mb-0 text-p"><b class="bold-point">0</b>  {{ __('home-job-taker.tahun') }}</p>
                 @endauth
             </div>
 
             <div class="col d-flex flex-column align-items-center p-0" id="detail-tengah">
-                <h4 class="fw-bold title-detail m-0 mb-2">Pekerjaan Selesai</h4>
+                <h4 class="fw-bold title-detail m-0 mb-2"> {{ __('home-job-taker.pekerjaan_selesai') }}</h4>
                 @auth
-                    <p class="mb-0 text-p"><b class="bold-point">{{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }}</b> Pekerjaan</p>
+                    <p class="mb-0 text-p"><b
+                            class="bold-point">{{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }}</b>
+                         {{ __('home-job-taker.pekerjaan') }}</p>
                 @else
-                    <p class="mb-0 text-p"><b class="bold-point">0</b> Pekerjaan</p>
+                    <p class="mb-0 text-p"><b class="bold-point">0</b>  {{ __('home-job-taker.pekerjaan') }}</p>
                 @endauth
             </div>
 
             <div class="col d-flex flex-column align-items-center p-0">
-                <h4 class="fw-bold title-detail m-0 mb-2">Rating Rata-rata</h4>
+                <h4 class="fw-bold title-detail m-0 mb-2"> {{ __('home-job-taker.rating_rata_rata') }}</h4>
                 <p class="mb-0"></p>
                 @auth
-                    <p class="mb-0 text-p"><b class="bold-point">{{ auth()->user()->rating }}</b></p>
+                    <p class="mb-0 text-p"><b class="bold-point">{{ number_format(auth()->user()->rating, 2, ',', '.') }}</b></p>
                 @else
                     <p class="mb-0 text-p"><b class="bold-point">0</b></p>
                 @endauth
@@ -53,12 +56,12 @@
     </div>
 
     <div class="container-fluid pembatas-x pembatas-b d-flex flex-column gap-4">
-        <h3 class="fw-bold mb-0">Pekerjaan yang Sedang Anda Ambil</h3>
+        <h3 class="fw-bold mb-0"> {{ __('home-job-taker.pekerjaan_diambil') }}</h3>
 
         <div class="d-flex">
             <div class="col-12 col-xl-8 d-flex flex-column gap-4 beranda-req-kiri">
                 @if ($fiveLatestTransaction->isEmpty())
-                    <p>Anda belum pernah mengambil pekerjaan!</p>
+                    <p> {{ __('home-job-taker.belum_ambil_pekerjaan') }}</p>
                 @else
                     @foreach ($fiveLatestTransaction as $r)
                         @php
@@ -87,7 +90,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                                     </div>
-                                    <span>Kak {{ $r->requester->first_name }}</span>
+                                    <span> {{ __('home-job-taker.card.klien_prefix') }} {{ $r->requester->first_name }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-3 col-lg-4 gap-2 me-2">
@@ -124,23 +127,23 @@
                             <div class="details-bottom-segment d-flex justify-content-between mt-2">
                                 @if ($r->status == 'accepted')
                                     <div class="status">
-                                        <p class="mb-0">Diterima</p>
+                                        <p class="mb-0"> {{ __('home-job-taker.card.status_diterima') }}</p>
                                     </div>
                                 @elseif($r->status == 'in progress')
                                     <div class="status" style="background-color: #309FFF">
-                                        <p class="mb-0">Dikerjain</p>
+                                        <p class="mb-0"> {{ __('home-job-taker.card.status_dikerjakan') }}</p>
                                     </div>
                                 @elseif($r->status == 'submitted')
                                     <div class="status">
-                                        <p class="mb-0">Ditinjau</p>
+                                        <p class="mb-0"> {{ __('home-job-taker.card.status_ditinjau') }}</p>
                                     </div>
                                 @elseif($r->status == 'completed')
                                     <div class="status" style="background-color:#E8FA0D; color: #294287;">
-                                        <p class="mb-0">Selesai</p>
+                                        <p class="mb-0"> {{ __('home-job-taker.card.status_selesai') }}</p>
                                     </div>
                                 @elseif($r->status == 'cancelled')
                                     <div class="status" style="background-color: #B02A37">
-                                        <p class="mb-0">Dibatalin</p>
+                                        <p class="mb-0"> {{ __('home-job-taker.card.status_dibatalkan') }}</p>
                                     </div>
                                 @endif
                                 <a class="detail-req-button" data-bs-toggle="modal" data-bs-target="#detailModal"
@@ -167,13 +170,13 @@
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div id="modal-content-container" class="p-3">
-                    <h1 class="fw-bold mb-3" id="modal-detail-title">Nama Lowongan Kerja</h1>
+                    <h1 class="fw-bold mb-3" id="modal-detail-title"> {{ __('home-job-taker.modal.judul_placeholder') }}</h1>
                     <ul class="job-card-details">
                         <li class="gap-2">
                             <div class="icon-wrapper">
                                 <img src="{{ asset('Image/Icon/icon-profile.svg') }}" alt="Icon Profile">
                             </div>
-                            <span>Kak <span id="modal-detail-profile"></span></span>
+                            <span>{{ __('home-job-taker.modal.klien_prefix') }} <span id="modal-detail-profile"></span></span>
                         </li>
 
                         <li class="gap-2">
@@ -204,12 +207,12 @@
                             Rp<span id="modal-detail-price-value"></span>
                         </li>
                     </ul>
-                    <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
+                    <h5 class="detail-description fw-bold d-flex mt-3">{{ __('home-job-taker.modal.deskripsi') }}</h5>
                     <div class="wrapDesc mb-3">
                         <p class="mb-0" id="modal-detail-description-text"></p>
                     </div>
 
-                    <h5 class="detail-status fw-bold d-flex mt-3">Status:</h5>
+                    <h5 class="detail-status fw-bold d-flex mt-3">{{ __('home-job-taker.modal.status') }}</h5>
                     <p class="mb-3" id="modal-detail-status"></p>
 
                     {{-- <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
@@ -217,32 +220,6 @@
                         <a id="button-action-2"></a>
                         <a id="button-action-3"></a>
                     </div> --}}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="deleteConfirmation" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header d-flex justify-content-between align-items-center">
-                    <img src="{{ asset('Image/Icon/icon-danger.svg') }}" alt="Danger Icon">
-                    <h1 class="fw-bold mb-0" style="color: #B02A37">Hapus Tawaran</h1>
-                    <img src="{{ asset('Image/Icon/icon-danger.svg') }}" alt="Danger Icon">
-                </div>
-                <div id="modal-content-container" class="p-3">
-                    <p class="mb-3 text-center fw-medium fs-5">Apakah kamu yakin menghapus tawaran?</p>
-                </div>
-                <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
-                    <a class="details-button-item btn-tawar-modal text-decoration-none" data-bs-target="#detailModal"
-                        data-bs-toggle="modal" id="kembali-button-section">Tidak</a>
-                    <form id="delete-request-form" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                            class="details-button-item btn-hapus-modal text-decoration-none">Ya</button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -334,7 +311,8 @@
                             const minutes = date.getUTCMinutes().toString().padStart(2, '0');
                             return `${hours}.${minutes}`;
                         }
-                        modalTime.textContent = `${formatTimeInUTC(startDatetime)} - ${formatTimeInUTC(endDatetime)}`;
+                        modalTime.textContent =
+                            `${formatTimeInUTC(startDatetime)} - ${formatTimeInUTC(endDatetime)}`;
                         // --- END MODIFIED ---
 
                         modalPrice.textContent = parseFloat(requests.final_price || 0).toLocaleString(

@@ -98,7 +98,7 @@ class TransactionController extends Controller
                 ->on($transaction)  // Targetnya adalah transaksi yang coba diakses
                 ->causedBy(Auth::user()) // Pelakunya adalah user yang mencoba akses
                 ->log("Percobaan akses tidak sah ke halaman transaksi on-going #{$transaction->order_number}.");
-            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang melihat halaman ini.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', __('alerts.anda_tidak_berwenang_melihat'));
         }
 
         // Ambil data request yang berhubungan dengan transaction
@@ -162,7 +162,8 @@ class TransactionController extends Controller
             'user_id' => $requester->id,
             'amount' => $refundAmount,
             'type' => 'debit',
-            'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $transaction->request->title,
+            'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $$transaction->request->title,
+            'description_en' => 'Balance refund from job cancellation: ' . $transaction->request->title,
         ]);
 
         $canceller = Auth::user();
@@ -184,9 +185,9 @@ class TransactionController extends Controller
         $userId = Auth::id();
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
         if ($userId === $requester->id) {
-            $alertMessage = 'Pekerjaan dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.';
+            $alertMessage = __('alerts.pekerjaan_dibatalkan_dana_kembali', ['amount' => $formattedRefundAmount]);
         } else {
-            $alertMessage = 'Pekerjaan telah berhasil dibatalkan';
+           $alertMessage = __('alerts.pekerjaan_berhasil_dibatalkan');
         }
         $redirectRoute = $request->input('redirect_to', 'landing');
 
@@ -236,7 +237,8 @@ class TransactionController extends Controller
                 'user_id' => $worker->id,
                 'amount' => $payoutAmount,
                 'type' => 'debit',
-                'description' => 'Pembayaran diterima dari pekerjaan: ' . $workRequest->title,
+                'description_id' => 'Pembayaran diterima dari pekerjaan: ' . $workRequest->title,
+                'description_en' => 'Payment received from job: ' . $workRequest->title,
             ]);
 
             // 6. Update status di semua tabel terkait
@@ -268,7 +270,7 @@ class TransactionController extends Controller
                 ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan requester.");
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
+                'message' => __('alerts.anda_tidak_berwenang')
             ], 403);
         }
 
@@ -294,7 +296,7 @@ class TransactionController extends Controller
         // Changed from redirect()->route() to return response()->json() for AJAX consistency
         return response()->json([
             'success' => true,
-            'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+            'message' => __('alerts.laporan_berhasil_dikirim')
         ]);
     }
 
@@ -312,4 +314,3 @@ class TransactionController extends Controller
         ]);
     }
 }
-

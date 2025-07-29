@@ -188,6 +188,7 @@
     $user = Auth::id(); // Ambil user yang sedang login
     $user = \App\Models\User::find($user);
 @endphp
+
 <body>
     <!-- Custom Alert Container (Non-Modal) -->
     <div id="custom-alert-container">
@@ -213,117 +214,120 @@
             <div class="collapse navbar-collapse" id="navbarCollapseFull">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/beranda') ? 'active' : '' }}"
-                            href="/job-taker/beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
-                            href="/job-taker/cari-kerja">Cari Kerja</a></li>
+                            href="/job-taker/beranda">{{ __('master-job-taker.beranda') }}</a></li>
+                    <li class="nav-item"><a
+                            class="nav-link {{ request()->is('job-taker/cari-kerja') ? 'active' : '' }}"
+                            href="/job-taker/cari-kerja">{{ __('master-job-taker.cari_kerja') }}</a></li>
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/pesan') ? 'active' : '' }}"
-                            href="/job-taker/pesan">Pesan</a></li>
+                            href="/job-taker/pesan">{{ __('master-job-taker.pesan') }}</a></li>
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/riwayat') ? 'active' : '' }}"
-                            href="/job-taker/riwayat">Riwayat</a></li>
+                            href="/job-taker/riwayat">{{ __('master-job-taker.riwayat') }}</a></li>
                 </ul>
-
                 <hr class="d-lg-none my-2">
 
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
-                            <span>Bahasa</span>
+
+                            @if (App::getLocale() == 'id')
+                                <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa Indonesia" id="langFlag">
+                            @else
+                                {{-- Pastikan Anda memiliki gambar bendera Inggris di path ini --}}
+                                <img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="English" id="langFlag">
+                            @endif
+
+                            <span>{{ __('master-job-req.bahasa') }}</span>
                             <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
-                        <ul class="dropdown-menu" aria-labelledby="dropdownLang">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                        <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
+                            <li><a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('language.switch', 'id') }}"><img
                                         src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
-                                        class="flag"> Bahasa</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                                        class="flag">{{ __('master-job-req.indonesia') }}</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('language.switch', 'en') }}"><img
                                         src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
-                                        class="flag"> English</a></li>
+                                        class="flag">{{ __('master-job-req.english') }}</a></li>
                         </ul>
                     </li>
-                    
+
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img 
-                                src="{{ Storage::url($user->photo_url_worker) }}" 
-                                alt="Profil" 
-                                id="profileIcon"
+                            <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil" id="profileIcon"
                                 onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
-                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
-                            />
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                             <span class="d-lg-none">Profil</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @auth
-                            
-                            <li>
-                                <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
-                                        <img 
-                                            src="{{ Storage::url($user->photo_url_worker) }}" 
-                                            alt="Profil" 
+
+                                <li>
+                                    <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
+                                        <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil"
                                             id="profileIcon"
                                             onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
-                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
-                                        />
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                                         <div>
-                                            <div class="fw-bold" style="font-size: 16px;">{{ auth()->user()->verificationRequests->first()?->first_name. ' ' . auth()->user()->verificationRequests->first()?->last_name}}</div>
-                                            <div style="font-size: 13px; color: gray;">Peran: Pekerja</div>
+                                            <div class="fw-bold" style="font-size: 16px;">
+                                                {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</div>
+                                            <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pekerja')}}</div>
                                         </div>
                                     </div>
 
-                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="{{ route('balance.job-taker') }}">
-                                    {{-- Sisi Kiri: Ikon dan Teks --}}
-                                    <div class="d-flex align-items-center gap-2">
-                                        {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                        <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
+                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        href="{{ route('balance.job-taker') }}">
+                                        {{-- Sisi Kiri: Ikon dan Teks --}}
+                                        <div class="d-flex align-items-center gap-2">
+                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
+                                            <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
+                                                class="navIcon">
+                                            <span>{{ __('master-job-taker.saldo') }}</span>
+                                        </div>
+                                        {{-- Sisi Kanan: Jumlah Saldo --}}
+                                        <span class="ms-auto fw-bold">
+                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                            {{-- Fungsi number_format untuk format Rupiah --}}
+                                            Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                                class="navIcon">
+                                            {{ __('master-job-taker.keluar') }}
+                                        </button>
+                                    </form>
+                                </li>
+                                @if (auth()->user()->role == 'admin')
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
+                                            href="{{ route('admin.dashboard') }}">
+                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                                alt="Icon Ganti Peran" class="navIcon">
+                                            Admin
+                                        </a>
+                                    </li>
+                                @endif
+                                {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-1"
+                                        href="{{ route('switch.to.requester') }}">
+                                        <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                             class="navIcon">
-                                        <span>Saldo</span>
-                                    </div>
-                                    {{-- Sisi Kanan: Jumlah Saldo --}}
-                                    <span class="ms-auto fw-bold">
-                                        {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                        {{-- Fungsi number_format untuk format Rupiah --}}
-                                        Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">
-                                        <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                            class="navIcon">
-                                        Keluar
-                                    </button>
-                                </form>
-                            </li>
-                            @if (auth()->user()->role == 'admin')
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('admin.dashboard') }}">
-                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                        alt="Icon Ganti Peran" class="navIcon">
-                                    Admin
-                                </a>
-                            </li>
-                            @endif
-                            {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('switch.to.requester') }}">
-                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
-                                        class="navIcon">
-                                    Ganti Peran
-                                </a>
-                            </li>
+                                        {{ __('master-job-taker.ganti_peran') }}
+                                    </a>
+                                </li>
                             @endauth
                         </ul>
                     </li>
@@ -337,7 +341,7 @@
 
     {{-- Main Section --}}
     <main class="main-content">
-        
+
         @yield('content')
     </main>
     {{-- End Main Section --}}
@@ -352,81 +356,81 @@
                         id="logoNavbar-footer">
                 </a>
                 <p class="m-0 p-0" id="foot-quotes">
-                    Kami selalu mengusahakan yang terbaik buat pelanggan dan memberikan pelayanan terbaik yang kami
-                    bisa.
+                    {{ __('master-job-taker.footer_quote') }}
                 </p>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-2">
-                <h4>Fitur</h4>
+                <h4>{{ __('master-job-taker.fitur') }}</h4>
                 <div class="list-group gap-2">
                     @auth
-                    <a href="/job-req/beranda" class="foot-list">Beranda</a>
+                        <a href="/job-req/beranda" class="foot-list">{{ __('master-job-taker.beranda') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                        class="foot-list">Beranda</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-taker.beranda') }}</a>
                     @endauth
 
 
                     @auth
-                    <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
+                        <a href="/job-req/tawarkan-kerja" class="foot-list">{{ __('master-job-taker.cari_kerja') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
-                        Kerja</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-taker.cari_kerja') }}
+                        </a>
                     @endauth
 
 
                     @auth
-                    <a href="/job-req/pesan" class="foot-list">Pesan</a>
+                        <a href="/job-req/pesan" class="foot-list">{{ __('master-job-taker.pesan') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                        class="foot-list">Pesan</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-taker.pesan') }}</a>
                     @endauth
 
 
                     @auth
-                    <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
+                        <a href="/job-req/riwayat" class="foot-list">{{ __('master-job-taker.riwayat') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                        class="foot-list">Riwayat</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-taker.riwayat') }}</a>
                     @endauth
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-3">
-                <h4>Penawaran</h4>
+                <h4>{{ __('master-job-taker.penawaran') }}</h4>
                 <div class="list-group gap-2">
                     @auth
-                    <a href="#" class="foot-list">Acara</a>
-                    <a href="#" class="foot-list">Promo</a>
+                        <a href="#" class="foot-list">{{ __('master-job-taker.acara') }}</a>
+                        <a href="#" class="foot-list">{{ __('master-job-taker.promo') }}</a>
                     @else
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Acara</a>
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Promo</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-taker.acara') }}</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-taker.promo') }}</a>
                     @endauth
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-4">
-                <h4>Bantuan</h4>
+                <h4>{{ __('master-job-taker.bantuan') }}</h4>
                 <div class="list-group gap-2">
                     @auth
-                    <a href="#" class="foot-list">Akun</a>
-                    <a href="#" class="foot-list">Laporkan</a>
-                    <a href="#" class="foot-list">Saran</a>
+                        <a href="#" class="foot-list">{{ __('master-job-taker.akun') }}</a>
+                        <a href="#" class="foot-list">{{ __('master-job-taker.laporkan') }}</a>
+                        <a href="#" class="foot-list">{{ __('master-job-taker.saran') }}</a>
                     @else
-                    <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Laporkan</a>
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Saran</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-taker.laporkan') }}</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-taker.saran') }}</a>
                     @endauth
                 </div>
             </div>
 
             <div class="col-6 col-md-auto col-lg-auto foot-content-detail" id="foot-5">
-                <h4>Contact Us</h4>
+                <h4>{{ __('master-job-taker.hubungi_kami') }}</h4>
                 <p class="m-0 p-0" id="foot-email">kerjain@gmail.com</p>
                 <div class="d-flex flex-row" id="list-foot-icon">
                     <img src="{{ asset('Image/Icon/icon-instagram.png') }}" alt="Logo Instagram" class="foot-icon">
@@ -438,10 +442,9 @@
         </div>
 
         <div class="row text-center" id="foot-copyright">
-            <p class="m-0 p-0" id="text-copyright">Copyright © 2025 Kerjain. All right reserved</p>
+            <p class="m-0 p-0" id="text-copyright">{{ __('master-job-taker.copyright') }}</p>
         </div>
     </footer>
-    {{-- End Footer --}}
 
     <script defer>
         // Custom Alert function (copied from master-job-req.blade.php's original)

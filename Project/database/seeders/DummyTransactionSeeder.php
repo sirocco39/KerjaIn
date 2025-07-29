@@ -248,7 +248,8 @@ class DummyTransactionSeeder extends Seeder
                 'user_id' => $requesterUser->id,
                 'amount' => $price,
                 'type' => 'credit', // 'credit' for locked balance, 'debit' for active balance
-                'description' => 'Penahanan saldo untuk pekerjaan: ' . $jobRequest->title,
+                'description_id' => 'Penahanan saldo untuk pekerjaan: ' . $jobRequest->title,
+                'description_en' => 'Balance reserved for the job: ' . $jobRequest->title,
             ]);
 
             return $jobRequest;
@@ -430,13 +431,15 @@ class DummyTransactionSeeder extends Seeder
             'user_id' => $requester->id,
             'amount' => $jobRequestCompleted->price,
             'type' => 'debit',
-            'description' => 'Pelepasan saldo untuk: ' . $jobRequestCompleted->title,
+            'description_id' => 'Pelepasan saldo untuk: ' . $jobRequestCompleted->title,
+            'description_en' => 'Balance release for: ' . $jobRequestCompleted->title,
         ]);
         WalletTransaction::create([
             'user_id' => $worker->id,
             'amount' => $jobRequestCompleted->price,
             'type' => 'credit',
-            'description' => 'Penerimaan pembayaran dari: ' . $jobRequestCompleted->title,
+            'description_id' => 'Penerimaan pembayaran dari: ' . $jobRequestCompleted->title,
+            'description_en' => 'Payment received from: ' . $jobRequestCompleted->title,
         ]);
 
         $transactionCompleted = Transaction::create([
@@ -498,7 +501,8 @@ class DummyTransactionSeeder extends Seeder
             'user_id' => $requester->id,
             'amount' => $jobRequestCancelled->price,
             'type' => 'debit',
-            'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $jobRequestCancelled->title,
+            'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $jobRequestCancelled->title,
+            'description_en' => 'Balance refund from job cancellation: ' . $jobRequestCancelled->title,
         ]);
         Transaction::create([
             'order_number' => 'ORD-' . Str::upper(Str::random(8)),

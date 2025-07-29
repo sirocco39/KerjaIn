@@ -26,7 +26,7 @@ class HomeController extends Controller
         // $requester->update(['role' => 'job_requester']);
 
         // Redirect to the job requester home page with the flash message
-        return redirect()->route('job-req.home')->with('custom_blue_alert', "Anda berhasil beralih ke peran Job Requester, {$firstName}!");
+        return redirect()->route('job-req.home')->with('custom_blue_alert', __('alerts.beralih_ke_requester', ['nama' => $firstName]));
     }
 
     /**
@@ -44,7 +44,7 @@ class HomeController extends Controller
         // $worker->update(['role' => 'job_taker']);
 
         // Redirect to the job taker home page with the flash message
-        return redirect()->route('job-taker.home')->with('custom_blue_alert', "Anda berhasil beralih ke peran Job Taker, {$firstName}!");
+        return redirect()->route('job-taker.home')->with('custom_blue_alert', __('alerts.beralih_ke_taker', ['nama' => $firstName]));
     }
 
     /**

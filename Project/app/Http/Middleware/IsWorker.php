@@ -24,6 +24,6 @@ class IsWorker
             ->log("Percobaan akses tidak sah ke halaman khusus pekerja.");
 
         // Alihkan pengguna dengan pesan error
-        return redirect('/')->with('custom_error_alert', 'Anda harus terverifikasi sebagai pekerja untuk mengakses halaman ini.');
+       return redirect('/')->with('custom_error_alert', __('alerts.harus_jadi_pekerja'));
     }
 }
