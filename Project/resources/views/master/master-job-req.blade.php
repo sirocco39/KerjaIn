@@ -294,8 +294,22 @@
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
+                            @php
+                                $user = Auth::user();
+                                $photo = '';
+
+                                // Cek apakah user login sebagai "user" atau "worker"
+                                if (isset($user->photo_url_user)) {
+                                    $photo = $user->photo_url_user;
+                                } elseif (isset($user->photo_url)) {
+                                    $photo = $user->photo_url;
+                                } else {
+                                    $photo = 'Image/Icon/user-circle.svg'; // fallback jika tidak ada foto
+                                }
+                            @endphp
+
                             <img 
-                                src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                src="{{ asset($photo) }}" 
                                 alt="Profil" 
                                 id="profileIcon"
                                 onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
@@ -322,13 +336,16 @@
                                     {{-- Jika sudah menjadi worker, tampilkan profil tapi tidak bisa diklik --}}
                                     <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
                                         <img 
-                                            src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                            src="{{ asset(Auth::user()->photo_url) }}" 
                                             alt="Profil" 
                                             id="profileIcon"
                                             onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
                                         />
-                                        <span>{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</span>
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 16px;">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</div>
+                                            <div style="font-size: 13px; color: gray;">Peran: Pekerja</div>
+                                        </div>
                                     </div>
                                 @else
                                     {{-- Jika user biasa, bisa diklik dan diarahkan ke halaman profile --}}
@@ -341,7 +358,10 @@
                                             onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
                                         />
-                                        <span>{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</span>
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 16px;">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</div>
+                                            <div style="font-size: 13px; color: gray;">Peran: Pelanggan</div>
+                                        </div>
                                     </a>
                                 @endif
                                 {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
