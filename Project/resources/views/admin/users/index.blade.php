@@ -175,7 +175,10 @@
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">
-                                            {{ $log->subject ? $log->subject->first_name . ' ' . $log->subject->last_name : __('admin/users.n_a') }}
+                                            @if($log->subject)
+                                            {{ class_basename($log->subject_type)}} (ID :{{$log->subject->id}})
+                                            @else -
+                                            @endif
                                         </p>
                                     </td>
                                     <td>
