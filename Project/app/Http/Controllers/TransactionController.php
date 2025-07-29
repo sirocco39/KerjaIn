@@ -162,7 +162,8 @@ class TransactionController extends Controller
             'user_id' => $requester->id,
             'amount' => $refundAmount,
             'type' => 'debit',
-            'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $transaction->request->title,
+            'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $$transaction->request->title,
+            'description_en' => 'Balance refund from job cancellation: ' . $transaction->request->title,
         ]);
 
         $canceller = Auth::user();
@@ -236,7 +237,8 @@ class TransactionController extends Controller
                 'user_id' => $worker->id,
                 'amount' => $payoutAmount,
                 'type' => 'debit',
-                'description' => 'Pembayaran diterima dari pekerjaan: ' . $workRequest->title,
+                'description_id' => 'Pembayaran diterima dari pekerjaan: ' . $workRequest->title,
+                'description_en' => 'Payment received from job: ' . $workRequest->title,
             ]);
 
             // 6. Update status di semua tabel terkait
@@ -312,4 +314,3 @@ class TransactionController extends Controller
         ]);
     }
 }
-

@@ -123,7 +123,8 @@ class RequestController extends Controller
             'user_id' => $user->id,
             'amount' => $jobCost,
             'type' => 'credit',
-            'description' => 'Penahanan saldo untuk pekerjaan: ' . $workRequest->title,
+            'description_id' => 'Penahanan saldo untuk pekerjaan: ' . $workRequest->title,
+            'description_en' => 'Balance reserved for the job: ' . $workRequest->title,
         ]);
 
         $result = $workRequest->save();
@@ -247,7 +248,8 @@ class RequestController extends Controller
                         'user_id' => $user->id,
                         'amount' => $priceDifference,
                         'type' => 'credit',
-                        'description' => 'Penambahan saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_id' => 'Penambahan saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_en' => 'Extra balance on hold for price update on: ' . $workRequest->title,
                     ]);
                     activity()->inLog('Finance')->causedBy($user)->on($user)
                         ->log("Dana tambahan sebesar Rp" . number_format($priceDifference) . " ditahan dari {$user->first_name} karena perubahan harga.");
@@ -263,7 +265,8 @@ class RequestController extends Controller
                         'user_id' => $user->id,
                         'amount' => $refundAmount,
                         'type' => 'debit',
-                        'description' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_id' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_id' => 'Balance refund on hold due to price adjustment on: ' . $workRequest->title,
                     ]);
                     activity()->inLog('Finance')->causedBy($user)->on($user)
                         ->log("Dana sebesar Rp" . number_format($refundAmount) . " dikembalikan ke {$user->first_name} karena perubahan harga.");
@@ -345,7 +348,8 @@ class RequestController extends Controller
                     'user_id' => $user->id,
                     'amount' => $refundAmount,
                     'type' => 'debit',
-                    'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $workRequest->title,
+                    'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $workRequest->title,
+                    'description_en' => 'Balance refund from job cancellation: ' . $workRequest->title,
                 ]);
 
                 activity()

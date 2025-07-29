@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users'); // Pemilik wallet
             $table->decimal('amount', 12, 2); // Jumlah uang (bisa positif/negatif)
             $table->enum('type', ['credit', 'debit']); // credit = uang masuk, debit = uang keluar
-            $table->string('description'); // Deskripsi transaksi
+            $table->string('description_id'); // Deskripsi transaksi
+            $table->string('description_en');
             $table->timestamps();
         });
     }
