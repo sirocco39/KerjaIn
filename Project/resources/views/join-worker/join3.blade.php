@@ -106,30 +106,45 @@
             const file = this.files[0];
 
             if (!file) {
-                // Removed: window.showCustomAlert('info', 'Unggah foto KTP untuk memindai NIK.');
                 // Also clear the preview if the file is removed
                 document.getElementById('ktp-preview').src = "";
                 document.getElementById('ktp-upload-area').classList.remove('has-image');
                 return;
             }
 
-            // Removed: window.showCustomAlert('info', 'Memindai NIK dari KTP, mohon tunggu...');
-
             const formData = new FormData();
-            formData.append('ktp_image', file);
+            // FIX: Changed 'ktp_image' to 'image' to match the backend validation
+            formData.append('image', file);
             formData.append('_token', '{{ csrf_token() }}'); // Laravel CSRF token
 
-            fetch('{{ route('ktp.ocr.ajax') }}', {
+            fetch('{{ route('
+                    ktp.ocr.ajax ') }}', {
                         method: 'POST',
                         body: formData,
                     })
-                .then(response => response.json())
+                .then(response => {
+                    // FIX: Check if the response is OK (2xx status) before trying to parse as JSON
+                    if (!response.ok) {
+                        // If not OK, read the response as text to get the HTML error page content
+                        return response.text().then(text => {
+                            console.error('Server responded with non-OK status:', response.status, text);
+                            // You might want to display 'text' in a user-friendly way or log it.
+                            throw new Error(`Server Error (${response.status}): ${text.substring(0, 200)}...`); // Limit error message length
+                        });
+                    }
+                    // If OK, parse as JSON
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        // Removed: window.showCustomAlert('success', data.message);
                         // NIK is now saved to session on backend, no need for frontend alert
+                        console.log('OCR successful:', data);
+                        // You might want to update a field with parsed data here, e.g., NIK
+                        // if (data.parsed_data && data.parsed_data.nik) {
+                        //     document.getElementById('nik_input_id').value = data.parsed_data.nik;
+                        // }
                     } else {
-                        // Removed: window.showCustomAlert('error', data.message);
+                        console.error('OCR failed:', data.message);
                         // Clear file input and preview on failure
                         ktpImageInput.value = ''; // Reset file input
                         document.getElementById('ktp-preview').src = "";
@@ -137,8 +152,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error during OCR:', error);
-                    // Removed: window.showCustomAlert('error', 'Terjadi kesalahan saat memproses gambar. Silakan coba lagi.');
+                    console.error('Error during OCR fetch:', error); // Changed message for clarity
                     // Clear file input and preview on error
                     ktpImageInput.value = '';
                     document.getElementById('ktp-preview').src = "";

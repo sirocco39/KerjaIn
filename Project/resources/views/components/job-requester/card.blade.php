@@ -153,7 +153,7 @@
         <div class="expanded-chats-container rounded-bottom-5">
             @forelse ($request->chatRooms as $room)
                 {{-- MODIFIKASI INI: Gunakan $dispatch untuk mengirim event ke komponen parent --}}
-                <div wire:click="$dispatch('chat-job-req-selected', { chatRoomId: {{ $room->id }} })"
+                <div wire:click="$dispatch('chat-selected', { chatRoomId: {{ $room->id }} })"
                     class="chat-item-card rounded-5 {{ $selectedChatRoomId === $room->id ? 'active' : '' }}">
                     <div class="chat-item-avatar">
                         <img src="{{ $room->worker->profile_picture_url ?? asset('Image/Icon/icon-done.svg') }}" {{-- INI BAKAL PAKE PROGILE USERS --}}

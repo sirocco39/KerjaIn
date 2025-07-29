@@ -42,6 +42,6 @@ return [
 
     'search' => [
         'placeholder' => 'Cari pekerjaan...',
-        'tombol_cari' => 'Cari',
+        'search_button' => 'Cari',
     ],
 ];

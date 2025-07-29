@@ -40,16 +40,16 @@
             word-wrap: break-word;
         }
 
-        .chat-bubble-sender {
-            background-color: #e9ecef;
-            color: #212529;
-            border-bottom-left-radius: 0.25rem;
+        .bubble-sender {
+            background-color: #309FFF;
+            color: white;
+            border-bottom-right-radius: 0;
         }
 
-        .chat-bubble-receiver {
-            background-color: #0d6efd;
-            color: white;
-            border-bottom-right-radius: 0.25rem;
+        .bubble-receiver {
+            background-color: #E0E0E0;
+            color: black;
+            border-bottom-left-radius: 0;
         }
 
         .chat-input-area {
