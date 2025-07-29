@@ -21,25 +21,33 @@ class VerificationRequest extends Model
         'user_id',
         'verified_at',
         'status',
-        'first_name',
-        'last_name',
-        'nik',
-        'scanned_nik', // Added the new column here
-        'birthdate',
-        'gender',
-        'address',
-        'phone_number',
+        'first_name', // User Input
+        'last_name',  // User Input
+        'nik',        // User Input
+        'birthdate',  // User Input
+        'gender',     // User Input
+        'address',    // User Input
+        'phone_number', // User Input
         'photo_url',
         'id_card_url',
         'selfie_with_id_card_url',
         'account_name',
-        'account_number'
+        'account_number',
+
+        // OCR-extracted fields (only the ones you want to keep)
+        'ocr_nik',
+        'ocr_full_name',
+        'ocr_birthdate',
+        'ocr_gender',
+        'ocr_address', // Unified address field
+        'ocr_raw_output',
     ];
 
     // protected $casts untuk mengubah tipe data dari database ke tipe data yang sesuai di PHP
     protected $casts = [
         'verified_at' => 'datetime',
         'birthdate' => 'date',
+        'ocr_birthdate' => 'date', // Keep this if you want it casted
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -83,4 +91,3 @@ class VerificationRequest extends Model
 
     public $timestamps = true; // pengaturan created_at dan updated_at otomatis dibuat oleh laravel
 }
-

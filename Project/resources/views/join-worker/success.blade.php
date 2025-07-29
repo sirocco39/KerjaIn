@@ -1,4 +1,5 @@
 @extends('master.master-job-req')
+<!-- This file name is success.blade.php -->
 
 @section('content')
 {{-- Link ke Tailwind CSS sudah dihapus, diasumsikan Bootstrap sudah ada di master layout --}}
@@ -20,33 +21,33 @@
                 </div>
 
                 {{-- Judul utama --}}
-                <h1 class="display-6 fw-bold text-dark mb-3">Pendaftaran Berhasil!</h1>
+                <h1 class="display-6 fw-bold text-dark mb-3">{{ __('join-worker.registration_successful') }}!</h1>
 
                 {{-- Menampilkan pesan sukses dari session jika ada --}}
                 @if (session('success'))
-                    <p class="fs-5 mb-4 text-success">{{ session('success') }}</p>
+                <p class="fs-5 mb-4 text-success">{{ session('success') }}</p>
                 @else
-                    <p class="fs-5 mb-4 text-body-secondary">Terima kasih telah mendaftar. Permintaan Anda telah berhasil disubmit.</p>
+                <p class="fs-5 mb-4 text-body-secondary">{{ __('join-worker.thanks_for_registering') }}</p>
                 @endif
 
                 <p class="mb-5">
-                    Tim kami akan segera memproses verifikasi data Anda. Proses ini mungkin memakan waktu <strong>1-3 hari kerja</strong>. Anda akan menerima notifikasi melalui WhatsApp atau email setelah proses verifikasi selesai.
+                    {!! __('join-worker.team_will_process_data') !!}
                 </p>
 
                 {{-- Tombol utama menggunakan kelas 'btn', 'btn-primary', dan 'btn-lg' --}}
                 <a href="{{ url('/') }}"
                     class="btn btn-primary btn-lg d-inline-flex align-items-center px-4 shadow-sm">
-                    
+
                     {{-- Ikon di dalam tombol --}}
                     <svg class="me-2" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0v-9l-2 2M9 5h6m-6 0H9"></path>
                     </svg>
-                    Kembali ke Beranda
+                    {{ __('join-worker.back_to_homepage') }}
                 </a>
 
                 {{-- Teks catatan kaki di bagian bawah --}}
                 <div class="mt-5 text-muted small">
-                    Jika ada pertanyaan, hubungi <a href="mailto:support@kerjain.com">support@kerjain.com</a>.
+                    {{ __('join-worker.questions_contact_us_at') }} <a href="mailto:support@kerjain.com">support@kerjain.com</a>.
                 </div>
 
             </div>

@@ -49,4 +49,20 @@ return [
     'tunggu' => 'Tunggu',
     'sudah_punya_akun' => 'Sudah punya akun?',
     'atau_daftar_dengan' => 'Atau daftar dengan:',
+
+    // Validation Messages
+    "validation_firstname_required" => "Nama depan diperlukan.",
+    "validation_lastname_required" => "Nama belakang diperlukan.",
+    "validation_email_required" => "Email harus diisi.",
+    "validation_email_invalid" => "Silakan masukkan alamat email yang valid.",
+    "validation_password_required" => "Password harus diisi.",
+    "validation_password_min_length" => "Password minimal harus 8 karakter.",
+    "validation_password_one_uppercase" => "Password harus mengandung setidaknya satu huruf kapital.",
+    "validation_password_one_lowercase" => "Password harus mengandung setidaknya satu huruf kecil.",
+    "validation_password_one_number" => "Password harus mengandung setidaknya satu angka.",
+    "validation_password_one_symbol" => "Password harus mengandung setidaknya satu simbol.",
+    "validation_confirm_password_required" => "Konfirmasi kata sandi harus diisi.",
+    "validation_confirm_password_match" => "Kata sandi tidak cocok.",
+    "validation_otp_required" => "OTP harus diisi.",
+    "validation_otp_format" => "OTP harus berupa 6 digit angka."
 ];

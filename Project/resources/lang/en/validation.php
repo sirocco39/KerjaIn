@@ -68,4 +68,30 @@ return [
         'workEndTimeLabel' => 'End Time',
     ],
 
+    // ... (pesan validasi bawaan Laravel lainnya, biarkan saja)
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Messages for JavaScript
+    |--------------------------------------------------------------------------
+    | These messages are specifically for frontend JavaScript validation.
+    */
+    'custom_js' => [
+        'firstname_required' => 'First name is required.',
+        'lastname_required' => 'Last name is required.',
+        'email_required' => 'Email is required.',
+        'email_invalid' => 'Please enter a valid email address.',
+        'password_required' => 'Password is required.',
+        'password_min_length' => 'Password must be at least 8 characters long.',
+        'password_one_uppercase' => 'Password must contain at least one uppercase letter.',
+        'password_one_lowercase' => 'Password must contain at least one lowercase letter.',
+        'password_one_number' => 'Password must contain at least one number.',
+        'password_one_symbol' => 'Password must contain at least one symbol.',
+        'confirm_password_required' => 'Confirm password is required.',
+        'confirm_password_match' => 'Passwords do not match.',
+        'otp_required' => 'OTP is required.',
+        'otp_format' => 'OTP must be a 6-digit number.',
+    ],
+
+
 ];

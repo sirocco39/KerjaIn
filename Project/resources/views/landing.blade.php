@@ -222,10 +222,6 @@
                 {{ __('landing.testimonials_title') }}
               </h2>
             </div>
-            <div class="col-md-4 d-flex justify-content-end align-items-start" style="margin-right: -50px"> <a href="#" class="me-3"> <i class="fas fa-arrow-left fa-2x" style="color: #4A90E2; margin-right: 100px"></i> </a>
-              <a href="#" style="margin-right: -80%">
-              <i class="fas fa-arrow-right fa-2x" style="color: #4A90E2;"></i> </a>
-            </div>
           </div>
        
 
