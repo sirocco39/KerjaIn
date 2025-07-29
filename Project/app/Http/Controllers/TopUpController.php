@@ -36,7 +36,7 @@ class TopUpController extends Controller
             // Jika tidak keduanya, arahkan ke halaman lain atau tampilkan error
         } else {
             // Changed to custom alert
-            return redirect()->route('landing')->with('custom_error_alert', 'Halaman tidak ditemukan.');
+            return redirect()->route('landing')->with('custom_error_alert', __('alerts.halaman_tidak_ditemukan'));
         }
 
         return view($viewPath, compact('user'));
@@ -87,7 +87,7 @@ class TopUpController extends Controller
             return redirect($invoice['invoice_url']);
         } catch (\Exception $e) {
             // Changed to custom alert
-            return back()->with('custom_error_alert', 'Gagal membuat invoice pembayaran: ' . $e->getMessage());
+            return back()->with('custom_error_alert', __('alerts.gagal_membuat_invoice', ['error' => $e->getMessage()]));
         }
     }
     public function checkStatus($external_id)

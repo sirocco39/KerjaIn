@@ -33,7 +33,7 @@
     <!-- Optional: Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
     <!-- AdminLTE v3 Assets via CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"> --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <style>
         .dropdown-profile-custom {
@@ -339,8 +339,8 @@
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
                                         />
                                         <div>
-                                            <div class="fw-bold" style="font-size: 16px;">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</div>
-                                            <div style="font-size: 13px; color: gray;">Peran: Pelanggan</div>
+                                            <div class="fw-bold text-dark" style="font-size: 16px;">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</div>
+                                            <div style="font-size: 13px; color: gray;">{{ __('')}}</div>
                                         </div>
                                     </a>
                              
@@ -1225,7 +1225,6 @@
     <!-- Bootstrap 4 -->
     <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
-    <script src="../../dist/js/adminlte.min.js"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="../../dist/js/demo.js"></script>
 

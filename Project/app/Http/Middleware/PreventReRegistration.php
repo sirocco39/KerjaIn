@@ -28,7 +28,7 @@ class PreventReRegistration
                 ->log('Pekerja yang sudah terverifikasi mencoba mengakses kembali halaman pendaftaran.');
             // --- 👆 BATAS PENAMBAHAN KODE 👆 ---
 
-            return redirect()->route('job-taker.home')->with('custom_error_alert', 'Anda sudah terdaftar sebagai pekerja.');
+            return redirect()->route('job-taker.home')->with('custom_error_alert', __('alerts.sudah_jadi_pekerja'));
         }
 
         // Kondisi 2: Cek apakah ada permintaan verifikasi yang sedang diproses atau sudah disetujui
@@ -44,7 +44,7 @@ class PreventReRegistration
                     ->causedBy($user)
                     ->log('Pengguna dengan verifikasi pending/approved mencoba mengakses kembali halaman pendaftaran.');
 
-                return redirect()->route('worker.register.pending')->with('custom_info_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
+                return redirect()->route('worker.register.pending')->with('custom_info_alert', __('alerts.verifikasi_diproses'));
             }
         }
 
