@@ -57,8 +57,7 @@
         }
 
         .chat-bubble-receiver {
-            background-color: #0d6efd
-            color: white;
+            background-color: #0d6efd color: white;
             border-bottom-right-radius: 0.25rem;
         }
 
@@ -247,7 +246,7 @@
                     @empty
                         <div class="text-center text-muted mt-5">
                             <i class="bi bi-chat-left-dots fs-1"></i>
-                            <p>Tidak ada pekerjaan dengan percakapan aktif.</p>
+                            <p>{{ __('chat-job-req.tidak_ada_percakapan_aktif') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -275,19 +274,23 @@
                     </div>
 
                     {{-- Panel Tawaran --}}
-                    @if ($activeOffer && $activeOffer->status === 'open' && auth()->id() === $activeOffer->requester_id && $chatRoom->request->status !== 'closed')
+                    @if (
+                        $activeOffer &&
+                            $activeOffer->status === 'open' &&
+                            auth()->id() === $activeOffer->requester_id &&
+                            $chatRoom->request->status !== 'closed')
                         <div class="offer-panel d-flex justify-content-between align-items-center border">
                             <div>
-                                <span class="text-muted">Nominal Upah yang Diajukan:</span>
+                                <span class="text-muted">{{ __('chat-job-req.tawaran_diajukan') }}</span>
                                 <strong
                                     class="text-dark">Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}</strong>
                             </div>
                             <div class="d-flex gap-2">
                                 <button wire:click="respondToOffer({{ $activeOffer->id }}, 'rejected')"
-                                    class="btn btn-danger btn-pill">Tolak</button>
+                                    class="btn btn-danger btn-pill">{{ __('chat-job-req.tombol_tolak') }}</button>
                                 <button type="button" class="btn btn-success btn-pill" data-bs-toggle="modal"
                                     data-bs-target="#confirmAcceptOfferModal">
-                                    Terima
+                                    {{ __('chat-job-req.tombol_terima') }}
                                 </button>
                             </div>
                         </div>
@@ -325,7 +328,7 @@
                                 </div>
                             @endforeach
                         @empty
-                            <div class="text-center text-muted mt-5">Belum ada pesan.</div>
+                            <div class="text-center text-muted mt-5">{{ __('chat-job-req.belum_ada_pesan') }}.</div>
                         @endforelse
                     </div>
 
@@ -345,7 +348,7 @@
                     <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted bg-light">
                         <div class="text-center">
                             <i class="bi bi-chat-left-text" style="font-size: 3rem;"></i>
-                            <p class="mt-2">Pilih percakapan untuk ditampilkan.</p>
+                            <p class="mt-2">{{ __('chat-job-req.pilih_percakapan') }}</p>
                         </div>
                     </div>
                 @endif
@@ -359,36 +362,35 @@
                 <div class="modal-dialog">
                     <div class="modal-content border-0 rounded-4">
                         <div class="modal-header border-0 pb-0">
-                            <h5 class="modal-title fw-bold" id="confirmAcceptOfferModalLabel">Konfirmasi Penerimaan
-                                Tawaran</h5>
+                            <h5 class="modal-title fw-bold" id="confirmAcceptOfferModalLabel">
+                                {{ __('chat-job-req.modal_judul') }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body p-4">
-                            <p class="text-center text-muted mb-3">Anda akan menerima tawaran upah dari pekerja. Mohon
-                                periksa kembali detail di bawah ini:</p>
+                            <p class="text-center text-muted mb-3">{{ __('chat-job-req.modal_deskripsi') }}</p>
                             <div class="bg-light p-3 rounded-3 mb-4 text-center">
-                                <h6 class="text-muted small fw-normal">JUMLAH TAWARAN</h6>
+                                <h6 class="text-muted small fw-normal">{{ __('chat-job-req.modal_jumlah_tawaran') }}</h6>
                                 <h2 class="fw-bolder text-success mb-3">
                                     Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}
                                 </h2>
-                                <h6 class="text-muted small fw-normal">DARI PEKERJA</h6>
+                                <h6 class="text-muted small fw-normal">{{ __('chat-job-req.modal_dari_pekerja') }}</h6>
                                 <h5 class="fw-bold mb-0">{{ $activeOffer->worker->first_name }}</h5>
                             </div>
                             <div class="alert alert-warning d-flex align-items-center" role="alert">
                                 <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
                                 <div>
-                                    <strong>Penting:</strong> Tindakan ini akan menyelesaikan proses negosiasi dan
-                                    tidak dapat dibatalkan.
+                                    <strong>{{ __('chat-job-req.modal_penting_header') }}</strong>
+                                    {{ __('chat-job-req.modal_penting_body') }}
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer border-0 pt-0">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('chat-job-req.modal_tombol_batal') }}</button>
                             <button type="button" class="btn btn-success fw-bold"
                                 wire:click="respondToOffer({{ $activeOffer->id }}, 'accepted')"
                                 data-bs-dismiss="modal">
-                                <i class="bi bi-check-circle-fill me-1"></i> Ya, Saya Terima Tawaran
+                                <i class="bi bi-check-circle-fill me-1"></i>{{ __('chat-job-req.modal_penting_body') }}
                             </button>
                         </div>
                     </div>

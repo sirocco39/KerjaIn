@@ -4,8 +4,8 @@
     <div class="container-fluid pembatas-x pembatas-y">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h2 class="fw-bold mb-2">Sunting tawaran kerja</h2>
-                <p class="mb-4">Perbarui detail pekerjaan di bawah ini jika ada perubahan.</p>
+                <h2 class="fw-bold mb-2">{{ __('post-work.judul_halaman') }}</h2>
+                <p class="mb-4">{{ __('post-work.deskripsi_halaman') }}</p>
 
                 <form action="{{ route('request.update', $workRequest->slug) }}" method="POST" id="edit-work-form">
                     @csrf
@@ -13,21 +13,26 @@
 
                     {{-- Judul Pekerjaan --}}
                     <div class="mb-3">
-                        <label for="work-title-text" class="form-label fw-semibold">Judul Pekerjaan</label>
-                        <input type="text" class="form-control rounded-3" id="work-title-text" name="workTitleLabel"
+                        <label for="work-title-text" class="form-label fw-semibold">{{ __('post-work.label_judul') }}</label>
+                        <input placeholder="{{ __('post-work.placeholder_judul') }}" type="text"
+                            class="form-control rounded-3" id="work-title-text" name="workTitleLabel"
                             value="{{ old('workTitleLabel', $workRequest->title) }}">
                         <div class="text-danger small mt-1" id="workTitleLabel-error"></div>
                     </div>
                     {{-- Detail Pekerjaan --}}
                     <div class="mb-3">
-                        <label for="work-detail-text" class="form-label fw-semibold">Detail Pekerjaan</label>
-                        <textarea class="form-control rounded-3" id="work-detail-text" rows="3" name="workDetailLabel" style="background-color: #f7f7ff; resize: none;">{{ old('workDetailLabel', $workRequest->description) }}</textarea>
+                        <label for="work-detail-text"
+                            class="form-label fw-semibold">{{ __('post-work.label_detail') }}</label>
+                        <textarea placeholder="{{ __('post-work.placeholder_detail') }}" class="form-control rounded-3" id="work-detail-text"
+                            rows="3" name="workDetailLabel" style="background-color: #f7f7ff; resize: none;">{{ old('workDetailLabel', $workRequest->description) }}</textarea>
                         <div class="text-danger small mt-1" id="workDetailLabel-error"></div>
                     </div>
                     {{-- Alamat --}}
                     <div class="mb-3">
-                        <label for="work-address-text" class="form-label fw-semibold">Alamat</label>
-                        <input type="text" class="form-control rounded-3" id="work-address-text" name="workAddressLabel"
+                        <label for="work-address-text"
+                            class="form-label fw-semibold">{{ __('post-work.label_alamat') }}</label>
+                        <input placeholder="{{ __('post-work.placeholder_alamat') }}" type="text"
+                            class="form-control rounded-3" id="work-address-text" name="workAddressLabel"
                             value="{{ old('workAddressLabel', $workRequest->location) }}">
                         <div class="text-danger small mt-1" id="workAddressLabel-error"></div>
                     </div>
@@ -38,15 +43,15 @@
                     @php
                         // Ensure these are formatted correctly for the HTML input type="date" and type="time"
                         // These values are based on the workRequest's times, which are in UTC (from DB).
-                        // So, format them directly as YYYY-MM-DD and HH:i to pre-fill inputs with UTC values.
-                        $startDate = \Carbon\Carbon::parse($workRequest->start_time)->format('Y-m-d');
-                        $startTime = \Carbon\Carbon::parse($workRequest->start_time)->format('H:i');
-                        $endDate = \Carbon\Carbon::parse($workRequest->end_time)->format('Y-m-d');
-                        $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
+// So, format them directly as YYYY-MM-DD and HH:i to pre-fill inputs with UTC values.
+$startDate = \Carbon\Carbon::parse($workRequest->start_time)->format('Y-m-d');
+$startTime = \Carbon\Carbon::parse($workRequest->start_time)->format('H:i');
+$endDate = \Carbon\Carbon::parse($workRequest->end_time)->format('Y-m-d');
+$endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                     @endphp
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Waktu mulai pekerjaan</label>
+                            <label class="form-label fw-semibold">{{ __('post-work.label_waktu_mulai') }}</label>
                             <div class="d-flex gap-2">
                                 <div class="flex-fill">
                                     <input type="date" class="form-control rounded-3" name="workStartDateLabel"
@@ -63,7 +68,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mt-3 mt-md-0">
-                            <label class="form-label fw-semibold">Waktu selesai pekerjaan</label>
+                            <label class="form-label fw-semibold">{{ __('post-work.label_waktu_selesai') }}</label>
                             <div class="d-flex gap-2">
                                 <div class="flex-fill">
                                     <input type="date" class="form-control rounded-3" name="workEndDateLabel"
@@ -86,23 +91,25 @@
 
                     {{-- Harga --}}
                     <div class="mb-4">
-                        <label for="work-price-text" class="form-label fw-semibold">Upah</label>
+                        <label for="work-price-text"
+                            class="form-label fw-semibold">{{ __('post-work.label_upah') }}</label>
                         <div class="input-group">
                             <span class="input-group-text rounded-start-3">Rp</span>
                             <input type="number" class="form-control rounded-end-3" min="5000" id="work-price-text"
-                                name="workPriceLabel" value="{{ old('workPriceLabel', (int) $workRequest->price) }}">
+                                name="workPriceLabel" placeholder="{{ __('post-work.placeholder_upah') }}"
+                                value="{{ old('workPriceLabel', (int) $workRequest->price) }}">
                         </div>
                         <div class="text-danger small mt-1" id="workPriceLabel-error"></div>
                     </div>
 
                     <button type="button" id="show-edit-confirmation-button"
-                        class="btn btn-primary px-4 py-2 rounded-3">Simpan Perubahan</button>
+                        class="btn btn-primary px-4 py-2 rounded-3">{{ __('post-work.tombol_simpan_perubahan') }}</button>
                 </form>
             </div>
 
             <div class="col-lg-6 text-center mt-5 mt-lg-0">
-                <img src="{{ asset('Image/orang/Merah dan Pink Ilustrasi Mochi Logo (12) 1.png') }}" alt="Ilustrasi Orang"
-                    class="img-fluid" style="max-height: 400px;">
+                <img src="{{ asset('Image/orang/Merah dan Pink Ilustrasi Mochi Logo (12) 1.png') }}"
+                    alt="Ilustrasi Orang" class="img-fluid" style="max-height: 400px;">
             </div>
         </div>
     </div>
@@ -111,30 +118,33 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="editConfirmationModalLabel">Konfirmasi Perubahan</h5>
+                    <h5 class="modal-title fw-bold" id="editConfirmationModalLabel">
+                        {{ __('post-work.modal_edit.judul') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Harap konfirmasi perubahan biaya pekerjaan. Dana yang ditahan akan disesuaikan.</p>
+                    <p>{{ __('post-work.modal_edit.deskripsi') }}</p>
 
                     <div class="mb-2 d-flex justify-content-between">
-                        <span id="modal-cost-label">Biaya tambahan:</span>
+                        <span id="modal-cost-label">Biaya :</span>
                         <span class="fw-bold" id="modal-job-cost-diff">Rp0</span>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span>Saldo Anda saat ini:</span>
+                        <span>{{ __('post-work.modal_edit.saldo_anda') }}</span>
                         <span class="fw-bold" id="modal-user-balance">Rp0</span>
                     </div>
 
                     <div id="modal-warning-message" class="alert alert-danger mt-3" style="display: none;">
-                        Saldo Anda tidak cukup untuk menutupi biaya tambahan.
+                        {{ __('post-work.modal_edit.peringatan_saldo_kurang') }}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal">
+                        {{ __('post-work.modal_edit.tombol_batal') }}</button>
                     <a href="{{ route('top-up.job-req') }}" id="modal-topup-button" class="btn btn-success"
-                        style="display: none;">Isi Saldo</a>
-                    <button type="button" id="modal-confirm-edit-button" class="btn btn-primary">Ya, Konfirmasi</button>
+                        style="display: none;"> {{ __('post-work.modal_edit.tombol_isi_saldo') }}</a>
+                    <button type="button" id="modal-confirm-edit-button" class="btn btn-primary">
+                        {{ __('post-work.modal_edit.tombol_konfirmasi') }}</button>
                 </div>
             </div>
         </div>
@@ -142,6 +152,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const lang = @json(__('post-work.modal_edit'));
             const form = document.getElementById('edit-work-form');
             const showConfirmationBtn = document.getElementById('show-edit-confirmation-button');
             const confirmationModal = new bootstrap.Modal(document.getElementById('editConfirmationModal'));
@@ -211,7 +222,8 @@
                 const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
                 const endDateTime = new Date(`${endDate}T${endTime}:00Z`);
                 // NEW: Get current UTC time for comparison
-                const nowUTCComparison = new Date(`${getFormattedCurrentDateUTC()}T${getFormattedCurrentTimeUTC()}:00Z`);
+                const nowUTCComparison = new Date(
+                    `${getFormattedCurrentDateUTC()}T${getFormattedCurrentTimeUTC()}:00Z`);
 
 
                 // 1. Check if start time is in the past (UTC comparison)
@@ -250,7 +262,8 @@
                     workStartTimeInput.value && workEndTimeInput.value) {
 
                     // NEW: Parse as UTC for this specific proactive check
-                    const tempStartDateTime = new Date(`${workStartDateInput.value}T${workStartTimeInput.value}:00Z`);
+                    const tempStartDateTime = new Date(
+                        `${workStartDateInput.value}T${workStartTimeInput.value}:00Z`);
                     const tempEndDateTime = new Date(`${workEndDateInput.value}T${workEndTimeInput.value}:00Z`);
 
                     if (tempEndDateTime <= tempStartDateTime) {
@@ -261,7 +274,8 @@
                 }
 
                 // Apply the determined minimum end date
-                workEndDateInput.min = minEndDate || todayUTC; // Fallback to today UTC if minEndDate is somehow null/empty
+                workEndDateInput.min = minEndDate ||
+                    todayUTC; // Fallback to today UTC if minEndDate is somehow null/empty
 
                 // If end date is set and is earlier than the newly calculated minEndDate, reset it to minEndDate
                 if (workEndDateInput.value && workEndDateInput.value < workEndDateInput.min) {
@@ -344,7 +358,8 @@
                             modalUserBalance.textContent = formatRupiah(userBalance);
 
                             if (priceDifference > 0) {
-                                modalCostLabel.textContent = 'Biaya tambahan:';
+                                // 2. Menggunakan teks dari objek 'lang'
+                                modalCostLabel.textContent = lang.biaya_tambahan;
                                 modalJobCostDiff.textContent = formatRupiah(priceDifference);
                                 if (userBalance < priceDifference) {
                                     modalUserBalance.classList.add('text-danger');
@@ -358,20 +373,23 @@
                                     modalTopupBtn.style.display = 'none';
                                 }
                             } else if (priceDifference < 0) {
-                                modalCostLabel.textContent = 'Dana akan dikembalikan:';
+                                // 2. Menggunakan teks dari objek 'lang'
+                                modalCostLabel.textContent = lang.dana_dikembalikan;
                                 modalJobCostDiff.textContent = formatRupiah(Math.abs(priceDifference));
                                 modalUserBalance.classList.remove('text-danger');
                                 modalWarning.style.display = 'none';
                                 modalConfirmBtn.style.display = 'inline-block';
                                 modalTopupBtn.style.display = 'none';
                             } else {
-                                modalCostLabel.textContent = 'Tidak ada perubahan biaya.';
+                                // 2. Menggunakan teks dari objek 'lang'
+                                modalCostLabel.textContent = lang.tidak_ada_perubahan;
                                 modalJobCostDiff.textContent = formatRupiah(0);
                                 modalUserBalance.classList.remove('text-danger');
                                 modalWarning.style.display = 'none';
                                 modalConfirmBtn.style.display = 'inline-block';
                                 modalTopupBtn.style.display = 'none';
                             }
+
 
                             // Show the modal
                             confirmationModal.show();
