@@ -1,1 +1,0 @@
-@extends('Master.master-admin')

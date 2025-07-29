@@ -1,3 +1,4 @@
+<!-- This file name is index.blade.php inside users -->
 @extends('Master.master-admin')
 
 @section('content')
@@ -15,15 +16,15 @@
                                     <i class="material-symbols-rounded opacity-10">groups</i>
                                 </div>
                                 <div class="text-end pt-1">
-                                    <p class="text-sm mb-0 text-capitalize">Total Pengguna</p>
+                                    <p class="text-sm mb-0 text-capitalize">{{ __('admin/users.total_users') }}</p>
                                     <h4 class="mb-0">{{ number_format($totalUsers) }}</h4>
                                 </div>
                             </div>
                             <hr class="dark horizontal my-0">
                             <div class="card-footer p-3">
                                 <p class="mb-0">
-                                    <span class="text-success text-sm font-weight-bolder">{{ $activeToday }}</span> aktif hari ini
-                                    <span class="text-dark text-sm ms-2 font-weight-bolder">{{ $newUsersThisWeek }}</span> baru minggu ini
+                                    <span class="text-success text-sm font-weight-bolder">{{ $activeToday }}</span> {{ __('admin/users.active_today') }}
+                                    <span class="text-dark text-sm ms-2 font-weight-bolder">{{ $newUsersThisWeek }}</span> {{ __('admin/users.new_this_week') }}
                                 </p>
                             </div>
                         </div>
@@ -39,14 +40,14 @@
                                     <i class="material-symbols-rounded opacity-10">engineering</i>
                                 </div>
                                 <div class="text-end pt-1">
-                                    <p class="text-sm mb-0 text-capitalize">Total Pekerja</p>
+                                    <p class="text-sm mb-0 text-capitalize">{{ __('admin/users.total_workers') }}</p>
                                     <h4 class="mb-0">{{ number_format($totalWorkers) }}</h4>
                                 </div>
                             </div>
                             <hr class="dark horizontal my-0">
                             <div class="card-footer p-3">
                                 <p class="mb-0">
-                                    <span class="text-success text-sm font-weight-bolder">{{ $activeWorkersToday }}</span> aktif hari ini
+                                    <span class="text-success text-sm font-weight-bolder">{{ $activeWorkersToday }}</span> {{ __('admin/users.active_workers_today') }}
                                 </p>
                             </div>
                         </div>
@@ -62,13 +63,13 @@
                                     <i class="material-symbols-rounded opacity-10">block</i>
                                 </div>
                                 <div class="text-end pt-1">
-                                    <p class="text-sm mb-0 text-capitalize">Pengguna Diblokir</p>
+                                    <p class="text-sm mb-0 text-capitalize">{{ __('admin/users.blocked_users') }}</p>
                                     <h4 class="mb-0">{{ number_format($blockedUsersCount) }}</h4>
                                 </div>
                             </div>
                             <hr class="dark horizontal my-0">
                             <div class="card-footer p-3">
-                                <span class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar blokir</span>
+                                <span class="text-primary text-sm font-weight-bolder cursor-pointer">{{ __('admin/users.view_blocked_list') }}</span>
                             </div>
                         </div>
                     </a>
@@ -83,13 +84,13 @@
                                     <i class="material-symbols-rounded opacity-10">flag</i>
                                 </div>
                                 <div class="text-end pt-1">
-                                    <p class="text-sm mb-0 text-capitalize">Pengguna Dilaporkan</p>
+                                    <p class="text-sm mb-0 text-capitalize">{{ __('admin/users.reported_users') }}</p>
                                     <h4 class="mb-0">{{ number_format($reportedUsersCount) }}</h4>
                                 </div>
                             </div>
                             <hr class="dark horizontal my-0">
                             <div class="card-footer p-3">
-                                <span class="text-primary text-sm font-weight-bolder cursor-pointer">Lihat daftar laporan</span>
+                                <span class="text-primary text-sm font-weight-bolder cursor-pointer">{{ __('admin/users.view_report_list') }}</span>
                             </div>
                         </div>
                     </a>
@@ -101,18 +102,18 @@
         <div class="col-lg-12 mt-4 mb-4"> {{-- Ubah ukuran kolom menjadi 12 untuk search bar di atas tabel --}}
             <div class="card z-index-2">
                 <div class="card-header pb-0 bg-transparent">
-                    <h6 class="mb-0">Log Aktivitas Terbaru {{ $searchedUser ? 'untuk ' . $searchedUser->first_name . ' ' . $searchedUser->last_name : '' }}</h6>
+                    <h6 class="mb-0">{{ __('admin/users.recent_activity_logs', ['for_user' => $searchedUser ? 'untuk ' . $searchedUser->first_name . ' ' . $searchedUser->last_name : '']) }}</h6>
                     <p class="text-sm mb-0">
                         <i class="fa fa-info-circle text-info"></i>
-                        <span class="font-weight-bold">Daftar aktivitas pengguna</span> di sistem.
+                        <span class="font-weight-bold">{{ __('admin/users.user_activity_list') }}</span> {{ __('admin/users.in_the_system') }}
                     </p>
 
                     {{-- Search Bar for Users Log Activity --}}
                     <div class="p-0 position-relative mt-3">
                         <form id="usersLogSearchForm" action="{{ route('admin.users.index') }}" method="GET" class="mb-0">
                             <div class="input-group m-0">
-                                <input type="text" id="usersLogSearchInput" name="search_query" class="form-control bg-white border border-primary p-2" placeholder="Cari pengguna berdasarkan ID atau Nama..." autocomplete="off" value="{{ $searchQuery ?? '' }}">
-                                <button class="btn btn-primary m-2" type="submit" id="cari-btn">Cari</button>
+                                <input type="text" id="usersLogSearchInput" name="search_query" class="form-control bg-white border border-primary p-2" placeholder="{{ __('admin/users.search_for_user_activity') }}" autocomplete="off" value="{{ $searchQuery ?? '' }}">
+                                <button class="btn btn-primary m-2" type="submit" id="cari-btn">{{ __('admin/users.search_button') }}</button>
                             </div>
                         </form>
                         <div id="usersLogSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
@@ -127,37 +128,37 @@
                     <div class="alert alert-success d-flex align-items-center mb-3" role="alert" style="color:white">
                         <i class="material-symbols-rounded me-2">check_circle</i>
                         <div>
-                            Pengguna <strong>{{ $searchedUser->first_name }} {{ $searchedUser->last_name }}</strong> ditemukan.
+                            {!! __('admin/users.user_found', ['name' => $searchedUser->first_name . ' ' . $searchedUser->last_name]) !!}
                             <br>
-                            ID: <strong>{{ $searchedUser->id }}</strong>
+                            {!! __('admin/users.user_id', ['id' => $searchedUser->id]) !!}
                             <br>
                             @if($searchedUser->last_activity)
-                            Aktif {{ \Carbon\Carbon::parse($searchedUser->last_activity)->diffForHumans(null, false, true) }}
+                            {{ __('admin/users.active_since', ['time_ago' => \Carbon\Carbon::parse($searchedUser->last_activity)->diffForHumans(null, false, true)]) }}
                             @else
-                            Belum ada aktivitas login.
+                            {{ __('admin/users.no_login_activity') }}
                             @endif
                             <br>
-                            Status: {{ $searchedUser->is_blocked ? 'Diblokir' : 'Aktif' }}
+                            {{ __('admin/users.status_colon') }} {{ $searchedUser->is_blocked ? __('admin/users.blocked') : __('admin/users.active') }}
                         </div>
                     </div>
                     @elseif($searchQuery && !$searchedUser)
                     <div class="alert alert-danger d-flex align-items-center mb-3" role="alert" style="color:white">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
-                            Pengguna dengan ID atau Nama <strong>{{ $searchQuery }}</strong> tidak ditemukan.
+                            {!! __('admin/users.user_not_found', ['query' => $searchQuery]) !!}
                         </div>
                     </div>
                     @endif
-
+                    @if(($searchQuery && $searchedUser) || (!$searchQuery))
                     <div class="table-responsive">
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Pengguna</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Target</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Aktivitas</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Log Nama</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.time') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.user') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.target') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.activity') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.log_name') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -169,12 +170,12 @@
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">
-                                            {{ $log->causer ? $log->causer->first_name . ' ' . $log->causer->last_name : 'N/A' }}
+                                            {{ $log->causer ? $log->causer->first_name . ' ' . $log->causer->last_name : __('admin/users.n_a') }}
                                         </p>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">
-                                            {{ $log->subject ? $log->subject->first_name . ' ' . $log->subject->last_name : 'N/A' }}
+                                            {{ $log->subject ? $log->subject->first_name . ' ' . $log->subject->last_name : __('admin/users.n_a') }}
                                         </p>
                                     </td>
                                     <td>
@@ -186,18 +187,20 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-secondary text-sm">Tidak ada log aktivitas {{ $searchedUser ? 'untuk pengguna ini' : 'terbaru' }}.</td>
+                                    <td colspan="4" class="text-center text-secondary text-sm">{{ __('admin/users.no_activity_logs_for_user') }}</td>
                                 </tr>
                                 @endforelse
                                 @endif
                             </tbody>
                         </table>
                     </div>
+
                     <div class="mt-4">
                         @if($activityLogs)
                         {{ $activityLogs->links() }}
                         @endif
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

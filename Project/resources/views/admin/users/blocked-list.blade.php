@@ -1,3 +1,5 @@
+<!-- This file name is blocked-list.blade.php inside users -->
+
 @extends('Master.master-admin')
 
 @section('content')
@@ -6,13 +8,13 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>Daftar Pengguna Diblokir</h6>
+                    <h6>{{ __('admin/users.blocked_users_list') }}</h6>
                     {{-- Search Bar for Blocked Users List --}}
                     <div class="p-0 position-relative mt-3">
                         <form id="blockedUsersSearchForm" action="{{ route('admin.users.blockedList') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
-                                <input type="text" id="blockedUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna diblokir berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
-                                <button class="btn btn-primary m-2" type="submit" id="cariBtn">Cari</button>
+                                <input type="text" id="blockedUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="{{ __('admin/users.search_blocked_users_placeholder') }}" autocomplete="off" value="{{ request('search_query') }}">
+                                <button class="btn btn-primary m-2" type="submit" id="cariBtn">{{ __('admin/users.search_button') }}</button>
                             </div>
                         </form>
                         <div id="blockedUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
@@ -23,10 +25,10 @@
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     @if(request('search_query') && $blockedUsers->isEmpty())
-                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert"  style="color:white">
+                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert" style="color:white">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
-                            Pengguna diblokir dengan ID atau Nama <strong>{{ request('search_query') }}</strong> tidak ditemukan.
+                            {!! __('admin/users.user_not_found', ['query' => request('search_query')]) !!}
                         </div>
                     </div>
                     @endif
@@ -34,10 +36,10 @@
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Email</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Status</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Aksi</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.name') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.email') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">{{ __('admin/users.status') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">{{ __('admin/users.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,23 +56,23 @@
                                         <p class="text-xs font-weight-bold mb-0">{{ $user->email }}</p>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="badge badge-sm bg-gradient-danger">Diblokir</span>
+                                        <span class="badge badge-sm bg-gradient-danger">{{ __('admin/users.blocked') }}</span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2" id="SeeActivityBtn">Lihat Aktivitas</a>
+                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2" id="SeeActivityBtn">{{ __('admin/users.view_activity') }}</a>
                                         {{-- Tombol Batal Blokir yang memicu modal --}}
                                         <button type="button" class="btn btn-sm btn-success mb-0"
                                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
                                             data-user-id="{{ $user->id }}"
                                             data-user-name="{{ $user->first_name }} {{ $user->last_name }}"
                                             id="unblockUserButton">
-                                            Unblock
+                                            {{ __('admin/users.unblock') }}
                                         </button>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-secondary text-sm">Tidak ada pengguna yang diblokir.</td>
+                                    <td colspan="4" class="text-center text-secondary text-sm">{{ __('admin/users.no_blocked_users_found') }}</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -89,18 +91,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmUnblockModalLabel">Konfirmasi Batal Blokir Pengguna</h5>
+                <h5 class="modal-title" id="confirmUnblockModalLabel">{{ __('admin/users.confirm_unblock_user') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Anda akan **membatalkan blokir** pengguna <strong id="unblockUserName"></strong>. Pengguna ini akan bisa login dan mengakses layanan kembali.</p>
-                <p>Apakah Anda yakin ingin melanjutkan?</p>
+                <p>{!! __('admin/users.confirm_unblock_message') !!}</p>
+                <p>{{ __('admin/users.are_you_sure_continue') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin/users.cancel') }}</button>
                 <form id="unblockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-success">Ya, Batal Blokir</button>
+                    <button type="submit" class="btn btn-success">{{ __('admin/users.yes_unblock') }}</button>
                 </form>
             </div>
         </div>

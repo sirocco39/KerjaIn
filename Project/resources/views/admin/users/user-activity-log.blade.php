@@ -1,3 +1,5 @@
+<!-- This file name is user-activity-log.blade.php inside users -->
+
 @extends('Master.master-admin')
 
 @section('content')
@@ -6,24 +8,24 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                    <h6>Log Aktivitas untuk {{ $user->first_name }} {{ $user->last_name }}</h6>
+                    <h6>{{ __('admin/users.activity_log_for', ['user_name' => $user->first_name . ' ' . $user->last_name]) }}</h6>
                     <div class="d-flex">
                         @if($user->is_blocked)
                         <button type="button" class="btn btn-sm btn-success mb-0 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
                             data-user-id="{{ $user->id }}"
                             data-user-name="{{ $user->first_name }} {{ $user->last_name }}" id="unblockUserButton">
-                            <i class="material-symbols-rounded text-sm">lock_open</i> Batal Blokir
+                            <i class="material-symbols-rounded text-sm">lock_open</i> {{ __('admin/users.unblock_user') }}
                         </button>
                         @else
                         <button type="button" class="btn btn-sm btn-warning mb-0 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmBlockModal"
                             data-user-id="{{ $user->id }}"
                             data-user-name="{{ $user->first_name }} {{ $user->last_name }}" id="blockUserButton">
-                            <i class="material-symbols-rounded text-sm">lock</i> Blokir Pengguna
+                            <i class="material-symbols-rounded text-sm">lock</i> {{ __('admin/users.block_user') }}
                         </button>
                         @endif
-                        <a href="{{ $previousUrl }}" class="btn btn-sm btn-secondary mb-0" id="backBtn">Kembali</a>
+                        <a href="{{ $previousUrl }}" class="btn btn-sm btn-secondary mb-0" id="backBtn">{{ __('admin/users.back_button') }}</a>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
@@ -31,12 +33,12 @@
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Pengguna</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Target</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Deskripsi</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Log Nama</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Properti</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.time') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.user') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.target') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.description') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.log_name') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.properties') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,10 +48,10 @@
                                         <span class="text-secondary text-xs font-weight-bold">{{ $activity->created_at->format('d M Y, H:i:s') }}</span>
                                     </td>
                                     <td class="align-middle">
-                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name : 'N/A'  }}</span>
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name :  __('admin/users.n_a')}}</span>
                                     </td>
                                     <td class="align-middle">
-                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->subject ? $activity->subject->first_name . ' ' . $activity->subject->last_name : 'N/A'  }}</span>
+                                        <span class="text-secondary text-xs font-weight-bold">{{ $activity->subject ? $activity->subject->first_name . ' ' . $activity->subject->last_name :  __('admin/users.n_a')  }}</span>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">{{ $activity->description }}</p>
@@ -63,7 +65,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-secondary text-sm">Tidak ada log aktivitas untuk pengguna ini.</td>
+                                    <td colspan="4" class="text-center text-secondary text-sm">{{ __('admin/users.no_activity_logs_for_user') }}</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -82,18 +84,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmBlockModalLabel">Konfirmasi Blokir Pengguna</h5>
+                <h5 class="modal-title" id="confirmBlockModalLabel">{{ __('admin/users.confirm_block_user') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Anda akan **memblokir** pengguna <strong id="blockUserName"></strong>. Pengguna ini tidak akan bisa login atau mengakses layanan.</p>
-                <p>Apakah Anda yakin ingin melanjutkan?</p>
+                <p>{!! __('admin/users.confirm_block_message') !!}</p>
+                <p>{{ __('admin/users.are_you_sure_continue') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin/users.cancel') }}</button>
                 <form id="blockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-warning">Ya, Blokir</button>
+                    <button type="submit" class="btn btn-warning">{{ __('admin/users.yes_block') }}</button>
                 </form>
             </div>
         </div>
@@ -104,18 +106,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmUnblockModalLabel">Konfirmasi Batal Blokir Pengguna</h5>
+                <h5 class="modal-title" id="confirmUnblockModalLabel">{{ __('admin/users.confirm_unblock_user') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Anda akan **membatalkan blokir** pengguna <strong id="unblockUserName"></strong>. Pengguna ini akan bisa login dan mengakses layanan kembali.</p>
-                <p>Apakah Anda yakin ingin melanjutkan?</p>
+                <p>{!! __('admin/users.confirm_unblock_message') !!}</p>
+                <p>{{ __('admin/users.are_you_sure_continue') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin/users.cancel') }}</button>
                 <form id="unblockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-success">Ya, Batal Blokir</button>
+                    <button type="submit" class="btn btn-success">{{ __('admin/users.yes_unblock') }}</button>
                 </form>
             </div>
         </div>

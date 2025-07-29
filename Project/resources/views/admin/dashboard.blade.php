@@ -2,8 +2,7 @@
 
 @section('content')
 <div class="container-fluid py-4">
-    <h1 class="mb-4">{{ __('dashboard.dasbor') }}</h1>
-
+    <h1 class="mb-4">{{ __('admin/dashboard.dasbor') }}</h1>
     {{-- Alert Messages (tetap) --}}
     @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -35,14 +34,14 @@
                             <i class="material-symbols-rounded opacity-10">groups</i>
                         </div>
                         <div class="text-end pt-1">
-                            <p class="text-sm mb-0 text-capitalize">Total Pengguna</p>
+                            <p class="text-sm mb-0 text-capitalize">{{ __('admin/dashboard.total_pengguna') }}</p>
                             <h4 class="mb-0">{{ number_format($totalUsers) }}</h4>
                         </div>
                     </div>
                     <hr class="dark horizontal my-0">
                     <div class="card-footer p-3">
                         <p class="mb-0 text-dark">
-                            <span class="text-success text-sm font-weight-bolder">{{ $activeUsersToday }}</span> aktif hari ini
+                            <span class="text-success text-sm font-weight-bolder">{{ $activeUsersToday }}</span> {{ __('admin/dashboard.aktif_hari_ini') }}
                         </p>
                     </div>
                 </div>
@@ -58,14 +57,14 @@
                             <i class="material-symbols-rounded opacity-10">how_to_reg</i>
                         </div>
                         <div class="text-end pt-1">
-                            <p class="text-sm mb-0 text-capitalize">Verifikasi Pending</p>
+                            <p class="text-sm mb-0 text-capitalize">{{ __('admin/dashboard.verifikasi_pending') }}</p>
                             <h4 class="mb-0">{{ number_format($pendingVerificationsCount) }}</h4>
                         </div>
                     </div>
                     <hr class="dark horizontal my-0">
                     <div class="card-footer p-3">
                         <p class="mb-0 text-dark">
-                            Klik untuk meninjau verifikasi
+                            {{ __('admin/dashboard.klik_tinjau_verifikasi') }}
                         </p>
                     </div>
                 </div>
@@ -81,13 +80,13 @@
                             <i class="material-symbols-rounded opacity-10">flag</i>
                         </div>
                         <div class="text-end pt-1">
-                            <p class="text-sm mb-0 text-capitalize">Laporan Pending</p>
+                            <p class="text-sm mb-0 text-capitalize">{{ __('admin/dashboard.laporan_pending') }}</p>
                             <h4 class="mb-0">{{ number_format($pendingReportsCount) }}</h4>
                         </div>
                     </div>
                     <hr class="dark horizontal my-0">
                     <div class="card-footer p-3">
-                        <p class="mb-0 text-dark">Klik untuk meninjau laporan</p>
+                        <p class="mb-0 text-dark">{{ __('admin/dashboard.klik_tinjau_laporan') }}</p>
                     </div>
                 </div>
             </a>
@@ -102,13 +101,13 @@
                             <i class="material-symbols-rounded opacity-10">paid</i>
                         </div>
                         <div class="text-end pt-1">
-                            <p class="text-sm mb-0 text-capitalize">Keuntungan Perusahaan</p>
+                            <p class="text-sm mb-0 text-capitalize">{{ __('admin/dashboard.keuntungan_perusahaan') }}</p>
                             <h4 class="mb-0">Rp{{ number_format($totalCompanyProfit, 0, ',', '.') }}</h4>
                         </div>
                     </div>
                     <hr class="dark horizontal my-0">
                     <div class="card-footer p-3">
-                        <p class="mb-0 text-dark">Klik untuk detail keuangan</p>
+                        <p class="mb-0 text-dark">{{ __('admin/dashboard.klik_detail_keuangan') }}</p>
                     </div>
                 </div>
             </a>
@@ -121,10 +120,10 @@
         <div class="col-lg-7 mb-lg-0 mb-4">
             <div class="card z-index-2">
                 <div class="card-header pb-0 bg-transparent">
-                    <h6 class="mb-0">Aktivitas Pengguna Mingguan</h6>
+                    <h6 class="mb-0">{{ __('admin/dashboard.aktivitas_pengguna_mingguan') }}</h6>
                     <p class="text-sm mb-0">
                         <i class="fa fa-arrow-up text-success"></i>
-                        <span class="font-weight-bold">Jumlah pengguna aktif</span> dalam 7 hari terakhir.
+                        <span class="font-weight-bold">{{ __('admin/dashboard.jumlah_pengguna_aktif') }}</span> {{ __('admin/dashboard.dalam_7_hari_terakhir') }}
                     </p>
                 </div>
                 <div class="card-body p-3">
@@ -145,12 +144,12 @@
             <div class="card z-index-2 h-100">
                 <div class="card-header pb-0 bg-transparent">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">Log Aktivitas Terbaru</h6>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary mb-0" id="lihat-log">Lihat Semua Log</a>
+                        <h6 class="mb-0">{{ __('admin/dashboard.log_aktivitas_terbaru') }}</h6>
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary mb-0" id="lihat-log">{{ __('admin/dashboard.lihat_semua_log') }}</a>
                     </div>
                     <p class="text-sm mb-0">
                         <i class="fa fa-info-circle text-info"></i>
-                        <span class="font-weight-bold">Daftar aktivitas terkini</span> di sistem.
+                        <span class="font-weight-bold">{{ __('admin/dashboard.daftar_aktivitas_terkini') }}</span> {{ __('admin/dashboard.di_sistem') }}
                     </p>
                 </div>
                 <div class="card-body p-3">
@@ -158,9 +157,9 @@
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Waktu</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Pengguna</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Aktivitas</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/dashboard.waktu') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/dashboard.pengguna') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/dashboard.aktivitas') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
