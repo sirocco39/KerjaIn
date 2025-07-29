@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <title>
-        Admin - Kerjain
+        {{ __('admin/master.admin_title') }}
     </title>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,900" />
     <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
@@ -29,7 +29,7 @@
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
             <a class="navbar-brand px-4 py-3 m-0" href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('Image/Icon/Icon Kerjain.png') }}" class="navbar-brand-img" width="26" height="26" alt="main_logo">
-                <span class="ms-1 text-sm text-dark">Kerjain Admin</span>
+                <span class="ms-1 text-sm text-dark">{{ __('admin/master.kerjain_admin') }}</span>
             </a>
         </div>
         <hr class="horizontal dark mt-0 mb-2">
@@ -38,43 +38,31 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{route('admin.dashboard')}}" id="dashboard-link">
                         <i class="material-symbols-rounded opacity-5">dashboard</i>
-                        <span class="nav-link-text ms-1">Dashboard</span>
+                        <span class="nav-link-text ms-1">{{ __('admin/master.dashboard') }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.verifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.verifications.index') }}" id="verifications-link">
                         <i class="material-symbols-rounded opacity-5">table_view</i>
-                        <span class="nav-link-text ms-1">Verifikasi</span>
+                        <span class="nav-link-text ms-1">{{ __('admin/master.verifications') }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.users.index') }}" id="users-link">
                         <i class="material-symbols-rounded opacity-5">receipt_long</i>
-                        <span class="nav-link-text ms-1">Pengguna</span>
+                        <span class="nav-link-text ms-1">{{ __('admin/master.users') }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.reports.index') }}" id="reports-link">
                         <i class="material-symbols-rounded opacity-5">view_in_ar</i>
-                        <span class="nav-link-text ms-1">Laporan</span>
+                        <span class="nav-link-text ms-1">{{ __('admin/master.reports') }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.transactions.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.transactions.index') }}" id="transactions-link">
                         <i class="material-symbols-rounded opacity-5">format_textdirection_r_to_l</i>
-                        <span class="nav-link-text ms-1">Penghasilan</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.notifications.index') }}" id="notifications-link">
-                        <i class="material-symbols-rounded opacity-5">notifications</i>
-                        <span class="nav-link-text ms-1">Notifikasi</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.settings') }}" id="settings-link">
-                        <i class="material-symbols-rounded opacity-5">settings</i>
-                        <span class="nav-link-text ms-1">Settings</span>
+                        <span class="nav-link-text ms-1">{{ __('admin/master.earnings') }}</span>
                     </a>
                 </li>
             </ul>
@@ -83,7 +71,7 @@
             <div class="mx-3">
                 <a class="btn bg-gradient-dark w-100" id="logout-btn" href="{{ route('logout') }}" type="button"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Log out
+                    {{ __('admin/master.logout') }}
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                     @csrf
@@ -100,7 +88,7 @@
                         {{-- Main breadcrumb item, "Admin" --}}
                         <li class="breadcrumb-item text-sm">
                             <a class="opacity-5 text-dark" href="{{ route('admin.dashboard') }}">
-                                {{ $breadcrumbs['mainPageTitle'] ?? 'Admin' }}
+                                {{ $breadcrumbs['mainPageTitle'] ?? __('admin/master.admin_breadcrumb') }}
                             </a>
                         </li>
                         {{-- Current page breadcrumb item --}}
@@ -128,36 +116,22 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="nav-item dropdown pe-2 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-bell cursor-pointer"></i>
+                        <li class="nav-item dropdown d-flex align-items-center">
+                            <a class="nav-link text-dark d-flex align-items-center" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="material-symbols-rounded opacity-5">language</i>
+                                <span class="nav-link-text ms-1">{{ __('admin/master.language') }}</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
-                                <li class="mb-2">
-                                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                                        <div class="d-flex py-1">
-                                            <div class="my-auto">
-                                                <img src="{{ asset('assets/img/small-logos/logo-spotify.svg') }}" class="avatar avatar-sm bg-gradient-dark me-3" alt="logo spotify">
-                                            </div>
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="text-sm font-weight-normal mb-1">
-                                                    <span class="font-weight-bold">New album</span> by Travis Scott
-                                                </h6>
-                                                <p class="text-xs text-secondary mb-0">
-                                                    <i class="fa fa-clock me-1"></i>
-                                                    13 minutes ago
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
+
+                            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item" href="{{ route('language.switch', 'id') }}">{{ __('admin/master.indonesia') }}</a></li>
+                                <li><a class="dropdown-item" href="{{ route('language.switch', 'en') }}">{{ __('admin/master.english') }}</a></li>
                             </ul>
                         </li>
                         <li class="nav-item d-flex align-items-center">
                             <a class="nav-link text-body font-weight-bold px-0" id="logout" href="{{ route('logout') }}" type="button"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fa fa-user me-sm-1"></i>
-                                <span class="d-sm-inline d-none">Log out</span>
+                                <span class="d-sm-inline d-none">{{ __('admin/master.logout') }}</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
@@ -176,24 +150,22 @@
                             © <script>
                                 document.write(new Date().getFullYear())
                             </script>,
-                            dibuat dengan <i class="fa fa-heart"></i> oleh
-                            <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-                            untuk pengalaman web yang lebih baik.
+                            {{ __('admin/master.proudly_powered') }} <i class="fa fa-tools"></i> {{ __('admin/master.by_kerjain') }}
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <ul class="nav nav-footer justify-content-center justify-content-lg-end">
                             <li class="nav-item">
-                                <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
+                                <a href="{{ route('admin.dashboard') }}" class="nav-link text-muted">{{ __('admin/master.dashboard') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
+                                <a href="#" class="nav-link text-muted">{{ __('admin/master.about_kerjain') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
+                                <a href="#" class="nav-link text-muted">{{ __('admin/master.support') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
+                                <a href="#" class="nav-link pe-0 text-muted">{{ __('admin/master.terms_of_service') }}</a>
                             </li>
                         </ul>
                     </div>

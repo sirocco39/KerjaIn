@@ -274,13 +274,6 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     // Manajemen Transaksi
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/{id}/show', [AdminTransactionController::class, 'show'])->name('transactions.show');
-
-    // Notifikasi
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-
-    // Pengaturan
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings');
-    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
 // Route::get('/admin/activity-log', function () {
 //     // Kode yang benar untuk urutan kronologis
