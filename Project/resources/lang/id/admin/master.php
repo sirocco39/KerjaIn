@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'admin_title' => 'Admin - Kerjain',
+    'kerjain_admin' => 'Kerjain Admin',
+    'dashboard' => 'Dashboard',
+    'verifications' => 'Verifikasi',
+    'users' => 'Pengguna',
+    'reports' => 'Laporan',
+    'earnings' => 'Penghasilan',
+    'notifications' => 'Notifikasi',
+    'language' => 'Bahasa',
+    'indonesia' => 'Indonesia',
+    'english' => 'English',
+    'logout' => 'Keluar',
+    'admin_breadcrumb' => 'Admin',
+    'made_with_love' => 'Dibuat dengan',
+    'by' => 'oleh',
+    'for_better_web_experience' => 'untuk pengalaman web yang lebih baik.',
+    'about_us' => 'Tentang Kami',
+    'blog' => 'Blog',
+    'license' => 'Lisensi',
+    'proudly_powered' => 'Ditenagai dengan bangga',
+    'by_kerjain' => 'oleh Kerjain.',
+    'about_kerjain' => 'Tentang Kerjain',
+    'support' => 'Dukungan',
+    'terms_of_service' => 'Ketentuan Layanan',
+];

@@ -1,8 +1,9 @@
+<!-- This file name is index.blade.php in reports -->
 @extends('Master.master-admin')
 
 @section('content')
 <div class="container-fluid py-4">
-    <h1 class="mb-4">Management Laporan Pengguna</h1>
+    <h1 class="mb-4">{{ __('admin/reports.management_user_reports') }}</h1>
 
     {{-- Success Message --}}
     @if (session('success'))
@@ -24,12 +25,12 @@
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ $currentStatus == 'Not Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}" id="notReviewedTab">
-                Tinjau <span class="badge bg-warning">{{ \App\Models\Report::where('status', 'Not Reviewed')->count() }}</span>
+                {{ __('admin/reports.review') }} <span class="badge bg-warning">{{ \App\Models\Report::where('status', 'Not Reviewed')->count() }}</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ $currentStatus == 'Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Reviewed']) }}" id="reviewedTab">
-                Sudah Ditinjau <span class="badge bg-success">{{ \App\Models\Report::where('status', 'Reviewed')->count() }}</span>
+                {{ __('admin/reports.already_reviewed') }} <span class="badge bg-success">{{ \App\Models\Report::where('status', 'Reviewed')->count() }}</span>
             </a>
         </li>
     </ul>
@@ -39,18 +40,18 @@
             <div class="table-responsive">
                 @if($reports->isEmpty())
                 <div class="text-center py-5">
-                    <p class="text-muted">No {{ $currentStatus }} reports found.</p>
+                    <p class="text-muted">{{ __('admin/reports.no_reports_found_status', ['status' => $currentStatus]) }}</p>
                 </div>
                 @else
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>ID</th>
-                            <th>Tanggal</th>
-                            <th>Pelapor</th>
-                            <th>Pengguna yang dilaporkan</th>
-                            <th>Status</th>
-                            <th class="text-end">Aksi</th>
+                            <th>{{ __('admin/reports.id') }}</th>
+                            <th>{{ __('admin/reports.date') }}</th>
+                            <th>{{ __('admin/reports.reporter') }}</th>
+                            <th>{{ __('admin/reports.reported_user') }}</th>
+                            <th>{{ __('admin/reports.status') }}</th>
+                            <th class="text-end">{{ __('admin/reports.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,26 +60,26 @@
                             <td>#{{ $report->id }}</td>
                             <td>{{ $report->created_at->format('M d, Y H:i') }}</td>
                             <td>
-                                {{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? 'N/A' }}
+                                {{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? __('admin/reports.n_a') }}
                                 <br>
                                 <span class="text-muted text-sm">(ID: {{ $report->reporter_id }})</span>
                             </td>
                             <td>
-                                {{ $report->reported->first_name . ' ' . $report->reported->last_name ?? 'N/A' }}
+                                {{ $report->reported->first_name . ' ' . $report->reported->last_name ?? __('admin/reports.n_a') }}
                                 <br>
                                 <span class="text-muted text-sm">(ID: {{ $report->reported_id }})</span>
                             </td>
                             <td>
                                 @if ($report->status == 'Reviewed')
-                                <span class="badge bg-success">Belum Ditinjau</span>
+                                <span class="badge bg-success">{{ __('admin/reports.reviewed') }}</span>
                                 @else
-                                <span class="badge bg-warning text-dark">Belum Ditinjau</span>
+                                <span class="badge bg-warning text-dark">{{ __('admin/reports.not_reviewed') }}</span>
                                 @endif
                             </td>
                             <td class="text-end">
                                 {{-- Ubah ini untuk mengarah ke halaman detail --}}
                                 <a href="{{ route('admin.reports.show', $report) }}" class="btn btn-sm btn-info me-2" id="lihat-detail">
-                                    Detail
+                                    {{ __('admin/reports.detail') }}
                                 </a>
 
                                 {{-- Action Form for Mark as Reviewed/Not Reviewed (bisa dipindahkan ke halaman detail) --}}
@@ -88,10 +89,10 @@
                                     @method('PATCH')
                                     @if ($report->status == 'Not Reviewed')
                                     <input type="hidden" name="status" value="Reviewed" id="status">
-                                    <button type="submit" class="btn btn-sm btn-success" id="tandai-sudah-ditinjau">Tandai Sudah Ditinjau</button>
+                                    <button type="submit" class="btn btn-sm btn-success" id="tandai-sudah-ditinjau">{{ __('admin/reports.mark_as_reviewed_button') }}</button>
                                     @else
                                     <input type="hidden" name="status" value="Not Reviewed" id="status">
-                                    <button type="submit" class="btn btn-sm btn-secondary" id="tandai-sudah-ditinjau">Tandai Belum Ditinjau</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary" id="tandai-sudah-ditinjau">{{ __('admin/reports.mark_as_not_reviewed_button') }}</button>
                                     @endif
                                 </form>
                             </td>

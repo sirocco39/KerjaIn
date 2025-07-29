@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'admin_title' => 'Admin - Kerjain',
+    'kerjain_admin' => 'Kerjain Admin',
+    'dashboard' => 'Dashboard',
+    'verifications' => 'Verifications',
+    'users' => 'Users',
+    'reports' => 'Reports',
+    'earnings' => 'Earnings',
+    'notifications' => 'Notifications',
+    'language' => 'Language',
+    'indonesia' => 'Indonesia',
+    'english' => 'English',
+    'logout' => 'Log out',
+    'admin_breadcrumb' => 'Admin',
+    'made_with_love' => 'Made with',
+    'by' => 'by',
+    'for_better_web_experience' => 'for a better web experience.',
+    'about_us' => 'About Us',
+    'blog' => 'Blog',
+    'license' => 'License',
+    'proudly_powered' => 'Proudly powered',
+    'by_kerjain' => 'by Kerjain.',
+    'about_kerjain' => 'About Kerjain',
+    'support' => 'Support',
+    'terms_of_service' => 'Terms of Service',
+];
