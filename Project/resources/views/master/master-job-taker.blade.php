@@ -188,6 +188,7 @@
     $user = Auth::id(); // Ambil user yang sedang login
     $user = \App\Models\User::find($user);
 @endphp
+
 <body>
     <!-- Custom Alert Container (Non-Modal) -->
     <div id="custom-alert-container">
@@ -222,7 +223,6 @@
                     <li class="nav-item"><a class="nav-link {{ request()->is('job-taker/riwayat') ? 'active' : '' }}"
                             href="/job-taker/riwayat">{{ __('master-job-taker.riwayat') }}</a></li>
                 </ul>
-
                 <hr class="d-lg-none my-2">
 
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
@@ -251,29 +251,32 @@
                                         class="flag">{{ __('master-job-req.english') }}</a></li>
                         </ul>
                     </li>
-                    
+
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-<<<<<<< HEAD
-                            <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
-                            <span class="d-lg-none">{{ __('master-job-taker.profil') }}</span>
-=======
-                            <img 
-                                src="{{ Storage::url($user->photo_url_worker) }}" 
-                                alt="Profil" 
-                                id="profileIcon"
+                            <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil" id="profileIcon"
                                 onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
-                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
-                            />
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                             <span class="d-lg-none">Profil</span>
->>>>>>> 3fb39c43f4580d5c123eed18d6e8f3ac0dfdaded
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @auth
-<<<<<<< HEAD
+
                                 <li>
+                                    <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
+                                        <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil"
+                                            id="profileIcon"
+                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 16px;">
+                                                {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</div>
+                                            <div style="font-size: 13px; color: gray;">Peran: Pekerja</div>
+                                        </div>
+                                    </div>
+
                                     {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
                                     <a class="dropdown-item d-flex align-items-center"
                                         href="{{ route('balance.job-taker') }}">
@@ -321,31 +324,6 @@
                                     <a class="dropdown-item d-flex align-items-center gap-1"
                                         href="{{ route('switch.to.requester') }}">
                                         <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
-=======
-                            
-                            <li>
-                                <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
-                                        <img 
-                                            src="{{ Storage::url($user->photo_url_worker) }}" 
-                                            alt="Profil" 
-                                            id="profileIcon"
-                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
-                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
-                                        />
-                                        <div>
-                                            <div class="fw-bold" style="font-size: 16px;">{{ auth()->user()->verificationRequests->first()?->first_name. ' ' . auth()->user()->verificationRequests->first()?->last_name}}</div>
-                                            <div style="font-size: 13px; color: gray;">Peran: Pekerja</div>
-                                        </div>
-                                    </div>
-
-                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="{{ route('balance.job-taker') }}">
-                                    {{-- Sisi Kiri: Ikon dan Teks --}}
-                                    <div class="d-flex align-items-center gap-2">
-                                        {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                        <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
->>>>>>> 3fb39c43f4580d5c123eed18d6e8f3ac0dfdaded
                                             class="navIcon">
                                         {{ __('master-job-taker.ganti_peran') }}
                                     </a>
@@ -363,7 +341,7 @@
 
     {{-- Main Section --}}
     <main class="main-content">
-        
+
         @yield('content')
     </main>
     {{-- End Main Section --}}
@@ -396,8 +374,9 @@
                     @auth
                         <a href="/job-req/tawarkan-kerja" class="foot-list">{{ __('master-job-taker.cari_kerja') }}</a>
                     @else
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">{{ __('master-job-taker.cari_kerja') }}
-                            </a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-taker.cari_kerja') }}
+                        </a>
                     @endauth
 
 
@@ -466,7 +445,6 @@
             <p class="m-0 p-0" id="text-copyright">{{ __('master-job-taker.copyright') }}</p>
         </div>
     </footer>
-    {{-- End Footer --}}
 
     <script defer>
         // Custom Alert function (copied from master-job-req.blade.php's original)

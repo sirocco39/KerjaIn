@@ -2,6 +2,8 @@
 
 return [
     // Navbar
+    'peran_pekerja' => 'Peran: Pekerja',
+    'peran_pelanggan' => 'Peran: Klien',
     'beranda' => 'Beranda',
     'cari_kerja' => 'Cari Kerja',
     'pesan' => 'Pesan',

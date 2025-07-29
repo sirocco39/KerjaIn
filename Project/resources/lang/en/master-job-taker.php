@@ -2,6 +2,8 @@
 
 return [
     // Navbar
+    'peran_pekerja' => 'Role: Worker',
+    'peran_pelanggan' => 'Role: Client',
     'beranda' => 'Home',
     'cari_kerja' => 'Find Work',
     'pesan' => 'Messages',
