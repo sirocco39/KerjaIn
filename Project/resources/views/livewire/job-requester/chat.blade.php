@@ -50,15 +50,16 @@
             word-wrap: break-word;
         }
 
-        .chat-bubble-sender {
-            background-color: #e9ecef;
-            color: #212529;
-            border-bottom-left-radius: 0.25rem;
+        .bubble-sender {
+            background-color: #309FFF;
+            color: white;
+            border-bottom-right-radius: 0;
         }
 
-        .chat-bubble-receiver {
-            background-color: #0d6efd color: white;
-            border-bottom-right-radius: 0.25rem;
+        .bubble-receiver {
+            background-color: #E0E0E0;
+            color: black;
+            border-bottom-left-radius: 0;
         }
 
         .chat-input-area {
@@ -337,7 +338,7 @@
                         <div class="input-group">
                             <input wire:model.defer="newMessage" x-data @clear-input.window="$el.value = ''"
                                 type="text" class="form-control chat-input border rounded-5"
-                                placeholder="Tulis pesan..." autocomplete="off">
+                                placeholder="{{ __('chat-job-req.placeholder_pesan') }}" autocomplete="off">
                             <button type="submit" class="btn btn-send-circle ms-2 rounded-circle">
                                 <img src="{{ asset('Image/Icon/icon-send.svg') }}" alt="">
                             </button>
@@ -370,7 +371,8 @@
                         <div class="modal-body p-4">
                             <p class="text-center text-muted mb-3">{{ __('chat-job-req.modal_deskripsi') }}</p>
                             <div class="bg-light p-3 rounded-3 mb-4 text-center">
-                                <h6 class="text-muted small fw-normal">{{ __('chat-job-req.modal_jumlah_tawaran') }}</h6>
+                                <h6 class="text-muted small fw-normal">{{ __('chat-job-req.modal_jumlah_tawaran') }}
+                                </h6>
                                 <h2 class="fw-bolder text-success mb-3">
                                     Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}
                                 </h2>
@@ -386,7 +388,8 @@
                             </div>
                         </div>
                         <div class="modal-footer border-0 pt-0">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('chat-job-req.modal_tombol_batal') }}</button>
+                            <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">{{ __('chat-job-req.modal_tombol_batal') }}</button>
                             <button type="button" class="btn btn-success fw-bold"
                                 wire:click="respondToOffer({{ $activeOffer->id }}, 'accepted')"
                                 data-bs-dismiss="modal">

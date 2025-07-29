@@ -220,8 +220,7 @@ Route::middleware('auth')->group(function () {
     // =======================
     // MISC / NAVBAR
     // =======================
-    Route::get('switch-language/{locale}', [LocalizationController::class, 'switch'])->name('language.switch');
-
+    
     // =======================
     // RESOURCE ROUTES (within auth middleware)
     // =======================
@@ -230,6 +229,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Endpoint untuk menerima webhook dari Xendit (DO NOT ADD AUTH HERE, as Xendit's server sends this)
+Route::get('switch-language/{locale}', [LocalizationController::class, 'switch'])->name('language.switch');
 Route::post('/webhooks/xendit', [WebhookController::class, 'handleXendit'])->name('webhooks.xendit');
 
 // =======================

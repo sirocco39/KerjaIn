@@ -570,7 +570,7 @@
                 {{ __('master-job-req.daftar') }}
             </button>
         </p>
-        <p class="mb-2">{{ __('master-job-req.atau_masuk_dengan') }}:</p>
+        <p class="mb-2">{{ __('master-job-req.atau_masuk_dengan') }}</p>
         <a href="{{ route('auth-google-redirect') }}">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="24">
         </a>
