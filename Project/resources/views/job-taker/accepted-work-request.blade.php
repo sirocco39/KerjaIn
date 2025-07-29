@@ -1,30 +1,39 @@
 @extends('master.master-job-taker')
-@php
-    $start_time_detail = $request->start_time->format('d M Y, H:i');
-    $end_time_detail = $request->end_time->format('d M Y, H:i');
-    $start_time = $request->start_time;
-    $end_time = $request->end_time;
-    $date = date('d M Y', strtotime($start_time));
-    $time = date('H:i', strtotime($start_time));
-    $start = new DateTime($start_time);
-    $end = new DateTime($end_time);
-    $interval = $start->diff($end);
 
-    $amount = $request->final_price;
-    $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
-
-    $alamat = $request->location; // Menggunakan $request->location dari model
-    $alamatEncoded = urlencode($alamat);
-    $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
-
-    $duration = $interval->format('%h jam %i menit');
-    $created_at = $worker->created_at;
-    $year = date('F Y', strtotime($created_at));
-    $start_work = $transaction->start_work ? date('d M Y H:i', strtotime($transaction->start_work)) : null;
-    $finish_work = $transaction->finish_work ? date('d M Y H:i', strtotime($transaction->finish_work)) : null;
-
-@endphp
 @section('content')
+    @php
+        $start_time_detail = $request->start_time->format('d M Y, H:i');
+        $end_time_detail = $request->end_time->format('d M Y, H:i');
+        $start_time = $request->start_time;
+        $end_time = $request->end_time;
+        $date = date('d M Y', strtotime($start_time));
+        $time = date('H:i', strtotime($start_time));
+        $start = new DateTime($start_time);
+        $end = new DateTime($end_time);
+        $interval = $start->diff($end);
+
+        $days = $interval->d;
+        $hours = $interval->h;
+        $minutes = $interval->i;
+
+        $total_hours = $days * 24 + $hours;
+
+        // Format durasi baru
+        $duration = $total_hours . ' jam ' . $minutes . ' menit';
+
+        $amount = $request->final_price;
+        $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
+
+        $alamat = $request->location; // Menggunakan $request->location dari model
+        $alamatEncoded = urlencode($alamat);
+        $mapsLink = 'http://maps.google.com/maps?q=' . $alamatEncoded;
+
+        $created_at = $worker->created_at;
+        $year = date('F Y', strtotime($created_at));
+        $start_work = $transaction->start_work ? date('d M Y H:i', strtotime($transaction->start_work)) : null;
+        $finish_work = $transaction->finish_work ? date('d M Y H:i', strtotime($transaction->finish_work)) : null;
+
+    @endphp
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="container-fluid pembatas-x mb-5">
         <div class="row mb-3 p-1">
@@ -79,6 +88,7 @@
                                             d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
                                             fill="#133E87" />
                                     </svg>
+
                                     <div class="p-2">Mulai</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
@@ -97,6 +107,7 @@
                                             d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
                                             fill="#133E87" />
                                     </svg>
+
                                     <div class="p-2">Selesai</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $end_time_detail }}</div>
@@ -299,8 +310,6 @@
                                             style="background-color:#294287;">
                                             Mulai Kerja
                                         </button>
-
-
                                     </form>
                                     <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
                                         data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja
@@ -316,7 +325,8 @@
                                         style="background-color:#294287;">
                                         Ditinjau
                                     </a>
-                                    <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
+                                    <button type="button"
+                                        class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-info fs-5"
                                         data-bs-toggle="modal" data-bs-target="#completionModal">Berikan Penilaian
                                     </button>
                                 @elseif($transaction->status === 'in progress')
@@ -340,7 +350,8 @@
     <div class="modal fade" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" style="max-width: 1000px; width: 100%; margin-top:5vh;">
-            <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
+            {{-- Form for review submission will be dynamically handled by JS --}}
+            <form id="reviewForm" method="POST" action="{{ route('reviews.store') }}">
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
@@ -356,55 +367,48 @@
                                     <div class="text flex-fill" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Judul
                                             Pesanan</p>
-                                        <p class="fw-medium">{{ $request->title }}</p>
+                                        <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nomor
                                             Pesanan</p>
-                                        <p class="fw-medium">
-                                            {{ $transaction->order_number }}</p>
+                                        <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nama
                                             Klien</p>
-                                        <p class="fw-medium">
-                                            {{ $request->requester->first_name }}
-                                            {{ $request->requester->last_name }}</p>
+                                        <p class="fw-medium" id="modalRequesterName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi
                                         </p>
-                                        <p class="fw-medium">{{ $request->location }}</p>
+                                        <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">
                                             Tanggal Pemesanan</p>
-                                        <p class="fw-medium">
-                                            {{ $transaction->created_at->format('d M Y') }}
-                                        </p>
+                                        <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">
                                             Tanggal Selesai</p>
-                                        <p class="fw-medium">
-                                            {{ $transaction->updated_at->format('d M Y') }}
-                                        </p>
+                                        <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Mulai
                                             Kerja</p>
-                                        <p class="fw-medium">{{ $start_work }}</p>
+                                        <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">
                                             Selesai Kerja</p>
-                                        <p class="fw-medium">{{ $finish_work }}</p>
+                                        <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
                                 <hr class="my-1 border border-dark">
@@ -414,7 +418,7 @@
                                         <p class="p-0 m-0 text-black-50 fw-semibold fs-6">
                                             Total</p>
                                         <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
-                                            {{ number_format($request->final_price, 2, ',', '.') }}
+                                            <span id="modalRequestPrice"></span>
                                         </p>
                                     </div>
                                     {{-- Removed Invoice Button as per user request --}}
@@ -423,168 +427,126 @@
 
                             <div class="vr d-none d-lg-block mx-3"></div>
 
-                            {{-- GANTI SELURUH BLOK "KASIH PENILAIAN" DENGAN KODE INI --}}
-
+                            {{-- Section for User Review and Report --}}
                             <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-                                {{-- Judul dinamis --}}
-                                <h4 class="fw-semibold mt-3 mb-1">
-                                    @if ($hasReviewRequester)
-                                        Ini Penilaian Klien Untukmu
-                                    @else
-                                        Kasih penilaian, yuk!
-                                    @endif
-                                </h4>
+                                <h4 class="fw-semibold mt-3 mb-1" id="reviewSectionHeading"></h4>
 
-                                {{-- Bagian Bintang Rating --}}
-                                <div class="text-center mt-0 mb-3 w-100">
-                                    @if ($hasReviewRequester)
-                                        {{-- Tampilkan bintang yang sudah diisi (read-only) --}}
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star-fill fs-2 star-blue"></i>
-                                        @endfor
-                                    @else
-                                        {{-- Tampilkan bintang interaktif untuk diisi --}}
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi bi-star-fill text-secondary star-rating" style="font-size: 32px;"
-                                                data-value="{{ $i }}"></i>
-                                        @endfor
-                                        <input type="hidden" name="rating" id="rating-input" value="0">
-                                    @endif
+                                {{-- Container for existing review or review form --}}
+                                <div id="review-section-container" class="w-100">
+                                    {{-- This content will be dynamically populated by JavaScript --}}
                                 </div>
 
-                                {{-- Bagian Komentar --}}
-                                <div class="ps-3 flex-fill d-flex flex-column w-100">
-                                    <label for="comment" class="form-label text-start">Komentar</label>
-                                    <textarea name="comment" id="comment" class="form-control" rows="3"
-                                        placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a;"
-                                        @if ($hasReviewRequester) disabled @endif>{{ $hasReviewRequester ? $receivedReviewRequester->comment : '' }}</textarea>
-                                </div>
-
-                                {{-- Bagian Tombol Aksi --}}
+                                {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
-                                    @if (!$hasReviewRequester)
-                                        <button type="button" class="btn btn-primary fw-medium rounded-3"
-                                            onclick="submitReview()">
-                                            Kirim
-                                        </button>
-                                        <div class="m-1 text-center">Atau</div>
-                                    @endif
+                                    <button type="submit" class="btn btn-primary fw-medium rounded-3"
+                                        id="submitReviewButton">Kirim</button>
+                                    <div class="m-1 text-center">Atau</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()">
-                                        Laporkan masalah
-                                    </button>
+                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+            </form>
         </div>
-        </form>
-    </div>
     </div>
 
-    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal fade" id="reportWorkModal" tabindex="-1" aria-labelledby="reportWorkModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" style="max-width: 900px;">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <form id="reportForm" action="{{ route('worker.submitReport', $transaction->id) }}" method="POST"
-                enctype="multipart/form-data" class="modal-content">
+            <form id="reportForm" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="transaction_id" value="{{ $transaction->id }}">
+                {{-- Hidden inputs for report submission data --}}
+                <input type="hidden" name="transaction_id" id="reportTransactionId">
                 <input type="hidden" name="reporter_id" value="{{ auth()->id() }}">
-                <input type="hidden" name="reported_id" value="{{ $transaction->requester->id }}">
+                <input type="hidden" name="reported_id" id="reportReportedId">
 
-
-                <div class="modal-header border-0 justify-content-center">
-                    <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-
-                <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
-
-                <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
-                            <p class="fw-medium">{{ $request->title }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
-                            <p class="fw-medium">{{ $transaction->order_number }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Nama Pekerja</p>
-                            <p class="fw-medium">{{ $worker->first_name }}
-                                {{ $worker->last_name }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
-                            <p class="fw-medium">{{ $request->location }}</p>
-                        </div>
+                <div class="modal-content">
+                    <div class="modal-header border-0 justify-content-center">
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
-                            <p class="fw-medium">
-                                {{ $transaction->created_at->format('d M Y') }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
-                            <p class="fw-medium">
-                                {{ $transaction->updated_at->format('d M Y') }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
-                            <p class="fw-medium">{{ $start_work ?? '-' }}</p>
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
-                            <p class="fw-medium" id="reportModalFinishWork">
-                                {{ $finish_work ?? '-' }}</p>
-                        </div>
-                    </div>
+                    <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
 
-                    <div class="d-flex justify-content-between mb-4">
-                        <p class="text-black-50 fw-semibold mb-0">Total</p>
-                        <p class="fw-medium fs-5 mb-0">Rp
-                            {{ number_format($request->final_price, 2, ',', '.') }}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Upload Bukti
-                            (gambar):</label>
-                        <div id="uploadAreaReport" class="d-flex flex-wrap gap-3 align-items-start">
-                            <div id="previewContainerReport" class="d-flex flex-wrap gap-3 align-items-start">
-                                {{-- Placeholder & preview akan di-generate oleh JavaScript --}}
+                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="fw-medium" id="reportModalRequestTitle"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="fw-medium" id="reportModalOrderNumber"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
+                                <p class="fw-medium" id="reportModalRequesterName"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
+                                <p class="fw-medium" id="reportModalRequestLocation"></p>
                             </div>
                         </div>
-                        <input type="file" class="d-none" id="photoInputReport" name="photo[]" accept="image/*"
-                            multiple>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="fw-medium" id="reportModalStartWork"></p>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
+                                <p class="fw-medium" id="reportModalFinishWork"></p>
+                            </div>
+                        </div>
+
+                        {{-- Total price display in report modal --}}
+                        <div class="d-flex justify-content-between mb-4">
+                            <p class="text-black-50 fw-semibold mb-0">Total</p>
+                            <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
+                        </div>
+
+                        {{-- Image upload section for report proof --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                            <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
+                                {{-- Images will be appended here dynamically by JS --}}
+                                <div class="add-image-button pb-2"
+                                    onclick="document.getElementById('reportImageInput').click()"
+                                    style="width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <span class="text-center" style="font-size: 32px; color:#294287;">+</span>
+                                </div>
+                                <span id="image-count"
+                                    class="text-secondary fw-medium align-self-center ms-auto">0/7</span>
+                            </div>
+                            <input type="file" class="d-none" id="reportImageInput" name="photo[]" accept="image/*"
+                                multiple>
+                        </div>
+
+                        {{-- Textarea for reporting reasons --}}
+                        <div class="mb-4">
+                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                            <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
+                                placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
+                        </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="reportNote" class="form-label fw-semibold">Keluh Kesah
-                            Anda</label>
-                        <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                            placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff;"></textarea>
+                    {{-- Report submission button --}}
+                    <div class="modal-footer border-0 d-flex justify-content-end">
+                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
+                            Laporan</button>
                     </div>
                 </div>
-
-                <div class="modal-footer border-0 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-danger px-4 py-2">Kirim
-                        Laporan</button>
-                </div>
-
             </form>
         </div>
     </div>
@@ -649,7 +611,7 @@
                                 style="cursor: pointer; min-height: 200px; border-style: dashed; border-color:#cacadd; background-color: #F4f4f4;">
                                 <div id="previewContainerProof"
                                     class="d-flex flex-wrap gap-2 justify-content-center w-100 h-100 align-items-center">
-                                    {{-- Placeholder & preview akan di-generate oleh JavaScript --}}
+                                    {{-- Placeholder & preview will be generated by JavaScript --}}
                                 </div>
                                 <input type="file" id="photoInputProof" name="photo[]" accept="image/*" multiple
                                     class="d-none">
@@ -689,97 +651,614 @@
 
     {{-- JavaScript section --}}
     <script>
-        // >>> TAMBAH BARIS INI <<<
-        window.isOpeningReportModal = false; // Inisialisasi flag global
-        // >>> BATAS TAMBAH <<<
+        window.isOpeningReportModal = false; // Initialize global flag
+
+        // Global variables for managing report images
+        let reportFiles = []; // Array of File objects or URLs for the report modal
+        const MAX_REPORT_IMAGES = 7; // Define max images constant
+
+        // Global variables for managing transaction and requester IDs across modals
+        let currentTransactionId = null;
+        let reportedRequesterId = null;
+
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Existing functions initialization
+            const startWorkSuccessMessage = localStorage.getItem('startWorkSuccessMessage');
+            if (startWorkSuccessMessage) {
+                window.showCustomAlert(startWorkSuccessMessage, 'success');
+                localStorage.removeItem('startWorkSuccessMessage'); // Clear the message after displaying it
+            }
+
+            // Check for success message after reload for reports
+            const reportSuccessMessage = localStorage.getItem('reportSuccessMessage');
+            if (reportSuccessMessage) {
+                window.showCustomAlert(reportSuccessMessage, 'success');
+                localStorage.removeItem('reportSuccessMessage'); // Clear the message after displaying it
+            }
+
+            // Check for success message after reload for reviews
+            const reviewSuccessMessage = localStorage.getItem('reviewSuccessMessage');
+            if (reviewSuccessMessage) {
+                window.showCustomAlert(reviewSuccessMessage, 'success');
+                localStorage.removeItem('reviewSuccessMessage'); // Clear the message after displaying it
+            }
+
+            // Initialize upload area for "Completion Proof" (image placeholder)
             initPhotoPreview('photoInputProof', 'previewContainerProof', 'uploadAreaProof', 'image');
 
-            // Inisialisasi area upload untuk "Laporan" (placeholder '+')
-            initPhotoPreview('photoInputReport', 'previewContainerReport', 'uploadAreaReport', 'plus');
+            // --- Image Preview Logic for Report Modal ---
+            const reportImageInput = document.getElementById('reportImageInput');
+            const reportImagePreviewContainer = document.getElementById('reportImagePreviewContainer');
+            const addImageButton = reportImagePreviewContainer ? reportImagePreviewContainer.querySelector(
+                '.add-image-button') : null;
+            const imageCountSpan = document.getElementById('image-count');
 
-            const reportForm = document.getElementById('reportForm');
-            if (reportForm) {
-                reportForm.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Mencegah submit form HTML bawaan
-                    submitReport(); // Memanggil fungsi submitReport() Anda
-                });
-            }
+            /**
+             * Updates the display of uploaded report images and the image count.
+             * Newest image appears to the left of the '+' button.
+             * This function handles both newly added images and pre-existing images from a report.
+             */
+            function updateReportImagePreview() {
+                // Clear all current image preview wrappers to re-render them
+                if (reportImagePreviewContainer) {
+                    reportImagePreviewContainer.querySelectorAll('.image-preview-wrapper').forEach(el => el
+                        .remove());
 
-            const photoInputReport = document.getElementById('photoInputReport');
-            const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-            if (photoInputReport && uploadPlaceholder && photoInputReport.files.length === 0) {
-                uploadPlaceholder.style.display = 'flex'; // Ensure it's flex for centering
-            }
+                    // Iterate in order for existing, and correctly place them relative to the addImageButton
+                    reportFiles.forEach((fileOrUrl, index) => {
+                        const isFileObject = fileOrUrl instanceof File;
+                        const src = isFileObject ? URL.createObjectURL(fileOrUrl) : fileOrUrl;
 
-            const stars = document.querySelectorAll('.star-rating');
-            const ratingInput = document.getElementById('rating-input');
-            let selectedRating = 0; // Initialize selectedRating for the review modal
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'image-preview-wrapper position-relative';
+                        wrapper.style.width = '80px';
+                        wrapper.style.height = '80px';
 
-            stars.forEach(star => {
-                star.addEventListener('mouseover', function() {
-                    const val = parseInt(this.getAttribute('data-value'));
-                    stars.forEach(s => {
-                        const sVal = parseInt(s.getAttribute('data-value'));
-                        if (sVal <= val) {
-                            s.classList.add('star-green');
-                            s.classList.remove('text-secondary');
-                        } else {
-                            s.classList.remove('star-green');
-                            s.classList.remove('star-blue');
-                            s.classList.add('text-secondary');
-                        }
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'rounded border img-thumbnail';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className =
+                            'btn-close position-absolute top-0 end-0 m-1';
+                        deleteButton.style.fontSize = '0.7rem';
+                        deleteButton.style.backgroundColor = '#dc3545';
+                        deleteButton.style.borderRadius = '50%';
+                        deleteButton.style.padding = '0.25em';
+                        deleteButton.type = 'button';
+                        deleteButton.onclick = function() {
+                            deleteReportImage(index); // Use captured index for correct deletion
+                        };
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(deleteButton);
+
+                        // Insert the new image wrapper right before the 'add-image-button'
+                        // This ensures new images stack to the right, and the '+' button remains at the end
+                        reportImagePreviewContainer.insertBefore(wrapper, addImageButton);
                     });
-                });
 
-                star.addEventListener('mouseout', function() {
-                    stars.forEach(s => {
-                        s.classList.remove('star-green');
-                        if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
-                            s.classList.add('star-blue');
-                            s.classList.remove('text-secondary');
-                        } else {
-                            s.classList.remove('star-blue');
-                            s.classList.add('text-secondary');
-                        }
-                    });
-                });
-
-                star.addEventListener('click', function() {
-                    selectedRating = parseInt(this.getAttribute('data-value'));
-                    ratingInput.value = selectedRating;
-                    stars.forEach(s => {
-                        if (parseInt(s.getAttribute('data-value')) <= selectedRating) {
-                            s.classList.add('star-blue');
-                            s.classList.remove('text-secondary');
-                        } else {
-                            s.classList.remove('star-blue');
-                            s.classList.add('text-secondary');
-                        }
-                    });
-                    // IMPORTANT: Also update the hidden input with the actual value for submission
-                    document.getElementById('rating-input').value = selectedRating;
-                });
-            });
-
-            // Re-handle click rating to use 'text-warning' as per initial code
-            document.querySelectorAll('.star-rating').forEach(star => {
-                star.addEventListener('click', function() {
-                    selectedRating = this.getAttribute('data-value');
-                    document.querySelectorAll('.star-rating').forEach(s => s.classList.remove(
-                        'text-warning', 'star-blue', 'star-green')); // Clear previous states
-                    for (let i = 0; i < selectedRating; i++) {
-                        document.querySelectorAll('.star-rating')[i].classList.add('text-warning');
+                    // Update image count and add button visibility
+                    imageCountSpan.textContent = `${reportFiles.length}/${MAX_REPORT_IMAGES}`;
+                    if (reportFiles.length >= MAX_REPORT_IMAGES) {
+                        if (addImageButton) addImageButton.style.display = 'none'; // Hide the add button
+                    } else {
+                        if (addImageButton) addImageButton.style.display = 'flex'; // Show the add button
                     }
-                    // Also update the hidden input
-                    document.getElementById('rating-input').value = selectedRating;
+                }
+            }
+
+            /**
+             * Deletes an image from the reportFiles array at the specified index and updates the preview.
+             * @param {number} index - The index of the image to delete.
+             */
+            function deleteReportImage(index) {
+                reportFiles.splice(index, 1); // Remove the file from the array
+                updateReportImagePreview(); // Re-render previews to reflect deletion and update indices
+            }
+
+            if (reportImageInput) {
+                reportImageInput.addEventListener('change', function(event) {
+                    // Iterate over selected files and apply validation
+                    Array.from(event.target.files).forEach(file => {
+                        // Client-side validation for file type
+                        if (!file.type.startsWith('image/')) {
+                            window.showCustomAlert('File yang diunggah harus berupa gambar.',
+                                'error');
+                            return; // Skip this file and continue to next
+                        }
+                        // Client-side validation for file size
+                        const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                        if (file.size > maxSizeBytes) {
+                            window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.',
+                                'error');
+                            return; // Skip this file and continue to next
+                        }
+
+                        // Add file to array if max limit not reached
+                        if (reportFiles.length < MAX_REPORT_IMAGES) {
+                            reportFiles.push(file);
+                        } else {
+                            window.showCustomAlert(
+                                `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`,
+                                'error');
+                            // Stop processing further files if limit is hit
+                            return;
+                        }
+                    });
+                    event.target.value = ''; // Clear the input value to allow re-selection of same files
+                    updateReportImagePreview(); // Update the visual display
                 });
-            });
+            }
 
 
-            // NEW: AJAX for "Mulai Kerja" button
+            // --- Function to Open Report Modal ---
+            window.openReportModal = function() {
+                // Set flag to true as we are intentionally opening the report modal
+                window.isOpeningReportModal = true;
+
+                // Close the completion modal before opening the report modal
+                var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                if (completionModal) {
+                    completionModal.hide();
+                }
+
+                // Populate report modal fields with data from the current transaction
+                const reportModal = new bootstrap.Modal(document.getElementById('reportWorkModal'));
+
+                document.getElementById('reportModalRequestTitle').textContent =
+                    `{{ $request->title ?? '-' }}`;
+                document.getElementById('reportModalOrderNumber').textContent =
+                    `{{ $transaction->order_number ?? '-' }}`;
+                document.getElementById('reportModalRequesterName').textContent =
+                    `{{ $transaction->requester->full_name ?? '-' }}`;
+                document.getElementById('reportModalRequestLocation').textContent =
+                    `{{ $request->location ?? '-' }}`;
+                document.getElementById('reportModalTransactionCreatedAt').textContent =
+                    `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
+                document.getElementById('reportModalTransactionUpdatedAt').textContent =
+                    `{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y') ?? '-' }}`;
+                document.getElementById('reportModalRequestPrice').textContent =
+                    `{{ number_format($request->final_price ?? 0, 0, ',', '.') ?? '-' }}`;
+                document.getElementById('reportModalStartWork').textContent =
+                    `{{ $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('H.i') : '-' }}`;
+                document.getElementById('reportModalFinishWork').textContent =
+                    `{{ $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') : '-' }}`;
+
+                // Set hidden form fields for submission
+                document.getElementById('reportTransactionId').value = `{{ $transaction->id }}`;
+                document.getElementById('reportReportedId').value = `{{ $transaction->requester_id }}`;
+
+                // Set form action for report submission
+                document.getElementById('reportForm').action =
+                    `/job-taker/submit-report/{{ $transaction->id }}`; // Correct route for worker reporting
+
+                // Always reset for new report (allow multiple reports)
+                reportFiles = []; // Clear any previously loaded report files
+                document.getElementById('reportNote').value = '';
+                document.getElementById('reportNote').disabled = false;
+                if (reportImageInput) reportImageInput.disabled = false;
+                if (document.getElementById('submitReportButton')) document.getElementById('submitReportButton')
+                    .style.display = 'block'; // Show submit button
+                if (addImageButton) addImageButton.style.display = 'flex'; // Show add image button
+
+                updateReportImagePreview(); // Render initial state (empty for new report)
+
+                // Show the report modal after a brief delay
+                setTimeout(() => {
+                    reportModal.show();
+                }, 300);
+            }
+
+
+            // --- Star Rating Functionality for Review Modal ---
+            // Updates the visual fill of the stars
+            function updateStarDisplay(rating) {
+                const stars = document.querySelectorAll('#review-section-container .star-rating');
+                stars.forEach(star => {
+                    const sVal = parseInt(star.getAttribute('data-value'));
+                    if (sVal <= rating) {
+                        star.classList.add('star-blue');
+                        star.classList.remove('text-secondary');
+                    } else {
+                        star.classList.remove('star-blue');
+                        star.classList.add('text-secondary');
+                    }
+                });
+            }
+
+
+            // --- Main function to handle review submission (now triggered by form.onsubmit) ---
+            function handleReviewFormSubmit(event) {
+                event.preventDefault(); // <-- CRUCIAL: Prevent the default form submission
+
+                const comment = document.getElementById('comment').value.trim();
+                const ratingInput = document.getElementById('rating-input');
+                const rating = ratingInput ? parseInt(ratingInput.value) : 0;
+
+                // Client-side validation for rating and comment
+                if (rating == 0) {
+                    window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
+                    return;
+                }
+
+                if (comment == '') {
+                    window.showCustomAlert('Silakan isi komentar.', 'error');
+                    return;
+                }
+
+                // Prepare FormData for submission
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
+                    'content'));
+                // Use the Blade-provided transaction ID directly from the context
+                formData.append('transaction_id', '{{ $transaction->id }}');
+                formData.append('reviewer_id', `{{ auth()->id() }}`);
+                formData.append('reviewee_id', `{{ $transaction->requester_id }}`); // Reviewing the requester
+                formData.append('rating', rating);
+                formData.append('comment', comment);
+
+                // Optionally, disable button and show loading here, as page will reload
+                const submitBtn = document.getElementById('submitReviewButton');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Mengirim...';
+                }
+
+                // Get the form action from the HTML form element
+                const reviewForm = document.getElementById('reviewForm');
+                const formAction = reviewForm
+                    .action; // This should be already set to route('reviews.store') in HTML
+
+                fetch(formAction, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest', // Important for Laravel to detect AJAX
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errorData => {
+                                throw errorData;
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Review submission response:", data);
+                        if (data.success) {
+                            localStorage.setItem('reviewSuccessMessage', data
+                                .message); // Store success message
+                            // Close the completion modal
+                            const completionModal = bootstrap.Modal.getInstance(document.getElementById(
+                                'completionModal'));
+                            if (completionModal) completionModal.hide();
+                            // Reload the page to reflect the new state (review submitted)
+                            location.reload();
+                        } else {
+                            let errorMessage = data.message || 'Terjadi kesalahan saat menyimpan ulasan.';
+                            if (data.errors) {
+                                for (const key in data.errors) {
+                                    if (data.errors.hasOwnProperty(key)) {
+                                        data.errors[key].forEach(msg => {
+                                            errorMessage += `\n- ${msg}`;
+                                        });
+                                    }
+                                }
+                            }
+                            window.showCustomAlert(errorMessage, "error");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting review:', error);
+                        let errorMessage = 'Terjadi kesalahan saat menyimpan ulasan.';
+                        if (error.message) {
+                            errorMessage = error.message;
+                        } else if (error.errors) { // Handle Laravel validation errors
+                            errorMessage = 'Validasi gagal:';
+                            for (const key in error.errors) {
+                                errorMessage += `\n- ${error.errors[key].join(', ')}`;
+                            }
+                        }
+                        window.showCustomAlert(errorMessage, "error");
+                    })
+                    .finally(() => {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Kirim';
+                        }
+                    });
+            }
+
+            // --- Function to Submit Report ---
+            window.submitReport = function(event) {
+                if (event) event
+                    .preventDefault(); // Prevent default form submission if called from an event listener
+
+                const form = document.getElementById('reportForm');
+                const reasons = document.getElementById('reportNote').value.trim();
+
+                if (reportFiles.length === 0) {
+                    window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                    return;
+                }
+                if (!reasons) {
+                    window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                    return;
+                }
+
+                // Re-validate files in reportFiles array before submission, as user might delete/add
+                let hasInvalidFile = false;
+                // Filter out existing URLs and only send File objects
+                const filesToSend = reportFiles.filter(item => item instanceof File);
+
+                for (const file of filesToSend) { // Use for...of for easy breaking
+                    if (!file.type.startsWith('image/')) {
+                        window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                        hasInvalidFile = true;
+                        break; // Exit loop
+                    }
+                    const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+                    if (file.size > maxSizeBytes) {
+                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.',
+                            'error');
+                        return; // Skip this file and continue to next
+                    }
+                }
+                if (hasInvalidFile) {
+                    return;
+                }
+
+                const formData = new FormData(); // Create new FormData object for submission
+                // Append static form fields
+                formData.append('transaction_id', document.getElementById('reportTransactionId').value);
+                formData.append('reporter_id', document.getElementById('reportForm').querySelector(
+                        'input[name="reporter_id"]')
+                    .value);
+                formData.append('reported_id', document.getElementById('reportReportedId').value);
+                formData.append('reasons', reasons);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
+                    'content')); // Manually add CSRF token
+
+                // Append all collected files from our `reportFiles` array
+                filesToSend.forEach((file, index) => {
+                    formData.append(`photo[${index}]`, file);
+                });
+
+                const submitBtn = document.getElementById('submitReportButton');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Mengirim Laporan...';
+                }
+
+                // Submit the form using fetch, expecting a redirect
+                fetch(form.action, { // Use the form's action which includes transaction ID
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            // DO NOT set 'Content-Type': 'multipart/form-data' explicitly when using FormData,
+                            // the browser does it correctly with a boundary.
+                            'Accept': 'application/json, text/plain, */*' // Accept various response types
+                        },
+                        redirect: 'follow' // Instructs fetch to follow redirects
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errorData => {
+                                let errorMessage = '';
+                                if (errorData.errors) {
+                                    for (let key in errorData.errors) {
+                                        errorMessage += `${errorData.errors[key].join(', ')}\n`;
+                                    }
+                                    window.showCustomAlert('Validasi Gagal:\n' + errorMessage,
+                                        'error');
+                                } else {
+                                    throw new Error(errorData.message || 'Server error: ' + response
+                                        .statusText);
+                                }
+                            });
+                        }
+                        return response
+                            .json(); // Use .json() here as you explicitly set 'Accept': 'application/json'
+                    })
+                    .then(data => {
+                        try {
+                            if (data.success) {
+                                localStorage.setItem('reportSuccessMessage', data
+                                    .message); // Store success message
+                                const reportModal = bootstrap.Modal.getInstance(document.getElementById(
+                                    'reportWorkModal'));
+                                if (reportModal) reportModal
+                                    .hide(); // Hide the modal, which will trigger its hidden.bs.modal listener for reload
+                                location.reload(); // Explicit reload if modal hide doesn't
+                            } else {
+                                window.showCustomAlert(data.message ||
+                                    'Terjadi kesalahan saat mengirim laporan.', "error");
+                            }
+                        } catch (e) {
+                            console.warn(
+                                'Response not JSON, assuming backend handles redirect or modal close reloads.'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error during report submission:', error);
+                        window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error
+                            .message, 'error');
+                    })
+                    .finally(() => {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Kirim Laporan';
+                        }
+                    });
+            }
+            // Function to render the review form
+            function renderReviewForm() {
+                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+                const reviewSectionContainer = document.getElementById('review-section-container');
+                if (!reviewSectionContainer) return;
+
+                reviewSectionContainer.innerHTML = `
+                    <div class="text-center mt-0 mb-3 w-100">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="bi bi-star-fill text-secondary star-rating fs-2" data-value="{{ $i }}"></i>
+                        @endfor
+                        <input type="hidden" name="rating" id="rating-input" value="0">
+                    </div>
+                    <div class="ps-3 flex-fill d-flex flex-column w-100">
+                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="3"
+                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; resize: none;"></textarea>
+                    </div>
+                `;
+                const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
+                const newRatingInput = document.getElementById('rating-input');
+                let currentSelectedRating = 0; // Local state for new review form interaction
+
+                newStars.forEach(star => {
+                    star.addEventListener('mouseover', function() {
+                        const val = parseInt(this.getAttribute('data-value'));
+                        updateStarDisplay(val);
+                    });
+                    star.addEventListener('mouseout', function() {
+                        updateStarDisplay(
+                            currentSelectedRating); // Revert to selected rating on mouseout
+                    });
+                    star.addEventListener('click', function() {
+                        currentSelectedRating = parseInt(this.getAttribute('data-value'));
+                        if (newRatingInput) newRatingInput.value = currentSelectedRating;
+                        updateStarDisplay(currentSelectedRating);
+                    });
+                });
+
+                // Get the submit button and the form
+                const submitReviewButton = document.getElementById('submitReviewButton');
+                const reviewForm = document.getElementById('reviewForm');
+
+                if (submitReviewButton) {
+                    submitReviewButton.style.display = 'block';
+                    // Remove existing click listener from the button to prevent duplicates
+                    submitReviewButton.removeEventListener('click', handleReviewFormSubmit);
+                    // Attach click listener to the button to trigger the form's submit event.
+                    // This ensures that the form's submit event listener (handleReviewFormSubmit) is always called.
+                    submitReviewButton.addEventListener('click', function() {
+                        reviewForm.requestSubmit(
+                            submitReviewButton); // Modern way to trigger form submission via button
+                    });
+                }
+
+                // Ensure the form's submit event is handled. This is the MOST RELIABLE way to intercept.
+                reviewForm.removeEventListener('submit', handleReviewFormSubmit); // Prevent duplicates
+                reviewForm.addEventListener('submit', handleReviewFormSubmit);
+            }
+
+            // Function to render the existing review display
+            function renderExistingReview(rating, comment) {
+                reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+                const reviewSectionContainer = document.getElementById('review-section-container');
+                if (!reviewSectionContainer) return;
+
+                let starHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starHtml +=
+                        `<i class="bi bi-star-fill fs-2 ${i <= rating ? 'star-blue' : 'text-secondary'} star-animate"></i>`;
+                }
+
+                reviewSectionContainer.innerHTML = `
+                    <div class="text-center mt-0 mb-3 w-100">
+                        ${starHtml}
+                    </div>
+                    <div class="ps-3 flex-fill d-flex flex-column w-100">
+                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <textarea id="comment" class="form-control" rows="3" disabled
+                            style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
+                    </div>
+                `;
+                const submitReviewButton = document.getElementById('submitReviewButton');
+                if (submitReviewButton) {
+                    submitReviewButton.style.display = 'none';
+                }
+            }
+
+
+            // Dynamic content and button states for Completion Modal
+            const completionModalElement = document.getElementById('completionModal');
+            if (completionModalElement) {
+                completionModalElement.addEventListener('show.bs.modal', function(event) {
+                    // This is where currentTransactionId and reportedRequesterId should be set
+                    // for accepted-work-request.blade.php, they are available as Blade variables
+                    currentTransactionId = '{{ $transaction->id }}';
+                    reportedRequesterId = '{{ $transaction->requester_id }}';
+
+                    // Populate the completion modal with data from Blade variables
+                    document.getElementById('modalRequestTitle').textContent =
+                        `{{ $request->title ?? '-' }}`;
+                    document.getElementById('modalOrderNumber').textContent =
+                        `{{ $transaction->order_number ?? '-' }}`;
+                    document.getElementById('modalRequesterName').textContent =
+                        `{{ $transaction->requester->first_name ?? '' }} {{ $transaction->requester->last_name ?? '' }}`;
+                    document.getElementById('modalRequestLocation').textContent =
+                        `{{ $request->location ?? '-' }}`;
+                    document.getElementById('modalTransactionCreatedAt').textContent =
+                        `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
+                    document.getElementById('modalTransactionUpdatedAt').textContent =
+                        `{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y') ?? '-' }}`;
+                    document.getElementById('modalRequestPrice').textContent =
+                        `{{ number_format($request->final_price ?? 0, 0, ',', '.') ?? '-' }}`;
+                    document.getElementById('modalStartWork').textContent =
+                        `{{ $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('H.i') : '-' }}`;
+                    document.getElementById('modalFinishWork').textContent =
+                        `{{ $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') : '-' }}`;
+
+                    // Conditional rendering of review section
+                    const hasReviewRequester = `{{ $hasReviewRequester ? 'true' : 'false' }}` === 'true';
+                    const receivedReviewRequester = @json($receivedReviewRequester); // Pass the whole object
+                    if (hasReviewRequester) {
+                        const requesterRating = receivedReviewRequester.rating ?? 0;
+                        const requesterComment = receivedReviewRequester.comment ?? '';
+                        renderExistingReview(parseInt(requesterRating), requesterComment);
+                    } else {
+                        renderReviewForm();
+                    }
+
+                    // Handle Report Button State (Removed hasWorkerReport check)
+                    const reportProblemButton = document.getElementById('reportProblemButton');
+                    if (reportProblemButton) {
+                        reportProblemButton.textContent = 'Laporkan masalah';
+                        reportProblemButton.disabled = false; // Always enabled
+                        reportProblemButton.classList.remove('text-secondary');
+                        reportProblemButton.classList.add('text-danger');
+                        reportProblemButton.onclick = window
+                            .openReportModal; // Always attach click listener
+                    }
+                });
+
+                // Reset review form state when the completion modal is hidden
+                completionModalElement.addEventListener('hidden.bs.modal', function() {
+                    // Only reload if we are NOT in the process of opening the report modal
+                    if (!window.isOpeningReportModal) {
+                        location.reload();
+                    }
+                    // Reset flag after modal is hidden
+                    window.isOpeningReportModal = false;
+                });
+            }
+
+
+            const submitReportButtonForReportModal = document.getElementById('submitReportButton');
+            if (submitReportButtonForReportModal) {
+                submitReportButtonForReportModal.addEventListener('click', window.submitReport);
+            }
+
+            // Logic for "Mulai Kerja" button
+            // Logic for "Mulai Kerja" button
             const startWorkForm = document.getElementById('start-work-form');
             if (startWorkForm) {
                 startWorkForm.addEventListener('submit', function(event) {
@@ -794,8 +1273,8 @@
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
                                     .getAttribute('content'),
-                                'X-Requested-With': 'XMLHttpRequest', // Important for Laravel to detect AJAX
-                                'Accept': 'application/json' // Explicitly ask for JSON response
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
                             },
                             credentials: 'same-origin'
                         })
@@ -810,8 +1289,9 @@
                         .then(data => {
                             console.log('Start work response:', data);
                             if (data.success) {
-                                window.showCustomAlert(data.message, "success");
-                                // Reload the page to reflect the new status
+                                // Store the success message in localStorage
+                                localStorage.setItem('startWorkSuccessMessage', data.message);
+                                // Reload the page
                                 location.reload();
                             } else {
                                 window.showCustomAlert(data.message, "error");
@@ -830,17 +1310,41 @@
                 });
             }
 
-            const completionModalElement = document.getElementById('completionModal');
-            if (completionModalElement) {
-                completionModalElement.addEventListener('hidden.bs.modal', function() {
-                    // Hanya reload jika kita TIDAK dalam proses membuka modal laporan
-                    if (!window.isOpeningReportModal) {
-                        location.reload();
+            // Clear report form state and re-enable button when the report modal is hidden
+            const reportWorkModalElement = document.getElementById('reportWorkModal'); // Changed to new modal ID
+            if (reportWorkModalElement) {
+                reportWorkModalElement.addEventListener('hidden.bs.modal', function() {
+                    // When report modal is closed, re-open the completion modal
+                    const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+                    completionModal.show(); // This will re-trigger its show.bs.modal event and re-populate
+                    // Clear report form state
+                    document.getElementById('reportNote').value = ''; // Clear textarea
+                    reportFiles = []; // Clear the global array of files
+                    updateReportImagePreview(); // Reset preview container
+                    if (reportImageInput) reportImageInput.value = ''; // Clear file input
+                    if (document.getElementById('submitReportButton')) {
+                        document.getElementById('submitReportButton').disabled = false;
+                        document.getElementById('submitReportButton').textContent = 'Kirim Laporan';
                     }
-                    // Reset flag setelah modal disembunyikan
-                    window.isOpeningReportModal = false;
                 });
             }
+
+            // === FIX FOR PERSISTENT OVERLAY ===
+            // Listen for any Bootstrap modal to be hidden and manually remove any remaining backdrops.
+            document.querySelectorAll('.modal').forEach(modalElement => {
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+
+                    // Also ensure body scrolling is re-enabled, as it sometimes gets stuck
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    // Clear any padding added by Bootstrap for scrollbar
+                    document.body.style.paddingRight = '';
+                });
+            });
+            // === END FIX ===
+
         }); // End of DOMContentLoaded
 
         // Existing uploadProof function - MODIFIED to remove review modal's reload listener
@@ -852,11 +1356,11 @@
             const photoErrorDiv = document.getElementById('photoError');
             const noteErrorDiv = document.getElementById('noteError');
 
-            photoErrorDiv.textContent = '';
-            noteErrorDiv.textContent = '';
+            if (photoErrorDiv) photoErrorDiv.textContent = '';
+            if (noteErrorDiv) noteErrorDiv.textContent = '';
 
-            if (photoInput.files.length === 0) {
-                photoErrorDiv.textContent = 'Minimal satu foto diperlukan.';
+            if (photoInput && photoInput.files.length === 0) {
+                if (photoErrorDiv) photoErrorDiv.textContent = 'Minimal satu foto diperlukan.';
                 return;
             }
 
@@ -908,9 +1412,9 @@
                             if (error.errors.hasOwnProperty(key)) {
                                 error.errors[key].forEach(msg => {
                                     errorMessage += `\n- ${msg}`;
-                                    if (key === 'photo' || key.startsWith('photo.')) {
+                                    if (photoErrorDiv && (key === 'photo' || key.startsWith('photo.'))) {
                                         photoErrorDiv.textContent = msg;
-                                    } else if (key === 'note') {
+                                    } else if (noteErrorDiv && key === 'note') {
                                         noteErrorDiv.textContent = msg;
                                     }
                                 });
@@ -926,21 +1430,20 @@
         }
 
 
-        // Existing initPhotoPreview function (no changes needed here)
-        // GANTI SELURUH FUNGSI LAMA DENGAN YANG INI
+        // Function to initialize photo preview logic (retained from original, but slightly adapted for `plus` type)
         function initPhotoPreview(inputId, previewContainerId, uploadAreaId, placeholderType = 'image') {
             const inputEl = document.getElementById(inputId);
             const previewContainer = document.getElementById(previewContainerId);
             const uploadArea = document.getElementById(uploadAreaId);
 
-            if (!uploadArea || uploadArea.dataset.initialized) {
-                return; // Hentikan jika elemen tidak ada atau sudah diinisialisasi
+            if (!inputEl || !previewContainer || !uploadArea || uploadArea.dataset.initialized) {
+                return; // Stop if elements are missing or already initialized
             }
 
             const createPlaceholder = () => {
                 const placeholder = document.createElement('div');
                 if (placeholderType === 'plus') {
-                    placeholder.className = 'pb-2';
+                    placeholder.className = 'pb-2 add-image-button'; // Add class for easy targeting later
                     placeholder.style.cssText =
                         "width: 80px; height: 80px; border: 2px dashed #294287; background-color: #f7f7ff; display: flex; align-items: center; justify-content: center; cursor: pointer;";
                     placeholder.innerHTML =
@@ -949,9 +1452,9 @@
                     placeholder.className =
                         'text-center text-muted d-flex flex-column align-items-center justify-content-center w-100 h-100';
                     placeholder.innerHTML = `
-                    <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 72.7418 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
-                    <p class="mb-0 mt-2 small">Klik untuk upload bukti pekerjaan</p>
-                `;
+                        <svg width="60" height="60" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 30C7.5 27.0163 8.68526 24.1548 10.795 22.045C12.9048 19.9353 15.7663 18.75 18.75 18.75H101.25C104.234 18.75 107.095 19.9353 109.205 22.045C111.315 24.1548 112.5 27.0163 112.5 30V90C112.5 92.9837 111.315 95.8452 109.205 97.9549C107.095 100.065 104.234 101.25 101.25 101.25H18.75C15.7663 101.25 12.9048 100.065 10.795 97.9549C8.68526 95.8452 7.5 92.9837 7.5 90V30ZM15 80.3V90C15 92.07 16.68 93.75 18.75 93.75H101.25C102.245 93.75 103.198 93.3549 103.902 92.6517C104.605 91.9484 105 90.9946 105 90V80.3L91.55 66.855C90.1437 65.4505 88.2375 64.6616 86.25 64.6616C84.2625 64.6616 82.3563 65.4505 80.95 66.855L76.55 71.25L81.4 76.1C81.7684 76.4433 82.0639 76.8573 82.2689 77.3173C82.4739 77.7773 82.5841 78.2739 82.593 78.7774C82.6018 79.2809 82.5092 79.781 82.3206 80.248C82.132 80.7149 81.8513 81.1391 81.4952 81.4952C81.1391 81.8513 80.7149 82.132 80.248 82.3206C79.781 82.5092 79.2809 82.6018 78.7774 82.593C78.2739 82.5841 77.7773 82.4739 77.3173 82.2689C76.8573 82.0639 76.4433 81.7684 76.1 81.4L50.3 55.605C48.8937 54.2005 46.9875 53.4116 45 53.4116C43.0125 53.4116 41.1063 54.2005 39.7 55.605L15 80.305V80.3ZM65.625 41.25C65.625 39.7582 66.2176 38.3274 67.2725 37.2725C68.3274 36.2176 69.7582 35.625 71.25 35.625C72.7418 35.625 74.1726 36.2176 75.2275 37.2725C76.2824 38.3274 76.875 39.7582 76.875 41.25C76.875 42.7418 76.2824 44.1726 75.2275 45.2275C74.1726 46.2824 65.625 46.875 71.25 46.875C69.7582 46.875 68.3274 46.2824 67.2725 45.2275C66.2176 44.1726 65.625 42.7418 65.625 41.25Z" fill="#294287"/></svg>
+                        <p class="mb-0 mt-2 small">Klik untuk upload bukti pekerjaan</p>
+                    `;
                 }
                 return placeholder;
             };
@@ -960,7 +1463,6 @@
                 previewContainer.innerHTML = '';
                 const files = inputEl.files;
 
-                // Tampilkan preview untuk setiap file
                 Array.from(files).forEach(file => {
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -973,14 +1475,14 @@
                     reader.readAsDataURL(file);
                 });
 
-                // Jika tidak ada file (setelah menghapus misalnya), atau jika placeholder adalah '+', tambahkan placeholder
+                // If no files (e.g., after deletion), or if placeholder is '+', add the placeholder
                 if (files.length === 0 || placeholderType === 'plus') {
                     previewContainer.appendChild(createPlaceholder());
                 }
             };
 
             uploadArea.addEventListener('click', (e) => {
-                // Cek agar klik pada gambar preview tidak membuka file dialog
+                // Ensure clicking on an image preview doesn't open the file dialog
                 if (e.target.tagName !== 'IMG') {
                     inputEl.click();
                 }
@@ -988,195 +1490,405 @@
 
             inputEl.addEventListener('change', updatePreview);
             updatePreview();
-            uploadArea.dataset.initialized = 'true';
-        }
-
-
-        // MODIFIED openReportModal function
-        // GANTI DENGAN FUNGSI openReportModal YANG BARU INI
-        function openReportModal() {
-            window.isOpeningReportModal = true;
-            const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-            if (completionModal) {
-                completionModal.hide();
-            }
-
-            // Ambil ID transaksi dari URL form (cara aman untuk mendapatkannya)
-            const transactionId = "{{ $transaction->id }}";
-            const url = `/transaction-details/${transactionId}`;
-
-            // Tampilkan loading spinner (opsional, tapi bagus)
-            document.getElementById('reportModalFinishWork').textContent = 'Memuat...';
-
-            // Ambil data terbaru dari server
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Suntikkan data terbaru ke dalam modal
-                        document.getElementById('reportModalFinishWork').textContent = data.finish_work;
-                    } else {
-                        // Jika gagal, tampilkan pesan error
-                        document.getElementById('reportModalFinishWork').textContent = 'Gagal memuat';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching transaction details:', error);
-                    document.getElementById('reportModalFinishWork').textContent = 'Error';
-                })
-                .finally(() => {
-                    // Tampilkan modal setelah selesai (baik berhasil maupun gagal)
-                    const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
-                    reportModal.show();
-                });
-        }
-        // MODIFIED submitReview function
-        function submitReview() {
-            const comment = document.getElementById('comment').value.trim();
-            const ratingInput = document.getElementById('rating-input');
-            const selectedRating = ratingInput ? parseInt(ratingInput.value) : 0;
-
-            if (selectedRating === 0) {
-                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
-                return;
-            }
-
-            if (comment === '') {
-                window.showCustomAlert('Silakan isi komentar.', 'error');
-                return;
-            }
-
-            fetch("{{ route('reviews.store', $transaction->id) }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json",
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({
-                        transaction_id: "{{ $transaction->id }}",
-                        reviewer_id: "{{ auth()->id() }}",
-                        reviewee_id: "{{ $transaction->requester_id }}",
-                        rating: selectedRating,
-                        comment: comment,
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw errorData;
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Review submission data:', data);
-                    if (data.success) {
-                        window.showCustomAlert(data.message, "success");
-                        // Close the completion modal
-                        var completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-                        if (completionModal) {
-                            completionModal.hide();
-                        }
-                        // >>> TAMBAH BARIS INI <<<
-                        location.reload(); // Reload halaman setelah review berhasil dikirim
-                        // >>> BATAS TAMBAH <<<
-                    } else {
-                        window.showCustomAlert(data.message || 'Gagal menyimpan ulasan.', "error");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting review:', error);
-                    let errorMessage = 'Terjadi kesalahan saat menyimpan ulasan.';
-
-                    if (error.errors) {
-                        errorMessage = 'Validasi gagal:';
-                        for (const key in error.errors) {
-                            if (error.errors.hasOwnProperty(key)) {
-                                error.errors[key].forEach(msg => {
-                                    errorMessage += `\n- ${msg}`;
-                                });
-                            }
-                        }
-                    } else if (error.message) {
-                        errorMessage = error.message;
-                    }
-
-                    window.showCustomAlert(errorMessage, 'error');
-                });
-        }
-
-        // MODIFIED submitReport function
-        function submitReport() {
-            const form = document.getElementById('reportForm');
-            if (!form) {
-                console.error('reportForm not found!');
-                return;
-            }
-            const formData = new FormData(form);
-
-            const reportNote = document.getElementById('reportNote').value;
-            if (!reportNote.trim()) {
-                window.showCustomAlert('Harap isi keterangan masalah terlebih dahulu.', 'error');
-                return;
-            }
-
-            fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'X-Requested-With': 'XMLHttpRequest', // Crucial for Laravel AJAX detection
-                        'Accept': 'application/json' // Request JSON response
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            throw errorData; // Throw the parsed error object
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Report submission data:', data);
-                    window.showCustomAlert(data.message, 'success');
-                    var reportModal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-                    if (reportModal) {
-                        reportModal.hide();
-                    }
-                    // >>> GANTI BARIS INI <<<
-                    window.location.href = "{{ route('job-taker.home') }}"; // Redirect ke beranda job requester
-                })
-                .catch(error => {
-                    console.error('Error submitting report:', error);
-                    let errorMessage = 'Terjadi kesalahan saat mengirim laporan.';
-
-                    if (error.errors) {
-                        errorMessage = 'Validasi gagal:';
-                        for (const key in error.errors) {
-                            if (error.errors.hasOwnProperty(key)) {
-                                error.errors[key].forEach(msg => {
-                                    errorMessage += `\n- ${msg}`;
-                                });
-                            }
-                        }
-                    } else if (error.message) {
-                        errorMessage = error.message;
-                    }
-
-                    window.showCustomAlert(errorMessage, 'error');
-                });
+            uploadArea.dataset.initialized = 'true'; // Mark as initialized
         }
     </script>
+
     <style>
-        .star-rating {
+        /* Star Rating Styles */
+        .star-rating,
+        .star-animate {
             cursor: pointer;
             transition: color 0.2s ease-in-out;
+            margin-right: 0.1em;
+            /* Consistent right margin */
+            margin-left: 0.1em;
+            /* Consistent left margin */
+            display: inline-block;
+            /* Ensure margins are respected */
+        }
+
+        .star-rating:last-of-type,
+        .star-animate:last-of-type {
+            margin-right: 0;
+            /* No right margin for the last star */
         }
 
         .star-blue {
             color: gold !important;
+        }
+
+        /* Tab Navigation (from previous context, might not be fully used here but included for completeness) */
+        .tabs-wrapper {
+            height: 3.5rem;
+            border-radius: 1.5rem;
+            position: relative;
+            z-index: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            border-radius: 0.5rem;
+            color: #6b7280;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            padding: 0.5rem 1rem;
+        }
+
+        .tab-button:hover {
+            color: #4f46e5;
+        }
+
+        .tab-button.active {
+            background-color: #ffffff;
+            color: #1f2937;
+            font-weight: 600;
+            z-index: 10;
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top: 8px solid #bfff00;
+            padding-top: calc(0.5rem - 8px);
+            padding-bottom: calc(0.5rem - 2px);
+            margin-bottom: -4px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Order List Row Hover Effect (from previous context) */
+        .hoverable-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            border-radius: 0.25rem;
+        }
+
+        .hoverable-row:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.175);
+            transform: translateY(-2px);
+        }
+
+        /* Status Badge Styling (from previous context) */
+        .status-badge {
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-badge-fixed {
+            min-width: 90px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Global Table Cell Styling for Text Wrapping (from previous context) */
+        .tableHeader .col,
+        .order-row .col {
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .tableHeader .col {
+            font-size: 14px;
+        }
+
+        .order-row .col {
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .order-list-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            transform: scale(0.9);
+            opacity: 0;
+        }
+
+        .modal.fade.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Responsive Adjustments for Mobile (max-width: 767px) */
+        @media (max-width: 767px) {
+            .tabs-wrapper {
+                display: none !important;
+            }
+
+            .tabs-dropdown-wrapper {
+                display: block !important;
+            }
+
+            .tabs-dropdown-wrapper select {
+                border-color: #bfff00 !important;
+                border-width: 2px !important;
+            }
+
+            .tableHeader .col,
+            .order-row .col {
+                font-size: 12px !important;
+                padding-left: 0.3rem;
+                padding-right: 0.3rem;
+                white-space: normal !important;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 0.8rem !important;
+            }
+
+            .order-row .title-col {
+                padding-left: 0.8rem !important;
+            }
+
+            .order-row .badge {
+                font-size: 12px !important;
+                padding: .2em .4em !important;
+            }
+
+            .status-badge-fixed {
+                min-width: 70px !important;
+                text-align: center;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .order-row .col.m-0.p-0 {
+                margin: 0 !important;
+            }
+
+            .modal-body p {
+                font-size: 14px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 16px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 20px !important;
+            }
+
+            .modal-body label {
+                font-size: 14px !important;
+            }
+
+            .modal-body textarea {
+                font-size: 14px !important;
+            }
+
+            .modal-footer button {
+                font-size: 14px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 18px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 16px !important;
+            }
+
+            .star-rating {
+                font-size: 28px !important;
+            }
+        }
+
+        /* Specific Adjustments for Smaller Screens (max-width: 500px) */
+        @media (max-width: 500px) {
+
+            .tableHeader .col,
+            .order-row .col {
+                padding-left: 0.6rem !important;
+                padding-right: 0.6rem !important;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 0.6rem !important;
+            }
+
+            .order-row .title-col {
+                padding-left: 0.6rem !important;
+            }
+
+            .order-row .badge {
+                font-size: 10px !important;
+            }
+
+            .status-badge-fixed {
+                min-width: 60px !important;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
+            }
+        }
+
+        /* Specific Adjustments for Very Small Screens (max-width: 433px) */
+        @media (max-width: 440px) {
+
+            .tableHeader .col,
+            .order-row .col {
+                font-size: 11px !important;
+                padding-left: 0.4rem !important;
+                padding-right: 0.4rem !important;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 0.4rem !important;
+            }
+
+            .order-row .title-col {
+                padding-left: 0.4rem !important;
+            }
+
+            .order-row .badge {
+                font-size: 9px !important;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 12px !important;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 14px !important;
+            }
+
+            .modal-header h5 {
+                font-size: 18px !important;
+            }
+
+            #reviewSectionHeading {
+                font-size: 16px !important;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 14px !important;
+            }
+
+            .star-rating {
+                font-size: 24px !important;
+            }
+        }
+
+        /* Desktop Specific Styles (min-width: 768px) */
+        @media (min-width: 768px) {
+            .tabs-wrapper {
+                display: flex !important;
+            }
+
+            .tabs-dropdown-wrapper {
+                display: none !important;
+            }
+
+            .tableHeader .col {
+                font-size: 16px;
+            }
+
+            .tableHeader .col:first-child {
+                padding-left: 1rem;
+            }
+
+            .order-row .col {
+                font-size: 14px;
+            }
+
+            .order-row .title-col {
+                padding-left: 1rem;
+            }
+
+            .order-row .badge {
+                font-size: 14px;
+            }
+
+            .modal-body p,
+            .modal-body label,
+            .modal-body textarea {
+                font-size: 16px;
+            }
+
+            .modal-body .fw-medium {
+                font-size: 18px;
+            }
+
+            .modal-header h5 {
+                font-size: 24px;
+            }
+
+            #reviewSectionHeading {
+                font-size: 22px;
+            }
+
+            #modalInvoiceLink .ms-2 {
+                font-size: 18px;
+            }
+
+            .star-rating {
+                font-size: 32px;
+            }
         }
     </style>
 @endsection

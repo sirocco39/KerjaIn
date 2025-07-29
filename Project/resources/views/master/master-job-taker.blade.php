@@ -24,6 +24,28 @@
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
     <style>
+        .dropdown-profile-custom {
+            min-width: 250px;
+            /* Lebar minimum agar tidak sempit */
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Ini adalah perbaikan utamanya */
+        .dropdown-profile-custom .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            /* Tambah padding kanan-kiri */
+            font-weight: 500;
+        }
+
+        .dropdown-profile-custom .navIcon {
+            width: 20px;
+            /* Pastikan ukuran ikon seragam */
+        }
+
         .popup-error-card {
             position: absolute;
             top: calc(100% + 0.25rem);
@@ -271,7 +293,7 @@
                             {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
                             <li>
                                 <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('job-req.home') }}">
+                                    href="{{ route('switch.to.requester') }}">
                                     <img src="{{ asset('Image/Icon/icon-change-role.svg') }}" alt="Icon Ganti Peran"
                                         class="navIcon">
                                     Ganti Peran
@@ -395,30 +417,6 @@
     </footer>
     {{-- End Footer --}}
 
-    <style>
-        .dropdown-profile-custom {
-            min-width: 250px;
-            /* Lebar minimum agar tidak sempit */
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: none;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-
-        /* Ini adalah perbaikan utamanya */
-        .dropdown-profile-custom .dropdown-item {
-            padding: 0.75rem 1.25rem;
-            /* Tambah padding kanan-kiri */
-            font-weight: 500;
-        }
-
-        .dropdown-profile-custom .navIcon {
-            width: 20px;
-            /* Pastikan ukuran ikon seragam */
-        }
-    </style>
-
     <script defer>
         // Custom Alert function (copied from master-job-req.blade.php's original)
         window.showCustomAlert = function(message, type = 'info', duration = 3000) {
@@ -437,6 +435,8 @@
                 customAlert.classList.add('alert-success-bg');
             } else if (type === 'error') {
                 customAlert.classList.add('alert-error-bg');
+            } else if (type === 'blue') {
+                customAlert.classList.add('alert-blue-bg');
             } else if (type === 'info') {
                 customAlert.classList.add('alert-info-bg');
             }

@@ -72,7 +72,7 @@
 
                     @if (session('success'))
 
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="color:white"> 
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="color:white">
                         {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -312,7 +312,7 @@
 @endsection
 @section('modal')
 <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="rejectReasonModalLabel">Tolak Verifikasi Pengguna</h5>
@@ -350,7 +350,7 @@
 </div>
 
 <div class="modal fade" id="approveConfirmationModal" tabindex="-1" aria-labelledby="approveConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="approveConfirmationModalLabel">Konfirmasi Persetujuan</h5>

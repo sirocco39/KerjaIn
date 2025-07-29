@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
@@ -17,13 +17,16 @@ return new class extends Migration
             $table->foreignId('reporter_id')->constrained('users');
             $table->foreignId('reported_id')->constrained('users');
             $table->text('reasons');
-            $table->string('photo_url')->nullable();
-            $table->enum('status', ['Reviewed', 'Not Reviewed']);
+            $table->json('photo_url')->nullable(); // Changed from string to json
+            $table->enum('status', ['Reviewed', 'Not Reviewed', 'pending'])->default('pending'); // Added 'pending' status
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('reports');
     }

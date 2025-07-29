@@ -4,7 +4,7 @@
     <h1>Judul : {{ $workRequest->title }}</h1>
     <div class="work-details">
         <p>Description : {{ $workRequest->description }}</p>
-        <p>Harga : {{ $workRequest->price }}</p>
+        <p>Upah : {{ $workRequest->price }}</p>
         <p>Lokasi : {{ $workRequest->location }}</p>
         <p>Status : {{ $workRequest->status }}</p>
         <?php

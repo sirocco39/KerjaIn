@@ -117,23 +117,23 @@
         <div class="row g-3 mb-3">
             <div class="col-md-6 mb-1 icon-text">
                 <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Clock">
-                <small class="text-muted">Mulai Kerja</small><br>
+                <small class="text-muted">{{ __('chat-job-req.card.mulai_kerja') }}</small><br>
                 <strong class="detaila">{{ $request->start_time }}</strong>
             </div>
             <div class="col-md-6 mb-1 icon-text">
                 <img class="ms-2" src="{{ asset('Image/Icon/icon-location-fill.svg') }}" alt="Icon Address">
-                <small class="text-muted">Lokasi</small><br>
+                <small class="text-muted">{{ __('chat-job-req.card.lokasi') }}</small><br>
                 <strong>{{ $request->location }}</strong>
             </div>
             <div class="col-md-6 mb-1 icon-text">
-                <img class="ms-2" src="{{ asset('Image/Icon/icon-done.svg') }}" alt="Icon Done">
-                <small class="text-muted">Selesai Kerja</small><br>
+                <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Done">
+                <small class="text-muted">{{ __('chat-job-req.card.selesai_kerja') }}</small><br>
                 <strong>{{ $request->end_time }}</strong>
                 <div></div>
             </div>
             <div class="col-md-6 mb-1 icon-text">
                 <img class="ms-2" src="{{ asset('Image/Icon/icon-stackMoney.svg') }}" alt="Icon Money">
-                <small class="text-muted">Upah</small><br>
+                <small class="text-muted">{{ __('chat-job-req.card.upah') }}</small><br>
                 <strong>Rp{{ number_format($request->price, 0, ',', '.') }}</strong>
                 <div></div>
             </div>
@@ -141,7 +141,7 @@
 
         {{-- Status & Tombol Expander --}}
         <div class="d-flex justify-content-between align-items-center">
-            <div class="label-tersedia d-flex align-items-center justify-content-center">Tersedia</div>
+            <div class="label-tersedia d-flex align-items-center justify-content-center">{{ __('chat-job-req.card.status_tersedia') }}</div>
             <a wire:click="toggleExpand({{ $request->id }})" class="text-secondary fs-5" style="cursor: pointer;">
                 <i class="bi {{ $expandedRequestId === $request->id ? 'bi-chevron-up' : 'bi-chevron-down' }}"></i>
             </a>
@@ -153,7 +153,7 @@
         <div class="expanded-chats-container rounded-bottom-5">
             @forelse ($request->chatRooms as $room)
                 {{-- MODIFIKASI INI: Gunakan $dispatch untuk mengirim event ke komponen parent --}}
-                <div wire:click="$dispatch('chat-selected', { chatRoomId: {{ $room->id }} })"
+                <div wire:click="$dispatch('chat-job-req-selected', { chatRoomId: {{ $room->id }} })"
                     class="chat-item-card rounded-5 {{ $selectedChatRoomId === $room->id ? 'active' : '' }}">
                     <div class="chat-item-avatar">
                         <img src="{{ $room->worker->profile_picture_url ?? asset('Image/Icon/icon-done.svg') }}" {{-- INI BAKAL PAKE PROGILE USERS --}}
@@ -169,7 +169,7 @@
                     </div>
                 </div>
             @empty
-                <p class="text-white-50 text-center small p-3">Belum ada percakapan.</p>
+                <p class="text-white-50 text-center small p-3">{{ __('chat-job-req.card.belum_ada_percakapan') }}</p>
             @endforelse
         </div>
     @endif

@@ -3,41 +3,48 @@
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y d-flex flex-column gap-3" id="greetings-section">
         @auth
-            <h1 class="fw-bold mb-0">Halo, {{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h1>
+            <h1 class="fw-bold mb-0">{{ __('home-job-req.selamat_datang', ['nama' => Auth::user()->first_name]) }}</h1>
+</h1>
         @else
             <h1 class="fw-bold mb-0">Halo, Nama Pengguna</h1>
         @endauth
         <p class="mb-0">
-            Selamat datang! Di sini tempat terbaik untuk menemukan mitra kerja yang siap membantu. <br>
-            Mulailah dengan membuat permintaan pekerjaan pertamamu.
+            {{ __('home-job-req.deskripsi_awal') }}
         </p>
         <a href="/job-req/tawarkan-kerja" class="button-switch">
-            Buat Lowongan Baru
+            {{ __('home-job-req.tawarkan_pekerjaan_pertama') }}
         </a>
     </div>
 
     <div class="container-fluid pembatas-x pembatas-b d-flex flex-column gap-4">
-        <h3 class="fw-bold mb-0">Tawaran Pekerjaan Saya Baru-baru Ini</h3>
+        <h3 class="fw-bold mb-0">{{ __('home-job-req.pekerjaan_terbaru_anda') }}</h3>
         <div class="d-flex">
             <div class="col-12 col-xl-8 d-flex flex-column gap-4 beranda-req-kiri">
                 @if ($fiveLatestRequests->isEmpty())
-                    <p>Anda belum pernah menawarkan pekerjaan!</p>
+                    <p>{{ __('home-job-req.belum_ada_pekerjaan') }}</p>
                 @else
                     @foreach ($fiveLatestRequests as $r)
                         @php
                             $hasTransaction = $r->transaction ? 'true' : 'false';
+
+                            // NEW: Explicitly format dates/times in UTC for display consistency
+                            $startDateTimeUTC = \Carbon\Carbon::parse($r->start_time)->setTimezone('UTC');
+                            $endDateTimeUTC = \Carbon\Carbon::parse($r->end_time)->setTimezone('UTC');
+
+                            $formattedStartDate = $startDateTimeUTC->format('d M Y');
+                            $formattedStartTime = $startDateTimeUTC->format('H.i');
+                            $formattedEndTime = $endDateTimeUTC->format('H.i');
+
+                            $displayDateRange = $formattedStartDate;
+                            // Check if the job spans multiple UTC days
+                            if ($startDateTimeUTC->format('Y-m-d') !== $endDateTimeUTC->format('Y-m-d')) {
+                                $displayDateRange .= ' - ' . $endDateTimeUTC->format('d M Y');
+                            }
+                            
                         @endphp
                         <div class="work-request p-4 d-flex flex-column"
                             data-url="{{ $r->transaction && $r->transaction->status !== 'cancelled' ? route('request.ongoing', ['transactionId' => $r->transaction->id]) : '' }}"
                             data-has-transaction="{{ $r->transaction ? 'true' : 'false' }}">
-                            <?php
-                            $startdatetime = strtotime($r->start_time);
-                            $enddatetime = strtotime($r->end_time);
-                            $startdate = date('d M Y', $startdatetime);
-                            $starttime = date('H.i', $startdatetime);
-                            $enddate = date('d M Y', $enddatetime);
-                            $endtime = date('H.i', $enddatetime);
-                            ?>
 
                             <h4 class="fw-bold mb-1">{{ $r->title }}</h4>
 
@@ -53,14 +60,16 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Date">
                                     </div>
-                                    <span>{{ $startdate }}</span>
+                                    {{-- Use the new variable for multi-day date display (UTC) --}}
+                                    <span>{{ $displayDateRange }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Clock">
                                     </div>
-                                    <span>{{ $starttime }} - {{ $endtime }}</span>
+                                    {{-- Use the formatted UTC times directly --}}
+                                    <span>{{ $formattedStartTime }} - {{ $formattedEndTime }}</span>
                                 </li>
 
                                 <li class="col-12 col-md-2 gap-2">
@@ -74,27 +83,27 @@
                             <div class="details-bottom-segment d-flex justify-content-between mt-2">
                                 @if ($r->status == 'open')
                                     <div class="status">
-                                        <p class="mb-0">Menunggu Mitra</p>
+                                        <p class="mb-0">{{ __('home-job-req.status_menunggu_mitra') }}</p>
                                     </div>
                                 @elseif ($r->transaction->status == 'accepted')
                                     <div class="status">
-                                        <p class="mb-0">Diterima</p>
+                                        <p class="mb-0">{{ __('home-job-req.status_diterima') }}</p>
                                     </div>
                                 @elseif($r->transaction->status == 'in progress' )
                                     <div class="status" style="background-color: #309FFF">
-                                        <p class="mb-0">Dikerjain</p>
+                                        <p class="mb-0">{{ __('home-job-req.status_dikerjakan') }}</p>
                                     </div>
                                 @elseif($r->transaction->status == 'submitted')
                                     <div class="status">
-                                        <p class="mb-0">Ditinjau</p>
+                                        <p class="mb-0">{{ __('home-job-req.status_ditinjau') }}</p>
                                     </div>
                                 @elseif($r->transaction->status == 'completed')
                                     <div class="status" style="background-color:#E8FA0D; color: #294287;">
-                                        <p class="mb-0">Selesai</p>
+                                        <p class="mb-0">{{ __('home-job-req.status_selesai') }}</p>
                                     </div>
                                 @elseif($r->transaction->status == 'cancelled')
                                     <div class="status" style="background-color: #B02A37">
-                                        <p class="mb-0">Dibatalin</p>
+                                        <p class="mb-0">{{ __('home-job-req.status_dibatalkan') }}</p>
                                     </div>
                                 @endif
                                 <a class="detail-req-button" data-bs-toggle="modal" data-bs-target="#detailModal"
@@ -123,7 +132,7 @@
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div id="modal-content-container" class="p-3">
-                    <h1 class="fw-bold mb-3" id="modal-detail-title">Nama Lowongan Kerja</h1>
+                    <h1 class="fw-bold mb-3" id="modal-detail-title">{{ __('home-job-req.nama_loker') }}</h1>
                     <ul class="job-card-details">
                         <li class="gap-2">
                             <div class="icon-wrapper">
@@ -153,7 +162,7 @@
                             Rp<span id="modal-detail-price-value"></span>
                         </li>
                     </ul>
-                    <h5 class="detail-description fw-bold d-flex mt-3">Deskripsi:</h5>
+                    <h5 class="detail-description fw-bold d-flex mt-3">{{ __('home-job-req.deskripsi') }}:</h5>
                     <div class="wrapDesc mb-3">
                         <p class="mb-0" id="modal-detail-description-text"></p>
                     </div>
@@ -177,20 +186,20 @@
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-between align-items-center">
                     <img src="{{ asset('Image/Icon/icon-danger.svg') }}" alt="Danger Icon">
-                    <h1 class="fw-bold mb-0" style="color: #B02A37">Hapus Tawaran</h1>
+                    <h1 class="fw-bold mb-0" style="color: #B02A37">{{ __('home-job-req.hapus_tawaran') }}</h1>
                     <img src="{{ asset('Image/Icon/icon-danger.svg') }}" alt="Danger Icon">
                 </div>
                 <div id="modal-content-container" class="p-3">
-                    <p class="mb-3 text-center fw-medium fs-5">Apakah kamu yakin menghapus tawaran?</p>
+                    <p class="mb-3 text-center fw-medium fs-5">{{ __('home-job-req.konfirmasi_hapus') }}</p>
                 </div>
                 <div class="detail-buttons-placeholder d-flex gap-3 justify-content-center mt-auto">
                     <a class="details-button-item btn-tawar-modal text-decoration-none" data-bs-target="#detailModal"
-                        data-bs-toggle="modal" id="kembali-button-section">Tidak</a>
+                        data-bs-toggle="modal" id="kembali-button-section">{{ __('home-job-req.tidak') }}</a>
                     <form id="delete-request-form" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="details-button-item btn-hapus-modal text-decoration-none">Ya</button>
+                            class="details-button-item btn-hapus-modal text-decoration-none">{{ __('home-job-req.ya') }}</button>
                     </form>
                 </div>
             </div>
@@ -250,13 +259,36 @@
 
                         modalTitle.textContent = data.title || '-';
                         modalLocation.textContent = data.location || '-';
-                        modalDate.textContent = startDatetime.toLocaleDateString('id-ID', {
+
+                        // NEW: Format date in UTC for consistency with card
+                        // Using 'en-GB' for 'd M Y' format, and timeZone: 'UTC'
+                        modalDate.textContent = startDatetime.toLocaleDateString('en-GB', {
                             day: '2-digit',
                             month: 'short',
-                            year: 'numeric'
+                            year: 'numeric',
+                            timeZone: 'UTC' // Display UTC date
                         });
-                        modalTime.textContent =
-                            `${startDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${endDatetime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+                        // Add check for multi-day span in modal date (still in UTC)
+                        if (startDatetime.getUTCFullYear() !== endDatetime.getUTCFullYear() ||
+                            startDatetime.getUTCMonth() !== endDatetime.getUTCMonth() ||
+                            startDatetime.getUTCDate() !== endDatetime.getUTCDate()) {
+                            modalDate.textContent += ` - ${endDatetime.toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                timeZone: 'UTC' // Display UTC end date
+                            })}`;
+                        }
+
+                        // NEW: Format time in UTC for consistency with card
+                        // Function to format time in UTC (HH.ii format)
+                        function formatTimeInUTC(date) {
+                            const hours = date.getUTCHours().toString().padStart(2, '0');
+                            const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+                            return `${hours}.${minutes}`;
+                        }
+                        modalTime.textContent = `${formatTimeInUTC(startDatetime)} - ${formatTimeInUTC(endDatetime)}`;
+
                         modalPrice.textContent = parseFloat(data.final_price || 0).toLocaleString('id-ID', {
                             minimumFractionDigits: 2
                         });
@@ -264,11 +296,11 @@
 
                         // Tentukan status berdasarkan data
                         if (data.status === 'open') {
-                            modalStatus.innerHTML = `<p class="mb-0">Menunggu Mitra</p>`;
+                            modalStatus.innerHTML = `<p class="mb-0">{{ __('home-job-req.status_menunggu_mitra') }}</p>`;
                             buttonAction1.innerHTML =
-                                `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="${editUrl}">Sunting</a>`;
+                                `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-1" href="${editUrl}">{{ __('home-job-req.sunting') }}</a>`;
                             buttonAction2.innerHTML =
-                                `<a class="details-button-item btn-hapus-modal text-decoration-none" data-bs-target="#deleteConfirmation" data-bs-toggle="modal" id="button-action-2">Hapus</a>`
+                                `<a class="details-button-item btn-hapus-modal text-decoration-none" data-bs-target="#deleteConfirmation" data-bs-toggle="modal" id="button-action-2">{{ __('home-job-req.hapus') }}</a>`
                             deleteForm.setAttribute('action', deleteUrl);
                         } else if (data.status === 'closed') {
                             const transaction = data.transaction;
@@ -333,11 +365,11 @@
 
                         // Cek apakah yang diklik adalah tombol DETAIL itu sendiri atau ikon di dalamnya.
                         if (event.target.closest('.detail-req-button')) {
-                            // Jika ya, jangan lakukan apa-apa.
-                            // Biarkan Bootstrap yang bekerja membuka modal.
+                            // If yes, do nothing.
+                            // Let Bootstrap handle opening the modal.
                             return;
                         } else {
-                            // Jika yang diklik adalah area lain di kartu, baru pindah halaman.
+                            // If another area on the card is clicked, navigate to the page.
                             const url = this.dataset.url;
                             if (url) {
                                 window.location.href = url;
@@ -345,10 +377,10 @@
                         }
 
                     } else {
-                        // ---> KONDISI 2: Request TIDAK punya transaksi (mode pop-up)
+                        // ---> KONDISI 2: Request DOES NOT have a transaction (pop-up mode)
 
-                        // Pakai logika lama: seluruh kartu akan membuka modal.
-                        // Cari tombol detail di dalam kartu ini dan klik secara programmatic.
+                        // Use old logic: entire card opens modal.
+                        // Find the detail button within this card and click it programmatically.
                         const detailButton = this.querySelector('.detail-req-button');
                         if (detailButton) {
                             detailButton.click();

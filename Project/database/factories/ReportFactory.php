@@ -19,7 +19,7 @@ class ReportFactory extends Factory
         return [
             'reasons' => $this->faker->sentence(),
             'status' => fake()->randomElement(['Not Reviewed', 'Reviewed']),
-            'photo_url' => $this->faker->imageUrl(),
+            'photo_url' => json_encode([$this->faker->imageUrl(640, 480, 'business', true, 'Faker', false)]),
         ];
     }
 }

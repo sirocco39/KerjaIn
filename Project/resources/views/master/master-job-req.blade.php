@@ -14,7 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -194,7 +194,6 @@
         {{-- <source src="{{ asset('audio/kerjain_soundtrack.ogg') }}" type="audio/ogg"> --}}
         Your browser does not support the audio element.
     </audio>
-    <!-- Custom Alert Container (Non-Modal) -->
     <div id="custom-alert-container">
         <div id="custom-alert">
             <span id="custom-alert-message"></span>
@@ -222,38 +221,38 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbarCollapse">
                         <li class="nav-item">
                             @auth
-                            <a class="nav-link {{ request()->is('job-req/beranda') ? 'active' : '' }}"
-                                href="/job-req/beranda">Beranda</a>
+                                <a class="nav-link {{ request()->is('job-req/beranda') ? 'active' : '' }}"
+                                    href="/job-req/beranda">{{ __('master-job-req.beranda') }}</a>
                             @else
-                            <a class="nav-link" href="#" data-bs-toggle="modal"
-                                data-bs-target="#loginModal">Beranda</a>
+                                <a class="nav-link" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">{{ __('master-job-req.beranda') }}</a>
                             @endauth
                         </li>
                         <li class="nav-item">
                             @auth
-                            <a class="nav-link {{ request()->is('job-req/tawarkan-kerja') ? 'active' : '' }}"
-                                href="/job-req/tawarkan-kerja">Tawarkan Kerja</a>
+                                <a class="nav-link {{ request()->is('job-req/tawarkan-kerja') ? 'active' : '' }}"
+                                    href="/job-req/tawarkan-kerja">{{ __('master-job-req.tawarkan_kerja') }}</a>
                             @else
-                            <a class="nav-link" href="#" data-bs-toggle="modal"
-                                data-bs-target="#loginModal">Tawarkan Kerja</a>
+                                <a class="nav-link" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">{{ __('master-job-req.tawarkan_kerja') }}</a>
                             @endauth
                         </li>
                         <li class="nav-item">
                             @auth
-                            <a class="nav-link {{ request()->is('job-req/pesan') ? 'active' : '' }}"
-                                href="/job-req/pesan">Pesan</a>
+                                <a class="nav-link {{ request()->is('job-req/pesan') ? 'active' : '' }}"
+                                    href="/job-req/pesan">{{ __('master-job-req.pesan') }}</a>
                             @else
-                            <a class="nav-link" href="#" data-bs-toggle="modal"
-                                data-bs-target="#loginModal">Pesan</a>
+                                <a class="nav-link" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">{{ __('master-job-req.pesan') }}</a>
                             @endauth
                         </li>
                         <li class="nav-item">
                             @auth
-                            <a class="nav-link {{ request()->is('job-req/riwayat') ? 'active' : '' }}"
-                                href="/job-req/riwayat">Riwayat</a>
+                                <a class="nav-link {{ request()->is('job-req/riwayat') ? 'active' : '' }}"
+                                    href="/job-req/riwayat">{{ __('master-job-req.riwayat') }}</a>
                             @else
-                            <a class="nav-link" href="#" data-bs-toggle="modal"
-                                data-bs-target="#loginModal">Riwayat</a>
+                                <a class="nav-link" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">{{ __('master-job-req.riwayat') }}</a>
                             @endauth
                         </li>
                     </ul>
@@ -265,104 +264,114 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center">
                     <li class="nav-item dropdown" id="dropLang">
                         <a class="nav-link" id="dropdownLang" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa" id="langFlag">
-                            <span>Bahasa</span>
+
+                            @if (App::getLocale() == 'id')
+                                <img src="{{ asset('Image/Flag/flag-id.png') }}" alt="Bahasa Indonesia"
+                                    id="langFlag">
+                            @else
+                                {{-- Pastikan Anda memiliki gambar bendera Inggris di path ini --}}
+                                <img src="{{ asset('Image/Flag/flag-uk.png') }}" alt="English" id="langFlag">
+                            @endif
+
+                            <span>{{ __('master-job-req.bahasa') }}</span>
                             <i class="bi bi-chevron-down" id="langIcon"></i>
                         </a>
 
                         <ul class="dropdown-menu m-0" aria-labelledby="dropdownLang">
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                            <li><a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('language.switch', 'id') }}"><img
                                         src="{{ asset('Image/Flag/flag-id.png') }}" alt="Indonesia's Flag"
-                                        class="flag"> Bahasa</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="#"><img
+                                        class="flag">{{ __('master-job-req.indonesia') }}</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('language.switch', 'en') }}"><img
                                         src="{{ asset('Image/Flag/flag-uk.png') }}" alt="England's Flag"
-                                        class="flag"> English</a></li>
+                                        class="flag">{{ __('master-job-req.english') }}</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
                             <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
-                            <span class="d-lg-none">Profil</span>
+                            <span class="d-lg-none">{{ __('master-job-req.profil') }}</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
                             @guest
-                            <li>
-                                <button type="button" class="dropdown-item d-flex align-items-center gap-1"
-                                    data-bs-toggle="modal" data-bs-target="#loginModal">
-                                    <img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
-                                        class="navIcon">
-                                    Masuk
-                                </button>
-                            </li>
+                                <li>
+                                    <button type="button" class="dropdown-item d-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#loginModal">
+                                        <img src="{{ asset('Image/Icon/icon-login.svg') }}" alt="Icon Login"
+                                            class="navIcon">
+                                        {{ __('master-job-req.masuk') }}
+                                    </button>
+                                </li>
                             @endguest
                             @auth
 
-                            <li>
-                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="{{ route('balance.job-req') }}">
-                                    {{-- Sisi Kiri: Ikon dan Teks --}}
-                                    <div class="d-flex align-items-center gap-2">
-                                        {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                        <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
-                                            class="navIcon">
-                                        <span>Saldo</span>
-                                    </div>
-                                    {{-- Sisi Kanan: Jumlah Saldo --}}
-                                    <span class="ms-auto fw-bold">
-                                        {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                        {{-- Fungsi number_format untuk format Rupiah --}}
-                                        Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">
-                                        <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                            class="navIcon">
-                                        Keluar
-                                    </button>
-                                </form>
-                            </li>
-                            @if (auth()->user()->role === "admin")
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('admin.dashboard') }}">
-                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                        alt="Icon Ganti Peran" class="navIcon">
-                                    Admin
-                                </a>
-                            </li>
-                            @endif
-                            @if (auth()->user()->is_worker)
-                            {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('job-taker.home') }}">
-                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                        alt="Icon Ganti Peran" class="navIcon">
-                                    Ganti Peran
-                                </a>
-                            </li>
-                            @else
-                            {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-1"
-                                    href="{{ route('worker.register.step1') }}">
-                                    <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                        class="navIcon">
-                                    Menjadi Mitra
-                                </a>
-                            </li>
-                            @endif
+                                <li>
+                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        href="{{ route('balance.job-req') }}">
+                                        {{-- Sisi Kiri: Ikon dan Teks --}}
+                                        <div class="d-flex align-items-center gap-2">
+                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
+                                            <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
+                                                class="navIcon">
+                                            <span>{{ __('master-job-req.saldo') }}</span>
+                                        </div>
+                                        {{-- Sisi Kanan: Jumlah Saldo --}}
+                                        <span class="ms-auto fw-bold">
+                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                            {{-- Fungsi number_format untuk format Rupiah --}}
+                                            Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                                class="navIcon">
+                                            {{ __('master-job-req.keluar') }}
+                                        </button>
+                                    </form>
+                                </li>
+                                @if (auth()->user()->role === 'admin')
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
+                                            href="{{ route('admin.dashboard') }}">
+                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                                alt="Icon Ganti Peran" class="navIcon">
+                                            Admin
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (auth()->user()->is_worker)
+                                    {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
+                                            href="{{ route('switch.to.taker') }}">
+                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                                alt="Icon Ganti Peran" class="navIcon">
+                                            {{ __('master-job-req.ganti_peran') }}
+                                        </a>
+                                    </li>
+                                @else
+                                    {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-1"
+                                            href="{{ route('worker.register.step1') }}">
+                                            <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
+                                                class="navIcon">
+                                            {{ __('master-job-req.menjadi_mitra') }}
+                                        </a>
+                                    </li>
+                                @endif
                             @endauth
                         </ul>
                     </li>
@@ -389,75 +398,75 @@
                         id="logoNavbar-footer">
                 </a>
                 <p class="m-0 p-0" id="foot-quotes">
-                    Kami selalu mengusahakan yang terbaik buat pelanggan dan memberikan pelayanan terbaik yang kami
-                    bisa.
+                    {{ __('master-job-req.footer_quote') }}
                 </p>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-2">
-                <h4>Fitur</h4>
+                <h4>{{ __('master-job-req.fitur') }}</h4>
                 <div class="list-group gap-2">
                     @auth
-                    <a href="/job-req/beranda" class="foot-list">Beranda</a>
+                        <a href="/job-req/beranda" class="foot-list">{{ __('master-job-req.beranda') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                        class="foot-list">Beranda</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-req.beranda') }}</a>
                     @endauth
 
 
                     @auth
-                    <a href="/job-req/tawarkan-kerja" class="foot-list">Tawarkan Kerja</a>
+                        <a href="/job-req/tawarkan-kerja" class="foot-list">{{ __('master-job-req.tawarkan_kerja') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="foot-list">Tawarkan
-                        Kerja</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-req.tawrakan_kerja') }}</a>
                     @endauth
 
 
                     @auth
-                    <a href="/job-req/pesan" class="foot-list">Pesan</a>
+                        <a href="/job-req/pesan" class="foot-list">{{ __('master-job-req.pesan') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                        class="foot-list">Pesan</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-req.pesan') }}</a>
                     @endauth
 
 
                     @auth
-                    <a href="/job-req/riwayat" class="foot-list">Riwayat</a>
+                        <a href="/job-req/riwayat" class="foot-list">{{ __('master-job-req.riwayat') }}</a>
                     @else
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                        class="foot-list">Riwayat</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            class="foot-list">{{ __('master-job-req.riwayat') }}</a>
                     @endauth
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-3">
-                <h4>Penawaran</h4>
+                <h4>{{ __('master-job-req.bantuan') }}</h4>
                 <div class="list-group gap-2">
                     @auth
-                    <a href="#" class="foot-list">Acara</a>
-                    <a href="#" class="foot-list">Promo</a>
+                        <a href="#" class="foot-list">{{ __('master-job-req.acara') }}</a>
+                        <a href="#" class="foot-list">{{ __('master-job-req.profil') }}</a>
                     @else
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Acara</a>
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Promo</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-req.acara') }}</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-req.promo') }}</a>
                     @endauth
                 </div>
             </div>
 
             <div class="col-6 col-md-3 col-lg-2 foot-content-detail" id="foot-4">
-                <h4>Bantuan</h4>
+                <h4>{{ __('master-job-req.bantuan') }}</h4>
                 <div class="list-group gap-2">
                     @auth
-                    <a href="#" class="foot-list">Akun</a>
-                    <a href="#" class="foot-list">Laporkan</a>
-                    <a href="#" class="foot-list">Saran</a>
+                        <a href="#" class="foot-list">{{ __('master-job-req.akun') }}</a>
+                        <a href="#" class="foot-list">{{ __('master-job-req.laporkan') }}</a>
+                        <a href="#" class="foot-list">{{ __('master-job-req.saran') }}</a>
                     @else
-                    <a class="foot-list" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Akun</a>
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Laporkan</a>
-                    <a class="foot-list" href="#" data-bs-toggle="modal"
-                        data-bs-target="#loginModal">Saran</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-req.akun') }}</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-req.laporkan') }}</a>
+                        <a class="foot-list" href="#" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">{{ __('master-job-req.saran') }}</a>
                     @endauth
                 </div>
             </div>
@@ -475,7 +484,7 @@
         </div>
 
         <div class="row text-center" id="foot-copyright">
-            <p class="m-0 p-0" id="text-copyright">Copyright © 2025 Kerjain. All right reserved</p>
+            <p class="m-0 p-0" id="text-copyright">{{ __('master-job-req.copyright') }}</p>
         </div>
     </footer>
     {{-- End Footer --}}
@@ -486,22 +495,22 @@
         <div class="modal-dialog" style="max-width: 400px;">
             <div class="modal-content bg-white rounded" style="box-shadow: none !important; border: none !important;">
                 <div class="modal-header border-0 position relative">
-                    <h1 class="modal-title w-100 text-center mb-0 fs-4">Login</h1>
+                    <h1 class="modal-title w-100 text-center mb-0 fs-4">{{ __('master-job-req.masuk') }}</h1>
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                         aria-label="Tutup"></button>
                 </div>
                 <form id="login-form" method="POST" action="{{ route('login') }}" style="padding: 30px">
                     @csrf
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                        <label for="email-login" class="form-label">Email</label>
-                        <input id="email-login" class="form-control is-invalid" type="email" name="email"
+                        <label for="email-login" class="form-label">{{ __('master-job-req.email') }}</label>
+                        <input id="email-login" class="form-control" type="email" name="email"
                             autocomplete="new-email" required>
                         <div id="Loginemail-error" class="popup-error-card d-none"></div>
                     </div>
 
                     <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                        <label for="password-login" class="form-label">Kata Sandi</label>
-                        <input id="password-login" class="form-control is-invalid" type="password" name="password"
+                        <label for="password-login" class="form-label">{{ __('master-job-req.kata_sandi') }}</label>
+                        <input id="password-login" class="form-control" type="password" name="password"
                             autocomplete="new-password" required>
                         <div id="Loginpassword-error" class="popup-error-card d-none"></div>
                     </div>
@@ -509,23 +518,23 @@
                     <div class="d-flex justify-content-between mb-4">
                         <div class="form-check">
                             <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
-                            <label class="form-check-label">Ingat Saya</label>
+                            <label class="form-check-label">{{ __('master-job-req.ingat_saya') }}</label>
                         </div>
                         @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}">Lupa kata sandi?</a>
+                            <a href="{{ route('password.request') }}">{{ __('master-job-req.lupa_kata_sandi') }}</a>
                         @endif
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Masuk</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-3 py-2">{{ __('master-job-req.masuk') }}</button>
 
                     <div class="text-center">
-                        <p class="mb-2">Belum punya akun?
+                        <p class="mb-2">{{ __('master-job-req.belum_punya_akun') }}
                             <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
                                 data-bs-target="#logoutModal">
-                                Daftar
+                                {{ __('master-job-req.daftar') }}
                             </button>
                         </p>
-                        <p class="mb-2">Atau masuk dengan:</p>
+                        <p class="mb-2">{{ __('master-job-req.atau_masuk_dengan') }}:</p>
                         <a href="{{ route('auth-google-redirect') }}">
                             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
                                 width="24">
@@ -542,7 +551,7 @@
         <div class="modal-dialog" style="max-width: 800px;">
             <div class="modal-content bg-white rounded" style="box-shadow: none !important; border: none !important;">
                 <div class="modal-header border-0 position-relative d-flex justify-content-center align-items-center">
-                    <h1 class="mb-0 fs-4" style="font-weight: 500">Daftar</h1>
+                    <h1 class="mb-0 fs-4" style="font-weight: 500">{{ __('master-job-req.daftar') }}</h1>
                     <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                         aria-label="Tutup"></button>
                 </div>
@@ -551,47 +560,48 @@
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="first_name">Nama Depan</label>
-                                <input type="text" id="first_name" class="form-control is-invalid"
-                                    name="first_name" required />
+                                <label class="form-label" for="first_name">{{ __('master-job-req.nama_depan') }}</label>
+                                <input type="text" id="first_name" class="form-control" name="first_name"
+                                    required />
                                 <div id="first_name-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="last_name">Nama Belakang</label>
-                                <input type="text" id="last_name" class="form-control is-invalid"
-                                    name="last_name" required />
+                                <label class="form-label" for="last_name">{{ __('master-job-req.nama_belakang') }}</label>
+                                <input type="text" id="last_name" class="form-control" name="last_name"
+                                    required />
                                 <div id="last_name-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label for="email-register" class="form-label">Email</label>
-                                <input id="email-register" class="form-control is-invalid" type="email"
-                                    name="email" autocomplete="new-email" required>
+                                <label for="email-register" class="form-label">{{ __('master-job-req.email') }}</label>
+                                <input id="email-register" class="form-control" type="email" name="email"
+                                    autocomplete="new-email" required>
                                 <div id="email-error" class="popup-error-card d-none"></div>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="password">Kata Sandi</label>
-                                <input id="password" class="form-control is-invalid" type="password"
-                                    name="password" required />
+                                <label class="form-label" for="password">{{ __('master-job-req.kata_sandi') }}</label>
+                                <input id="password" class="form-control" type="password" name="password"
+                                    required />
                                 <div id="password-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="password_confirmation">Konfirmasi Kata Sandi</label>
-                                <input class="form-control is-invalid" id="password_confirmation" type="password"
+                                <label class="form-label"
+                                    for="password_confirmation">{{ __('master-job-req.konfirmasi_kata_sandi') }}</label>
+                                <input class="form-control" id="password_confirmation" type="password"
                                     name="password_confirmation" required />
                                 <div id="confirm_password-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="otp">Kode OTP</label>
+                                <label class="form-label" for="otp">{{ __('master-job-req.kode_otp') }}</label>
                                 <div class="d-flex align-items-center gap-2 otp-container">
-                                    <input id="otp" class="form-control is-invalid" type="text"
-                                        name="otp" maxlength="6" placeholder="Masukkan Kode OTP" required />
+                                    <input id="otp" class="form-control" type="text" name="otp"
+                                        maxlength="6" placeholder="Masukkan Kode OTP" required />
                                     <button type="button" id="send-otp-button"
                                         class="btn btn-primary send-otp-button"
                                         onmouseover="this.style.backgroundColor='#D3FA0D'; this.style.color='#000000';"
@@ -613,16 +623,17 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mb-3 py-2">Daftar</button>
+                            <button type="submit"
+                                class="btn btn-primary w-100 mb-3 py-2">{{ __('master-job-req.daftar') }}</button>
 
                             <div class="text-center">
-                                <p class="mb-2">Sudah punya akun?
+                                <p class="mb-2">{{ __('master-job-req.sudah_punya_akun') }}
                                     <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
                                         data-bs-target="#loginModal">
-                                        Masuk
+                                        {{ __('master-job-req.masuk') }}
                                     </button>
                                 </p>
-                                <p>Atau daftar dengan:</p>
+                                <p>{{ __('master-job-req.atau_daftar_dengan') }}</p>
                                 <a href="{{ route('auth-google-redirect') }}" class="btn btn-link btn-floating mx-1">
                                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
                                         style="width: 24px; height: 24px;">
@@ -685,19 +696,17 @@
             }
         };
 
-        // Modified validateInput: Now it ONLY handles the 'is-invalid' class.
-        // Error message visibility will be handled by blur/focus directly.
+        // Modified validateInput: Now it ONLY handles the 'is-invalid' class and error text.
+        // It returns true if valid, false if invalid.
         function validateInput(inputElement, errorDiv, validationLogic) {
             const errors = validationLogic(inputElement.value.trim());
             if (errors.length > 0) {
                 errorDiv.innerHTML = `<ul class="mb-0">${errors.map(err => `<li>${err}</li>`).join('')}</ul>`;
-                // errorDiv.classList.remove('d-none'); // Removed: Handled by focus
-                inputElement.classList.add('is-invalid');
+                inputElement.classList.add('is-invalid'); // Add red border
                 return false;
             } else {
                 errorDiv.innerHTML = '';
-                errorDiv.classList.add('d-none'); // Keep hidden if no errors
-                inputElement.classList.remove('is-invalid');
+                inputElement.classList.remove('is-invalid'); // Remove red border
                 return true;
             }
         }
@@ -767,22 +776,23 @@
         // Function to set up common blur/focus/input listeners
         function setupValidationListeners(inputElement, errorDiv, validationLogic) {
             inputElement.addEventListener('blur', function() {
-                validateInput(inputElement, errorDiv,
-                    validationLogic); // Re-validate to ensure red border if still invalid
-                errorDiv.classList.add('d-none'); // ALWAYS hide error text on blur
+                // Validate on blur. If invalid, keep red border. Always hide text on blur.
+                validateInput(inputElement, errorDiv, validationLogic);
+                errorDiv.classList.add('d-none');
             });
 
             inputElement.addEventListener('focus', function() {
-                // Re-validate on focus to ensure the error text is up-to-date
-                validateInput(inputElement, errorDiv, validationLogic);
-                if (inputElement.classList.contains('is-invalid')) {
-                    errorDiv.classList.remove('d-none'); // Show error text if invalid
+                // Validate on focus. If invalid, show error text.
+                const isValid = validateInput(inputElement, errorDiv, validationLogic);
+                if (!isValid) {
+                    errorDiv.classList.remove('d-none');
                 }
             });
 
             inputElement.addEventListener('input', function() {
-                validateInput(inputElement, errorDiv, validationLogic); // Live validation
-                if (inputElement.classList.contains('is-invalid')) {
+                // Live validation. If invalid, show error text. If valid, hide error text.
+                const isValid = validateInput(inputElement, errorDiv, validationLogic);
+                if (!isValid) {
                     errorDiv.classList.remove('d-none'); // Keep error text visible while typing if invalid
                 } else {
                     errorDiv.classList.add('d-none'); // Hide error text if it becomes valid while typing
@@ -793,9 +803,9 @@
         // --- Apply listeners to Login Form Inputs ---
         setupValidationListeners(loginEmailInput, loginEmailErrorDiv, (value) => {
             const errors = [];
-            if (value === '') {
+            if (value.trim() === '') { // Use trim() for consistency
                 errors.push('Email harus diisi.');
-            } else if (!emailRegex.test(value)) {
+            } else if (!emailRegex.test(value.trim())) {
                 errors.push('Silakan masukkan alamat email yang valid.');
             }
             return errors;
@@ -847,7 +857,15 @@
 
             // Special handling for passwordInput's input event to re-validate confirmPasswordInput
             passwordInput.addEventListener('input', function() {
+                // First, validate the password input itself
                 validateInput(passwordInput, passwordErrorDiv, validatePasswordStrength);
+                if (passwordInput.classList.contains('is-invalid')) {
+                    passwordErrorDiv.classList.remove('d-none');
+                } else {
+                    passwordErrorDiv.classList.add('d-none');
+                }
+
+                // Then, re-validate confirm password if it has a value, to reflect password changes
                 if (confirmPasswordInput.value.trim() !== '') {
                     validateInput(confirmPasswordInput, confirmPasswordErrorDiv, validateConfirmPassword);
                     if (confirmPasswordInput.classList.contains('is-invalid') && document.activeElement ===
@@ -857,11 +875,6 @@
                     } else {
                         confirmPasswordErrorDiv.classList.add('d-none'); // Hide if not focused
                     }
-                }
-                if (passwordInput.classList.contains('is-invalid')) {
-                    passwordErrorDiv.classList.remove('d-none');
-                } else {
-                    passwordErrorDiv.classList.add('d-none');
                 }
             });
 
@@ -979,12 +992,9 @@
                 })
                 .then(data => {
                     showOtpMessage(data.message, true);
-                    startCountdown({
-                        {
-                            \
-                            App\ Http\ Controllers\ Auth\ RegisteredUserController::OTP_COOLDOWN_SECONDS
-                        }
-                    });
+                    startCountdown(
+                        {{ \App\Http\Controllers\Auth\RegisteredUserController::OTP_COOLDOWN_SECONDS }}
+                    );
                 })
                 .catch(async (error) => {
                     otpMessage.classList.add('!success');
@@ -1070,6 +1080,54 @@
                 }, 300);
             };
         }
+
+        // ***** NEW / MODIFIED CODE BELOW *****
+
+        // Function to reset a single input field's state
+        function resetInputField(inputElement, errorDiv) {
+            inputElement.value = ''; // Clear input value
+            inputElement.classList.remove('is-invalid'); // Remove red border
+            errorDiv.innerHTML = ''; // Clear error message text
+            errorDiv.classList.add('d-none'); // Hide error message div
+        }
+
+        // Get modal elements
+        const loginModalElement = document.getElementById('loginModal');
+        const registerModalElement = document.getElementById(
+        'logoutModal'); // Still referring to this as logoutModal, but it's register
+
+        // Add event listener for Login Modal close
+        loginModalElement.addEventListener('hidden.bs.modal', function() {
+            resetInputField(loginEmailInput, loginEmailErrorDiv);
+            resetInputField(loginPasswordInput, loginPasswordErrorDiv);
+            rememberMeCheckbox.checked = false; // Uncheck "Remember Me"
+            loginForm.reset(); // Also good practice to reset the form itself
+        });
+
+        // Add event listener for Register Modal close
+        registerModalElement.addEventListener('hidden.bs.modal', function() {
+            resetInputField(firstNameInput, firstNameErrorDiv);
+            resetInputField(lastNameInput, lastNameErrorDiv);
+            resetInputField(emailInput, emailErrorDiv);
+            resetInputField(passwordInput, passwordErrorDiv);
+            resetInputField(confirmPasswordInput, confirmPasswordErrorDiv);
+            resetInputField(otpInput, otpErrorDiv);
+
+            // Also reset OTP message and button state if countdown is active
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            sendButton.disabled = false;
+            sendButton.textContent = 'Kirim OTP';
+            otpMessage.classList.add('hidden'); // Ensure OTP success/error message is hidden
+            otpMessage.textContent = ''; // Clear OTP message text
+
+            registerForm.reset(); // Reset the form itself
+        });
+
+
+        // ***** END NEW / MODIFIED CODE *****
     </script>
 
     {{-- SCRIPT TO AUTO-SHOW MODAL BASED ON SESSION FLASH --}}
@@ -1099,25 +1157,29 @@
 
         // --- SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
         document.addEventListener('DOMContentLoaded', function() {
-            const logoLink = document.getElementById('dropdownLang');
+            // CORRECTED: changed logoLink to logoNavbarLink
+            const logoLink = document.getElementById('logoNavbarLink'); // Corrected ID
             const logoSoundtrack = document.getElementById('logoSoundtrack');
 
             if (logoLink && logoSoundtrack) {
                 logoLink.addEventListener('click', function(event) {
-                    // Mencegah redirect default langsung terjadi
-                    // Kita akan melakukan redirect secara manual setelah audio ditangani
+                    // If you want to prevent the default navigation immediately, uncomment this line:
+                    // event.preventDefault();
 
                     if (logoSoundtrack.paused) {
                         logoSoundtrack.play().catch(e => {
                             console.error("Autoplay diblokir atau error saat memutar:", e);
-                            // Jika autoplay diblokir, tetap lanjutkan ke href
-                            window.location.href = logoLink.href;
+                            // If autoplay is blocked, still navigate to the link
+                            // window.location.href = logoLink.href; // Only if you prevented default above
                         });
                     } else {
                         logoSoundtrack.pause();
-                        logoSoundtrack.currentTime = 0; // Reset ke awal
+                        logoSoundtrack.currentTime = 0; // Reset to start
                     }
 
+                    // If you prevented default, you might want to navigate after a short delay
+                    // to allow sound to start, or not at all depending on UX.
+                    // For now, it will navigate as normal if event.preventDefault() is commented out.
                 });
             }
         });

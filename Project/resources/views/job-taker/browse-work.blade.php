@@ -216,7 +216,7 @@
 
     <div class="modal" id="accept-job-confirmation-modal" tabindex="-1" aria-labelledby="acceptJobModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-body text-center p-4">
                     {{-- Pastikan icon-warning.svg ada di public/Image/Icon/ atau sesuaikan path --}}
@@ -225,7 +225,7 @@
                     <h2 class="fw-bold mb-3">Menerima Pekerjaan</h2>
                     <p>Apakah anda yakin ingin menerima pekerjaan ini?</p>
                     <div class="d-flex justify-content-center gap-3 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal"
                             id="cancel-accept-job">Kembali</button>
                         <button type="button" class="btn btn-primary" id="confirm-accept-job">Ya, Saya
                             Yakin</button>

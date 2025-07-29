@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->char('nik', 16);
+            $table->string('scanned_nik', 16)->nullable();
             $table->date('birthdate');
             $table->enum('gender', ['Male', 'Female']);
             $table->string('address');

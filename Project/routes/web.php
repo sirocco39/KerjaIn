@@ -134,7 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/user/submit-report/{transaction}', [TransactionController::class, 'storeReport'])->name('user.submitReport');
 
     // Avoid duplicates — keep only one valid review route
-    Route::post('/reviews/{transaction}', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store'); // Corrected route
     Route::get('/transaction-details/{id}', [TransactionController::class, 'getTransactionDetails'])->name('transaction.details');
 
     // =======================
@@ -173,6 +173,8 @@ Route::middleware('auth')->group(function () {
     // Grup route untuk pendaftaran pekerja tanpa autentikasi
 
     Route::middleware(['auth', PreventReRegistration::class])->group(function () {
+        Route::post('/ktp/ocr', [workerRegistrationController::class, 'ocrKtpAjax'])->name('ktp.ocr.ajax');
+
         Route::prefix('joinWorker')->name('worker.register.')->group(function () {
             // Langkah 1: Data Pribadi (Form GET, Proses POST)
             // URL: /joinWorker/join
@@ -276,7 +278,7 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
 // Route::post('verifications/{id}/approve', [VerificationController::class, 'approve'])->name('admin.verifications.approve');
 // Route::post('verifications/{id}/reject', [VerificationController::class, 'reject'])->name('admin.verifications.reject');
 // Route::get('/admin/verifications/search-ajax', [VerificationController::class, 'searchUsersForShow'])->name('admin.verifications.search-ajax');
-// // Manajemen Pengguna (admin.users.*)   
+// // Manajemen Pengguna (admin.users.*)
 // // Route::resource('users', AdminUserController::class);
 // Route::get('users/search', [AdminUserController::class, 'searchUsers'])->name('admin.users.search');
 // Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');

@@ -18,7 +18,7 @@
     .job-taker-card:active {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
     }
-    
+
     .icon-text {
         display: flex;
         gap: 8px;
@@ -42,7 +42,7 @@
 </style>
 
 {{-- Logika class 'is-expanded' telah dihapus dari div utama --}}
-<div class="card bg-white rounded-5 job-taker-card"> 
+<div class="card bg-white rounded-5 job-taker-card">
     <div class="card-body p-3">
         {{-- Judul Pekerjaan --}}
         <h5 class="card-title-chat fw-bold mb-2" style="font-size: 20px;">{{ $request->title }}</h5>

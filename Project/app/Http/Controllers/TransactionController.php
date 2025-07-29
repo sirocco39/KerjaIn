@@ -21,18 +21,36 @@ class TransactionController extends Controller
         $userId = Auth::id();
 
         // Fetch all orders where the authenticated user is the REQUIESTER
-        // Eager load the 'userReview' relationship
+        // Eager load the 'userReview' and 'userReport' relationships
+        // userReport is the report specific to the *authenticated user*
         $transactions = Transaction::withTrashed()
-            ->with(['request', 'requester', 'worker', 'userReview']) // Eager load the NEW userReview relationship
+            ->with(['request', 'requester', 'worker', 'userReview', 'userReport'])
             ->where('requester_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Attach a flag to each order indicating if a review exists and load the review data
+        // Attach flags and process report data for each order
         $allOrders = $transactions->map(function ($order) {
             // Check if the specific userReview exists for this order
             $order->has_review = $order->userReview()->exists();
             $order->user_review = $order->userReview; // Get the actual userReview object (will be null if no review)
+
+            // NEW: Check for existing report and load report data
+            // The `userReport` relationship is a HasOne, so it will fetch the first report found.
+            // For allowing multiple reports, the frontend will simply present a fresh form.
+            $userReport = $order->userReport; // Get the report object from the relationship
+
+            $order->has_user_report = ($userReport !== null); // Set flag based on existence
+
+            // Initialize properties to avoid errors in Blade even if no report exists
+            $order->report_decoded_photo_urls = [];
+            $order->report_reasons = null;
+
+            if ($userReport) { // If a report exists, populate the new properties
+                $order->report_decoded_photo_urls = json_decode($userReport->photo_url, true) ?? [];
+                $order->report_reasons = $userReport->reasons;
+            }
+
             return $order;
         });
 
@@ -75,7 +93,6 @@ class TransactionController extends Controller
 
         // Authorization check: only the requester of the transaction can view this page
         if (Auth::id() !== $transaction->requester_id) {
-            // Changed to custom alert
             activity()
                 ->inLog('Security') // Kelompokkan ke log 'Security'
                 ->on($transaction)  // Targetnya adalah transaksi yang coba diakses
@@ -96,12 +113,31 @@ class TransactionController extends Controller
         // Ambil completion proof terkait
         $completionProof = $transaction->completionProof;
 
-        // NEW: Check if a review already exists from the current requester for this transaction
+        // Check if a review already exists from the current requester for this transaction
         $hasReview = $transaction->userReview()->exists();
         $userReview = $transaction->userReview; // This will be null if no review exists
 
-        // Kirim data ke view
-        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room', 'hasReview', 'userReview'));
+        // Add this to check for an existing user report
+        // Note: With multiple reports allowed, this only checks if *any* report by the user exists.
+        // You might need to adjust logic if you need to fetch a specific 'latest' report.
+        $hasUserReport = $transaction->userReport()->exists();
+        $userReport = $transaction->userReport; // This will be null if no report exists
+
+        // Corrected logic: Ensure $userReport is an object before trying to set properties
+        if ($userReport) { // Check if the relationship loaded an actual report
+            $userReport->decoded_photo_urls = json_decode($userReport->photo_url, true) ?? [];
+        } else {
+            // If no userReport exists, create a dummy object to prevent errors in Blade
+            // FIX: Create the object and then assign it to the variable.
+            $dummyUserReport = (object)[
+                'decoded_photo_urls' => [],
+                'reasons' => null, // Also provide a default null for 'reasons'
+            ];
+            $userReport = $dummyUserReport;
+        }
+
+        // Kirim data ke view, including hasUserReport and userReport
+        return view('job-requester.on-going-work-request', compact('transaction', 'request', 'worker', 'completionProof', 'room', 'hasReview', 'userReview', 'hasUserReport', 'userReport'));
     }
 
 
@@ -117,7 +153,7 @@ class TransactionController extends Controller
         $payment = $transaction->request->payment;
         $refundAmount = $payment->amount;
 
-        // 5. Proses pengembalian dana (refund) ke requester
+        // 5. Proses pengembalian dana (refund)
         $requester->balance += $refundAmount;
         $requester->locked_balance -= $refundAmount;
         $requester->save();
@@ -212,47 +248,56 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function storeReport(HttpRequest $request)
+    public function storeReport(HttpRequest $request, $transactionId)
     {
         $request->validate([
-            'transaction_id' => 'required|exists:transactions,id',
+            'reasons' => 'required|string|max:2000',
+            'photo' => 'required|array|min:1|max:7',
+            'photo.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'reporter_id' => 'required|exists:users,id',
             'reported_id' => 'required|exists:users,id',
-            'reasons' => 'required|string',
-            'photo' => 'required|array',
-            'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        try {
-            $photoUrls = [];
+        $transaction = Transaction::findOrFail($transactionId);
+
+        if (Auth::id() !== $transaction->requester_id || $request->reporter_id != Auth::id()) {
+            activity()
+                ->inLog('Security')
+                ->on($transaction)
+                ->causedBy(Auth::user())
+                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan requester.");
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
+            ], 403);
+        }
+
+        DB::transaction(function () use ($request, $transaction) {
+            $photoUrls = []; // Array to store public URLs of uploaded photos
 
             foreach ($request->file('photo') as $file) {
-                $path = $file->store('report_photos', 'public');
-                $photoUrls[] = Storage::url($path);
+                $path = $file->store('reports/photos', 'public'); // Store in storage/app/public/reports/photos
+                $photoUrls[] = Storage::url($path); // Get public URL for storage
             }
 
+            // Always create a new report entry
             Report::create([
-                'transaction_id' => $request->transaction_id,
+                'transaction_id' => $transaction->id,
                 'reporter_id' => $request->reporter_id,
                 'reported_id' => $request->reported_id,
                 'reasons' => $request->reasons,
-                'photo_url' => json_encode($photoUrls),
-                'status' => 'Not Reviewed',
+                'photo_url' => json_encode($photoUrls), // Store JSON encoded array of URLs
+                'status' => 'Not Reviewed', // Default status for a new report
             ]);
+        });
 
-            // Changed from JSON response to redirect with custom alert
-            return response()->json([
-                'success' => true,
-                'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
-            ]);
-        } catch (\Exception $e) {
-            // Changed from JSON response to redirect with custom alert
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage()
-            ], 500);
-        }
+        // Changed from redirect()->route() to return response()->json() for AJAX consistency
+        return response()->json([
+            'success' => true,
+            'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+        ]);
     }
+
     public function getTransactionDetails($id)
     {
         // Temukan transaksi berdasarkan ID
@@ -267,3 +312,4 @@ class TransactionController extends Controller
         ]);
     }
 }
+
