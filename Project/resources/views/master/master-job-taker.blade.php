@@ -273,7 +273,7 @@
                                         <div>
                                             <div class="fw-bold" style="font-size: 16px;">
                                                 {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</div>
-                                            <div style="font-size: 13px; color: gray;">Peran: Pekerja</div>
+                                            <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pekerja')}}</div>
                                         </div>
                                     </div>
 
