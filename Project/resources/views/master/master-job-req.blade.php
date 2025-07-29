@@ -23,6 +23,20 @@
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+    <!-- Optional: Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
+    <!-- AdminLTE v3 Assets via CDN -->
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"> --}}
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <style>
         .dropdown-profile-custom {
             min-width: 250px;
@@ -291,7 +305,14 @@
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
+
+                            <img 
+                                src="{{ asset(Auth::user()->photo_url_user ?? asset('Image/Icon/user-circle.svg')) }}" 
+                                alt="Profil" 
+                                id="profileIcon"
+                                onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                            />
                             <span class="d-lg-none">{{ __('master-job-req.profil') }}</span>
                         </a>
 
@@ -307,10 +328,26 @@
                                 </li>
                             @endguest
                             @auth
-
-                                <li>
-                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                    <a class="dropdown-item d-flex align-items-center"
+                            
+                            <li>
+                                    {{-- Jika user biasa, bisa diklik dan diarahkan ke halaman profile --}}
+                                
+                                    <a href="{{ route('profile') }}" class="dropdown-item d-flex align-items-center gap-2">
+                                        <img 
+                                            src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                            alt="Profil" 
+                                            id="profileIcon"
+                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                                        />
+                                        <div>
+                                            <div class="fw-bold text-dark" style="font-size: 16px;">{{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</div>
+                                            <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pelanggan')}}</div>
+                                        </div>
+                                    </a>
+                             
+                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                 <a class="dropdown-item d-flex align-items-center"
                                         href="{{ route('balance.job-req') }}">
                                         {{-- Sisi Kiri: Ikon dan Teks --}}
                                         <div class="d-flex align-items-center gap-2">
@@ -472,7 +509,7 @@
             </div>
 
             <div class="col-6 col-md-auto col-lg-auto foot-content-detail" id="foot-5">
-                <h4>Contact Us</h4>
+                <h4>{{ __('master-job-req.hubungi_kami')}}</h4>
                 <p class="m-0 p-0" id="foot-email">kerjain@gmail.com</p>
                 <div class="d-flex flex-row" id="list-foot-icon">
                     <img src="{{ asset('Image/Icon/icon-instagram.png') }}" alt="Logo Instagram" class="foot-icon">
@@ -521,28 +558,26 @@
                             <label class="form-check-label">{{ __('master-job-req.ingat_saya') }}</label>
                         </div>
                         @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}">{{ __('master-job-req.lupa_kata_sandi') }}</a>
-                        @endif
+                            <a href="{{ route('password.request') }}">{{ __('master-job-req.lupa_kata_sandi') }}</a> @endif
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 mb-3 py-2">{{ __('master-job-req.masuk') }}</button>
+                    <button type="submit"
+        class="btn btn-primary w-100 mb-3 py-2">{{ __('master-job-req.masuk') }}</button>
 
-                    <div class="text-center">
-                        <p class="mb-2">{{ __('master-job-req.belum_punya_akun') }}
-                            <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
-                                data-bs-target="#logoutModal">
-                                {{ __('master-job-req.daftar') }}
-                            </button>
-                        </p>
-                        <p class="mb-2">{{ __('master-job-req.atau_masuk_dengan') }}:</p>
-                        <a href="{{ route('auth-google-redirect') }}">
-                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
-                                width="24">
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <div class="text-center">
+        <p class="mb-2">{{ __('master-job-req.belum_punya_akun') }}
+            <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                {{ __('master-job-req.daftar') }}
+            </button>
+        </p>
+        <p class="mb-2">{{ __('master-job-req.atau_masuk_dengan') }}</p>
+        <a href="{{ route('auth-google-redirect') }}">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="24">
+        </a>
+    </div>
+    </form>
+    </div>
+    </div>
     </div>
     {{-- End Pop Up Login --}}
 
@@ -560,16 +595,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="first_name">{{ __('master-job-req.nama_depan') }}</label>
-                                <input type="text" id="first_name" class="form-control" name="first_name"
-                                    required />
+                                <label class="form-label"
+                                    for="first_name">{{ __('master-job-req.nama_depan') }}</label>
+                                <input type="text" id="first_name" class="form-control" name="first_name" required />
                                 <div id="first_name-error" class="popup-error-card d-none"></div>
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="last_name">{{ __('master-job-req.nama_belakang') }}</label>
-                                <input type="text" id="last_name" class="form-control" name="last_name"
-                                    required />
+                                <label class="form-label"
+                                    for="last_name">{{ __('master-job-req.nama_belakang') }}</label>
+                                <input type="text" id="last_name" class="form-control" name="last_name" required />
                                 <div id="last_name-error" class="popup-error-card d-none"></div>
                             </div>
 
@@ -583,7 +618,8 @@
 
                         <div class="col-md-6 mb-4">
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label class="form-label" for="password">{{ __('master-job-req.kata_sandi') }}</label>
+                                <label class="form-label"
+                                    for="password">{{ __('master-job-req.kata_sandi') }}</label>
                                 <input id="password" class="form-control" type="password" name="password"
                                     required />
                                 <div id="password-error" class="popup-error-card d-none"></div>
@@ -634,7 +670,8 @@
                                     </button>
                                 </p>
                                 <p>{{ __('master-job-req.atau_daftar_dengan') }}</p>
-                                <a href="{{ route('auth-google-redirect') }}" class="btn btn-link btn-floating mx-1">
+                                <a href="{{ route('auth-google-redirect') }}"
+                                    class="btn btn-link btn-floating mx-1">
                                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google"
                                         style="width: 24px; height: 24px;">
                                 </a>
@@ -1094,7 +1131,7 @@
         // Get modal elements
         const loginModalElement = document.getElementById('loginModal');
         const registerModalElement = document.getElementById(
-        'logoutModal'); // Still referring to this as logoutModal, but it's register
+            'logoutModal'); // Still referring to this as logoutModal, but it's register
 
         // Add event listener for Login Modal close
         loginModalElement.addEventListener('hidden.bs.modal', function() {
@@ -1158,7 +1195,7 @@
         // --- SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
         document.addEventListener('DOMContentLoaded', function() {
             // CORRECTED: changed logoLink to logoNavbarLink
-            const logoLink = document.getElementById('logoNavbarLink'); // Corrected ID
+            const logoLink = document.getElementById('dropLang');
             const logoSoundtrack = document.getElementById('logoSoundtrack');
 
             if (logoLink && logoSoundtrack) {
@@ -1184,7 +1221,18 @@
             }
         });
         // --- AKHIR SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
+
+        <
+        !--jQuery-- >
+        <
+        script src = "../../plugins/jquery/jquery.min.js" >
     </script>
-</body>
+    <!-- Bootstrap 4 -->
+    <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <!-- AdminLTE for demo purposes -->
+    <script src="../../dist/js/demo.js"></script>
+
+    </body>
 
 </html>

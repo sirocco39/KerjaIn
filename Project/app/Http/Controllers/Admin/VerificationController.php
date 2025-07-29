@@ -161,9 +161,11 @@ class VerificationController extends Controller
             $verificationRequest->verified_at = now();
             $verificationRequest->save();
 
+
             $user = User::find($verificationRequest->user_id);
             if ($user) {
                 $user->is_worker = 1;
+                $user->photo_url_worker = $verificationRequest->photo_url;
                 $user->save();
             } else {
                 Log::warning("Pengguna dengan ID {$verificationRequest->user_id} tidak ditemukan untuk permintaan verifikasi {$id}.");

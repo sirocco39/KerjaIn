@@ -1,3 +1,4 @@
+<!-- This file name is show.blade.php in reports -->
 @extends('Master.master-admin')
 
 @section('content')
@@ -6,31 +7,30 @@
         <div class="col-lg-10 col-md-12 mx-auto">
             <div class="card mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                    <h6>Detail Laporan #{{ $report->id }}</h6>
-                    <a href="{{ route('admin.reports.index', ['status' => $report->status]) }}" class="btn btn-sm btn-secondary mb-0" id="KembaliBtn">Kembali ke Daftar Laporan</a>
+                    <h6>{{ __('admin/reports.report_detail_id', ['id' => $report->id]) }}</h6>
+                    <a href="{{ route('admin.reports.index', ['status' => $report->status]) }}" class="btn btn-sm btn-secondary mb-0" id="KembaliBtn">{{ __('admin/reports.back_to_report_list') }}</a>
                 </div>
                 <div class="card-body">
                     {{-- Informasi Dasar Laporan --}}
-                    <h5 class="mb-3">Informasi Laporan</h5>
+                    <h5 class="mb-3">{{ __('admin/reports.report_information') }}</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>ID Laporan:</strong> #{{ $report->id }}</p>
-                            <p class="mb-1"><strong>Tanggal Laporan:</strong> {{ $report->created_at->format('F j, Y, H:i') }}</p>
-                            <p class="mb-1"><strong>Status:</strong> <span class="badge {{ $report->status == 'Reviewed' ? 'bg-success' : 'bg-warning text-dark' }}">{{ $report->status }}</span></p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.report_id_colon') }}</strong> #{{ $report->id }}</p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.report_date_colon') }}</strong> {{ $report->created_at->format('F j, Y, H:i') }}</p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.status') }}:</strong> <span class="badge {{ $report->status == 'Reviewed' ? 'bg-success' : 'bg-warning text-dark' }}">{{ $report->status }}</span></p>
                             @if ($report->transaction_id)
-                            <p class="mb-1"><strong>ID Transaksi:</strong> {{ $report->transaction_id }}</p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.transaction_id_colon') }}</strong> {{ $report->transaction_id }}</p>
                             @endif
                         </div>
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Pelapor:</strong> {{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? 'N/A' }} (ID: {{ $report->reporter_id }})</p>
-                            <p class="mb-1"><strong>Email Pelapor:</strong> {{ $report->reporter->email ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>Pengguna Dilaporkan:</strong> {{ $report->reported->first_name . ' ' . $report->reported->last_name ?? 'N/A' }} (ID: {{ $report->reported_id }})</p>
-                            <p class="mb-1"><strong>Email Pengguna Dilaporkan:</strong> {{ $report->reported->email ?? 'N/A' }}</p>
-                            {{-- Tampilkan riwayat laporan di sini --}}
+                            <p class="mb-1"><strong>{{ __('admin/reports.reporter_colon') }}</strong> {{ $report->reporter->first_name . ' ' . $report->reporter->last_name ?? __('admin/reports.n_a') }} (ID: {{ $report->reporter_id }})</p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.reporter_email_colon') }}</strong> {{ $report->reporter->email ?? __('admin/reports.n_a') }}</p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.reported_user_colon') }}</strong> {{ $report->reported->first_name . ' ' . $report->reported->last_name ?? __('admin/reports.n_a') }} (ID: {{ $report->reported_id }})</p>
+                            <p class="mb-1"><strong>{{ __('admin/reports.reported_user_email_colon') }}</strong> {{ $report->reported->email ?? __('admin/reports.n_a') }}</p>
                             @if($report->reported)
                             <p class="mb-1">
-                                <strong>Total Laporan Diterima:</strong>
-                                <span class="badge bg-danger">{{ $report->reported->reportsReceived->count() }} kali</span>
+                                <strong>{{ __('admin/reports.total_reports_received') }}</strong>
+                                <span class="badge bg-danger">{{ $report->reported->reportsReceived->count() }} {{ __('admin/reports.times') }}</span>
                             </p>
                             @endif
                         </div>
@@ -39,7 +39,7 @@
                     <hr>
 
                     {{-- Alasan Laporan --}}
-                    <h5 class="mt-4 mb-3">Alasan Laporan</h5>
+                    <h5 class="mt-4 mb-3">{{ __('admin/reports.report_reason') }}</h5>
                     <p class="alert alert-light">{{ $report->reasons }}</p>
 
                     {{-- Bukti Foto (jika ada) --}}
@@ -49,7 +49,7 @@
                     @endphp
 
                     @if (!empty($photoPaths) && is_array($photoPaths) && isset($photoPaths[0]))
-                    <h5 class="mt-4 mb-3">Bukti Foto</h5>
+                    <h5 class="mt-4 mb-3">{{ __('admin/reports.photo_evidence') }}</h5>
                     <div class="text-center mb-4">
                         {{-- Ambil elemen pertama dari array dan bersihkan '/storage/' prefix jika ada --}}
                         @php
@@ -60,7 +60,7 @@
                         </a>
                     </div>
                     @else
-                    <p class="text-muted">Tidak ada bukti foto dilampirkan.</p>
+                    <p class="text-muted">{{ __('admin/reports.no_photo_evidence_attached') }}</p>
                     @endif
                     @endif
                     <!-- {{-- Bukti Foto (jika ada) --}}
@@ -77,16 +77,16 @@
                     <hr>
 
                     {{-- Aksi Cepat --}}
-                    <h5 class="mt-4 mb-3">Aksi Terkait Pengguna</h5>
+                    <h5 class="mt-4 mb-3">{{ __('admin/reports.user_related_actions') }}</h5>
                     <div class="d-flex flex-wrap gap-2">
                         {{-- Lihat Aktivitas Reporter --}}
                         <a href="{{ route('admin.users.activityLog', ['user' => $report->reporter_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-2 me-2" id="lihat-aktivitas-pelapor">
-                            <i class="material-symbols-rounded text-sm me-1">history</i> Lihat Aktivitas Pelapor
+                            <i class="material-symbols-rounded text-sm me-1">history</i> {{ __('admin/reports.view_reporter_activity') }}
                         </a>
 
                         {{-- Lihat Aktivitas Reported User --}}
                         <a href="{{ route('admin.users.activityLog', ['user' => $report->reported_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-info mb-2 me-2" id="lihat-aktivitas-pengguna-dilaporkan">
-                            <i class="material-symbols-rounded text-sm me-1">manage_accounts</i> Lihat Aktivitas Pengguna Dilaporkan
+                            <i class="material-symbols-rounded text-sm me-1">manage_accounts</i> {{ __('admin/reports.view_reported_user_activity') }}
                         </a>
 
                         {{-- Tombol Blokir / Batal Blokir untuk Reported User --}}
@@ -96,7 +96,7 @@
                             data-user-id="{{ $report->reported_id }}"
                             data-user-name="{{ $report->reported->first_name }} {{ $report->reported->last_name }}"
                             id="unblockUserButton">
-                            <i class="material-symbols-rounded text-sm me-1">lock_open</i> Batal Blokir Pengguna Dilaporkan
+                            <i class="material-symbols-rounded text-sm me-1">lock_open</i> {{ __('admin/reports.unblock_reported_user') }}
                         </button>
                         @else
                         <button type="button" class="btn btn-sm btn-warning mb-2 me-2"
@@ -104,7 +104,7 @@
                             data-user-id="{{ $report->reported_id }}"
                             data-user-name="{{ $report->reported->first_name }} {{ $report->reported->last_name }}"
                             id="blockUserButton">
-                            <i class="material-symbols-rounded text-sm me-1">lock</i> Blokir Pengguna Dilaporkan
+                            <i class="material-symbols-rounded text-sm me-1">lock</i> {{ __('admin/reports.block_reported_user') }}
                         </button>
                         @endif
                     </div>
@@ -112,19 +112,19 @@
                     <hr>
 
                     {{-- Aksi Mark as Reviewed/Not Reviewed --}}
-                    <h5 class="mt-4 mb-3">Status Laporan</h5>
+                    <h5 class="mt-4 mb-3">{{ __('admin/reports.report_status') }}</h5>
                     <form action="{{ route('admin.reports.update', $report) }}" method="POST">
                         @csrf
                         @method('PATCH')
                         @if ($report->status == 'Not Reviewed')
                         <input type="hidden" name="status" value="Reviewed">
                         <button type="submit" class="btn btn-success btn-lg mt-3" id="tandai-sudah-ditinjau">
-                            <i class="material-symbols-rounded text-sm me-1">check_circle</i> Tandai sebagai Ditinjau
+                            <i class="material-symbols-rounded text-sm me-1">check_circle</i> {{ __('admin/reports.mark_as_reviewed') }}
                         </button>
                         @else
                         <input type="hidden" name="status" value="Not Reviewed">
                         <button type="submit" class="btn btn-secondary btn-lg mt-3" id="tandai-belum-ditinjau">
-                            <i class="material-symbols-rounded text-sm me-1">remove_done</i> Tandai sebagai Belum Ditinjau
+                            <i class="material-symbols-rounded text-sm me-1">remove_done</i> {{ __('admin/reports.mark_as_not_reviewed') }}
                         </button>
                         @endif
                     </form>
@@ -138,18 +138,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmBlockModalLabel">Konfirmasi Blokir Pengguna</h5>
+                <h5 class="modal-title" id="confirmBlockModalLabel">{{ __('admin/reports.confirm_block_user') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Anda akan **memblokir** pengguna <strong id="blockUserName"></strong>. Pengguna ini tidak akan bisa login atau mengakses layanan.</p>
-                <p>Apakah Anda yakin ingin melanjutkan?</p>
+                <p>{!! __('admin/reports.confirm_block_message') !!}</p>
+                <p>{{ __('admin/reports.are_you_sure_continue') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="Batalbtn">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="Batalbtn">{{ __('admin/reports.cancel') }}</button>
                 <form id="blockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-warning" id="BlokirPgn">Ya, Blokir</button>
+                    <button type="submit" class="btn btn-warning" id="BlokirPgn">{{ __('admin/reports.yes_block') }}</button>
                 </form>
             </div>
         </div>
@@ -160,18 +160,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmUnblockModalLabel">Konfirmasi Batal Blokir Pengguna</h5>
+                <h5 class="modal-title" id="confirmUnblockModalLabel">{{ __('admin/reports.confirm_unblock_user') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Anda akan **membatalkan blokir** pengguna <strong id="unblockUserName"></strong>. Pengguna ini akan bisa login dan mengakses layanan kembali.</p>
-                <p>Apakah Anda yakin ingin melanjutkan?</p>
+                <p>{!! __('admin/reports.confirm_unblock_message') !!}</p>
+                <p>{{ __('admin/reports.are_you_sure_continue') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="batalBatalBlokir">Batal</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="batalBatalBlokir">{{ __('admin/reports.cancel') }}</button>
                 <form id="unblockUserForm" action="" method="POST" style="display:inline;">
                     @csrf
-                    <button type="submit" class="btn btn-success" id="BatalBlokir">Ya, Batal Blokir</button>
+                    <button type="submit" class="btn btn-success" id="BatalBlokir">{{ __('admin/reports.yes_unblock') }}</button>
                 </form>
             </div>
         </div>

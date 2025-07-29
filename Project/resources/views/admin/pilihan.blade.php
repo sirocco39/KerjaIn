@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilihan Admin</title>
+    <title>{{ __('admin/pilihan.title') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         main {
@@ -60,59 +60,59 @@
 </head>
 
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/job-req/home" id="logoNavbarLink">
-                <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain"
-                    id="logoNavbar">
-            </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
-  </div>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/job-req/home" id="logoNavbarLink">
+            <img src="{{ asset('Image/Logo/Logo Kerjain - LightBackground.png') }}" alt="Logo Kerjain"
+                id="logoNavbar">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="btn btn-danger">{{ __('admin/pilihan.logout') }}</button>
+        </form>
+    </div>
 </nav>
 
 <body>
 
     <div class="container-fluid p-0">
-    @if(session('custom_info_alert'))
-    {{-- Menampilkan alert dari controller jika ada --}}
-    <div class="alert alert-info alert-dismissible fade show text-center w-100 rounded-0 mb-0" role="alert">
-        {{ session('custom_info_alert') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
+        @if(session('custom_info_alert'))
+        {{-- Menampilkan alert dari controller jika ada --}}
+        <div class="alert alert-info alert-dismissible fade show text-center w-100 rounded-0 mb-0" role="alert">
+            {{ session('custom_info_alert') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="text mb-2">
-                    <h1>Pilih Dashboard untuk Admin</h1>
-                    <p class="lead">Selamat datang! Silakan pilih halaman yang ingin Anda akses:</p>
+                    <h1>{{ __('admin/pilihan.welcome_message_title') }}</h1>
+                    <p class="lead">{{ __('admin/pilihan.welcome_message_lead') }}</p>
                 </div>
 
                 <div class="row justify-content-center gap-3">
                     <a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-reset"> {{-- Ganti dengan rute dashboard admin Anda --}}
                         <div class="card-choice admin" style="color: white">
                             <h3><i class="bi bi-gear-fill"></i></h3>
-                            <h5>Halaman Admin</h5>
-                            <p>Mengelola pengguna, laporan, dll.</p>
+                            <h5>{{ __('admin/pilihan.admin_page_title') }}</h5>
+                            <p>{{ __('admin/pilihan.admin_page_description') }}</p>
                         </div>
                     </a>
                     <a href="{{ route('job-req.home') }}" class="text-decoration-none text-reset">
                         <div class="card-choice requester">
                             <h3><i class="bi bi-briefcase-fill"></i></h3>
-                            <h5>Halaman Job Req</h5>
-                            <p>Mengelola permintaan pekerjaan.</p>
+                            <h5>{{ __('admin/pilihan.job_req_page_title') }}</h5>
+                            <p>{{ __('admin/pilihan.job_req_page_description') }}</p>
                         </div>
                     </a>
                     <a href="{{ route('job-taker.home') }}" class="text-decoration-none text-reset"> {{-- Ganti dengan rute job taker Anda jika ada --}}
                         <div class="card-choice taker" style="color: white">
                             <h3><i class="bi bi-person-workspace"></i></h3>
-                            <h5>Halaman Job Taker</h5>
-                            <p>Melihat dan menerima pekerjaan.</p>
+                            <h5>{{ __('admin/pilihan.job_taker_page_title') }}</h5>
+                            <p>{{ __('admin/pilihan.job_taker_page_description') }}</p>
                         </div>
                     </a>
                 </div>

@@ -140,7 +140,8 @@ class Chat extends Component
                         'user_id' => $requester->id,
                         'amount' => $priceDifference,
                         'type' => 'credit',
-                        'description' => 'Penambahan saldo ditahan untuk pekerjaan: ' . $workRequest->title,
+                        'description_id' => 'Penambahan saldo ditahan untuk pekerjaan: ' . $workRequest->title,
+                        'description_en' => 'Added balance on hold for the job: ' . $workRequest->title,
                     ]);
 
                     $user = Auth::user();
@@ -162,7 +163,8 @@ class Chat extends Component
                         'user_id' => $requester->id,
                         'amount' => $refundAmount,
                         'type' => 'debit',
-                        'description' => 'Pengembalian saldo ditahan untuk pekerjaan: ' . $workRequest->title,
+                        'description_id' => 'Pengembalian saldo ditahan untuk pekerjaan: ' . $workRequest->title,
+                        'description_en' => 'Held balance refund for a job: ' . $workRequest->title,
                     ]);
                     $user = Auth::user();
                     activity()->inLog('Finance')->causedBy($user)->on($workRequest)

@@ -1,3 +1,4 @@
+<!-- This file name is all-list.blade.php inside users -->
 @extends('Master.master-admin')
 
 @section('content')
@@ -6,13 +7,13 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>Daftar Semua Pengguna</h6>
+                    <h6>{{ __('admin/users.all_users_list') }}</h6>
                     {{-- Search Bar for All Users List --}}
                     <div class="p-0 position-relative mt-3">
                         <form id="allUsersSearchForm" action="{{ route('admin.users.all') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
-                                <input type="text" id="allUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna berdasarkan ID atau Nama..." autocomplete="off" value="{{ request('search_query') }}">
-                                <button class="btn btn-primary m-2" type="submit" id="btn-cari">Cari</button>
+                                <input type="text" id="allUsersSearchInput" name="search_query" class="form-control rounded-start bg-white border border-primary p-2" placeholder="{{ __('admin/users.search_all_users_placeholder') }}" autocomplete="off" value="{{ request('search_query') }}">
+                                <button class="btn btn-primary m-2" type="submit" id="btn-cari">{{ __('admin/users.search_button') }}</button>
                             </div>
                         </form>
                         <div id="allUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
@@ -23,10 +24,10 @@
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     @if(request('search_query') && $users->isEmpty())
-                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert"  style="color:white">
+                    <div class="alert alert-danger d-flex align-items-center mb-3 mx-4" role="alert" style="color:white">
                         <i class="material-symbols-rounded me-2">error</i>
                         <div>
-                            Pengguna dengan ID atau Nama <strong>{{ request('search_query') }}</strong> tidak ditemukan.
+                            {!! __('admin/users.user_not_found', ['query' => request('search_query')]) !!}
                         </div>
                     </div>
                     @endif
@@ -34,11 +35,11 @@
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Nama</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">Email</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Peran</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Status</th>
-                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">Aksi</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">{{ __('admin/users.name') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">{{ __('admin/users.email') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">{{ __('admin/users.role') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">{{ __('admin/users.status') }}</th>
+                                    <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 text-center">{{ __('admin/users.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,22 +57,22 @@
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         <span class="badge badge-sm bg-gradient-{{ $user->is_worker ? 'info' : 'primary' }}">
-                                            {{ $user->is_worker ? 'Pekerja' : 'Pengguna Biasa' }}
+                                            {{ $user->is_worker ? __('admin/users.worker') : __('admin/users.regular_user') }}
                                         </span>
                                     </td>
                                     <td class="align-middle text-center">
                                         <span class="badge badge-sm bg-gradient-{{ $user->is_blocked ? 'danger' : 'success' }}">
-                                            {{ $user->is_blocked ? 'Diblokir' : 'Aktif' }}
+                                            {{ $user->is_blocked ? __('admin/users.blocked') : __('admin/users.active') }}
                                         </span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0" id="SeeActivityBtn">Lihat Aktivitas</a>
+                                        <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0" id="SeeActivityBtn">{{ __('admin/users.view_activity') }}</a>
                                         {{-- Add other action buttons if needed, e.g., edit, block/unblock --}}
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center text-secondary text-sm">Tidak ada pengguna ditemukan.</td>
+                                    <td colspan="5" class="text-center text-secondary text-sm">{{ __('admin/users.no_users_found') }}</td>
                                 </tr>
                                 @endforelse
                             </tbody>

@@ -91,9 +91,7 @@ class RequestController extends Controller
 
         // Ensure user has sufficient balance for jobCost + service_fee (2500)
         if ($user->balance < $jobCost) {
-            return back()->withErrors([
-                'workPriceLabel' => 'Saldo Anda tidak cukup untuk membuat pekerjaan ini.'
-            ])->withInput();
+            return back()->withErrors(['workPriceLabel' => __('alerts.saldo_tidak_cukup_untuk_pekerjaan')])->withInput();
         }
 
         $user->balance -= $jobCost;
@@ -123,7 +121,8 @@ class RequestController extends Controller
             'user_id' => $user->id,
             'amount' => $jobCost,
             'type' => 'credit',
-            'description' => 'Penahanan saldo untuk pekerjaan: ' . $workRequest->title,
+            'description_id' => 'Penahanan saldo untuk pekerjaan: ' . $workRequest->title,
+            'description_en' => 'Balance reserved for the job: ' . $workRequest->title,
         ]);
 
         $result = $workRequest->save();
@@ -133,9 +132,9 @@ class RequestController extends Controller
             'status' => 'holding',
         ]);
         if ($result) {
-            return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil dibuat!');
+            return redirect()->route('job-req.home')->with('custom_success_alert', __('alerts.pekerjaan_berhasil_dibuat'));
         } else {
-            return back()->with('custom_error_alert', 'Terjadi kesalahan saat membuat permintaan pekerjaan.');
+            return back()->with('custom_error_alert', __('alerts.terjadi_kesalahan'));
         }
     }
 
@@ -170,7 +169,7 @@ class RequestController extends Controller
                 ->on($workRequest)
                 ->causedBy(Auth::user())
                 ->log("Percobaan akses tidak sah ke halaman edit pekerjaan '{$workRequest->id}'. Pekerjaan sudah dimulai/lewat waktu.");
-            return redirect()->route('job-req.home')->with('custom_error_alert', 'Pekerjaan ini sudah dimulai atau telah melewati waktu mulai (UTC) dan tidak dapat diubah.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', __('alerts.pekerjaan_sudah_dimulai'));
         }
 
         if (Auth::id() !== $workRequest->requester_id) {
@@ -182,7 +181,7 @@ class RequestController extends Controller
                 ->log("Percobaan akses tidak sah ke halaman edit pekerjaan '{$workRequest->id}'.");
 
             // Alihkan dengan pesan error
-            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang mengubah pekerjaan ini.');
+            return redirect()->route('job-req.home')->with('custom_error_alert', __('alerts.anda_tidak_berwenang'));
         }
         // If the request is not found, it will throw a 404 error
         if (!$workRequest || $workRequest->deleted_at) {
@@ -247,7 +246,8 @@ class RequestController extends Controller
                         'user_id' => $user->id,
                         'amount' => $priceDifference,
                         'type' => 'credit',
-                        'description' => 'Penambahan saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_id' => 'Penambahan saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_en' => 'Extra balance on hold for price update on: ' . $workRequest->title,
                     ]);
                     activity()->inLog('Finance')->causedBy($user)->on($user)
                         ->log("Dana tambahan sebesar Rp" . number_format($priceDifference) . " ditahan dari {$user->first_name} karena perubahan harga.");
@@ -263,7 +263,8 @@ class RequestController extends Controller
                         'user_id' => $user->id,
                         'amount' => $refundAmount,
                         'type' => 'debit',
-                        'description' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_id' => 'Pengembalian saldo ditahan untuk perubahan harga pada: ' . $workRequest->title,
+                        'description_id' => 'Balance refund on hold due to price adjustment on: ' . $workRequest->title,
                     ]);
                     activity()->inLog('Finance')->causedBy($user)->on($user)
                         ->log("Dana sebesar Rp" . number_format($refundAmount) . " dikembalikan ke {$user->first_name} karena perubahan harga.");
@@ -304,7 +305,7 @@ class RequestController extends Controller
         }
 
         // 7. Redirect jika berhasil
-        return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil diperbarui!');
+        return redirect()->route('job-req.home')->with('custom_success_alert', __('alerts.pekerjaan_berhasil_diperbarui'));
     }
     /**
      * Remove the specified resource from storage.
@@ -318,7 +319,7 @@ class RequestController extends Controller
 
                 // 1. Otorisasi: Pastikan yang menghapus adalah pemilik request
                 if (Auth::id() !== $workRequest->requester_id) {
-                    return back()->with('custom_error_alert', 'Anda tidak berwenang untuk membatalkan pekerjaan ini.');
+                    return back()->with('custom_error_alert', __('alerts.anda_tidak_berwenang'));
                 }
 
                 // 2. Validasi: Jangan biarkan request dihapus jika sudah ada offer diterima atau sedang berjalan
@@ -345,7 +346,8 @@ class RequestController extends Controller
                     'user_id' => $user->id,
                     'amount' => $refundAmount,
                     'type' => 'debit',
-                    'description' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $workRequest->title,
+                    'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $workRequest->title,
+                    'description_en' => 'Balance refund from job cancellation: ' . $workRequest->title,
                 ]);
 
                 activity()
@@ -372,7 +374,7 @@ class RequestController extends Controller
         // 8. Jika semua berhasil, redirect dengan pesan sukses
         $refundAmount = session('refund_amount', 0); // Get the flashed amount, default to 0
         $formattedRefundAmount = 'Rp' . number_format($refundAmount, 0, ',', '.');
-        return redirect()->route('job-req.home')->with('custom_success_alert', 'Pekerjaan berhasil dibatalkan dan dana sebesar ' . $formattedRefundAmount . ' telah dikembalikan.');
+        return redirect()->route('job-req.home')->with('custom_success_alert', __('alerts.pekerjaan_dibatalkan_refund', ['amount' => $formattedRefundAmount]));
     }
 
     public function showOngoing($id)

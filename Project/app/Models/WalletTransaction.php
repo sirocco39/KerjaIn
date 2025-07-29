@@ -10,7 +10,8 @@ class WalletTransaction extends Model
         'user_id',
         'amount',
         'type', // 'top_up', 'withdrawal', etc.
-        'description', // Optional description of the transaction
+        'description_id', // Optional description of the transaction
+        'description_en', // Optional description of the transaction
     ];
     public function user()
     {

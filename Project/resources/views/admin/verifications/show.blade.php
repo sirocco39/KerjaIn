@@ -8,24 +8,24 @@
                 <div class="card-header pb-0 p-3">
                     <div class="row">
                         <div class="col-6 d-flex align-items-center">
-                            <h6 class="mb-0">Detail Permintaan Verifikasi</h6>
+                            <h6 class="mb-0">{{ __('admin/verifications.verification_request_detail') }}</h6>
                         </div>
                         <div class="col-6 text-end" style="padding-right: 12px">
-                            {{-- Tombol Kembali --}}
                             <a href="{{ route('admin.verifications.index', ['status' => $verificationRequest->status, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-dark mb-0" id="backButton">
-                                <i class="material-symbols-rounded text-sm">arrow_back</i> Kembali
+                                <i class="material-symbols-rounded text-sm">arrow_back</i> {{ __('admin/verifications.back') }}
                             </a>
                         </div>
+
                     </div>
                 </div>
                 <div class="card-body p-3">
                     {{-- Search Bar with Recommendations for Show Page --}}
                     <div class="mb-4">
-                        <label for="userSearchShow" class="form-label">Cari Pengguna:</label>
+                        <label for="userSearchShow" class="form-label">{{ __('admin/verifications.search_user') }}</label>
                         <div class="row g-0 border rounded overflow-hidden">
                             <div class="col">
                                 <input type="text" id="userSearchShow" class="form-control border-0 py-3 px-3"
-                                    placeholder="Cari ID, NIK, atau Nama Lengkap pengguna..."
+                                    placeholder="{{ __('admin/verifications.search_placeholder') }}"
                                     value="{{ $search ?? '' }}">
                             </div>
                             <div class="col-auto">
@@ -33,7 +33,7 @@
                                     type="button"
                                     id="clearSearchShow"
                                     style="width: 80px;">
-                                    Clear
+                                    {{ __('admin/verifications.clear') }}
                                 </button>
                             </div>
                         </div>
@@ -47,16 +47,16 @@
                         <div style="padding-top: 1rem">
                             @if ($previousRequest)
                             <a href="{{ route('admin.verifications.show', ['id' => $previousRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary order-1" id="previousRequestButton">
-                                <i class="material-symbols-rounded text-sm">chevron_left</i> Sebelumnya
+                                <i class="material-symbols-rounded text-sm">chevron_left</i> {{ __('admin/verifications.previous') }}
                             </a>
                             @endif
                         </div>
                         <div class="flex-grow-1 mx-1">
                             <select id="statusFilteredUserDropdown" class="form-select" style="border-radius: 1px; text-align: center; background-color: #bcdeff;">
-                                <option value="">Pilih Pengguna (Status: {{ ucfirst($verificationRequest->status) }})</option>
+                                <option value="">{{ __('admin/verifications.select_user_status', ['status' => ucfirst($verificationRequest->status)]) }}</option>
                                 @foreach ($sameStatusRequests as $req)
                                 <option value="{{ $req->id }}" {{ $req->id == $verificationRequest->id ? 'selected' : '' }}>
-                                    {{ $req->id }} - {{ $req->first_name }} {{ $req->last_name }} (NIK: {{ $req->nik }})
+                                    {{ $req->id }} - {{ $req->first_name }} {{ $req->last_name }} ({{ __('admin/verifications.nik') }} {{ $req->nik }})
                                 </option>
                                 @endforeach
                             </select>
@@ -64,7 +64,7 @@
                         <div style="padding-top: 1rem">
                             @if ($nextRequest)
                             <a href="{{ route('admin.verifications.show', ['id' => $nextRequest->id, 'search' => $search ?? '']) }}" class="btn btn-sm btn-outline-secondary" id="nextRequestButton">
-                                Selanjutnya <i class="material-symbols-rounded text-sm">chevron_right</i>
+                                {{ __('admin/verifications.next') }} <i class="material-symbols-rounded text-sm">chevron_right</i>
                             </a>
                             @endif
                         </div>
@@ -84,69 +84,69 @@
                     </div>
                     @endif
 
-                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Informasi Pengguna</h6>
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">{{ __('admin/verifications.user_information') }}</h6>
                     <ul class="list-group">
                         <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-3 text-sm">Nama Lengkap:
+                                <h6 class="mb-3 text-sm">{{ __('admin/verifications.full_name') }}:
                                     <span class="text-dark font-weight-bold ms-sm-2">
                                         {{ $verificationRequest->first_name }} {{ $verificationRequest->last_name }}
                                     </span>
                                 </h6>
-                                <span class="mb-2 text-xs">Email:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
                                     <span class="text-dark font-weight-bold ms-sm-2">
                                         {{ $verificationRequest->user->email ?? 'N/A' }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">Nomor Telepon:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->phone_number ?? 'N/A' }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">Tanggal Lahir:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ \Carbon\Carbon::parse($verificationRequest->birthdate)->format('d M Y') }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">Jenis Kelamin:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.gender') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->gender ?? 'N/A' }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">NIK:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.nik') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->nik }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">Alamat:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.address') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->address ?? 'N/A' }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">Nama Rekening Bank:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.bank_account_name') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->account_name ?? 'N/A' }}
                                     </span>
                                 </span>
-                                <span class="mb-2 text-xs">Nomor Rekening Bank:
+                                <span class="mb-2 text-xs">{{ __('admin/verifications.bank_account_number') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->account_number ?? 'N/A' }}
                                     </span>
                                 </span>
-                                <span class="text-xs">Diajukan pada:
+                                <span class="text-xs">{{ __('admin/verifications.submitted_on') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->created_at->format('d M Y H:i') }}
                                     </span>
                                 </span>
                                 @if ($verificationRequest->status == 'approved' || $verificationRequest->status == 'rejected')
-                                <span class="text-xs mt-2">Diperbarui pada:
+                                <span class="text-xs mt-2">{{ __('admin/verifications.updated_on') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->updated_at->format('d M Y H:i') }}
                                     </span>
                                 </span>
                                 @endif
                                 @if ($verificationRequest->status == 'approved')
-                                <span class="text-xs mt-2">Diverifikasi pada:
+                                <span class="text-xs mt-2">{{ __('admin/verifications.verified_on') }}:
                                     <span class="text-dark ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->verified_at ? $verificationRequest->verified_at->format('d M Y H:i') : 'N/A' }}
                                     </span>
@@ -154,7 +154,7 @@
                                 @endif
                                 {{-- Menampilkan alasan penolakan jika ada --}}
                                 @if ($verificationRequest->status == 'rejected' && $verificationRequest->rejection_reason)
-                                <span class="text-xs mt-2">Alasan Penolakan:
+                                <span class="text-xs mt-2">{{ __('admin/verifications.rejection_reason') }}
                                     <span class="text-danger ms-sm-2 font-weight-bold">
                                         {{ $verificationRequest->rejection_reason }}
                                     </span>
@@ -162,7 +162,7 @@
                                 @endif
                             </div>
                             <div class="ms-auto text-end">
-                                <h6 class="text-sm">Status:
+                                <h6 class="text-sm">{{ __('admin/verifications.status') }}:
                                     <span class="badge badge-sm
                                                 @if($verificationRequest->status == 'pending') bg-gradient-warning
                                                 @elseif($verificationRequest->status == 'approved') bg-gradient-success
@@ -175,41 +175,41 @@
                         </li>
                     </ul>
 
-                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-4">Dokumen Pendukung</h6>
+                    <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-4">{{ __('admin/verifications.supporting_documents') }}</h6>
                     <div class="row">
                         <div class="col-md-6 mb-md-0 mb-4">
                             <div class="card card-body border card-plain border-radius-lg d-flex flex-column justify-content-between h-100">
-                                <p class="text-dark text-sm font-weight-bold">Foto Pengguna:</p>
+                                <p class="text-dark text-sm font-weight-bold">{{ __('admin/verifications.user_photo') }}</p>
                                 @if ($verificationRequest->photo_url)
                                 <a href="{{ Storage::url($verificationRequest->photo_url) }}" target="_blank">
-                                    <img src="{{ Storage::url($verificationRequest->photo_url) }}" class="img-fluid border-radius-lg mb-3" alt="Foto Pengguna">
+                                    <img src="{{ Storage::url($verificationRequest->photo_url) }}" class="img-fluid border-radius-lg mb-3" alt="{{ __('admin/verifications.user_photo') }}">
                                 </a>
                                 @else
-                                <p class="text-muted">Tidak ada foto pengguna yang diunggah.</p>
+                                <p class="text-muted">{{ __('admin/verifications.no_user_photo_uploaded') }}</p>
                                 @endif
                             </div>
                         </div>
                         <div class="col-md-6 mb-md-0 mb-4">
                             <div class="card card-body border card-plain border-radius-lg d-flex flex-column justify-content-between h-100">
-                                <p class="text-dark text-sm font-weight-bold">Foto KTP:</p>
+                                <p class="text-dark text-sm font-weight-bold">{{ __('admin/verifications.id_card_photo') }}</p>
                                 @if ($verificationRequest->id_card_url)
                                 <a href="{{ Storage::url($verificationRequest->id_card_url) }}" target="_blank">
-                                    <img src="{{ Storage::url($verificationRequest->id_card_url) }}" class="img-fluid border-radius-lg mb-3" alt="Foto KTP">
+                                    <img src="{{ Storage::url($verificationRequest->id_card_url) }}" class="img-fluid border-radius-lg mb-3" alt="{{ __('admin/verifications.id_card_photo') }}">
                                 </a>
                                 @else
-                                <p class="text-muted">Tidak ada foto KTP yang diunggah.</p>
+                                <p class="text-muted">{{ __('admin/verifications.no_id_card_photo_uploaded') }}</p>
                                 @endif
                             </div>
                         </div>
                         <div class="col-md-6 mt-4">
                             <div class="card card-body border card-plain border-radius-lg d-flex flex-column justify-content-between h-100">
-                                <p class="text-dark text-sm font-weight-bold">Foto Selfie dengan KTP:</p>
+                                <p class="text-dark text-sm font-weight-bold">{{ __('admin/verifications.selfie_with_id_card_photo') }}</p>
                                 @if ($verificationRequest->selfie_with_id_card_url)
                                 <a href="{{ Storage::url($verificationRequest->selfie_with_id_card_url) }}" target="_blank">
-                                    <img src="{{ Storage::url($verificationRequest->selfie_with_id_card_url) }}" class="img-fluid border-radius-lg mb-3" alt="Foto Selfie dengan KTP">
+                                    <img src="{{ Storage::url($verificationRequest->selfie_with_id_card_url) }}" class="img-fluid border-radius-lg mb-3" alt="{{ __('admin/verifications.selfie_with_id_card_photo') }}">
                                 </a>
                                 @else
-                                <p class="text-muted">Tidak ada foto selfie dengan KTP yang diunggah.</p>
+                                <p class="text-muted">{{ __('admin/verifications.no_selfie_id_card_photo_uploaded') }}</p>
                                 @endif
                             </div>
                         </div>
@@ -219,16 +219,16 @@
                     @if ($verificationRequest->status == 'pending')
                     <div class="row mt-4">
                         <div class="col-md-12">
-                            <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">Aksi</h6>
+                            <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">{{ __('admin/verifications.actions') }}</h6>
                             <form action="{{ route('admin.verifications.approve', $verificationRequest->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="button" class="btn bg-gradient-success mb-0 me-2" data-bs-toggle="modal" data-bs-target="#approveConfirmationModal" id="approveButton">
-                                    <i class="material-symbols-rounded text-sm">check_circle</i> Setujui
+                                    <i class="material-symbols-rounded text-sm">check_circle</i> {{ __('admin/verifications.approve') }}
                                 </button>
                             </form>
                             {{-- Tombol Tolak memicu modal --}}
                             <button type="button" class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#rejectReasonModal" id="rejectButton">
-                                <i class="material-symbols-rounded text-sm">cancel</i> Tolak
+                                <i class="material-symbols-rounded text-sm">cancel</i> {{ __('admin/verifications.reject') }}
                             </button>
                         </div>
                     </div>
@@ -243,7 +243,7 @@
                 <div class="card-header pb-0 p-3">
                     <div class="row">
                         <div class="col-12 d-flex align-items-center">
-                            <h6 class="mb-0">Detail Akun Pengguna</h6>
+                            <h6 class="mb-0">{{ __('admin/verifications.user_account_details') }}</h6>
                         </div>
                     </div>
                 </div>
@@ -251,56 +251,56 @@
                     <ul class="list-group">
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">ID Pengguna:</h6>
-                                <span class="text-xs">{{ $verificationRequest->user->id ?? 'N/A' }}</span>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.user_id_colon') }}</h6>
+                                <span class="text-xs">{{ $verificationRequest->user->id ?? __('admin/verifications.n_a') }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Nama Pengguna:</h6>
-                                <span class="text-xs">{{ $verificationRequest->user ? $verificationRequest->user->first_name . ' ' . $verificationRequest->user->last_name : 'N/A' }}</span>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.username_colon') }}</h6>
+                                <span class="text-xs">{{ $verificationRequest->user ? $verificationRequest->user->first_name . ' ' . $verificationRequest->user->last_name : __('admin/verifications.n_a') }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Role:</h6>
-                                <span class="text-xs">{{ $verificationRequest->user->role ?? 'N/A' }}</span>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.role_colon') }}</h6>
+                                <span class="text-xs">{{ $verificationRequest->user->role ?? __('admin/verifications.n_a') }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Saldo Kerjain:</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.saldokerjain_balance') }}</h6>
                                 <span class="text-xs">Rp {{ number_format($verificationRequest->user->saldokerjain ?? 0, 2, ',', '.') }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Status Pekerja:</h6>
-                                <span class="text-xs">{{ ($verificationRequest->user->is_worker ?? 0) ? 'Ya' : 'Tidak' }}</span>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.worker_status') }}</h6>
+                                <span class="text-xs">{{ ($verificationRequest->user->is_worker ?? 0) ? __('admin/verifications.yes') : __('admin/verifications.no') }} }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Rating:</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.rating_colon') }}</h6>
                                 <span class="text-xs">{{ number_format($verificationRequest->user->rating ?? 0, 2) }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg {{ ($verificationRequest->user->is_worker ?? 0) ? '' : 'd-none'}}">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Pekerjaan Selesai:</h6>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.jobs_completed') }}</h6>
                                 <span class="text-xs">{{ $verificationRequest->user->job_done ?? 0 }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Akun Dibuat:</h6>
-                                <span class="text-xs">{{ $verificationRequest->user?->created_at ? $verificationRequest->user->created_at->format('d M Y H:i') : 'N/A' }}</span>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.account_created') }}</h6>
+                                <span class="text-xs">{{ $verificationRequest->user?->created_at ? $verificationRequest->user->created_at->format('d M Y H:i') :  __('admin/verifications.n_a') }}</span>
                             </div>
                         </li>
                         <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
                             <div class="d-flex flex-column">
-                                <h6 class="mb-1 text-dark font-weight-bold text-sm">Terakhir Diperbarui:</h6>
-                                <span class="text-xs">{{ $verificationRequest->user?->updated_at ? $verificationRequest->user->updated_at->format('d M Y H:i') : 'N/A' }}</span>
+                                <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ __('admin/verifications.last_updated') }}</h6>
+                                <span class="text-xs">{{ $verificationRequest->user?->updated_at ? $verificationRequest->user->updated_at->format('d M Y H:i') :  __('admin/verifications.n_a') }}</span>
                             </div>
                         </li>
                     </ul>
@@ -315,34 +315,33 @@
     <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rejectReasonModalLabel">Tolak Verifikasi Pengguna</h5>
+                <h5 class="modal-title" id="rejectReasonModalLabel">{{ __('admin/verifications.reject_user_verification') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('admin.verifications.reject', $verificationRequest->id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="rejection_reason" class="form-label">Alasan Penolakan:</label>
-                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" placeholder="Berikan alasan mengapa permintaan verifikasi ini ditolak." required></textarea>
+                        <label for="rejection_reason" class="form-label">{{ __('admin/verifications.reason_for_rejection') }}</label>
+                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" placeholder="{{ __('admin/verifications.provide_rejection_reason_placeholder') }}" required></textarea>
                         @error('rejection_reason')
                         <div class="text-danger text-sm mt-1">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <p class="text-sm font-weight-bold mb-2">Pilih Alasan Cepat:</p>
-                    <div class="d-flex flex-wrap gap-2"> {{-- Flexbox untuk layout gelembung --}}
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Foto KTP buram atau tidak jelas." id="KTPBuram" >KTP Buram</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Data NIK tidak sesuai." id="NIKtidaksesuai">NIK Tidak Sesuai</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Wajah di foto selfie tidak terlihat jelas." id="WajahTidakJelas">Wajah Tidak Jelas</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Foto selfie dengan KTP tidak sesuai ketentuan." id="SelfieSalah">Selfie KTP Salah</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Data diri tidak konsisten." id="Datatidakkonsisten">Data Tidak Konsisten</span>
-                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="Dokumen yang diunggah tidak valid." id="DokumenTidakValid">Dokumen Tidak Valid</span>
-                        {{-- Tambahkan lebih banyak opsi sesuai kebutuhan --}}
+                    <p class="text-sm font-weight-bold mb-2">{{ __('admin/verifications.choose_quick_reason') }}</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="{{ __('admin/verifications.blurry_id_card') }}">{{ __('admin/verifications.blurry_id_card') }}</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="{{ __('admin/verifications.nik_mismatch') }}">{{ __('admin/verifications.nik_mismatch') }}</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="{{ __('admin/verifications.unclear_face') }}">{{ __('admin/verifications.unclear_face') }}</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="{{ __('admin/verifications.incorrect_selfie_id_card') }}">{{ __('admin/verifications.incorrect_selfie_id_card') }}</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="{{ __('admin/verifications.inconsistent_data') }}">{{ __('admin/verifications.inconsistent_data') }}</span>
+                        <span class="badge bg-gradient-secondary reason-chip cursor-pointer" data-reason="{{ __('admin/verifications.invalid_document_uploaded') }}">{{ __('admin/verifications.invalid_document_uploaded') }}</span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="BatalButton">Batal</button>
-                    <button type="submit" class="btn btn-danger" id="TolakVerifikasi">Tolak Verifikasi</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="BatalButton">{{ __('admin/verifications.cancel') }}</button>
+                    <button type="submit" class="btn btn-danger" id="TolakVerifikasi">{{ __('admin/verifications.reject_verification') }}</button>
                 </div>
             </form>
         </div>
@@ -353,18 +352,18 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="approveConfirmationModalLabel">Konfirmasi Persetujuan</h5>
+                <h5 class="modal-title" id="approveConfirmationModalLabel">{{ __('admin/verifications.approve_confirmation') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Apakah Anda yakin ingin <b>menyetujui</b> permintaan verifikasi ini?</p>
-                <p class="text-danger">Tindakan ini tidak dapat dibatalkan.</p>
+                <p>{!! __('admin/verifications.confirm_approve_message') !!}</p>
+                <p class="text-danger">{{ __('admin/verifications.action_cannot_be_undone') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="CancelBtn">Batalkan</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="CancelBtn">{{ __('admin/verifications.cancel') }}</button>
                 <form action="{{ route('admin.verifications.approve', $verificationRequest->id) }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn bg-gradient-success" id="yesApproveBtn" >Ya, Setujui</button>
+                    <button type="submit" class="btn bg-gradient-success" id="yesApproveBtn">{{ __('admin/verifications.yes_approve') }}</button>
                 </form>
             </div>
         </div>

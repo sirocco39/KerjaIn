@@ -29,6 +29,9 @@ class User extends Authenticatable
         'locked_balance',
         'bank_acc_num',
         'google_id',
+        'birth_date',              
+        'photo_url_user',          
+        'photo_url_worker',       
     ];
 
     protected $attributes = [

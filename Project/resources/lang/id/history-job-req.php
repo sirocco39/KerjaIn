@@ -43,4 +43,12 @@ return [
     'modal_laporan_keluh_kesah' => 'Keluh Kesah Anda',
     'placeholder_keluh_kesah' => 'Ceritakan masalah yang Anda alami...',
     'tombol_kirim_laporan' => 'Kirim Laporan',
+
+    'status' => [
+        'accepted' => 'Diterima',
+        'in_progress' => 'Dikerjakan',
+        'completed' => 'Selesai',
+        'cancelled' => 'Dibatalkan',
+        'submitted' => 'Ditinjau',
+    ],
 ];

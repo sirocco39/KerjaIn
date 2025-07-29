@@ -42,4 +42,13 @@ return [
     'modal_laporan_keluh_kesah' => 'Your Complaint',
     'placeholder_keluh_kesah' => 'Describe the problem you experienced...',
     'tombol_kirim_laporan' => 'Send Report',
+
+
+    'status' => [
+        'accepted' => 'Accepted',
+        'in_progress' => 'In Progress',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        'submitted' => 'Submitted',
+    ],
 ];

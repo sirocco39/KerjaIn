@@ -269,6 +269,8 @@ class WorkerRegistrationController extends Controller
         $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
         if ($verificationRequest) {
             return redirect()->route('worker.register.pending')->with('custom_success_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
+            // If there's a pending or approved verification request, redirect to the pending page
+            return redirect()->route('worker.register.pending')->with('custom_success_alert', __('alerts.verifikasi_diproses'));
         }
         $data = Session::get('worker_registration.step1', []);
         $ocrData = Session::get('worker_registration.ocr_data', []);
@@ -334,7 +336,7 @@ class WorkerRegistrationController extends Controller
     public function createStep2()
     {
         if (!Session::has('worker_registration.step1')) {
-            return redirect()->route('worker.register.step1')->with('custom_error_alert', 'Silakan lengkapi Data Pribadi terlebih dahulu.');
+            return redirect()->route('worker.register.step1')->with('custom_error_alert', __('alerts.lengkapi_langkah_sebelumnya'));
         }
         return view('join-worker.join2');
     }
@@ -342,7 +344,7 @@ class WorkerRegistrationController extends Controller
     public function store2(Request $request)
     {
         if (!Session::has('worker_registration.step1')) {
-            return redirect()->route('worker.register.step1')->with('custom_error_alert', 'Silakan lengkapi Data Pribadi terlebih dahulu.');
+            return redirect()->route('worker.register.step1')->with('custom_error_alert', __('alerts.lengkapi_langkah_sebelumnya'));
         }
 
         $request->validate([
@@ -361,7 +363,7 @@ class WorkerRegistrationController extends Controller
     public function createStep3()
     {
         if (!Session::has('worker_registration.step1') || !Session::has('worker_registration.step2')) {
-            return redirect()->route('worker.register.step1')->with('custom_error_alert', 'Silakan lengkapi langkah sebelumnya terlebih dahulu.');
+            return redirect()->route('worker.register.step1')->with('custom_error_alert', __('alerts.lengkapi_langkah_sebelumnya'));
         }
 
         $step1Data = Session::get('worker_registration.step1', []);
@@ -390,7 +392,7 @@ class WorkerRegistrationController extends Controller
     public function finalizeRegistration(Request $request)
     {
         if (!Session::has('worker_registration.step1') || !Session::has('worker_registration.step2')) {
-            return redirect()->route('worker.register.step1')->with('custom_error_alert', 'Silakan lengkapi langkah sebelumnya terlebih dahulu.');
+            return redirect()->route('worker.register.step1')->with('custom_error_alert', __('alerts.lengkapi_langkah_sebelumnya'));
         }
 
         $step1Data = Session::get('worker_registration.step1');

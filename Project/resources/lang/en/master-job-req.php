@@ -2,6 +2,7 @@
 
 return [
     // Navbar
+    'peran_pelanggan' => 'Role: Client',
     'beranda' => 'Home',
     'tawarkan_kerja' => 'Offer a Job',
     'pesan' => 'Messages',

@@ -3,23 +3,26 @@
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
         {{-- Page Title --}}
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">Riwayat Pemesanan
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 inline-block">{{ __('history-job-taker.judul_halaman') }}
         </h1>
+        <a href="{{ route('monthly.report') }}" class="btn btn-primary btn-lg mb-3 text-white" style="text-decoration: none;">
+            {{ __('history-job-taker.tombol_laporan_bulanan') }}
+        </a>
 
         <div class="flex flex-col md:flex-row justify-start items-start md:items-center">
             {{-- Desktop Tab Navigation --}}
             <div class="tabs-wrapper hidden md:flex">
                 <div class="col tab-button active" data-tab="all">
-                    Semua Transaksi ({{ $allOrders->count() }})
+                    {{ __('history-job-taker.tab_semua') }} ({{ $allOrders->count() }})
                 </div>
                 <div class="col tab-button" data-tab="pending">
-                    Berlangsung ({{ $pendingOrders->count() }})
+                    {{ __('history-job-taker.tab_berlangsung') }} ({{ $pendingOrders->count() }})
                 </div>
                 <div class="col tab-button" data-tab="completed">
-                    Selesai ({{ $completedOrders->count() }})
+                    {{ __('history-job-taker.tab_selesai') }} ({{ $completedOrders->count() }})
                 </div>
-                <div class="col tab-button" data-tab="cancelled">
-                    Dibatalin ({{ $cancelledOrders->count() }})
+            <div class="col tab-button" data-tab="cancelled">
+                    {{ __('history-job-taker.tab_dibatalkan') }} ({{ $cancelledOrders->count() }})
                 </div>
             </div>
 
@@ -27,13 +30,13 @@
             <div class="tabs-dropdown-wrapper md:hidden w-full mb-4">
                 <select id="tab-select"
                     class="form-select w-full border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-blue-500">
-                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>Semua Transaksi
+                    <option value="all" @if (request('tab') == 'all' || !request('tab')) selected @endif>{{ __('history-job-taker.tab_semua') }}
                         ({{ $allOrders->count() }})</option>
-                    <option value="pending" @if (request('tab') == 'pending') selected @endif>Berlangsung
+                    <option value="pending" @if (request('tab') == 'pending') selected @endif>{{ __('history-job-taker.tab_berlangsung') }}
                         ({{ $pendingOrders->count() }})</option>
-                    <option value="completed" @if (request('tab') == 'completed') selected @endif>Selesai
+                    <option value="completed" @if (request('tab') == 'completed') selected @endif>{{ __('history-job-taker.tab_selesai') }}
                         ({{ $completedOrders->count() }})</option>
-                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>Dibatalin
+                    <option value="cancelled" @if (request('tab') == 'cancelled') selected @endif>{{ __('history-job-taker.tab_dibatalkan') }}
                         ({{ $cancelledOrders->count() }})</option>
                 </select>
             </div>
@@ -45,22 +48,22 @@
             <div class="row text-center tableHeader d-flex align-items-center justify-content-center fw-semibold m-0 p-0 text-xs md:text-base"
                 style="height: 4rem;">
                 {{-- Added ps-3 for left padding on the header column --}}
-                <div class="col m-0 p-0 text-start ps-3">Judul</div>
-                <div class="col m-0 p-0">Status</div>
-                <div class="col m-0 p-0">Tanggal Selesai</div>
-                <div class="col m-0 p-0">Klien</div>
-                <div class="col m-0 p-0">Lokasi</div>
-                <div class="col m-0 p-0">Upah</div>
+                <div class="col m-0 p-0 text-start ps-3">{{ __('history-job-taker.header_judul') }}</div>
+                <div class="col m-0 p-0">{{ __('history-job-taker.header_status') }}</div>
+                <div class="col m-0 p-0">{{ __('history-job-taker.header_tgl_selesai') }}</div>
+                <div class="col m-0 p-0">{{ __('history-job-taker.header_klien') }}</div>
+                <div class="col m-0 p-0">{{ __('history-job-taker.header_lokasi') }}</div>
+                <div class="col m-0 p-0">{{ __('history-job-taker.header_upah') }}</div>
             </div>
             <hr class="mx-auto border-2 opacity-100 my-0 p-0" style="width: 98%; border-color: #294287;">
 
             {{-- Loop to Display Individual Order Rows --}}
             <div id="order-list-container" class="order-list-fade-in">
                 @forelse ($allOrders as $order)
-                    <div class="order-row hoverable-row
-                        {{ str_replace(' ', '-', $order->status) }}-tab"
+                    <div class="order-row hoverable-row"
+                       data-status="{{ $order->status }}"
                         {{-- Determine whether to open modal or redirect based on status and user role --}}
-                        @if ($order->status_text == 'Selesai') data-bs-toggle="modal"
+                        @if ($order->status == 'completed') data-bs-toggle="modal"
                                 data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
@@ -98,15 +101,15 @@
                                     style="
                                         padding: .5em .9em;
                                         font-size: 0.85em;
-                                        @if ($order->status_text == 'Selesai') background-color: #D3FA0D;
+                                        @if ($order->status == 'completed') background-color: #D3FA0D;
                                             color: #333;
-                                        @elseif ($order->status_text == 'Dikerjain')
+                                        @elseif ($order->status == 'in progress')
                                             background-color: #309FFF;
                                             color: #FFF;
-                                        @elseif($order->status_text == 'Diterima' || $order->status_text == 'Ditinjau')
+                                        @elseif($order->status == 'accepted' || $order->status == 'submitted')
                                             background-color: #294287;
                                             color: #FFF;
-                                        @elseif($order->status_text == 'Dibatalin')
+                                        @elseif($order->status == 'cancelled')
                                             background-color: #E63C3C;
                                             color: #FFF;
                                         @else
@@ -131,7 +134,7 @@
                     <div id="no-transaction-message"
                         class="mt-3 mb-0 py-6 px-6 text-center text-gray-500 justify-content-center flex items-center w-full"
                         style="height: 3rem">
-                        Belum Ada Transaksi
+                        {{ __('history-job-taker.belum_ada_transaksi') }}
                     </div>
                 @endforelse
             </div>
@@ -145,7 +148,7 @@
                 @csrf
                 <div class="modal-content p-3">
                     <div class="modal-header">
-                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">Detail Penyelesaian</h5>
+                        <h5 class="modal-title fw-bold fs-3" id="completionModalLabel">{{ __('history-job-taker.modal_detail_penyelesaian') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -155,41 +158,41 @@
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_judul_pesanan') }}</p>
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_nomor_pesanan') }}</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama Klien</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_nama_klien') }}</p>
                                         <p class="fw-medium" id="modalRequesterName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_lokasi') }}</p>
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_tgl_pesan') }}</p>
                                         <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_tgl_selesai') }}</p>
                                         <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_mulai_kerja') }}</p>
                                         <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">{{ __('history-job-taker.modal_selesai_kerja') }}</p>
                                         <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
@@ -197,7 +200,7 @@
                                 <div class="d-flex mt-1">
                                     <div class="text d-flex justify-content-between align-items-center"
                                         style="width:50%;">
-                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">Total</p>
+                                        <p class="p-0 m-0 text-black-50 fw-semibold fs-6">{{ __('history-job-taker.modal_total') }}</p>
                                         <p class="p-0 m-0 fw-medium fs-lg-6 text-end">Rp
                                             <span id="modalRequestPrice"></span>
                                         </p>
@@ -211,7 +214,7 @@
                                                     d="M8.5029 12.668L3.29334 7.45843L4.75202 5.94766L7.46099 8.65663V0.165039H9.54482V8.65663L12.2538 5.94766L13.7125 7.45843L8.5029 12.668ZM2.25143 16.8356C1.67838 16.8356 1.18781 16.6316 0.779726 16.2235C0.371644 15.8154 0.167603 15.3249 0.167603 14.7518V11.6261H2.25143V14.7518H14.7544V11.6261H16.8382V14.7518C16.8382 15.3249 16.6342 15.8154 16.2261 16.2235C15.818 16.6316 15.3274 16.8356 14.7544 16.8356H2.25143Z"
                                                     fill="#294287" />
                                             </svg>
-                                            <div class="ms-2 fw-medium fs-5">Invoice</div>
+                                            <div class="ms-2 fw-medium fs-5">{{ __('history-job-taker.modal_invoice') }}</div>
                                         </a>
                                     </div>
                                 </div>
@@ -232,10 +235,10 @@
                                 {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
                                     <button type="submit" class="btn btn-primary fw-medium rounded-3"
-                                        id="submitReviewButton">Kirim</button>
-                                    <div class="m-1 text-center">Atau</div>
+                                        id="submitReviewButton">{{ __('history-job-taker.tombol_kirim') }}</button>
+                                    <div class="m-1 text-center">{{ __('history-job-taker.atau') }}</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
+                                        onclick="openReportModal()" id="reportProblemButton">{{ __('history-job-taker.laporkan_masalah') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -258,7 +261,7 @@
                     <input type="hidden" name="reported_id" id="reportReportedId">
 
                     <div class="modal-header border-0 justify-content-center">
-                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">Laporan</h3>
+                        <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">{{ __('history-job-taker.modal_laporan_judul') }}</h3>
                         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -268,49 +271,51 @@
                     <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_judul_pesanan') }}</p>
                                 <p class="fw-medium" id="reportModalRequestTitle"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Nomor Pesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_nomor_pesanan') }}</p>
                                 <p class="fw-medium" id="reportModalOrderNumber"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_nama_klien') }}</p>
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_lokasi') }}</p>
                                 <p class="fw-medium" id="reportModalRequestLocation"></p>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Tanggal Pemesanan</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_tgl_pesan') }}</p>
                                 <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Tanggal Selesai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_tgl_selesai') }}</p>
                                 <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Waktu Mulai</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_mulai_kerja') }}</p>
                                 <p class="fw-medium" id="reportModalStartWork"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_selesai_kerja') }}</p>
                                 <p class="fw-medium" id="reportModalFinishWork"></p>
                             </div>
                         </div>
 
                         {{-- Total price display in report modal --}}
-                        <div class="d-flex justify-content-between mb-3">
-                            <p class="text-black-50 fw-semibold mb-0">Total</p>
+                        <div class="d-flex justify-content-between mb-4">
+                            <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-taker.modal_total') }}</p>
                             <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
                         </div>
 
                         {{-- Image upload section for report proof --}}
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">{{ __('history-job-taker.modal_laporan_upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
                                 <div class="add-image-button pb-2"
@@ -326,8 +331,8 @@
                         </div>
 
                         {{-- Textarea for reporting reasons --}}
-                        <div class="mb-3">
-                            <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
+                        <div class="mb-4">
+                            <label for="reportNote" class="form-label fw-semibold">{{ __('history-job-taker.modal_laporan_keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
                                 placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
@@ -338,6 +343,10 @@
                         </div>
                     </div>
 
+                    {{-- Report submission button --}}
+                    <div class="modal-footer border-0 d-flex justify-content-end">
+                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">{{ __('history-job-taker.tombol_kirim_laporan') }}</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -832,14 +841,13 @@
                     const receivedReviewRating = this.getAttribute('data-received-review-rating');
                     const receivedReviewComment = this.getAttribute('data-received-review-comment');
                     const hasWorkerReport = this.getAttribute('data-has-worker-report') === 'true';
-
-
+                    const orderStatus = row.dataset.status;
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
                     reportedRequesterId = this.getAttribute(
                         'data-requester-id'); // Changed to requester ID
 
-                    if (orderStatusText === 'Selesai') {
+                    if (orderStatus === 'completed') {
                         const completionModal = new bootstrap.Modal(document.getElementById(
                             'completionModal'));
                         completionModal.show();
@@ -902,12 +910,12 @@
                         }
 
 
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
-                            orderStatusText)) {
+                    } else if (['in progress', 'accepted', 'submitted'].includes(
+                            orderStatus)) {
                         // For these specific statuses, redirect to the ongoing request page
                         window.location.href = `/job-taker/accepted-work-request/${transactionId}`;
                     } else {
-                        console.log('Clicked on a row with status:', orderStatusText,
+                        console.log('Clicked on a row with status:', orderStatus,
                             'No specific action defined.');
                     }
                 });
@@ -965,14 +973,14 @@
                 orderRowsForTabs.forEach(row => {
                     // Extract status from the badge text content
                     const badgeElement = row.querySelector('.badge');
-                    let orderStatusText = badgeElement ? badgeElement.textContent.trim() : '';
+                    const orderStatus = row.dataset.status;
 
                     let orderStatusForTab = '';
-                    if (orderStatusText == 'Selesai') {
+                    if (orderStatus == 'completed') {
                         orderStatusForTab = 'completed';
-                    } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) {
+                    } else if (['in progress', 'accepted', 'submitted'].includes(orderStatus)) {
                         orderStatusForTab = 'pending';
-                    } else if (orderStatusText == 'Dibatalin') {
+                    } else if (orderStatus == 'cancelled') {
                         orderStatusForTab = 'cancelled';
                     } else {
                         orderStatusForTab = 'other'; // Fallback for other statuses

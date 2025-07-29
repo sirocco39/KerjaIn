@@ -7,8 +7,8 @@
     <form action="{{ route('browse.work.requests.index') }}" method="GET" class="d-flex justify-content-between gap-3">
         <div class="d-flex flex-fill align-items-center rounded-pill" id="search-form">
             <i class="fas fa-search search-icon"></i>
-            <input class="flex-fill p-0" id="input-area" type="text" name="search" placeholder="Cari Pekerjaan" value="{{ request('search') }}">
+            <input class="flex-fill p-0" id="input-area" type="text" name="search" placeholder="{{ __('home-job-taker.search.placeholder') }}" value="{{ request('search') }}">
         </div>
-        <button type="submit" class="btn search-button rounded-pill">CARI</button>
+        <button type="submit" class="btn search-button rounded-pill"> {{ __('home-job-taker.search.search_button') }}</button>
     </form>
 </div>

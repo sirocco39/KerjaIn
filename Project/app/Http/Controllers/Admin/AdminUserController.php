@@ -34,51 +34,52 @@ class AdminUserController extends Controller
 
         // --- Pencarian Pengguna dan Filtering Log ---
         $searchedUser = null;
-        $searchQuery = $request->input('search_query'); // Ini akan digunakan untuk menampilkan nilai di input
-        $selectedUserId = $request->input('user_id'); // Ini ID pengguna yang dipilih dari autocomplete
+        $searchQuery = $request->input('search_query');
+        $selectedUserId = $request->input('user_id'); // ID pengguna yang dipilih dari autocomplete
 
-        $activityLogs = Activity::with('causer')
+        // Base query for activity logs
+        $activityLogsQuery = Activity::with('causer')
             ->orderByDesc('created_at');
 
         // Logika filtering activityLogs
         if ($selectedUserId) {
-            // Jika ada user_id yang dipilih dari autocomplete
+            // Jika ada user_id yang dipilih dari autocomplete, cari user berdasarkan ID tersebut.
             $searchedUser = User::find($selectedUserId);
+
             if ($searchedUser) {
-                $activityLogs->where(function ($query) use ($searchedUser) {
+                $activityLogsQuery->where(function ($query) use ($searchedUser) {
                     $query->where('causer_id', $searchedUser->id)
                         ->where('causer_type', get_class($searchedUser));
                 });
             } else {
-                // Jika ID tidak valid, tampilkan log kosong
-                $activityLogs = Activity::whereRaw('1 = 0');
+                // Jika ID tidak valid, set query ke hasil kosong
+                $activityLogsQuery->whereRaw('1 = 0');
             }
         } elseif ($searchQuery) {
-            // Jika hanya ada search_query (dari form submit biasa, bukan autocomplete)
-            // Kita masih ingin menampilkan hasil yang relevan, tapi tanpa memilih satu user spesifik
-            $searchedUser = User::where('id', $searchQuery)
-                ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
-                ->orWhere('first_name', 'like', '%' . $searchQuery . '%')
-                ->orWhere('last_name', 'like', '%' . $searchQuery . '%')
-                ->first();
+            // Jika hanya ada searchQuery (dari form submit biasa, bukan autocomplete)
+            // KITA MODIFIKASI LOGIKA PENCARIAN USER DI SINI
+            $searchedUser = User::where(function ($query) use ($searchQuery) {
+                // Coba cari berdasarkan ID jika query adalah angka
+                if (is_numeric($searchQuery)) {
+                    $query->where('id', $searchQuery);
+                }
+                // Selalu coba cari berdasarkan nama lengkap
+                $query->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%');
+            })->first();
+
 
             if ($searchedUser) {
-                $activityLogs = Activity::where('causer_type', User::class)
-                    ->where('causer_id', $searchedUser->id)
-                    ->latest()
-                    ->paginate(10)
-                    // === PENTING: Tambahkan ini ===
-                    ->appends(request()->query());
+                // Jika user ditemukan berdasarkan search_query, filter log aktivitasnya
+                $activityLogsQuery->where('causer_type', User::class)
+                    ->where('causer_id', $searchedUser->id);
             } else {
-                $activityLogs = Activity::whereRaw('1 = 0');
+                // Jika user tidak ditemukan, set query ke hasil kosong
+                $activityLogsQuery->whereRaw('1 = 0');
             }
-        } else {
-            $activityLogs = Activity::latest()->paginate(10)
-                // === PENTING: Tambahkan ini juga ===
-                ->appends(request()->query());
         }
 
-        // $activityLogs = $activityLogs->paginate(10);
+        // Apply pagination and appends to the activityLogs
+        $activityLogs = $activityLogsQuery->paginate(10)->appends($request->query());
 
         // Data Breadcrumbs
         $breadcrumbs = [
@@ -100,6 +101,7 @@ class AdminUserController extends Controller
             'breadcrumbs'
         ));
     }
+
 
     /**
      * Endpoint AJAX untuk pencarian rekomendasi pengguna.
@@ -156,8 +158,10 @@ class AdminUserController extends Controller
 
         if ($searchQuery = $request->input('search_query')) {
             $query->where(function ($q) use ($searchQuery) {
-                $q->where('id', $searchQuery)
-                    ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                if (is_numeric($searchQuery)) {
+                    $q->where('id', $searchQuery);
+                }
+                $q->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
                     ->orWhere('email', 'like', '%' . $searchQuery . '%');
             });
         }
@@ -184,8 +188,10 @@ class AdminUserController extends Controller
 
         if ($searchQuery = $request->input('search_query')) {
             $query->where(function ($q) use ($searchQuery) {
-                $q->where('id', $searchQuery)
-                    ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                if (is_numeric($searchQuery)) {
+                    $q->where('id', $searchQuery);
+                }
+                $q->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
                     ->orWhere('email', 'like', '%' . $searchQuery . '%');
             });
         }
@@ -211,8 +217,10 @@ class AdminUserController extends Controller
 
         if ($searchQuery = $request->input('search_query')) {
             $query->where(function ($q) use ($searchQuery) {
-                $q->where('id', $searchQuery)
-                    ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
+                if (is_numeric($searchQuery)) {
+                    $q->where('id', $searchQuery);
+                }
+                $q->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%')
                     ->orWhere('email', 'like', '%' . $searchQuery . '%');
             });
         }
