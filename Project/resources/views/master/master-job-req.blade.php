@@ -733,6 +733,12 @@
             }
         };
 
+        window.i18n = {
+            validation: @json(trans('validation.custom_js')),
+            // Anda bisa tambahkan bagian terjemahan lain di sini jika perlu diakses JS
+            // homepage: @json(trans('landing')), // Jika Anda perlu terjemahan dari landing.php juga di JS
+        };
+
         // Modified validateInput: Now it ONLY handles the 'is-invalid' class and error text.
         // It returns true if valid, false if invalid.
         function validateInput(inputElement, errorDiv, validationLogic) {
@@ -753,7 +759,7 @@
         function validateFirstName(value) {
             const errors = [];
             if (value === '') {
-                errors.push('Nama depan diperlukan.');
+                errors.push(window.i18n.validation.firstname_required || 'First name is required.');
             }
             return errors;
         }
@@ -761,7 +767,7 @@
         function validateLastName(value) {
             const errors = [];
             if (value === '') {
-                errors.push('Nama belakang diperlukan.');
+                errors.push(window.i18n.validation.lastname_required || 'Last name is required.');
             }
             return errors;
         }
@@ -769,17 +775,41 @@
         function validateRegisterEmail(value) {
             const errors = [];
             if (value === '') {
-                errors.push('Email harus diisi.');
+                errors.push(window.i18n.validation.email_required || 'Email is required.');
             } else if (!emailRegex.test(value)) {
-                errors.push('Silakan masukkan alamat email yang valid.');
+                errors.push(window.i18n.validation.email_invalid || 'Please enter a valid email address.');
             }
             return errors;
         }
 
         function validatePasswordStrength(value) {
             const errors = [];
+            // Definisi passwordRules yang sekarang merujuk ke window.i18n.validation
+            const passwordRules = {
+                minLength: {
+                    test: (val) => val.length >= 8,
+                    message: window.i18n.validation.password_min_length || 'Password must be at least 8 characters long.'
+                },
+                oneUppercase: {
+                    test: (val) => /[A-Z]/.test(val),
+                    message: window.i18n.validation.password_one_uppercase || 'Password must contain at least one uppercase letter.'
+                },
+                oneLowercase: {
+                    test: (val) => /[a-z]/.test(val),
+                    message: window.i18n.validation.password_one_lowercase || 'Password must contain at least one lowercase letter.'
+                },
+                oneNumber: {
+                    test: (val) => /[0-9]/.test(val),
+                    message: window.i18n.validation.password_one_number || 'Password must contain at least one number.'
+                },
+                oneSymbol: {
+                    test: (val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), // Sesuaikan simbol yang diizinkan
+                    message: window.i18n.validation.password_one_symbol || 'Password must contain at least one symbol.'
+                }
+            };
+
             if (value === '') {
-                errors.push('Password harus diisi.');
+                errors.push(window.i18n.validation.password_required || 'Password is required.');
             }
             for (const key in passwordRules) {
                 if (!passwordRules[key].test(value)) {
@@ -789,13 +819,17 @@
             return errors;
         }
 
+
         function validateConfirmPassword(value) {
             const errors = [];
-            const originalPassword = passwordInput.value;
+                // Ganti 'passwordInputId' dengan ID aktual dari input password Anda di HTML.
+                // Jika input password tidak memiliki ID, Anda harus mendapatkannya dengan cara lain (mis. class atau name)
+                const passwordInput = document.getElementById('passwordInputId'); // PENTING: Ganti ini!
+                const originalPassword = passwordInput ? passwordInput.value : ''; // Pastikan elemen ditemukan
             if (value === '') {
-                errors.push('Konfirmasi kata sandi harus diisi.');
+                errors.push(window.i18n.validation.confirm_password_required || 'Confirm password is required.');
             } else if (value !== originalPassword) {
-                errors.push('Kata sandi tidak cocok.');
+                errors.push(window.i18n.validation.confirm_password_match || 'Passwords do not match.');
             }
             return errors;
         }
@@ -803,9 +837,9 @@
         function validateOtp(value) {
             const errors = [];
             if (value === '') {
-                errors.push('OTP harus diisi.');
+                errors.push(window.i18n.validation.otp_required || 'OTP is required.');
             } else if (!/^\d{6}$/.test(value)) {
-                errors.push('OTP harus berupa 6 digit angka.');
+                errors.push(window.i18n.validation.otp_format || 'OTP must be a 6-digit number.');
             }
             return errors;
         }

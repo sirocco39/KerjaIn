@@ -49,4 +49,20 @@ return [
     'tunggu' => 'Wait',
     'sudah_punya_akun' => 'Already have an account?',
     'atau_daftar_dengan' => 'Or register with:',
+
+    // Validation Messages
+    "validation_firstname_required" => "First name is required.",
+    "validation_lastname_required"=> "Last name is required.",
+    "validation_email_required" => "Email is required.",
+    "validation_email_invalid" => "Please enter a valid email address.",
+    "validation_password_required" => "Password is required.",
+    "validation_password_min_length" => "Password must be at least 8 characters long.",
+    "validation_password_one_uppercase" => "Password must contain at least one uppercase letter.",
+    "validation_password_one_lowercase" => "Password must contain at least one lowercase letter.",
+    "validation_password_one_number" => "Password must contain at least one number.",
+    "validation_password_one_symbol" => "Password must contain at least one symbol.",
+    "validation_confirm_password_required" => "Confirm password is required.",
+    "validation_confirm_password_match" => "Passwords do not match.",
+    "validation_otp_required" => "OTP is required.",
+    "validation_otp_format" => "OTP must be a 6-digit number."
 ];
