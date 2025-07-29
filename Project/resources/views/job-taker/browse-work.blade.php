@@ -225,7 +225,7 @@
                     <h2 class="fw-bold mb-3">Menerima Pekerjaan</h2>
                     <p>Apakah anda yakin ingin menerima pekerjaan ini?</p>
                     <div class="d-flex justify-content-center gap-3 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        <button type="button" class="btn btn-secondary text-light" data-bs-dismiss="modal"
                             id="cancel-accept-job">Kembali</button>
                         <button type="button" class="btn btn-primary" id="confirm-accept-job">Ya, Saya
                             Yakin</button>

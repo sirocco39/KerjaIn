@@ -1,4 +1,4 @@
-@extends('Master.master-job-req')
+@extends('Master.master-job-taker')
 
 @section('content')
     <div class="container-fluid pembatas-x pembatas-y">
@@ -64,27 +64,28 @@
                                 data-bs-target="#completionModal"
                         @else
                             {{-- For requester, always redirect to on-going-work-request for non-completed statuses --}}
-                            data-redirect-url="{{ route('request.ongoing', ['transactionId' => $order->id]) }}"
-                        @endif
-                            data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
-                            data-order-number="{{ $order->order_number ?? '-' }}"
-                            data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
-                            data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
-                            data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
-                            data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
-                            data-request-location="{{ $order->request->location ?? '-' }}"
-                            data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
-                            data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
-                            data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
-                            data-start-work="{{ $order->start_work ? \Carbon\Carbon::parse($order->start_work)->format('H.i') : '-' }}"
-                            data-finish-work="{{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('H.i') : '-' }}"
-                            data-worker-id="{{ $order->worker_id ?? '' }}" data-order-status-text="{{ $order->status_text }}"
-                            data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
-                            data-has-user-report="{{ $order->has_user_report ? 'true' : 'false' }}"
-                        @if ($order->has_review && $order->user_review) data-user-rating="{{ $order->user_review->rating }}"
-                                data-user-comment="{{ $order->user_review->comment }}" @endif
-                        {{-- Pass decoded photo URLs if a report exists --}}
-                        @if ($order->has_user_report && $order->user_report->decoded_photo_urls) data-report-photo-urls="{{ json_encode($order->user_report->decoded_photo_urls) }}" @endif>
+                            data-redirect-url="{{ route('job-taker.accepted-work-request', ['id' => $order->id]) }}" @endif
+                        data-transaction-id="{{ $order->id }}" data-request-title="{{ $order->request->title ?? '-' }}"
+                        data-order-number="{{ $order->order_number ?? '-' }}"
+                        data-worker-first-name="{{ $order->worker->first_name ?? '' }}"
+                        data-worker-last-name="{{ $order->worker->last_name ?? '' }}"
+                        data-requester-first-name="{{ $order->requester->first_name ?? '' }}"
+                        data-requester-last-name="{{ $order->requester->last_name ?? '' }}"
+                        data-request-location="{{ $order->request->location ?? '-' }}"
+                        data-transaction-created-at="{{ \Carbon\Carbon::parse($order->created_at)->format('d M Y') ?? '-' }}"
+                        data-transaction-updated-at="{{ \Carbon\Carbon::parse($order->updated_at)->format('d M Y') ?? '-' }}"
+                        data-request-price="{{ number_format($order->request->price ?? 0, 0, ',', '.') ?? '-' }}"
+                        data-start-work="{{ $order->start_work ? \Carbon\Carbon::parse($order->start_work)->format('H.i') : '-' }}"
+                        data-finish-work="{{ $order->finish_work ? \Carbon\Carbon::parse($order->finish_work)->format('H.i') : '-' }}"
+                        data-requester-id="{{ $order->requester_id ?? '' }}"
+                        data-order-status-text="{{ $order->status_text }}"
+                        data-has-review="{{ $order->has_review ? 'true' : 'false' }}"
+                        data-has-worker-report="{{ $order->has_worker_report ? 'true' : 'false' }}"
+                        @if ($order->has_review && $order->received_review) data-received-review-rating="{{ $order->received_review->rating }}"
+                                data-received-review-comment="{{ $order->received_review->comment }}" @endif
+                        {{-- Pass decoded photo URLs if a report exists, using the new property from controller --}}
+                        @if ($order->has_worker_report) data-worker-report-photo-urls="{{ json_encode($order->workerReport->decoded_photo_urls) }}"
+                                data-worker-report-reasons="{{ $order->workerReport->reasons }}" @endif>
                         {{-- This inner row's height will now have a minimum height and content will be vertically centered --}}
                         <div class="row text-center text-xs d-flex justify-content-center align-items-center m-0 p-0"
                             style="min-height: 3.5rem;">
@@ -165,7 +166,7 @@
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Nama Klien</p>
-                                        <p class="fw-medium" id="modalWorkerName"></p>
+                                        <p class="fw-medium" id="modalRequesterName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
                                         <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
@@ -264,7 +265,7 @@
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
                                 <p class="text-black-50 fw-semibold mb-0">Judul Pesanan</p>
@@ -275,7 +276,6 @@
                                 <p class="fw-medium" id="reportModalOrderNumber"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Nama Klien</p>
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
@@ -298,19 +298,18 @@
                                 <p class="fw-medium" id="reportModalStartWork"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Waktu Selesai</p>
                                 <p class="fw-medium" id="reportModalFinishWork"></p>
                             </div>
                         </div>
 
                         {{-- Total price display in report modal --}}
-                        <div class="d-flex justify-content-between mb-4">
+                        <div class="d-flex justify-content-between mb-3">
                             <p class="text-black-50 fw-semibold mb-0">Total</p>
                             <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
                         </div>
 
                         {{-- Image upload section for report proof --}}
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label fw-semibold">Upload Bukti (Gambar, maks 5MB per gambar):</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
@@ -327,27 +326,27 @@
                         </div>
 
                         {{-- Textarea for reporting reasons --}}
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="reportNote" class="form-label fw-semibold">Keluh Kesah Anda</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
                                 placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
+
+                        <div class="modal-footer border-0 d-flex justify-content-end m-0 p-0">
+                            <button type="button" id="submitReportButton" class="btn btn-danger px-4">Kirim
+                                Laporan</button>
+                        </div>
                     </div>
 
-                    {{-- Report submission button --}}
-                    <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">Kirim
-                            Laporan</button>
-                    </div>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        // Global variables for managing transaction and worker IDs across modals
+        // Global variables for managing transaction and requester IDs across modals
         let currentTransactionId = null;
-        let reportedWorkerId = null;
+        let reportedRequesterId = null; // Changed from reportedWorkerId
         // Store uploaded files globally for the report modal
         let reportFiles = []; // Array of File objects
         const MAX_REPORT_IMAGES = 7; // Define max images constant
@@ -468,7 +467,7 @@
                 document.getElementById('reportModalRequestTitle').textContent = rowData.dataset.requestTitle;
                 document.getElementById('reportModalOrderNumber').textContent = rowData.dataset.orderNumber;
                 document.getElementById('reportModalRequesterName').textContent =
-                    `${rowData.dataset.workerFirstName} ${rowData.dataset.workerLastName}`;
+                    `${rowData.dataset.requesterFirstName} ${rowData.dataset.requesterLastName}`; // Changed to requester name
                 document.getElementById('reportModalRequestLocation').textContent = rowData.dataset.requestLocation;
                 document.getElementById('reportModalTransactionCreatedAt').textContent = rowData.dataset
                     .transactionCreatedAt;
@@ -480,39 +479,21 @@
 
                 // Set hidden form fields for submission
                 document.getElementById('reportTransactionId').value = currentTransactionId;
-                document.getElementById('reportReportedId').value = reportedWorkerId;
+                document.getElementById('reportReportedId').value = reportedRequesterId; // Changed to reportedRequesterId
 
                 // Set form action for report submission
-                document.getElementById('reportForm').action = `/user/submit-report/${currentTransactionId}`;
+                document.getElementById('reportForm').action =
+                    `/job-taker/submit-report/${currentTransactionId}`; // Correct route for worker reporting
 
-                // --- Populate existing report data if available ---
-                const hasUserReport = rowData.getAttribute('data-has-user-report') === 'true';
-                const reportPhotoUrlsJson = rowData.getAttribute('data-report-photo-urls');
-                const reportReasons = rowData.getAttribute(
-                    'data-user-report-reasons'); // Assuming you add this data attribute
+                // Always reset for new report (allow multiple reports)
+                reportFiles = [];
+                document.getElementById('reportNote').value = '';
+                document.getElementById('reportNote').disabled = false;
+                reportImageInput.disabled = false;
+                document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
+                addImageButton.style.display = 'flex'; // Show add image button
 
-                if (hasUserReport && reportPhotoUrlsJson) {
-                    try {
-                        reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs into reportFiles
-                        document.getElementById('reportNote').value = reportReasons || ''; // Populate reasons
-                        // Disable fields if report already exists
-                        document.getElementById('reportNote').disabled = true;
-                        reportImageInput.disabled = true;
-                        document.getElementById('submitReportButton').style.display = 'none'; // Hide submit button
-                        addImageButton.style.display = 'none'; // Hide add image button
-                    } catch (e) {
-                        console.error('Error parsing report photo URLs:', e);
-                        reportFiles = []; // Fallback to empty
-                    }
-                } else {
-                    // Reset for new report
-                    reportFiles = [];
-                    document.getElementById('reportNote').value = '';
-                    document.getElementById('reportNote').disabled = false;
-                    reportImageInput.disabled = false;
-                    document.getElementById('submitReportButton').style.display = 'block'; // Show submit button
-                }
-                updateReportImagePreview(); // Render initial state (either empty or existing images)
+                updateReportImagePreview(); // Render initial state (empty for new report)
             }
 
             // Show the report modal after a brief delay
@@ -554,19 +535,85 @@
                 return;
             }
 
-            // Submit the form normally. Laravel will handle the redirect with flashed data.
-            // Ensure the form's action is correctly set for review submission.
-            document.getElementById('reviewForm').submit();
+            // Prepare FormData for submission
+            const formData = new FormData();
+            formData.append('transaction_id', currentTransactionId);
+            formData.append('reviewer_id', `{{ auth()->id() }}`);
+            formData.append('reviewee_id', reportedRequesterId); // Reviewing the requester
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 
-            // Optionally, disable button and show loading here, as page will reload
             const submitBtn = document.getElementById('submitReviewButton');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim...';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Mengirim...';
+            }
+
+            fetch(document.getElementById('reviewForm').action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw errorData;
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem('reviewSuccessMessage', data.message); // Store success message
+                        // Close the completion modal (optional, but good UX before reload)
+                        const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
+                        if (completionModal) completionModal.hide();
+                        location.reload(); // Reload the page to display the alert
+                    } else {
+                        let errorMessage = data.message || 'Terjadi kesalahan saat menyimpan ulasan.';
+                        if (data.errors) {
+                            errorMessage = 'Validasi gagal:';
+                            for (const key in data.errors) {
+                                if (data.errors.hasOwnProperty(key)) {
+                                    data.errors[key].forEach(msg => {
+                                        errorMessage += `\n- ${msg}`;
+                                    });
+                                }
+                            }
+                        }
+                        window.showCustomAlert(errorMessage, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting review:', error);
+                    let errorMessage = 'Terjadi kesalahan saat menyimpan ulasan.';
+                    if (error.message) {
+                        errorMessage = error.message;
+                    } else if (error.errors) { // Handle Laravel validation errors
+                        errorMessage = 'Validasi gagal:';
+                        for (const key in error.errors) {
+                            errorMessage += `\n- ${error.errors[key].join(', ')}`;
+                        }
+                    }
+                    window.showCustomAlert(errorMessage, "error");
+                    // NO RELOAD ON ERROR
+                })
+                .finally(() => {
+                    const submitBtn = document.getElementById('submitReviewButton');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Kirim';
+                    }
+                });
         }
 
         // --- Function to Submit Report ---
         function submitReport(event) {
-            event.preventDefault(); // Prevent default form submission to handle manually
+            if (event) event.preventDefault(); // Prevent default form submission to handle manually
 
             const form = document.getElementById('reportForm');
             const reasons = document.getElementById('reportNote').value.trim();
@@ -622,63 +669,52 @@
             submitBtn.textContent = 'Mengirim Laporan...';
 
             // Submit the form using fetch, expecting a redirect
-            fetch(form.action, { // Use the form's action which includes transaction ID
+            fetch(form.action, {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        // DO NOT set 'Content-Type': 'multipart/form-data' explicitly when using FormData,
-                        // the browser does it correctly with a boundary.
-                        'Accept': 'application/json, text/plain, */*' // Accept various response types
+                        'Accept': 'application/json', // Expect JSON response
+                        'X-Requested-With': 'XMLHttpRequest',
                     },
-                    redirect: 'follow' // Instructs fetch to follow redirects
                 })
                 .then(response => {
-                    // This block will be executed if the initial response is NOT a redirect (e.g., validation error, 4xx/5xx status)
-                    // If the server successfully redirects (2xx status), this block might be skipped as the browser handles the redirect.
                     if (!response.ok) {
-                        // Try to parse JSON errors from Laravel validation
                         return response.json().then(errorData => {
-                            let errorMessage = '';
-                            if (errorData.errors) {
-                                for (let key in errorData.errors) {
-                                    errorMessage += `${errorData.errors[key].join(', ')}\n`;
-                                }
-                                window.showCustomAlert('Validasi Gagal:\n' + errorMessage, 'error');
-                            } else {
-                                // Fallback for non-validation errors
-                                throw new Error(errorData.message || 'Server error: ' + response.statusText);
-                            }
-                        }).catch(jsonError => {
-                            // Catch errors from parsing JSON or from the throw new Error above
-                            console.error('Error parsing server response:', jsonError);
-                            window.showCustomAlert('Terjadi kesalahan saat memproses respons server: ' +
-                                jsonError.message, 'error');
+                            throw errorData;
                         });
                     }
-                    // If response is OK, but not a redirect (unlikely if backend redirects on success)
-                    // or if it's a successful JSON response we didn't expect,
-                    // it means the backend didn't redirect as planned.
-                    // We'll just return text to consume the response body if it's not a redirect.
-                    return response.text();
+                    return response.json();
                 })
-                .then(text => {
-                    // This block is typically hit if the fetch promise resolves successfully
-                    // BUT the server did not issue a redirect (e.g., returned a success JSON or HTML directly).
-                    // If a redirect was successful, the page would have already navigated.
-                    console.log("Fetch completed, but no redirect occurred:", text);
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem('reportSuccessMessage', data.message); // Store success message
+                        const reportModal = bootstrap.Modal.getInstance(document.getElementById('reportWorkModal'));
+                        if (reportModal) reportModal.hide();
+                        location.reload(); // Reload the page to display the alert
+                    } else {
+                        window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim laporan.', 'error');
+                    }
                 })
                 .catch(error => {
-                    // Catch network errors or errors thrown from the .then(response => ...) block
                     console.error('Error during report submission:', error);
-                    window.showCustomAlert('Terjadi kesalahan saat mengirim laporan.\nDetails: ' + error.message,
-                        'error');
+                    let errorMessage = 'Terjadi kesalahan saat mengirim laporan.\n';
+                    if (error.errors) {
+                        errorMessage += 'Validasi Gagal:\n';
+                        for (let key in error.errors) {
+                            errorMessage += `- ${error.errors[key].join(', ')}\n`;
+                        }
+                    } else if (error.message) {
+                        errorMessage += error.message;
+                    }
+                    window.showCustomAlert(errorMessage, 'error');
+                    // NO RELOAD ON ERROR
                 })
                 .finally(() => {
-                    // This finally block will always run.
-                    // For a successful redirect, the page will reload, making these UI updates moot.
-                    // But for client-side errors or server-side errors that don't redirect, they are important.
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Kirim Laporan';
+                    const submitBtn = document.getElementById('submitReportButton');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Kirim Laporan';
+                    }
                 });
         }
 
@@ -700,6 +736,17 @@
         document.addEventListener('DOMContentLoaded', function() {
             // No longer checking URL parameters for success messages, Laravel's session will handle it.
             // The global alert display in master-job-req.blade.php handles it.
+            const reviewSuccessMessage = localStorage.getItem('reviewSuccessMessage');
+            if (reviewSuccessMessage) {
+                window.showCustomAlert(reviewSuccessMessage, 'success');
+                localStorage.removeItem('reviewSuccessMessage'); // Clear the message
+            }
+
+            const reportSuccessMessage = localStorage.getItem('reportSuccessMessage');
+            if (reportSuccessMessage) {
+                window.showCustomAlert(reportSuccessMessage, 'success');
+                localStorage.removeItem('reportSuccessMessage'); // Clear the message
+            }
 
             const orderRows = document.querySelectorAll('.order-row');
             const submitReviewButton = document.getElementById('submitReviewButton');
@@ -711,7 +758,7 @@
 
             let selectedRating = 0; // Local variable for selected rating within current modal view
 
-            // Function to render the review form (unchanged)
+            // Function to render the review form
             function renderReviewForm() {
                 reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
                 reviewSectionContainer.innerHTML = `
@@ -749,7 +796,7 @@
                 }
             }
 
-            // Function to render the existing review display (unchanged)
+            // Function to render the existing review display
             function renderExistingReview(rating, comment) {
                 reviewSectionHeading.textContent = 'Ini penilaianmu';
                 let starHtml = '';
@@ -782,14 +829,15 @@
                     const transactionId = this.getAttribute('data-transaction-id');
                     const orderStatusText = this.getAttribute('data-order-status-text');
                     const hasReview = this.getAttribute('data-has-review') === 'true';
-                    const userRating = this.getAttribute('data-user-rating');
-                    const userComment = this.getAttribute('data-user-comment');
-                    const hasUserReport = this.getAttribute('data-has-user-report') === 'true';
+                    const receivedReviewRating = this.getAttribute('data-received-review-rating');
+                    const receivedReviewComment = this.getAttribute('data-received-review-comment');
+                    const hasWorkerReport = this.getAttribute('data-has-worker-report') === 'true';
 
 
                     // Set global variables for use in modals
                     currentTransactionId = transactionId;
-                    reportedWorkerId = this.getAttribute('data-worker-id');
+                    reportedRequesterId = this.getAttribute(
+                        'data-requester-id'); // Changed to requester ID
 
                     if (orderStatusText === 'Selesai') {
                         const completionModal = new bootstrap.Modal(document.getElementById(
@@ -801,7 +849,8 @@
                             .requestTitle;
                         document.getElementById('modalOrderNumber').textContent = this.dataset
                             .orderNumber;
-                        document.getElementById('modalWorkerName').textContent =
+                        document.getElementById('modalRequesterName')
+                            .textContent = // Changed to requester name
                             `${this.dataset.requesterFirstName} ${this.dataset.requesterLastName}`;
                         document.getElementById('modalRequestLocation').textContent = this.dataset
                             .requestLocation;
@@ -819,17 +868,15 @@
                             .finishWork;
 
                         // Set form actions dynamically for the completion modal
-                        // This form will be submitted directly via .submit()
-                        // Ensure this route is correct for your ReviewController.store method
-                        // Or if `storeReview` is in TransactionController, adjust accordingly.
-                        document.getElementById('reviewForm').action = `/reviews/${transactionId}`;
+                        document.getElementById('reviewForm').action =
+                            `/reviews`; // Corrected route
 
 
                         // Conditional rendering of review section
                         if (hasReview) {
-                            renderExistingReview(userRating, userComment);
+                            renderExistingReview(receivedReviewRating, receivedReviewComment);
                             // Set selectedRating to existing review
-                            selectedRating = parseInt(userRating);
+                            selectedRating = parseInt(receivedReviewRating);
                         } else {
                             renderReviewForm();
                             selectedRating = 0; // Reset selectedRating for new review
@@ -837,20 +884,13 @@
 
                         // --- Handle Report Button State ---
                         if (reportProblemButton) {
-                            if (hasUserReport) {
-                                reportProblemButton.textContent = 'Laporan sudah terkirim';
-                                reportProblemButton.disabled = true;
-                                reportProblemButton.classList.remove('text-danger');
-                                reportProblemButton.classList.add('text-secondary');
-                                reportProblemButton.onclick = null; // Remove click listener
-                            } else {
-                                reportProblemButton.textContent = 'Laporkan masalah';
-                                reportProblemButton.disabled = false;
-                                reportProblemButton.classList.remove('text-secondary');
-                                reportProblemButton.classList.add('text-danger');
-                                reportProblemButton.onclick =
-                                    openReportModal; // Re-attach click listener
-                            }
+                            // Always enable report button and reset its text
+                            reportProblemButton.textContent = 'Laporkan masalah';
+                            reportProblemButton.disabled = false;
+                            reportProblemButton.classList.remove('text-secondary');
+                            reportProblemButton.classList.add('text-danger');
+                            reportProblemButton.onclick =
+                                openReportModal; // Re-attach click listener
                         }
 
                         // Setup invoice link
@@ -865,7 +905,7 @@
                     } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(
                             orderStatusText)) {
                         // For these specific statuses, redirect to the ongoing request page
-                        window.location.href = `/job-req/on-going-work-request/${transactionId}`;
+                        window.location.href = `/job-taker/accepted-work-request/${transactionId}`;
                     } else {
                         console.log('Clicked on a row with status:', orderStatusText,
                             'No specific action defined.');
@@ -880,7 +920,6 @@
 
             // Attach submitReview to its button
             if (submitReviewButton) {
-                // Changed from onclick in HTML to addEventListener for cleaner JS
                 submitReviewButton.addEventListener('click', submitReview);
             }
 
@@ -929,11 +968,11 @@
                     let orderStatusText = badgeElement ? badgeElement.textContent.trim() : '';
 
                     let orderStatusForTab = '';
-                    if (orderStatusText === 'Selesai') {
+                    if (orderStatusText == 'Selesai') {
                         orderStatusForTab = 'completed';
                     } else if (['Dikerjain', 'Diterima', 'Ditinjau'].includes(orderStatusText)) {
                         orderStatusForTab = 'pending';
-                    } else if (orderStatusText === 'Dibatalin') {
+                    } else if (orderStatusText == 'Dibatalin') {
                         orderStatusForTab = 'cancelled';
                     } else {
                         orderStatusForTab = 'other'; // Fallback for other statuses
@@ -1024,6 +1063,7 @@
             // === END FIX ===
         });
     </script>
+
     <style>
         /* Star Rating Styles */
         .star-rating,
@@ -1226,7 +1266,7 @@
             }
 
             .order-row .status-badge-fixed {
-                min-width: 70px !important;
+                min-width: 70px;
                 /* Smaller width for mobile */
                 text-align: center;
                 display: inline-flex;

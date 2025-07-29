@@ -2,40 +2,36 @@
 
 @section('content')
     @php
-        $start_time_detail = $request->start_time->format('d M Y, H:i');
-        $end_time_detail = $request->end_time->format('d M Y, H:i');
-        $start_time = $request->start_time;
-        $end_time = $request->end_time;
-        $date = date('d M Y', strtotime($start_time));
-        $time = date('H:i', strtotime($start_time));
-        $start = new DateTime($start_time);
-        $end = new DateTime($end_time);
-        $interval = $start_time->diff($end_time);
+        // Prepare data for display and JavaScript usage
+        $startTimeDetail = $request->start_time->format('d M Y, H:i');
+        $endTimeDetail = $request->end_time->format('d M Y, H:i');
 
-        $days = $interval->d;
-        $hours = $interval->h;
-        $minutes = $interval->i;
+        $start = new DateTime($request->start_time);
+        $end = new DateTime($request->end_time);
+        $interval = $start->diff($end);
 
-        $total_hours = $days * 24 + $hours;
-
-        // Format durasi baru
-        $duration = $total_hours . ' jam ' . $minutes . ' menit';
+        $totalHours = $interval->days * 24 + $interval->h;
+        $duration = $totalHours . ' jam ' . $interval->i . ' menit';
 
         $amount = $request->final_price;
-        $formatted = 'Rp ' . number_format($amount, 2, ',', '.');
+        $formattedAmount = 'Rp ' . number_format($amount, 2, ',', '.');
 
-        $alamat = $request->location; // Menggunakan $request->location dari model
-        $alamatEncoded = urlencode($alamat);
+        $alamatEncoded = urlencode($request->location);
         $mapsLink = "https://www.google.com/maps/search/?api=1&query={$alamatEncoded}";
 
-        $created_at = $worker->created_at;
-        $year = date('F Y', strtotime($created_at));
+        $workerCreatedAtYear = date('F Y', strtotime($worker->created_at));
 
-        $start_work = date('d M Y H:i', strtotime($transaction->start_work));
-        $finish_work = date('d M Y H:i', strtotime($transaction->finish_work));
+        $transactionStartWorkFormatted = $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('d M Y H:i') : '-';
+        $transactionFinishWorkFormatted = $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('d M Y H:i') : '-';
 
+        $transactionCreatedAtFormatted = \Carbon\Carbon::parse($transaction->created_at)->format('d M Y');
+        $transactionUpdatedAtFormatted = \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y');
+
+        // Fetch existing review for the current transaction by the authenticated user (requester)
+        $existingReview = App\Models\Review::where('transaction_id', $transaction->id)
+            ->where('reviewer_id', Auth::id())
+            ->first();
     @endphp
-
 
     <div class="container-fluid pembatas-x mb-5">
         <div class="row mb-3 p-1">
@@ -43,7 +39,7 @@
                 <h2 style="font-weight: 800;">Pesanan Kamu</h2>
             </div>
             <div class="col-12 contain bg-light mt-2 px-4 py-3 rounded-4 d-flex align-items-center"
-                style="border: 1px solid #cacadd; ">
+                style="border: 1px solid #cacadd;">
                 @if ($transaction->status == 'submitted')
                     <div class="badge px-4 py-3 rounded-pill bg-primary text-light fs-6" style="background-color:#294287;">
                         Ditinjau</div>
@@ -80,39 +76,37 @@
                                 <div class="separate d-flex align-items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
-                                        {{-- Path untuk badan kalender --}}
+                                        {{-- Path for calendar body --}}
                                         <path
                                             d="M19.5 3.75H4.5C3.80964 3.75 3.14707 4.02656 2.65165 4.52198C2.15623 5.01739 1.875 5.67996 1.875 6.375V19.5C1.875 20.1904 2.15623 20.8529 2.65165 21.3483C3.14707 21.8437 3.80964 22.125 4.5 22.125H19.5C20.1904 22.125 20.8529 21.8437 21.3483 21.3483C21.8437 20.8529 22.125 20.1904 22.125 19.5V6.375C22.125 5.67996 21.8437 5.01739 21.3483 4.52198C20.8529 4.02656 20.1904 3.75 19.5 3.75ZM15.75 1.875V5.625M8.25 1.875V5.625M1.875 9.375H22.125"
                                             stroke="#133E87" stroke-width="1.5" stroke-linecap="round"
                                             stroke-linejoin="round" />
-                                        {{-- Path untuk titik-titik di dalam kalender --}}
+                                        {{-- Path for dots inside calendar --}}
                                         <path
                                             d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
                                             fill="#133E87" />
                                     </svg>
-
                                     <div class="p-2">Mulai</div>
                                 </div>
-                                <div class="py-2 fw-bold text-end">{{ $start_time_detail }}</div>
+                                <div class="py-2 fw-bold text-end">{{ $startTimeDetail }}</div>
                             </div>
                             <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                                 <div class="separate d-flex align-items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
-                                        {{-- Path untuk badan kalender --}}
+                                        {{-- Path for calendar body --}}
                                         <path
                                             d="M19.5 3.75H4.5C3.80964 3.75 3.14707 4.02656 2.65165 4.52198C2.15623 5.01739 1.875 5.67996 1.875 6.375V19.5C1.875 20.1904 2.15623 20.8529 2.65165 21.3483C3.14707 21.8437 3.80964 22.125 4.5 22.125H19.5C20.1904 22.125 20.8529 21.8437 21.3483 21.3483C21.8437 20.8529 22.125 20.1904 22.125 19.5V6.375C22.125 5.67996 21.8437 5.01739 21.3483 4.52198C20.8529 4.02656 20.1904 3.75 19.5 3.75ZM15.75 1.875V5.625M8.25 1.875V5.625M1.875 9.375H22.125"
                                             stroke="#133E87" stroke-width="1.5" stroke-linecap="round"
                                             stroke-linejoin="round" />
-                                        {{-- Path untuk titik-titik di dalam kalender --}}
+                                        {{-- Path for dots inside calendar --}}
                                         <path
                                             d="M14.875 14.875C14.875 15.1071 14.7828 15.3296 14.6187 15.4937C14.4546 15.6578 14.2321 15.75 14 15.75C13.7679 15.75 13.5454 15.6578 13.3813 15.4937C13.2172 15.3296 13.125 15.1071 13.125 14.875C13.125 14.6429 13.2172 14.4204 13.3813 14.2563C13.5454 14.0922 13.7679 14 14 14C14.2321 14 14.4546 14.0922 14.6187 14.2563C14.7828 14.4204 14.875 14.6429 14.875 14.875ZM8.75 18.375C8.98206 18.375 9.20462 18.2828 9.36872 18.1187C9.53281 17.9546 9.625 17.7321 9.625 17.5C9.625 17.2679 9.53281 17.0454 9.36872 16.8813C9.20462 16.7172 8.98206 16.625 8.75 16.625C8.51794 16.625 8.29538 16.7172 8.13128 16.8813C7.96719 17.0454 7.875 17.2679 7.875 17.5C7.875 17.7321 7.96719 17.9546 8.13128 18.1187C8.29538 18.2828 8.51794 18.375 8.75 18.375ZM9.625 20.125C9.625 20.3571 9.53281 20.5796 9.36872 20.7437C9.20462 20.9078 8.98206 21 8.75 21C8.51794 21 8.29538 20.9078 8.13128 20.7437C7.96719 20.5796 7.875 20.3571 7.875 20.125C7.875 19.8929 7.96719 19.6704 8.13128 19.5063C8.29538 19.3422 8.51794 19.25 8.75 19.25C8.98206 19.25 9.20462 19.3422 9.36872 19.5063C9.53281 19.6704 9.625 19.8929 9.625 20.125ZM11.375 18.375C11.6071 18.375 11.8296 18.2828 11.9937 18.1187C12.1578 17.9546 12.25 17.7321 12.25 17.5C12.25 17.2679 12.1578 17.0454 11.9937 16.8813C11.8296 16.7172 11.6071 16.625 11.375 16.625C11.1429 16.625 10.9204 16.7172 10.7563 16.8813C10.5922 17.0454 10.5 17.2679 10.5 17.5C10.5 17.7321 10.5922 17.9546 10.7563 18.1187C10.9204 18.2828 11.1429 18.375 11.375 18.375ZM12.25 20.125C12.25 20.3571 12.1578 20.5796 11.9937 20.7437C11.8296 20.9078 11.6071 21 11.375 21C11.1429 21 10.9204 20.9078 10.7563 20.7437C10.5922 20.5796 10.5 20.3571 10.5 20.125C10.5 19.8929 10.5922 19.6704 10.7563 19.5063C10.9204 19.3422 11.1429 19.25 11.375 19.25C11.6071 19.25 11.8296 19.3422 11.9937 19.5063C12.1578 19.6704 12.25 19.8929 12.25 20.125ZM14 18.375C14.2321 18.375 14.4546 18.2828 14.6187 18.1187C14.7828 17.9546 14.875 17.7321 14.875 17.5C14.875 17.2679 14.7828 17.0454 14.6187 16.8813C14.4546 16.7172 14.2321 16.625 14 16.625C13.7679 16.625 13.5454 16.7172 13.3813 16.8813C13.2172 17.0454 13.125 17.2679 13.125 17.5C13.125 17.7321 13.2172 17.9546 13.3813 18.1187C13.5454 18.2828 13.7679 18.375 14 18.375ZM14.875 20.125C14.875 20.3571 14.7828 20.5796 14.6187 20.7437C14.4546 20.9078 14.2321 21 14 21C13.7679 21 13.5454 20.9078 13.3813 20.7437C13.2172 20.5796 13.125 20.3571 13.125 20.125C13.125 19.8929 13.2172 19.6704 13.3813 19.5063C13.5454 19.3422 13.7679 19.25 14 19.25C14.2321 19.25 14.4546 19.3422 14.6187 19.5063C14.7828 19.6704 14.875 19.8929 14.875 20.125ZM16.625 18.375C16.8571 18.375 17.0796 18.2828 17.2437 18.1187C17.4078 17.9546 17.5 17.7321 17.5 17.5C17.5 17.2679 17.4078 17.0454 17.2437 16.8813C17.0796 16.7172 16.8571 16.625 16.625 16.625C16.3929 16.625 16.1704 16.7172 16.0063 16.8813C15.8422 17.0454 15.75 17.2679 15.75 17.5C15.75 17.7321 15.8422 17.9546 16.0063 18.1187C16.1704 18.2828 16.3929 18.375 16.625 18.375ZM17.5 20.125C17.5 20.3571 17.4078 20.5796 17.2437 20.7437C17.0796 20.9078 16.8571 21 16.625 21C16.3929 21 16.1704 20.9078 16.0063 20.7437C15.8422 20.5796 15.75 20.3571 15.75 20.125C15.75 19.8929 15.8422 19.6704 16.0063 19.5063C16.1704 19.3422 16.3929 19.25 16.625 19.25C16.8571 19.25 17.0796 19.3422 17.2437 19.5063C17.4078 19.6704 17.5 19.8929 17.5 20.125ZM19.25 18.375C19.4821 18.375 19.7046 18.2828 19.8687 18.1187C20.0328 17.9546 20.125 17.7321 20.125 17.5C20.125 17.2679 20.0328 17.0454 19.8687 16.8813C19.7046 16.7172 19.4821 16.625 19.25 16.625C19.0179 16.625 18.7954 16.7172 18.6313 16.8813C18.4672 17.0454 18.375 17.2679 18.375 17.5C18.375 17.7321 18.4672 17.9546 18.6313 18.1187C18.7954 18.2828 19.0179 18.375 19.25 18.375ZM17.5 14.875C17.5 15.1071 17.4078 15.3296 17.2437 15.4937C17.0796 15.6578 16.8571 15.75 16.625 15.75C16.3929 15.75 16.1704 15.6578 16.0063 15.4937C15.8422 15.3296 15.75 15.1071 15.75 14.875C15.75 14.6429 15.8422 14.4204 16.0063 14.2563C16.1704 14.0922 16.3929 14 16.625 14C16.8571 14 17.0796 14.0922 17.2437 14.2563C17.4078 14.4204 17.5 14.6429 17.5 14.875ZM19.25 15.75C19.4821 15.75 19.7046 15.6578 19.8687 15.4937C20.0328 15.3296 20.125 15.1071 20.125 14.875C20.125 14.6429 20.0328 14.4204 19.8687 14.2563C19.7046 14.0922 19.4821 14 19.25 14C19.0179 14 18.7954 14.0922 18.6313 14.2563C18.4672 14.4204 18.375 14.6429 18.375 14.875C18.375 15.1071 18.4672 15.3296 18.6313 15.4937C18.7954 15.6578 19.0179 15.75 19.25 15.75Z"
                                             fill="#133E87" />
                                     </svg>
-
                                     <div class="p-2">Selesai</div>
                                 </div>
-                                <div class="py-2 fw-bold text-end">{{ $end_time_detail }}</div>
+                                <div class="py-2 fw-bold text-end">{{ $endTimeDetail }}</div>
                             </div>
                             <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                                 <div class="separate d-flex align-items-center">
@@ -122,7 +116,6 @@
                                             d="M12 2.25C6.615 2.25 2.25 6.615 2.25 12C2.25 17.385 6.615 21.75 12 21.75C17.385 21.75 21.75 17.385 21.75 12C21.75 6.615 17.385 2.25 12 2.25ZM12.75 6C12.75 5.80109 12.671 5.61032 12.5303 5.46967C12.3897 5.32902 12.1989 5.25 12 5.25C11.8011 5.25 11.6103 5.32902 11.4697 5.46967C11.329 5.61032 11.25 5.80109 11.25 6V12C11.25 12.414 11.586 12.75 12 12.75H16.5C16.6989 12.75 16.8897 12.671 17.0303 12.5303C17.171 12.3897 17.25 12.1989 17.25 12C17.25 11.8011 17.171 11.6103 17.0303 11.4697C16.8897 11.329 16.6989 11.25 16.5 11.25H12.75V6Z"
                                             fill="#133E87" />
                                     </svg>
-
                                     <div class="p-2">Durasi</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">{{ $duration }}</div>
@@ -141,10 +134,9 @@
                                             d="M2.25 18C2.05109 18 1.86032 18.079 1.71967 18.2197C1.57902 18.3603 1.5 18.5511 1.5 18.75C1.5 18.9489 1.57902 19.1397 1.71967 19.2803C1.86032 19.421 2.05109 19.5 2.25 19.5C7.65 19.5 12.88 20.222 17.85 21.575C19.04 21.899 20.25 21.017 20.25 19.755V18.75C20.25 18.5511 20.171 18.3603 20.0303 18.2197C19.8897 18.079 19.6989 18 19.5 18H2.25Z"
                                             fill="#133E87" />
                                     </svg>
-
                                     <div class="p-2">Upah</div>
                                 </div>
-                                <div class="py-2 fw-bold text-end">{{ $formatted }}</div>
+                                <div class="py-2 fw-bold text-end">{{ $formattedAmount }}</div>
                             </div>
                             <div class="d-flex flex-fill justify-content-between" style="width: 100%;">
                                 <div class="separate d-flex align-items-center">
@@ -154,7 +146,6 @@
                                             d="M11.54 22.351L11.61 22.391L11.638 22.407C11.749 22.467 11.8733 22.4985 11.9995 22.4985C12.1257 22.4985 12.25 22.467 12.361 22.407L12.389 22.392L12.46 22.351C12.8511 22.1191 13.2328 21.8716 13.604 21.609C14.5651 20.9305 15.463 20.1667 16.287 19.327C18.231 17.337 20.25 14.347 20.25 10.5C20.25 8.31196 19.3808 6.21354 17.8336 4.66637C16.2865 3.11919 14.188 2.25 12 2.25C9.81196 2.25 7.71354 3.11919 6.16637 4.66637C4.61919 6.21354 3.75 8.31196 3.75 10.5C3.75 14.346 5.77 17.337 7.713 19.327C8.53664 20.1667 9.43427 20.9304 10.395 21.609C10.7666 21.8716 11.1485 22.1191 11.54 22.351ZM12 13.5C12.7956 13.5 13.5587 13.1839 14.1213 12.6213C14.6839 12.0587 15 11.2956 15 10.5C15 9.70435 14.6839 8.94129 14.1213 8.37868C13.5587 7.81607 12.7956 7.5 12 7.5C11.2044 7.5 10.4413 7.81607 9.87868 8.37868C9.31607 8.94129 9 9.70435 9 10.5C9 11.2956 9.31607 12.0587 9.87868 12.6213C10.4413 13.1839 11.2044 13.5 12 13.5Z"
                                             fill="#133E87" />
                                     </svg>
-
                                     <div class="p-2">Lokasi</div>
                                 </div>
                                 <div class="py-2 fw-bold text-end">
@@ -181,66 +172,60 @@
                                             d="M8.99008 2.67508C9.36342 1.77758 10.6368 1.77758 11.0101 2.67508L12.7451 6.84675L17.2484 7.20841C18.2184 7.28591 18.6118 8.49591 17.8726 9.12924L14.4418 12.0684L15.4893 16.4626C15.7151 17.4092 14.6859 18.1567 13.8559 17.6501L10.0001 15.2951L6.14425 17.6501C5.31425 18.1567 4.28508 17.4084 4.51092 16.4626L5.55842 12.0684L2.12758 9.12924C1.38842 8.49591 1.78175 7.28591 2.75175 7.20841L7.25508 6.84675L8.99008 2.67508Z"
                                             fill="#FFDD00" />
                                     </svg>
-
                                     <div class="rate fw-semibold">{{ $worker->rating }}</div>
                                     <div class="banyak">
-                                        ({{ \App\Models\Transaction::where('worker_id', Auth::id())->where('status', 'completed')->count() }})
+                                        ({{ \App\Models\Transaction::where('worker_id', $worker->id)->where('status', 'completed')->count() }})
                                     </div>
                                 </div>
                                 <div id="join">
                                     <p style="font-size: 9px;">Bergabung dengan Kerjain sejak
-                                        <span>{{ $year }}</span>
+                                        <span>{{ $workerCreatedAtYear }}</span>
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-12 px-0 pe-lg-2">
-                        @if ($transaction->status !== 'cancelled')
-                            <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center"
-                                style="border: 1px solid #cacadd; height:100%;">
-
-                                @if ($transaction->status == 'submitted')
-                                    <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
-                                        data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
-                                        style="background-color:#294287; width:88%;">
-                                        Tandai Selesai
-                                    </button>
-                                @endif
-
-                                @if ($transaction->status == 'completed')
-                                    <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
-                                        style="width:88%;cursor: not-allowed;pointer-events: none;">
-                                        Selesai
-                                    </a>
-                                @endif
-
-                                {{-- Lihat Bukti Penyelesaian --}}
-                                @if ($transaction->status == 'in progress')
-                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
-                                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
-                                        style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
-                                        Lihat Bukti Penyelesaian
-                                    </a>
-                                @elseif($transaction->status == 'submitted' || $transaction->status == 'completed')
-                                    <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
-                                        data-bs-toggle="modal" data-bs-target="#completionProofModal"
-                                        style="color: #0d6efd; text-decoration: none;">
-                                        Lihat Bukti Penyelesaian
-                                    </a>
-                                @endif
-
-                                {{-- Batalkan --}}
-                                @if ($transaction->status == 'accepted')
-                                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
-                                    <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
-                                @endif
-
-                            </div>
-                        @endif
+                    <div class="col-12 col-md-6 col-lg-12 px-0 pe-lg-2 statb">
+                        <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-column align-items-center justify-content-center"
+                            style="border: 1px solid #cacadd; height:100%;">
+                            {{-- This section will be dynamically updated by JavaScript --}}
+                            @if ($transaction->status == 'submitted')
+                                <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
+                                    data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
+                                    style="background-color:#294287; width:88%;">
+                                    Tandai Selesai
+                                </button>
+                                <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                                    data-bs-toggle="modal" data-bs-target="#completionProofModal"
+                                    style="color: #0d6efd; text-decoration: none;">
+                                    Lihat Bukti Penyelesaian
+                                </a>
+                            @elseif($transaction->status == 'completed')
+                                <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
+                                    style="width:88%;cursor: not-allowed;pointer-events: none;">
+                                    Selesai
+                                </a>
+                                <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                                    data-bs-toggle="modal" data-bs-target="#completionProofModal"
+                                    style="color: #0d6efd; text-decoration: none;">
+                                    Lihat Bukti Penyelesaian
+                                </a>
+                            @elseif($transaction->status == 'in progress')
+                                <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
+                                    style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
+                                    style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
+                                    Lihat Bukti Penyelesaian
+                                </a>
+                                <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
+                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                            @elseif($transaction->status == 'accepted')
+                                <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
+                                    style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
+                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -252,8 +237,7 @@
     <div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form id="markCompleteForm" action="{{ route('transaction.markComplete', $transaction->id) }}"
-                method="POST">
+            <form id="markCompleteForm" action="{{ route('transaction.markComplete', $transaction->id) }}" method="POST">
                 @csrf
                 <div class="modal-content p-4">
                     <div class="d-flex flex-md-row align-items-center justify-content-center text-center text-md-start">
@@ -416,14 +400,14 @@
                             <div class="rounded-3 my-2 p-2 d-flex justify-content-center align-items-center"
                                 style="border: 1px solid #8a8a8a; height: 40vh; background-color: #f9f9f9; overflow: hidden;">
                                 @php
-                                    // Decode string JSON menjadi array
+                                    // Decode string JSON into array
                                     $photoUrls = !empty($completionProof)
                                         ? json_decode($completionProof->photo_url, true)
                                         : [];
                                 @endphp
 
                                 @if (!empty($photoUrls) && isset($photoUrls[0]))
-                                    {{-- Ambil URL gambar pertama dari array --}}
+                                    {{-- Get the first image URL from the array --}}
                                     <img src="{{ $photoUrls[0] }}" alt="Bukti Foto"
                                         class="img-fluid h-100 w-100 rounded" style="object-fit: cover;">
                                 @else
@@ -474,14 +458,14 @@
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
-                            fill="#B02A37" />
+                                fill="#B02A37" />
                     </svg>
                     <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">Batalkan Pekerjaan?</h4>
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
-                            fill="#B02A37" />
+                                fill="#B02A37" />
                     </svg>
                 </div>
 
@@ -541,6 +525,7 @@
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
+                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
                                 <p class="fw-medium" id="reportModalRequestLocation">
                                     <a href={{ $mapsLink }} target="_blank" class="text-end"
                                         style="text-decoration: none; color: #007BFF;">
@@ -609,12 +594,16 @@
             </div>
         </div>
     </div>
+
     <script>
         // Global variables for managing transaction and worker IDs across modals
         let currentTransactionId = `{{ $transaction->id }}`;
         let reportedWorkerId = `{{ $worker->id }}`;
-        let reportFiles = []; // Array of File objects
+        let reportFiles = []; // Array of File objects or URLs for report images
         const MAX_REPORT_IMAGES = 7; // Define max images constant
+
+        // Add a global variable to store the existing review data
+        let existingReviewData = @json($existingReview);
 
         // --- Image Preview Logic for Report Modal ---
         const reportImageInput = document.getElementById('reportImageInput');
@@ -744,9 +733,9 @@
                 `{{ $request->location ?? '-' }}`; // Keep current location display logic
 
             document.getElementById('reportModalTransactionCreatedAt').textContent =
-                `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
+                `{{ $transactionCreatedAtFormatted ?? '-' }}`;
             document.getElementById('reportModalTransactionUpdatedAt').textContent =
-                `{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y') ?? '-' }}`;
+                `{{ $transactionUpdatedAtFormatted ?? '-' }}`;
             document.getElementById('reportModalRequestPrice').textContent =
                 `{{ number_format($request->final_price ?? 0, 0, ',', '.') ?? '-' }}`;
             document.getElementById('reportModalStartWork').textContent =
@@ -763,36 +752,14 @@
             document.getElementById('reportForm').action =
                 `{{ route('user.submitReport', $transaction->id) }}`; // Correct route for requester reporting
 
-            // Check if a report already exists for this transaction
-            const hasUserReport = `{{ $hasUserReport ? 'true' : 'false' }}` === 'true';
-            const reportPhotoUrlsJson = `{{ json_encode($userReport->decoded_photo_urls ?? []) }}`;
-            const reportReasons = `{{ $userReport->reasons ?? '' }}`;
-
-            const reportNoteElement = document.getElementById('reportNote');
-            const submitReportButton = document.getElementById('submitReportButton');
-
-            if (hasUserReport) {
-                try {
-                    reportFiles = JSON.parse(reportPhotoUrlsJson); // Load existing URLs
-                    if (reportNoteElement) reportNoteElement.value = reportReasons; // Populate reasons
-                    // Disable fields if report already exists
-                    if (reportNoteElement) reportNoteElement.disabled = true;
-                    if (reportImageInput) reportImageInput.disabled = true;
-                    if (submitReportButton) submitReportButton.style.display = 'none'; // Hide submit button
-                } catch (e) {
-                    console.error('Error parsing report photo URLs:', e);
-                    reportFiles = []; // Fallback to empty
-                }
-            } else {
-                // Reset for new report
-                reportFiles = [];
-                if (reportNoteElement) reportNoteElement.value = '';
-                if (reportNoteElement) reportNoteElement.disabled = false;
-                if (reportImageInput) reportImageInput.disabled = false;
-                if (submitReportButton) submitReportButton.style.display = 'block'; // Show submit button
-            }
-            updateReportImagePreview(); // Render initial state (either empty or existing images)
-
+            // Always reset for new report (as per new requirement)
+            reportFiles = [];
+            if (document.getElementById('reportNote')) document.getElementById('reportNote').value = '';
+            if (document.getElementById('reportNote')) document.getElementById('reportNote').disabled = false;
+            if (reportImageInput) reportImageInput.disabled = false;
+            if (document.getElementById('submitReportButton')) document.getElementById('submitReportButton').style.display =
+                'block'; // Always show submit button
+            updateReportImagePreview(); // Render initial state (empty for new report)
 
             // Show the report modal after a brief delay
             setTimeout(() => {
@@ -867,12 +834,11 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.showCustomAlert(data.message, 'success');
-                        const completionModal = bootstrap.Modal.getInstance(document.getElementById('completionModal'));
-                        if (completionModal) completionModal.hide();
-                        // Update UI to reflect review submitted state
-                        renderExistingReview(rating, comment); // Show the submitted review
-                        // updateReportButtonState(true); // Decide if reporting should be disabled after review
+                        // Reload the page first, then display the alert.
+                        window.location.reload();
+                        setTimeout(() => {
+                            window.showCustomAlert(data.message, 'success');
+                        }, 500); // Small delay to ensure reload starts
                     } else {
                         window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim ulasan.', 'error');
                     }
@@ -978,9 +944,13 @@
                     if (data.success) {
                         window.showCustomAlert(data.message, 'success');
                         const reportModal = bootstrap.Modal.getInstance(document.getElementById('reportWorkModal'));
-                        if (reportModal) reportModal.hide();
-                        // Update UI to reflect report submitted state
-                        updateReportButtonState(true); // Assuming 'true' means report exists now
+                        if (reportModal) reportModal.hide(); // Hide report modal
+
+                        // Re-open the completion modal
+                        const completionModal = new bootstrap.Modal(document.getElementById('completionModal'));
+                        completionModal.show();
+                        // Update UI to reflect report submitted state (without checking hasUserReport)
+                        updateReportButtonState(true); // Always set to true after submission
                     } else {
                         window.showCustomAlert(data.message || 'Terjadi kesalahan saat mengirim laporan.', 'error');
                     }
@@ -1020,21 +990,19 @@
 
         // Function to update the main transaction status badge and buttons
         function updateTransactionStatus(newStatus) {
-            const badge = document.getElementById('transaction-status-badge');
-            if (!badge) return;
+            // --- Update Status Badge Section ---
+            const statusBadgeSection = document.querySelector(
+                '.col-12.contain.bg-light.mt-2.px-4.py-3.rounded-4.d-flex.align-items-center');
+            if (!statusBadgeSection) return;
 
             let statusText = '';
             let bgColor = '';
             let textColor = 'text-light'; // Default text color
 
-            // Update status text and color
+            // Determine status text and color
             if (newStatus === 'submitted') {
                 statusText = 'Ditinjau';
                 bgColor = '#294287';
-            } else if (newStatus === 'completed') {
-                statusText = 'Selesai';
-                bgColor = '#D3FA0D';
-                textColor = 'text-dark'; // Changed for 'Selesai' status
             } else if (newStatus === 'cancelled') {
                 statusText = 'Dibatalin';
                 bgColor = 'crimson';
@@ -1044,19 +1012,29 @@
             } else if (newStatus === 'in progress') {
                 statusText = 'Dikerjain';
                 bgColor = '#309FFF';
+            } else if (newStatus === 'completed') {
+                statusText = 'Selesai';
+                bgColor = '#D3FA0D';
+                textColor = 'text-dark';
             }
 
-            badge.textContent = statusText;
-            badge.style.backgroundColor = bgColor;
-            badge.classList.remove('text-light', 'text-dark');
-            badge.classList.add(textColor);
+            // Reconstruct the innerHTML for the status badge section
+            statusBadgeSection.innerHTML = `
+                <div class="badge px-4 py-3 rounded-pill ${textColor} fs-6" style="background-color:${bgColor};">
+                    ${statusText}
+                </div>
+                <h3 class="d-inline mx-3 mt-1" style="color:#294287; font-weight: 800;">{{ $request->title }}</h3>
+            `;
 
-            // Update action buttons based on new status
-            const actionContainer = document.querySelector('.col-12.col-md-6.col-lg-12.px-0.pe-lg-2 > .contain');
+
+            // --- Update Action Buttons Section ---
+            // Target the specific .contain div inside the .statb column
+            const actionContainer = document.querySelector('.statb > .contain');
             if (!actionContainer) return;
 
             actionContainer.innerHTML = ''; // Clear existing buttons
 
+            // Add content based on newStatus
             if (newStatus === 'submitted') {
                 actionContainer.innerHTML += `
                     <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
@@ -1091,6 +1069,8 @@
                 `;
             } else if (newStatus === 'in progress') {
                 actionContainer.innerHTML += `
+                    <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
+                        style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
                     <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                         style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
                         Lihat Bukti Penyelesaian
@@ -1098,13 +1078,24 @@
                     <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
                         data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
                 `;
+            } else if (newStatus === 'cancelled') {
+                actionContainer.innerHTML += `
+                    <div class="text-center text-secondary fw-semibold fs-5" style="width:100%; height:100%; display: flex; align-items: center; justify-content: center;">
+                        Pekerjaan Dibatalkan
+                    </div>
+                `;
             }
+
             // Re-attach event listeners for newly created elements
             attachEventListeners();
         }
 
         function renderReviewForm() {
-            reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+            const reviewSectionHeading = document.getElementById('reviewSectionHeading'); // Get the heading element
+            if (reviewSectionHeading) {
+                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+            }
+
             const reviewSectionContainer = document.getElementById('review-section-container');
             if (!reviewSectionContainer) return;
 
@@ -1148,7 +1139,11 @@
 
         // Function to render the existing review display
         function renderExistingReview(rating, comment) {
-            reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+            const reviewSectionHeading = document.getElementById('reviewSectionHeading'); // Get the heading element
+            if (reviewSectionHeading) {
+                reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+            }
+
             const reviewSectionContainer = document.getElementById('review-section-container');
             if (!reviewSectionContainer) return;
 
@@ -1170,7 +1165,7 @@
                 `;
             const submitReviewButton = document.getElementById('submitReviewButton');
             if (submitReviewButton) {
-                submitReviewButton.style.display = 'none';
+                submitReviewButton.style.display = 'none'; // Hide submit button if review already exists
             }
         }
 
@@ -1222,6 +1217,16 @@
                 invoiceLink.removeEventListener('click', handleInvoiceLinkClick); // Prevent duplicates
                 invoiceLink.addEventListener('click', handleInvoiceLinkClick);
             }
+            // Attach event listener for the main "Tandai Selesai" button
+            const markCompleteMainButton = document.getElementById('completeJobBtn');
+            if (markCompleteMainButton) {
+                markCompleteMainButton.removeEventListener('click', function() {
+                    // No direct action here, just opens the modal
+                });
+                markCompleteMainButton.addEventListener('click', function() {
+                    // No direct action here, just opens the modal
+                });
+            }
         }
 
         // Centralized handler for complete button to keep `this` context for disabling
@@ -1258,12 +1263,17 @@
                             .getElementById('completeJobModal'));
                         if (confirmModal) confirmModal.hide();
 
+                        // Update existingReviewData with the newly submitted review info if needed,
+                        // or simply trigger a page reload which will refetch all data.
+                        // For simplicity, we'll trigger a reload after review.
+                        // But for immediate display, you might set existingReviewData = data.review;
+
                         // When job is marked complete, open the completion/review modal
                         const completionModal = new bootstrap.Modal(document.getElementById(
                             'completionModal'));
                         completionModal.show();
                         // Update UI status
-                        updateTransactionStatus('completed'); // Update the main status badge
+                        updateTransactionStatus('completed'); // Update the main status badge AND action buttons
                     } else {
                         let errorMessage = data.message || 'Terjadi kesalahan.';
                         if (data.errors) {
@@ -1316,9 +1326,9 @@
                     document.getElementById('modalRequestLocation').textContent =
                         `{{ $request->location ?? '-' }}`;
                     document.getElementById('modalTransactionCreatedAt').textContent =
-                        `{{ \Carbon\Carbon::parse($transaction->created_at)->format('d M Y') ?? '-' }}`;
+                        `{{ $transactionCreatedAtFormatted ?? '-' }}`;
                     document.getElementById('modalTransactionUpdatedAt').textContent =
-                        `{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y') ?? '-' }}`;
+                        `{{ $transactionUpdatedAtFormatted ?? '-' }}`;
                     document.getElementById('modalRequestPrice').textContent =
                         `{{ number_format($request->final_price ?? 0, 0, ',', '.') ?? '-' }}`;
                     document.getElementById('modalStartWork').textContent =
@@ -1326,27 +1336,22 @@
                     document.getElementById('modalFinishWork').textContent =
                         `{{ $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('H.i') : '-' }}`;
 
-                    // Set form action dynamically for the review form (already done in submitReview)
-
-                    // Conditional rendering of review section
-                    const hasReview = `{{ $hasReview ? 'true' : 'false' }}` === 'true';
-                    if (hasReview) {
-                        const userRating = `{{ $userReview->rating ?? 0 }}`;
-                        const userComment = `{{ $userReview->comment ?? '' }}`;
-                        renderExistingReview(parseInt(userRating), userComment);
-                        selectedRating = parseInt(userRating);
+                    // Conditional rendering of review form or existing review
+                    if (existingReviewData) {
+                        renderExistingReview(existingReviewData.rating, existingReviewData.comment);
                     } else {
                         renderReviewForm();
                         selectedRating = 0; // Reset selectedRating for new review
                     }
 
-                    // Handle Report Button State
-                    updateReportButtonState(`{{ $hasUserReport ? 'true' : 'false' }}` === 'true');
+                    // Always enable the report button, ignoring existing report status
+                    updateReportButtonState(false); // Force to false to make it active
                 });
 
                 // Reset review form state when the completion modal is hidden
                 completionModalElement.addEventListener('hidden.bs.modal', function() {
-                    selectedRating = 0; // Reset selected rating
+                    // No need to reset selectedRating if we re-render every time it's shown.
+                    // If you wanted to preserve unsaved review data, you'd need more complex state management.
                 });
             }
 
@@ -1364,6 +1369,9 @@
                     reportImageInput.value = ''; // Clear file input
                     document.getElementById('submitReportButton').disabled = false;
                     document.getElementById('submitReportButton').textContent = 'Kirim Laporan';
+                    // The report button state in the completion modal will be set by its 'show.bs.modal' listener
+                    // based on whether an existing report exists (which isn't implemented for display yet).
+                    // For now, it will always revert to 'Laporkan masalah' (active).
                 });
             }
 
@@ -1386,6 +1394,7 @@
 
         }); // End of DOMContentLoaded
     </script>
+
     <style>
         /* Star Rating Styles */
         .star-rating,

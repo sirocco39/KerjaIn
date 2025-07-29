@@ -36,23 +36,19 @@ class TransactionController extends Controller
             $order->user_review = $order->userReview; // Get the actual userReview object (will be null if no review)
 
             // NEW: Check for existing report and load report data
-            $order->has_user_report = $order->userReport()->exists();
+            // The `userReport` relationship is a HasOne, so it will fetch the first report found.
+            // For allowing multiple reports, the frontend will simply present a fresh form.
+            $userReport = $order->userReport; // Get the report object from the relationship
 
-            // Corrected logic: Ensure $order->userReport is an object before accessing its properties.
-            // If userReport() returns null, assign a new StdClass object to it
-            // and then set the properties on that new object.
-            if ($order->userReport) { // Check if the relationship loaded an actual report
-                $order->user_report->decoded_photo_urls = json_decode($order->userReport->photo_url, true) ?? [];
-                // Ensure 'reasons' is accessible, even if not explicitly stored in decoded_photo_urls
-                // It should be a direct property of the Report model if it exists.
-                // You might need to adjust your Report model's accessors/attributes if 'reasons' isn't directly available.
-                // Assuming 'reasons' is a standard column, it will be available when $order->userReport is not null.
-            } else {
-                // If no userReport exists, create a dummy object to prevent errors in Blade
-                $order->user_report = (object)[
-                    'decoded_photo_urls' => [],
-                    'reasons' => null, // Provide a default null for 'reasons' as well
-                ];
+            $order->has_user_report = ($userReport !== null); // Set flag based on existence
+
+            // Initialize properties to avoid errors in Blade even if no report exists
+            $order->report_decoded_photo_urls = [];
+            $order->report_reasons = null;
+
+            if ($userReport) { // If a report exists, populate the new properties
+                $order->report_decoded_photo_urls = json_decode($userReport->photo_url, true) ?? [];
+                $order->report_reasons = $userReport->reasons;
             }
 
             return $order;
@@ -132,10 +128,12 @@ class TransactionController extends Controller
             $userReport->decoded_photo_urls = json_decode($userReport->photo_url, true) ?? [];
         } else {
             // If no userReport exists, create a dummy object to prevent errors in Blade
-            $userReport = (object)[
+            // FIX: Create the object and then assign it to the variable.
+            $dummyUserReport = (object)[
                 'decoded_photo_urls' => [],
                 'reasons' => null, // Also provide a default null for 'reasons'
             ];
+            $userReport = $dummyUserReport;
         }
 
         // Kirim data ke view, including hasUserReport and userReport
@@ -155,7 +153,7 @@ class TransactionController extends Controller
         $payment = $transaction->request->payment;
         $refundAmount = $payment->amount;
 
-        // 5. Proses pengembalian dana (refund) ke requester
+        // 5. Proses pengembalian dana (refund)
         $requester->balance += $refundAmount;
         $requester->locked_balance -= $refundAmount;
         $requester->save();
@@ -268,19 +266,11 @@ class TransactionController extends Controller
                 ->on($transaction)
                 ->causedBy(Auth::user())
                 ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} oleh user bukan requester.");
-            return redirect()->route('job-req.home')->with('custom_error_alert', 'Anda tidak berwenang melaporkan transaksi ini.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
+            ], 403);
         }
-
-        // REMOVED: This block prevents multiple reports.
-        /*
-        $existingReport = Report::where('transaction_id', $transactionId)
-            ->where('reporter_id', Auth::id())
-            ->first();
-        if ($existingReport) {
-            // Changed to custom_error_alert for consistency
-            return redirect()->route('job-req.history')->with('custom_error_alert', 'Anda sudah mengajukan laporan untuk transaksi ini.');
-        }
-        */
 
         DB::transaction(function () use ($request, $transaction) {
             $photoUrls = []; // Array to store public URLs of uploaded photos
@@ -290,18 +280,22 @@ class TransactionController extends Controller
                 $photoUrls[] = Storage::url($path); // Get public URL for storage
             }
 
+            // Always create a new report entry
             Report::create([
                 'transaction_id' => $transaction->id,
                 'reporter_id' => $request->reporter_id,
                 'reported_id' => $request->reported_id,
                 'reasons' => $request->reasons,
                 'photo_url' => json_encode($photoUrls), // Store JSON encoded array of URLs
-                'status' => 'pending', // Default status for a new report
+                'status' => 'Not Reviewed', // Default status for a new report
             ]);
         });
 
-        // Changed to custom_success_alert for consistency
-        return redirect()->route('job-req.history')->with('custom_success_alert', 'Laporan berhasil dikirim dan akan segera ditinjau.');
+        // Changed from redirect()->route() to return response()->json() for AJAX consistency
+        return response()->json([
+            'success' => true,
+            'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+        ]);
     }
 
     public function getTransactionDetails($id)
@@ -318,3 +312,4 @@ class TransactionController extends Controller
         ]);
     }
 }
+
