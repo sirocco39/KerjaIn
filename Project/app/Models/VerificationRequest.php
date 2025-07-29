@@ -24,6 +24,7 @@ class VerificationRequest extends Model
         'first_name',
         'last_name',
         'nik',
+        'scanned_nik', // Added the new column here
         'birthdate',
         'gender',
         'address',
@@ -82,3 +83,4 @@ class VerificationRequest extends Model
 
     public $timestamps = true; // pengaturan created_at dan updated_at otomatis dibuat oleh laravel
 }
+

@@ -42,6 +42,22 @@ use App\Livewire\jobTaker\JobTakerChatRoom;
 use App\Livewire\JobTakerChatRoom as LivewireJobTakerChatRoom;
 use App\Models\ChatRoom;
 use Spatie\Activitylog\Models\Activity;
+use App\Http\Controllers\ProfileController;
+
+// =======================
+// PROFILE PAGE
+// =======================
+Route::get('/profile', function () {
+    return view('job-requester.profile');
+})->middleware('auth')->name('profile');
+Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
+Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
+
+// =======================
+// Worker Profile
+// =======================
+Route::post('/profile/upload-worker', [ProfileController::class, 'uploadWorkerPhoto'])->name('profile.upload.worker');
 
 // =======================
 // LANDING PAGE
@@ -173,6 +189,8 @@ Route::middleware('auth')->group(function () {
     // Grup route untuk pendaftaran pekerja tanpa autentikasi
 
     Route::middleware(['auth', PreventReRegistration::class])->group(function () {
+        Route::post('/ktp/ocr', [workerRegistrationController::class, 'ocrKtpAjax'])->name('ktp.ocr.ajax');
+
         Route::prefix('joinWorker')->name('worker.register.')->group(function () {
             // Langkah 1: Data Pribadi (Form GET, Proses POST)
             // URL: /joinWorker/join
@@ -256,13 +274,6 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     // Manajemen Transaksi
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/{id}/show', [AdminTransactionController::class, 'show'])->name('transactions.show');
-
-    // Notifikasi
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-
-    // Pengaturan
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings');
-    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
 Route::get('/admin/activity-log', function () {
     // Kode yang benar untuk urutan kronologis

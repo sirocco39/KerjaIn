@@ -88,7 +88,7 @@ html::-webkit-scrollbar {
     margin-left: 2px;
 }
 
-#dropProfile .dropdown-menu li img{
+.navIcon{
     filter: brightness(0) saturate(100%);
 }
 

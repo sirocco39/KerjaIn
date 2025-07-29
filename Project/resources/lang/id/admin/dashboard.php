@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'dasbor' => 'Dasbor',
+    'total_pengguna' => 'Total Pengguna',
+    'aktif_hari_ini' => 'aktif hari ini',
+    'verifikasi_pending' => 'Verifikasi Pending',
+    'klik_tinjau_verifikasi' => 'Klik untuk meninjau verifikasi',
+    'laporan_pending' => 'Laporan Pending',
+    'klik_tinjau_laporan' => 'Klik untuk meninjau laporan',
+    'keuntungan_perusahaan' => 'Keuntungan Perusahaan',
+    'klik_detail_keuangan' => 'Klik untuk detail keuangan',
+    'aktivitas_pengguna_mingguan' => 'Aktivitas Pengguna Mingguan',
+    'jumlah_pengguna_aktif' => 'Jumlah pengguna aktif',
+    'dalam_7_hari_terakhir' => 'dalam 7 hari terakhir.',
+    'log_aktivitas_terbaru' => 'Log Aktivitas Terbaru',
+    'lihat_semua_log' => 'Lihat Semua Log',
+    'daftar_aktivitas_terkini' => 'Daftar aktivitas terkini',
+    'di_sistem' => 'di sistem.',
+    'waktu' => 'Waktu',
+    'pengguna' => 'Pengguna',
+    'aktivitas' => 'Aktivitas',
+    'tidak_ada_log_aktivitas' => 'Tidak ada log aktivitas terbaru.',
+    'sistem' => 'Sistem',
+];

@@ -1,17 +1,17 @@
 @extends('Master.master-admin')
-
+<!-- This file name is index.blade.php in folder verifications -->
 @section('content')
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <h1 class="h3 mb-4 text-dark">Manajemen Verifikasi Pengguna</h1>
+            <h1 class="h3 mb-4 text-dark">{{ __('admin/verifications.user_verification_management') }}</h1>
 
             {{-- Mengubah nav-pills menjadi elemen yang lebih mirip tombol/page separator --}}
             <div class="row gx-2 mb-4"> {{-- Gunakan row dan gx-2 untuk spacing antar kolom --}}
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'pending' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
                         href="{{ route('admin.verifications.index', ['status' => 'pending']) }}" id="pendingVerificationsButton">
-                        <span class="me-1">Belum Diverifikasi</span>
+                        <span class="me-1">{{ __('admin/verifications.pending_verifications') }}</span>
                         @if (isset($pendingVerificationsCount) && $pendingVerificationsCount > 0)
                         <span class="badge badge-lg bg-danger rounded-circle text-white ms-1" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
                             {{ $pendingVerificationsCount }}
@@ -22,13 +22,13 @@
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'approved' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
                         href="{{ route('admin.verifications.index', ['status' => 'approved']) }}" id="approvedVerificationsButton">
-                        Terverifikasi
+                        {{ __('admin/verifications.approved_verifications') }}
                     </a>
                 </div>
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'rejected' && $search == null)  ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
                         href="{{ route('admin.verifications.index', ['status' => 'rejected']) }}" id="rejectedVerificationsButton">
-                        Verifikasi Ditolak
+                        {{ __('admin/verifications.rejected_verifications') }}
                     </a>
                 </div>
                 {{-- Search Bar with Recommendations for Index Page --}}
@@ -36,8 +36,8 @@
                     <div class="p-0 position-relative"> {{-- Tambahkan position-relative untuk penempatan hasil pencarian --}}
                         <form id="indexSearchForm" action="{{ route('admin.verifications.index', ['status' => $status]) }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
-                                <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="Cari pengguna" autocomplete="off" value="{{ $search ?? '' }}">
-                                <button class="btn btn-primary m-2" type="submit" id="btn-cari">Cari</button>
+                                <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="{{ __('admin/verifications.search_users_placeholder') }}" autocomplete="off" value="{{ $search ?? '' }}">
+                                <button class="btn btn-primary m-2" type="submit" id="btn-cari">{{ __('admin/verifications.search_button') }}</button>
                             </div>
                         </form>
                         <div id="searchResultsIndex" class="list-group position-absolute w-100 mt-1" style="z-index: 1000;">
@@ -53,9 +53,9 @@
                     <div class="card shadow mb-4 mt-3">
                         <div class="card-header py-3">
                             @if (empty($search))
-                            <h6 class="m-0 font-weight-bold text-primary">Daftar Permintaan Verifikasi ({{ ucfirst($status) }})</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">{{ __('admin/verifications.verification_requests_list', ['status' => ucfirst($status)]) }}</h6>
                             @else
-                            <h6 class="m-0 font-weight-bold text-primary">Hasil Pencarian</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">{{ __('admin/verifications.search_results') }}</h6>
                             @endif
                         </div>
                         <div class="card-body">
@@ -75,9 +75,9 @@
                             @if ($verificationRequests->isEmpty())
                             <p class="text-dark">
                                 @if (empty($search))
-                                Tidak ada permintaan verifikasi {{ $status }} saat ini.
+                                {{ __('admin/verifications.no_verification_requests', ['status' => $status]) }}
                                 @else
-                                Tidak ada hasil ditemukan untuk "{{ $search }}".
+                                {{ __('admin/verifications.no_results_for_search', ['search' => $search]) }}
                                 @endif
                             </p>
                             @else
@@ -85,17 +85,17 @@
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
-                                            <th>ID</th>
-                                            <th>User_ID</th>
-                                            <th>Nama Pemohon</th>
-                                            <th>NIK</th>
-                                            <th>Status</th>
-                                            <th>Diajukan Pada</th>
+                                            <th>{{ __('admin/verifications.no') }}</th>
+                                            <th>{{ __('admin/verifications.id') }}</th>
+                                            <th>{{ __('admin/verifications.user_id') }}</th>
+                                            <th>{{ __('admin/verifications.full_name') }}</th>
+                                            <th>{{ __('admin/verifications.nik') }}</th>
+                                            <th>{{ __('admin/verifications.status') }}</th>
+                                            <th>{{ __('admin/verifications.submitted_on') }}</th>
                                             @if ($status == 'approved')
-                                            <th>Diverifikasi Pada</th>
+                                            <th>{{ __('admin/verifications.verified_on') }}</th>
                                             @endif
-                                            <th>Aksi</th>
+                                            <th>{{ __('admin/verifications.action') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -115,7 +115,7 @@
                                             @endif
                                             <td>
                                                 {{-- Pass the current search term when linking to show page --}}
-                                                <a href="{{ route('admin.verifications.show', ['id' => $request->id]) }}" class="btn btn-primary btn-sm" id="lihat-detail">Lihat Detail</a>
+                                                <a href="{{ route('admin.verifications.show', ['id' => $request->id]) }}" class="btn btn-primary btn-sm" id="lihat-detail">{{ __('admin/verifications.view_detail') }}</a>
                                             </td>
                                         </tr>
                                         @endforeach

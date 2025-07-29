@@ -23,6 +23,18 @@
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+    <!-- Optional: Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
+    <!-- AdminLTE v3 Assets via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <style>
         .dropdown-profile-custom {
             min-width: 250px;
@@ -291,8 +303,15 @@
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon">
-                            <span class="d-lg-none">{{ __('master-job-req.profil') }}</span>
+
+                            <img 
+                                src="{{ asset(Auth::user()->photo_url_user ?? asset('Image/Icon/user-circle.svg')) }}" 
+                                alt="Profil" 
+                                id="profileIcon"
+                                onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                            />
+                            <span class="d-lg-none">Profil</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
@@ -307,71 +326,87 @@
                                 </li>
                             @endguest
                             @auth
-
-                                <li>
-                                    {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
-                                    <a class="dropdown-item d-flex align-items-center"
-                                        href="{{ route('balance.job-req') }}">
-                                        {{-- Sisi Kiri: Ikon dan Teks --}}
-                                        <div class="d-flex align-items-center gap-2">
-                                            {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
-                                            <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
-                                                class="navIcon">
-                                            <span>{{ __('master-job-req.saldo') }}</span>
+                            
+                            <li>
+                                    {{-- Jika user biasa, bisa diklik dan diarahkan ke halaman profile --}}
+                                
+                                    <a href="{{ route('profile') }}" class="dropdown-item d-flex align-items-center gap-2">
+                                        <img 
+                                            src="{{ asset(Auth::user()->photo_url_user) }}" 
+                                            alt="Profil" 
+                                            id="profileIcon"
+                                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                                        />
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 16px;">{{auth()->user()->first_name . ' ' . auth()->user()->last_name}}</div>
+                                            <div style="font-size: 13px; color: gray;">Peran: Pelanggan</div>
                                         </div>
-                                        {{-- Sisi Kanan: Jumlah Saldo --}}
-                                        <span class="ms-auto fw-bold">
-                                            {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
-                                            {{-- Fungsi number_format untuk format Rupiah --}}
-                                            Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
-                                        </span>
                                     </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
-                                            onclick="event.preventDefault(); this.closest('form').submit();">
-                                            <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
-                                                class="navIcon">
-                                            {{ __('master-job-req.keluar') }}
-                                        </button>
-                                    </form>
-                                </li>
-                                @if (auth()->user()->role === 'admin')
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-1"
-                                            href="{{ route('admin.dashboard') }}">
-                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                                alt="Icon Ganti Peran" class="navIcon">
-                                            Admin
-                                        </a>
-                                    </li>
-                                @endif
-                                @if (auth()->user()->is_worker)
-                                    {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-1"
-                                            href="{{ route('switch.to.taker') }}">
-                                            <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
-                                                alt="Icon Ganti Peran" class="navIcon">
-                                            {{ __('master-job-req.ganti_peran') }}
-                                        </a>
-                                    </li>
-                                @else
-                                    {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-1"
-                                            href="{{ route('worker.register.step1') }}">
-                                            <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
-                                                class="navIcon">
-                                            {{ __('master-job-req.menjadi_mitra') }}
-                                        </a>
-                                    </li>
-                                @endif
+                             
+                                {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
+                                <a class="dropdown-item d-flex align-items-center"
+                                    href="{{ route('balance.job-req') }}">
+                                    {{-- Sisi Kiri: Ikon dan Teks --}}
+                                    <div class="d-flex align-items-center gap-2" style="margin-left: 5px">
+                                        {{-- Pastikan Anda punya ikon untuk saldo, contoh: icon-wallet.svg --}}
+                                        <img src="{{ asset('Image/Icon/icon-wallet.svg') }}" alt="Icon Saldo"
+                                            class="navIcon">
+                                        <span>Saldo</span>
+                                    </div>
+                                    {{-- Sisi Kanan: Jumlah Saldo --}}
+                                    <span class="ms-auto fw-bold">
+                                        {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
+                                        {{-- Fungsi number_format untuk format Rupiah --}}
+                                        Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-1"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">
+                                        <img src="{{ asset('Image/Icon/icon-logout.svg') }}" alt="Icon Logout"
+                                            class="navIcon" style="margin-left: 5px">
+                                        Keluar
+                                    </button>
+                                </form>
+                            </li>
+                            @if (auth()->user()->role === "admin")
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('admin.dashboard') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                        alt="Icon Ganti Peran" class="navIcon" style="margin-left: 5px">
+                                    Admin
+                                </a>
+                            </li>
+                            @endif
+                            @if (auth()->user()->is_worker)
+                            {{-- JIKA SUDAH JADI WORKER: Tampilkan tombol "Ganti Peran" --}}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('job-taker.home') }}">
+                                    <img src="{{ asset('Image/Icon/icon-change-role.svg') }}"
+                                        alt="Icon Ganti Peran" class="navIcon" style="margin-left: 5px">
+                                    Ganti Peran
+                                </a>
+                            </li>
+                            @else
+                            {{-- JIKA BELUM JADI WORKER: Tampilkan tombol "Menjadi Mitra" --}}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-1"
+                                    href="{{ route('worker.register.step1') }}">
+                                    <img src="{{ asset('Image/Icon/icon-join.svg') }}" alt="Icon Menjadi Mitra"
+                                        class="navIcon" style="margin-left: 5px">
+                                    Menjadi Mitra
+                                </a>
+                            </li>
+                            @endif
                             @endauth
                         </ul>
                     </li>
@@ -1158,7 +1193,7 @@
         // --- SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
         document.addEventListener('DOMContentLoaded', function() {
             // CORRECTED: changed logoLink to logoNavbarLink
-            const logoLink = document.getElementById('logoNavbarLink'); // Corrected ID
+            const logoLink = document.getElementById('dropLang'); 
             const logoSoundtrack = document.getElementById('logoSoundtrack');
 
             if (logoLink && logoSoundtrack) {
@@ -1184,7 +1219,16 @@
             }
         });
         // --- AKHIR SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
-    </script>
+
+    <!-- jQuery -->
+    <script src="../../plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="../../dist/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="../../dist/js/demo.js"></script>
+
 </body>
 
 </html>
