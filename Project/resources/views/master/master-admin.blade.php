@@ -65,12 +65,6 @@
                         <span class="nav-link-text ms-1">{{ __('admin/master.earnings') }}</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active bg-gradient-primary text-white' : 'text-dark' }}" href="{{ route('admin.notifications.index') }}" id="notifications-link">
-                        <i class="material-symbols-rounded opacity-5">notifications</i>
-                        <span class="nav-link-text ms-1">{{ __('admin/master.notifications') }}</span>
-                    </a>
-                </li>
             </ul>
         </div>
         <div class="sidenav-footer position-absolute w-100 bottom-0 ">
