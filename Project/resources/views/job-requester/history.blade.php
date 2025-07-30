@@ -320,13 +320,13 @@
                         </div>
 
                         {{-- Total price display in report modal --}}
-                        <div class="d-flex justify-content-between mb-4">
+                        <div class="d-flex justify-content-between mb-3">
                             <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_total') }}</p>
                             <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
                         </div>
 
                         {{-- Image upload section for report proof --}}
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label
                                 class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
@@ -344,7 +344,7 @@
                         </div>
 
                         {{-- Textarea for reporting reasons --}}
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="reportNote"
                                 class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
@@ -353,7 +353,7 @@
                         </div>
 
                         {{-- Report submission button --}}
-                        <div class="modal-footer border-0 d-flex justify-content-end">
+                        <div class="modal-footer border-0 d-flex justify-content-end p-0 m-0">
                             <button type="button" id="submitReportButton"
                                 class="btn btn-danger px-4 py-2">{{ __('history-job-req.tombol_kirim_laporan') }}</button>
                         </div>
