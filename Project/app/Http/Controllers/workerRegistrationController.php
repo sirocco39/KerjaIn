@@ -28,48 +28,52 @@ class WorkerRegistrationController extends Controller
      */
     public function ocrKtpAjax(Request $request)
     {
-        Log::debug('ocrKtpAjax method called.');
+        // Log::debug('ocrKtpAjax method called.');
 
-        $request->validate([
-            'image' => 'required|image|max:5120', // Max 5MB
-        ]);
+        // $request->validate([
+        //     'image' => 'required|image|max:5120', // Max 5MB
+        // ]);
 
-        try {
-            $uploadedFile = $request->file('image');
-            $originalPath = $uploadedFile->store('ktp_temp_original'); // Store original
-            $originalImagePath = storage_path('app/' . $originalPath);
+        // try {
+        //     $uploadedFile = $request->file('image');
+        //     $originalPath = $uploadedFile->store('ktp_temp_original'); // Store original
+        //     $originalImagePath = storage_path('app/' . $originalPath);
 
-            // Extract text using Tesseract OCR directly from the original image.
-            $rawText = (new TesseractOCR($originalImagePath))
-                ->lang('ind') // Use 'ind' for Indonesian language
-                ->run();
+        //     // Extract text using Tesseract OCR directly from the original image.
+        //     $rawText = (new TesseractOCR($originalImagePath))
+        //         ->lang('ind') // Use 'ind' for Indonesian language
+        //         ->run();
 
-            Log::debug("Tesseract Raw Output: " . $rawText);
+        //     Log::debug("Tesseract Raw Output: " . $rawText);
 
-            // Parse the raw OCR text into structured data
-            $parsedData = $this->parseKtpData($rawText);
+        //     // Parse the raw OCR text into structured data
+        //     $parsedData = $this->parseKtpData($rawText);
 
-            // Store parsed_data in session
-            Session::put('worker_registration.ocr_data', $parsedData);
-            Log::debug('Parsed OCR Data stored in session: ' . json_encode($parsedData));
+        //     // Store parsed_data in session
+        //     Session::put('worker_registration.ocr_data', $parsedData);
+        //     Log::debug('Parsed OCR Data stored in session: ' . json_encode($parsedData));
 
-            // Delete temporary original image after processing
-            Storage::delete($originalPath);
+        //     // Delete temporary original image after processing
+        //     Storage::delete($originalPath);
 
-            return response()->json([
+        //     return response()->json([
+        //         'success' => true,
+        //         'message' => 'OCR processing successful.',
+        //         'raw_text' => $rawText,
+        //         'parsed_data' => $parsedData,
+        //     ]);
+        // } catch (\Throwable $e) {
+        //     Log::error("KTP OCR Extraction Error: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+        //     return response()->json([
+        //         'success' => false,
+        //         'error' => 'Failed to process KTP image. Please try again or ensure the image is clear.',
+        //         'message' => 'Internal server error. Check server logs for details. ' . $e->getMessage()
+        //     ], 500);
+        // }
+        return response()->json([
                 'success' => true,
-                'message' => 'OCR processing successful.',
-                'raw_text' => $rawText,
-                'parsed_data' => $parsedData,
-            ]);
-        } catch (\Throwable $e) {
-            Log::error("KTP OCR Extraction Error: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            return response()->json([
-                'success' => false,
                 'error' => 'Failed to process KTP image. Please try again or ensure the image is clear.',
-                'message' => 'Internal server error. Check server logs for details. ' . $e->getMessage()
             ], 500);
-        }
     }
 
     /**

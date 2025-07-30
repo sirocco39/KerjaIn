@@ -288,7 +288,7 @@
                                             <span>{{ __('master-job-taker.saldo') }}</span>
                                         </div>
                                         {{-- Sisi Kanan: Jumlah Saldo --}}
-                                        <span class="ms-auto fw-bold">
+                                        <span class="ms-auto fw-bold" style="margin-right: 10px;">
                                             {{-- Asumsi saldo tersimpan di kolom 'saldo' pada tabel user --}}
                                             {{-- Fungsi number_format untuk format Rupiah --}}
                                             Rp{{ number_format(auth()->user()->balance, 0, ',', '.') }}
