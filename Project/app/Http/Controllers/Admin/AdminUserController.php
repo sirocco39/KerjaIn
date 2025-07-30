@@ -21,13 +21,18 @@ class AdminUserController extends Controller
     {
         // --- Statistik Ringkasan Pengguna ---
         $totalUsers = User::count();
-        $activeToday = User::whereDate('last_activity', Carbon::today())->count();
+        $activeToday = Activity::whereDate('created_at', Carbon::today())
+            ->distinct('causer_id')
+            ->count('causer_id');
         $newUsersThisWeek = User::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
 
         $totalWorkers = User::where('is_worker', true)->count();
-        $activeWorkersToday = User::where('is_worker', true)
-            ->whereDate('last_activity', Carbon::today())
-            ->count();
+        $activeWorkersToday = Activity::whereDate('created_at', Carbon::today())
+            ->whereHasMorph('causer', [User::class], function ($query) {
+                $query->where('is_worker', true);
+            })
+            ->distinct('causer_id')
+            ->count('causer_id');
 
         $blockedUsersCount = User::where('is_blocked', true)->count();
         $reportedUsersCount = Report::distinct('reported_id')->count('reported_id');

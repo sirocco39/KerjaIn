@@ -117,8 +117,7 @@
             formData.append('image', file);
             formData.append('_token', '{{ csrf_token() }}'); // Laravel CSRF token
 
-            fetch('{{ route('
-                    ktp.ocr.ajax ') }}', {
+            fetch('{{ route('ktp.ocr.ajax') }}', {
                         method: 'POST',
                         body: formData,
                     })

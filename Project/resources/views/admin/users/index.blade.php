@@ -132,8 +132,8 @@
                             <br>
                             {!! __('admin/users.user_id', ['id' => $searchedUser->id]) !!}
                             <br>
-                            @if($searchedUser->last_activity)
-                            {{ __('admin/users.active_since', ['time_ago' => \Carbon\Carbon::parse($searchedUser->last_activity)->diffForHumans(null, false, true)]) }}
+                            @if($activityLogs[0])
+                            {{ __('admin/users.active_since', ['time_ago' => \Carbon\Carbon::parse($activityLogs[0]->created_at)->diffForHumans(null, false, true)]) }}
                             @else
                             {{ __('admin/users.no_login_activity') }}
                             @endif
