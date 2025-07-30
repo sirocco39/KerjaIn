@@ -187,7 +187,7 @@ class TransactionController extends Controller
         if ($userId === $requester->id) {
             $alertMessage = __('alerts.pekerjaan_dibatalkan_dana_kembali', ['amount' => $formattedRefundAmount]);
         } else {
-           $alertMessage = __('alerts.pekerjaan_berhasil_dibatalkan');
+            $alertMessage = __('alerts.pekerjaan_berhasil_dibatalkan');
         }
         $redirectRoute = $request->input('redirect_to', 'landing');
 
@@ -246,7 +246,7 @@ class TransactionController extends Controller
         });
         return response()->json([
             'success' => true,
-            'message' => 'Pekerjaan berhasil ditandai selesai!'
+            'message' => __('alerts.job_marked_completed_success')
         ]);
     }
 

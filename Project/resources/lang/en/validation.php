@@ -35,16 +35,71 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
-
     'custom' => [
+        'workStartDateLabel' => [
+            'past_utc' => 'Start time cannot be in the past (UTC).',
+        ],
+        'datetime' => [
+            'after_start_time' => 'The end time must be after the start time.',
+        ],
+        // Validation messages for file uploads from WorkerRegistrationController
+        'photo_url' => [
+            'required' => 'Selfie Photo is required.',
+            'image' => 'The file must be an image.',
+            'mimes' => 'Selfie Photo must be in JPEG, PNG, or JPG format.',
+            'max' => 'Selfie Photo size must not exceed :max MB.',
+        ],
+        'id_card_url' => [
+            'required' => 'ID Card Photo is required.',
+            'image' => 'The file must be an image.',
+            'mimes' => 'ID Card Photo must be in JPEG, PNG, or JPG format.',
+            'max' => 'ID Card Photo size must not exceed :max MB.',
+        ],
+        'selfie_with_id_card_url' => [
+            'required' => 'Selfie with ID Card Photo is required.',
+            'image' => 'The file must be an image.',
+            'mimes' => 'Selfie with ID Card Photo must be in JPEG, PNG, or JPG format.',
+            'max' => 'Selfie with ID Card Photo size must not exceed :max MB.',
+        ],
+        'account_name' => [
+            'required' => 'Account Holder Name is required.',
+            'string' => 'Account Holder Name must be text.',
+            'max' => 'Account Holder Name must not exceed :max characters.',
+        ],
+        'account_number' => [
+            'required' => 'Account Number is required.',
+            'string' => 'Account Number must be text.',
+            'max' => 'Account Number must not exceed :max characters.',
+        ],
+        'agree_terms' => [
+            'accepted' => 'You must agree to the Terms and Conditions.',
+        ],
+        'agree_data_usage' => [
+            'accepted' => 'You must agree to the data usage for verification and security.',
+        ],
+        'first_name' => [
+            'regex' => 'First name can only contain letters, spaces, hyphens, or periods.',
+        ],
+        'last_name' => [
+            'regex' => 'Last name can only contain letters, spaces, hyphens, or periods.',
+        ],
+        'nik' => [
+            'digits' => 'NIK must be 16 digits long.',
+            'unique' => 'NIK is already registered.',
+        ],
+        'phone_number' => [
+            'regex' => 'Please enter a valid phone number in 08XXXXXXXXXX format.',
+            'unique' => 'Phone number is already registered.',
+        ],
+        'birthdate' => [
+            'before_or_equal' => 'Age must be at least 17 years old.',
+        ],
         'workTitleLabel' => [
             'required' => 'The job title cannot be empty.',
         ],
-        // Pesan error khusus untuk perbandingan waktu
-        'datetime' => [
-            'after_start_time' => 'The end time must be after the start time.'
-        ],
+        // ... other custom validation rules ...
     ],
+
 
     /*
     |--------------------------------------------------------------------------

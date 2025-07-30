@@ -173,8 +173,9 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
                             style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
-                            <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}"
-                                style="width: 50%; max-height: 150px; object-fit: cover;" class="me-3 py-2">
+                            <img src="{{ $transaction->worker->photo_url_worker ? asset($transaction->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
+                                alt="Profil" style="width:40%; max-height: 125px; object-fit: cover; border-radius: 16px;"
+                                class="me-3 py-2">
                             <div class="info d-flex flex-column">
                                 <div id="name" class="fw-bold">{{ $worker->first_name . ' ' . $worker->last_name }}
                                 </div>
@@ -308,41 +309,49 @@
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.judul_pesanan') }}</p>
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.nomor_pesanan') }}</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('ongoing.modal_penilaian.nama_klien') }}</p>
                                         <p class="fw-medium" id="modalWorkerName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.lokasi') }}</p>
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.tgl_pesan') }}</p>
                                         <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.tgl_selesai') }}</p>
                                         <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.mulai_kerja') }}</p>
                                         <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.selesai_kerja') }}</p>
                                         <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
@@ -385,10 +394,11 @@
                                 {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
                                     <button type="submit" class="btn btn-primary fw-medium rounded-3"
-                                        id="submitReviewButton">Kirim</button>
-                                    <div class="m-1 text-center">Atau</div>
+                                        id="submitReviewButton">{{ __('accepted.modal_penilaian.tombol_kirim') }}</button>
+                                    <div class="m-1 text-center">{{ __('accepted.modal_penilaian.atau') }}</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
+                                        onclick="openReportModal()"
+                                        id="reportProblemButton">{{ __('accepted.modal_penilaian.judul') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -614,6 +624,9 @@
     </div>
 
     <script>
+        const lang = @json(__('accepted.js_messages'));
+        const reviewLang = @json(__('accepted.modal_penilaian'));
+        const proofLang = @json(__('accepted.modal_bukti'));
         // Global variables for managing transaction and worker IDs across modals
         let currentTransactionId = `{{ $transaction->id }}`;
         let reportedWorkerId = `{{ $worker->id }}`;
@@ -704,13 +717,15 @@
                 Array.from(event.target.files).forEach(file => {
                     // Client-side validation for file type
                     if (!file.type.startsWith('image/')) {
-                        window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                        window.showCustomAlert(lang.file_harus_gambar,
+                            'error');
                         return; // Skip this file and continue to next
                     }
                     // Client-side validation for file size
                     const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                     if (file.size > maxSizeBytes) {
-                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                        window.showCustomAlert(lang.ukuran_file_maksimal,
+                            'error');
                         return; // Skip this file and continue to next
                     }
 
@@ -718,8 +733,8 @@
                     if (reportFiles.length < MAX_REPORT_IMAGES) {
                         reportFiles.push(file);
                     } else {
-                        window.showCustomAlert(
-                            `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`, 'error');
+                        window.showCustomAlert(lang.maksimal_upload_gambar.replace(':max',
+                            MAX_REPORT_IMAGES), 'error');
                         // Stop processing further files if limit is hit
                         return;
                     }
@@ -810,12 +825,12 @@
 
             // Client-side validation for rating and comment
             if (rating == 0) {
-                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
+                window.showCustomAlert(lang.pilih_rating_dulu, 'error');
                 return;
             }
 
             if (comment == '') {
-                window.showCustomAlert('Silakan isi komentar.', 'error');
+                window.showCustomAlert(lang.isi_komentar_dulu, 'error');
                 return;
             }
 
@@ -831,7 +846,7 @@
             const submitBtn = document.getElementById('submitReviewButton');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Mengirim...';
+                submitBtn.textContent = lang.mengirim_laporan;
             }
 
             fetch(`{{ route('reviews.store', $transaction->id) }}`, {
@@ -877,7 +892,7 @@
                 .finally(() => {
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = 'Kirim';
+                        submitBtn.textContent = lang.mengirim;
                     }
                 });
         }
@@ -890,11 +905,11 @@
             const reasons = document.getElementById('reportNote').value.trim();
 
             if (reportFiles.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                window.showCustomAlert(lang.upload_bukti_dulu, 'error');
                 return;
             }
             if (!reasons) {
-                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                window.showCustomAlert(lang.isi_keluhan_dulu, 'error');
                 return;
             }
 
@@ -905,13 +920,15 @@
 
             for (const file of filesToSend) { // Use for...of for easy breaking
                 if (!file.type.startsWith('image/')) {
-                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    window.showCustomAlert(lang.file_harus_gambar,
+                        'error');
                     hasInvalidFile = true;
                     break; // Exit loop
                 }
                 const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                 if (file.size > maxSizeBytes) {
-                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    window.showCustomAlert(lang.ukuran_file_maksimal,
+                        'error');
                     hasInvalidFile = true;
                     break; // Exit loop
                 }
@@ -937,7 +954,7 @@
 
             const submitBtn = document.getElementById('submitReportButton');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim Laporan...';
+            submitBtn.textContent = lang.mengirim_laporan;
 
             // Submit the form using fetch, expecting a redirect
             fetch(form.action, { // Use the form's action which includes transaction ID
@@ -988,7 +1005,7 @@
                 })
                 .finally(() => {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Kirim Laporan';
+                    submitBtn.textContent = reviewLang.tombol_kirim;
                 });
         }
 
@@ -1111,7 +1128,7 @@
         function renderReviewForm() {
             const reviewSectionHeading = document.getElementById('reviewSectionHeading'); // Get the heading element
             if (reviewSectionHeading) {
-                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+                reviewSectionHeading.textContent = reviewLang.penilaian_heading_baru;
             }
 
             const reviewSectionContainer = document.getElementById('review-section-container');
@@ -1125,9 +1142,9 @@
                         <input type="hidden" name="rating" id="rating-input" value="0">
                     </div>
                     <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <label for="comment" class="form-label text-start">${reviewLang.label_komentar}</label>
                         <textarea name="comment" id="comment" class="form-control" rows="3"
-                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; resize: none;"></textarea>
+                            placeholder="${reviewLang.placeholder_komentar}" style="border-color:#8a8a8a; resize: none;"></textarea>
                     </div>
                 `;
             const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
@@ -1159,7 +1176,7 @@
         function renderExistingReview(rating, comment) {
             const reviewSectionHeading = document.getElementById('reviewSectionHeading'); // Get the heading element
             if (reviewSectionHeading) {
-                reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+                reviewSectionHeading.textContent = reviewLang.penilaian_heading_sudah;
             }
 
             const reviewSectionContainer = document.getElementById('review-section-container');
@@ -1176,7 +1193,7 @@
                         ${starHtml}
                     </div>
                     <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <label for="comment" class="form-label text-start">${reviewLang.label_komentar}</label>
                         <textarea id="comment" class="form-control" rows="3" disabled
                             style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
                     </div>
@@ -1198,7 +1215,7 @@
                     reportProblemButton.classList.add('text-secondary');
                     reportProblemButton.onclick = null;
                 } else {
-                    reportProblemButton.textContent = 'Laporkan masalah';
+                    reportProblemButton.textContent = reviewLang.laporkan_masalah;
                     reportProblemButton.disabled = false;
                     reportProblemButton.classList.remove('text-secondary');
                     reportProblemButton.classList.add('text-danger');

@@ -320,7 +320,8 @@
                                         </button>
                                     </form>
                                     <button class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal"> {{ __('accepted.tombol.batalkan_kerja') }}
+                                        data-bs-toggle="modal" data-bs-target="#cancelWorkModal">
+                                        {{ __('accepted.tombol.batalkan_kerja') }}
                                     </button>
                                 @elseif($transaction->status === 'completed')
                                     {{-- Tombol Sudah Dikerjakan --}}
@@ -997,7 +998,7 @@
                     .finally(() => {
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.textContent = lang.mengirim;
+                            submitBtn.textContent = lang.mengirim_laporan;
                         }
                     });
             }
@@ -1257,7 +1258,7 @@
                     // Handle Report Button State (Removed hasWorkerReport check)
                     const reportProblemButton = document.getElementById('reportProblemButton');
                     if (reportProblemButton) {
-reportProblemButton.textContent = reviewLang.laporkan_masalah;
+                        reportProblemButton.textContent = reviewLang.laporkan_masalah;
                         reportProblemButton.disabled = false; // Always enabled
                         reportProblemButton.classList.remove('text-secondary');
                         reportProblemButton.classList.add('text-danger');
@@ -1350,7 +1351,7 @@ reportProblemButton.textContent = reviewLang.laporkan_masalah;
                     if (reportImageInput) reportImageInput.value = ''; // Clear file input
                     if (document.getElementById('submitReportButton')) {
                         document.getElementById('submitReportButton').disabled = false;
-                          document.getElementById('submitReportButton').textContent = lang.mengirim_laporan;
+                        document.getElementById('submitReportButton').textContent = lang.mengirim_laporan;
                     }
                 });
             }
@@ -1386,7 +1387,7 @@ reportProblemButton.textContent = reviewLang.laporkan_masalah;
             if (noteErrorDiv) noteErrorDiv.textContent = '';
 
             if (photoInput && photoInput.files.length === 0) {
-                 if (photoErrorDiv) photoErrorDiv.textContent = proofLang.error_foto_diperlukan;
+                if (photoErrorDiv) photoErrorDiv.textContent = proofLang.error_foto_diperlukan;
                 return;
             }
 

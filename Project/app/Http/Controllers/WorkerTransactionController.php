@@ -183,15 +183,15 @@ class WorkerTransactionController extends Controller
         if (Auth::id() !== $transaction->worker_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak berwenang untuk memulai pekerjaan ini.'
-            ], 403); // Forbidden
+                'message' => __('alerts.not_authorized_to_start_job')
+            ], 403);
         }
 
         if ($transaction->status !== 'accepted') {
             return response()->json([
                 'success' => false,
-                'message' => 'Pekerjaan tidak dalam status "Diterima" dan tidak dapat dimulai.'
-            ], 400); // Bad Request
+                'message' => __('alerts.job_not_in_accepted_status')
+            ], 400);
         }
 
         $transaction->status = 'in progress';
@@ -207,7 +207,7 @@ class WorkerTransactionController extends Controller
         // Return JSON response for AJAX requests
         return response()->json([
             'success' => true,
-            'message' => 'Pekerjaan dimulai.',
+            'message' => __('alerts.job_started'),
             'new_status' => $transaction->status,
             'start_work_time' => $transaction->start_work->format('d M Y H:i'),
         ]);
@@ -227,17 +227,16 @@ class WorkerTransactionController extends Controller
             if (Auth::id() !== $transaction->worker_id) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Anda tidak berwenang untuk mengunggah bukti pekerjaan ini.'
+                    'message' => __('alerts.not_authorized_to_upload_proof')
                 ], 403);
             }
 
             if ($transaction->status !== 'in progress') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pekerjaan tidak dalam status "Dikerjain" dan tidak dapat mengunggah bukti.'
+                    'message' => __('alerts.job_not_in_progress_status')
                 ], 400);
             }
-
             $request->validate([
                 'photo' => 'required|array',
                 'photo.*' => 'image|max:5120', // Max 5MB per image, consistent with previous context
@@ -278,7 +277,7 @@ class WorkerTransactionController extends Controller
             // Return a JSON success response for AJAX requests
             return response()->json([
                 'success' => true,
-                'message' => 'Bukti pekerjaan berhasil diupload. Pekerjaan Anda sekarang dalam status ditinjau.',
+              'message' => __('alerts.proof_uploaded_success'),
                 'photo_urls' => $uploadedPhotoUrls, // Optionally return uploaded URLs
                 'new_status' => $transaction->status,
                 'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
@@ -288,7 +287,7 @@ class WorkerTransactionController extends Controller
             // Return JSON response for validation errors
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal.',
+                 'message' => __('alerts.validation_failed'),
                 'errors' => $e->errors()
             ], 422); // 422 Unprocessable Entity for validation errors
         } catch (\Exception $e) {
@@ -298,7 +297,7 @@ class WorkerTransactionController extends Controller
             // Return JSON response for other general errors
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat upload foto: ' . $e->getMessage()
+                  'message' => __('alerts.error_uploading_proof') . ' ' . $e->getMessage()
             ], 500); // 500 Internal Server Error
         }
     }
@@ -318,7 +317,7 @@ class WorkerTransactionController extends Controller
         if (Auth::id() !== $transaction->worker_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak berwenang untuk menandai pekerjaan ini selesai.'
+                'message' => __('alerts.not_authorized_to_mark_complete')
             ], 403);
         }
 
@@ -335,7 +334,7 @@ class WorkerTransactionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pekerjaan berhasil ditandai selesai dan sedang menunggu konfirmasi dari klien.',
+                'message' => __('alerts.job_marked_submitted_success'),
                 'new_status' => $transaction->status,
                 'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
             ]);
@@ -343,7 +342,7 @@ class WorkerTransactionController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'Status pekerjaan tidak memungkinkan untuk ditandai selesai.'
+            'message' => __('alerts.job_status_not_allowed')
         ], 400);
     }
 
@@ -368,9 +367,9 @@ class WorkerTransactionController extends Controller
                 ->on($transaction)
                 ->causedBy(Auth::user())
                 ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number}.");
-            return response()->json([
+          return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak berwenang melaporkan transaksi ini.'
+                'message' => __('alerts.not_authorized_to_report')
             ], 403);
         }
 
@@ -406,13 +405,13 @@ class WorkerTransactionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Laporan berhasil dikirim dan akan segera ditinjau.'
+                'message' => __('alerts.report_submitted_success')
             ]);
-        } catch (\Exception $e) {
+         } catch (\Exception $e) {
             Log::error("Error submitting report for worker transaction {$transactionId}: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat mengirim laporan: ' . $e->getMessage()
+                'message' => __('alerts.error_submitting_report') . ' ' . $e->getMessage()
             ], 500);
         }
     }
@@ -435,9 +434,9 @@ class WorkerTransactionController extends Controller
                 ->on($transaction)
                 ->causedBy(Auth::user())
                 ->log("Percobaan ulasan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja.");
-            return response()->json([
+           return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak berwenang untuk memberikan ulasan ini.'
+                'message' => __('alerts.not_authorized_to_review')
             ], 403);
         }
 
@@ -448,10 +447,10 @@ class WorkerTransactionController extends Controller
             ->first();
 
         if ($existingReview) {
-            return response()->json([
+          return response()->json([
                 'success' => false,
-                'message' => 'Anda sudah memberikan ulasan untuk transaksi ini.'
-            ], 409); // Conflict
+                'message' => __('alerts.review_already_given')
+            ], 409);
         }
 
         try {
@@ -479,17 +478,16 @@ class WorkerTransactionController extends Controller
                 ])
                 ->log("Pekerja telah memberikan ulasan ({$request->rating} bintang) untuk klien transaksi #{$transaction->order_number}.");
 
-            return response()->json([
+           return response()->json([
                 'success' => true,
-                'message' => 'Ulasan Anda berhasil disimpan!'
+                'message' => __('alerts.review_saved_success')
             ]);
         } catch (\Exception $e) {
             Log::error("Error storing review for worker transaction {$transaction->id}: " . $e->getMessage());
-            return response()->json([
+           return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan ulasan: ' . $e->getMessage()
+                'message' => __('alerts.error_saving_review') . ' ' . $e->getMessage()
             ], 500);
         }
     }
 }
-

@@ -454,7 +454,7 @@
                         <a href="/job-req/tawarkan-kerja" class="foot-list">{{ __('master-job-req.tawarkan_kerja') }}</a>
                     @else
                         <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">{{ __('master-job-req.tawrakan_kerja') }}</a>
+                            class="foot-list">{{ __('master-job-req.tawarkan_kerja') }}</a>
                     @endauth
 
 
@@ -875,7 +875,7 @@
         setupValidationListeners(loginEmailInput, loginEmailErrorDiv, (value) => {
             const errors = [];
             if (value.trim() === '') { // Use trim() for consistency
-                errors.push('Email harus diisi.');
+                errors.push('{{ __('master-job-req.validation_email_required') }}');
             } else if (!emailRegex.test(value.trim())) {
                 errors.push('Silakan masukkan alamat email yang valid.');
             }
@@ -894,7 +894,7 @@
             const isEmailValid = validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
                 const errors = [];
                 if (value.trim() === '') {
-                    errors.push('Email harus diisi.');
+                    errors.push('{{ __('master-job-req.validation_email_required') }}');
                 } else if (!emailRegex.test(value.trim())) {
                     errors.push('Silakan masukkan alamat email yang valid.');
                 }

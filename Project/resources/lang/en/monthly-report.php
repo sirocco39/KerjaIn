@@ -14,7 +14,7 @@ return [
     'average_rating' => 'Average rating',
     'total_distinct_clients' => 'Total distinct clients',
     'jobs_table_title' => 'Jobs',
-    'no_jobs_completed_this_month' => 'No jobs completed this month. Let\'s start working! ЁЯТк',
+    'no_jobs_completed_this_month' => 'No jobs completed this month. Lets start working! ЁЯТк',
     'table_header_date' => 'Date',
     'table_header_job' => 'Job',
     'table_header_location' => 'Location',

@@ -9,12 +9,68 @@ return [
         'numeric' => ':attribute minimal harus :min.',
     ],
     'custom' => [
+        'workStartDateLabel' => [
+            'past_utc' => 'Waktu mulai tidak boleh di masa lalu (UTC).',
+        ],
+        'datetime' => [
+            'after_start_time' => 'Waktu selesai harus setelah waktu mulai.',
+        ],
+        // Validasi unggahan file dari WorkerRegistrationController
+        'photo_url' => [
+            'required' => 'Foto Diri wajib diunggah.',
+            'image' => 'File harus berupa gambar.',
+            'mimes' => 'Format file Foto Diri harus JPEG, PNG, atau JPG.',
+            'max' => 'Ukuran Foto Diri tidak boleh lebih dari :max MB.',
+        ],
+        'id_card_url' => [
+            'required' => 'Foto KTP wajib diunggah.',
+            'image' => 'File harus berupa gambar.',
+            'mimes' => 'Format file Foto KTP harus JPEG, PNG, atau JPG.',
+            'max' => 'Ukuran Foto KTP tidak boleh lebih dari :max MB.',
+        ],
+        'selfie_with_id_card_url' => [
+            'required' => 'Foto Diri dan KTP wajib diunggah.',
+            'image' => 'File harus berupa gambar.',
+            'mimes' => 'Format file Foto Diri dan KTP harus JPEG, PNG, atau JPG.',
+            'max' => 'Ukuran Foto Diri dan KTP tidak boleh lebih dari :max MB.',
+        ],
+        'account_name' => [
+            'required' => 'Nama Pemilik Rekening wajib diisi.',
+            'string' => 'Nama Pemilik Rekening harus berupa teks.',
+            'max' => 'Nama Pemilik Rekening tidak boleh lebih dari :max karakter.',
+        ],
+        'account_number' => [
+            'required' => 'Nomor Rekening wajib diisi.',
+            'string' => 'Nomor Rekening harus berupa teks.',
+            'max' => 'Nomor Rekening tidak boleh lebih dari :max karakter.',
+        ],
+        'agree_terms' => [
+            'accepted' => 'Anda harus menyetujui Syarat dan Ketentuan.',
+        ],
+        'agree_data_usage' => [
+            'accepted' => 'Anda harus menyetujui penggunaan data untuk verifikasi dan keamanan.',
+        ],
+        'first_name' => [
+            'regex' => 'Nama depan hanya boleh mengandung huruf, spasi, tanda hubung, atau titik.',
+        ],
+        'last_name' => [
+            'regex' => 'Nama belakang hanya boleh mengandung huruf, spasi, tanda hubung, atau titik.',
+        ],
+        'nik' => [
+            'digits' => 'NIK harus terdiri dari 16 digit.',
+            'unique' => 'NIK sudah terdaftar.',
+        ],
+        'phone_number' => [
+            'regex' => 'Masukkan nomor telepon yang valid dengan format 08XXXXXXXXXX.',
+            'unique' => 'Nomor telepon sudah terdaftar.',
+        ],
+        'birthdate' => [
+            'before_or_equal' => 'Usia harus minimal 17 tahun.',
+        ],
         'workTitleLabel' => [
             'required' => 'Judul pekerjaan tidak boleh kosong.',
         ],
-        'datetime' => [
-            'after_start_time' => 'Waktu selesai harus setelah waktu mulai.'
-        ],
+        // ... validasi kustom lainnya yang mungkin sudah ada ...
     ],
     'attributes' => [
         'workTitleLabel' => 'Judul Pekerjaan',

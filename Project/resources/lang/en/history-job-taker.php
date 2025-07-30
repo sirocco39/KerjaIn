@@ -29,7 +29,7 @@ return [
     'modal_total' => 'Total',
     'modal_invoice' => 'Invoice',
 
-    'penilaian_heading_baru' => 'Let\'s give a rating for the Client!',
+    'penilaian_heading_baru' => 'Lets give a rating for the Client!',
     'penilaian_heading_sudah' => 'This is your review for the Client',
     'label_komentar' => 'Comment',
     'placeholder_komentar' => 'Write your comment here...',

@@ -141,7 +141,8 @@
 
         {{-- Status & Tombol Expander --}}
         <div class="d-flex justify-content-between align-items-center">
-            <div class="label-tersedia d-flex align-items-center justify-content-center">{{ __('chat-job-req.card.status_tersedia') }}</div>
+            <div class="label-tersedia d-flex align-items-center justify-content-center">
+                {{ __('chat-job-req.card.status_tersedia') }}</div>
             <a wire:click="toggleExpand({{ $request->id }})" class="text-secondary fs-5" style="cursor: pointer;">
                 <i class="bi {{ $expandedRequestId === $request->id ? 'bi-chevron-up' : 'bi-chevron-down' }}"></i>
             </a>
@@ -156,8 +157,9 @@
                 <div wire:click="$dispatch('chat-selected', { chatRoomId: {{ $room->id }} })"
                     class="chat-item-card rounded-5 {{ $selectedChatRoomId === $room->id ? 'active' : '' }}">
                     <div class="chat-item-avatar">
-                        <img src="{{ $room->worker->profile_picture_url ?? asset('Image/Icon/icon-done.svg') }}" {{-- INI BAKAL PAKE PROGILE USERS --}}
-                            alt="{{ $room->worker->first_name }}">
+                        <img src="{{ $room->worker->photo_url_user ? asset($room->worker->photo_url_user) : asset('Image/Icon/user-circle.svg') }}"  alt="Profil" id="profileIcon"
+                            onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                            style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
                     </div>
                     <div class="chat-item-text">
                         <h6 class="mb-0 fw-bold">{{ $room->worker->first_name ?? 'Worker' }}</h6>

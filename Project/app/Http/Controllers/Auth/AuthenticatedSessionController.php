@@ -97,8 +97,8 @@ class AuthenticatedSessionController extends Controller
             if ($request->expectsJson()) {
                 // Untuk respons JSON, mungkin Anda ingin mengarahkan ke halaman default admin atau memberikan URL pilihan
                 return response()->json([
-                    'message' => "Login berhasil! Selamat datang, Admin {$user->first_name}! Silakan pilih tujuan Anda.",
-                    'redirect_url' => route('admin.pilihan') // Rute baru untuk halaman pilihan admin
+                    'message' => __('alerts.admin_selamat_datang', ['nama' => $user->first_name]),
+                    'redirect_url' => route('admin.pilihan')
                 ]);
             }
 
@@ -119,8 +119,8 @@ class AuthenticatedSessionController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => "Login berhasil! Selamat datang, {$firstName}!",
-                'redirect_url' => route('job-req.home') // Changed redirect URL for JSON response
+                'message' => __('alerts.login_berhasil', ['nama' => $firstName]),
+                'redirect_url' => route('job-req.home')
             ]);
         }
 
