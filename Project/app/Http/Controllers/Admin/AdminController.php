@@ -21,14 +21,9 @@ class AdminController extends Controller
         // --- Statistik Pengguna ---
         $totalUsers = User::count();
         $totalWorkers = User::where('is_worker', true)->count();
-        $activeUsersToday = Activity::whereDate('created_at', Carbon::today())
+        $activeUsersToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) // Filter by Asia/Jakarta time
             ->distinct('causer_id')
             ->count('causer_id');
-        // // MENGAMBIL DATA LOGIN HARI INI DARI activity_log MENGGUNAKAN LIKE
-        // $activeUsersToday = Activity::where('description', 'like', 'User telah login%')
-        //     ->whereDate('created_at', Carbon::today())
-        //     ->distinct('causer_id')
-        //     ->count();
 
         // --- Statistik Laporan ---
         $pendingReportsCount = Report::where('status', 'Not Reviewed')->count();
@@ -48,11 +43,10 @@ class AdminController extends Controller
         $jobsCompletedData = []; // Data dummy untuk 'jobsCompletedData'
 
         for ($i = 6; $i >= 0; $i--) { // Loop untuk 7 hari terakhir
-            $date = Carbon::today()->subDays($i);
-            $chartLabels[] = $date->format('D, M d');
+            $date = Carbon::today('Asia/Jakarta')->subDays($i); // Ensure today is in Asia/Jakarta for loop
+            $chartLabels[] = $date->format('D, M d'); // Format date for UTC+7 display
 
             // MENGAMBIL DATA LOGIN UNTUK GRAFIK DARI activity_log MENGGUNAKAN LIKE
-
             $dailyLogins = Activity::whereDate('created_at', $date)
                 ->distinct('causer_id')
                 ->count();

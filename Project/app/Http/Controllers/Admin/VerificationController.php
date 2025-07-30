@@ -8,6 +8,7 @@ use App\Models\VerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon; // For logging timestamp
 
 class VerificationController extends Controller
 {
@@ -158,7 +159,7 @@ class VerificationController extends Controller
             }
 
             $verificationRequest->status = 'approved';
-            $verificationRequest->verified_at = now();
+            $verificationRequest->verified_at = Carbon::now('UTC'); // Store verification time in UTC
             $verificationRequest->save();
 
 

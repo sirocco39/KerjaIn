@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Carbon\Carbon; // Import Carbon for logging timestamp
 
 
 class ProfileController extends Controller
@@ -54,6 +55,11 @@ class ProfileController extends Controller
         $user->birth_date = $request->birth_date;
         $user->save();
 
+        activity()
+            ->performedOn($user)
+            ->causedBy(Auth::id())
+            ->log('User ' . $user->first_name . ' ' . $user->last_name . ' updated their profile on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
+
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
 
@@ -73,6 +79,11 @@ class ProfileController extends Controller
             $photo->storeAs('public/profile_photos', $photoName);
             $user->photo_url_user = 'storage/profile_photos/' . $photoName;
             $user->save();
+
+            activity()
+                ->performedOn($user)
+                ->causedBy(Auth::id())
+                ->log('User ' . $user->first_name . ' ' . $user->last_name . ' updated their profile photo on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
 
             return redirect()->back()->with('success', 'Foto profil berhasil diperbarui!');
         }
@@ -98,6 +109,11 @@ class ProfileController extends Controller
             // Simpan ke database
             $user->photo_url_worker = 'storage/uploads/worker_photos/' . $filename;
             $user->save();
+
+            activity()
+                ->performedOn($user)
+                ->causedBy(Auth::id())
+                ->log('Worker ' . $user->first_name . ' ' . $user->last_name . ' uploaded their worker photo on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
         }
 
         return redirect()->back()->with('success', 'Foto berhasil diunggah!');
@@ -105,4 +121,3 @@ class ProfileController extends Controller
 
 
 }
-

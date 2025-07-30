@@ -28,52 +28,52 @@ class WorkerRegistrationController extends Controller
      */
     public function ocrKtpAjax(Request $request)
     {
-        // Log::debug('ocrKtpAjax method called.');
+        Log::debug('ocrKtpAjax method called.');
 
-        // $request->validate([
-        //     'image' => 'required|image|max:5120', // Max 5MB
-        // ]);
+        $request->validate([
+            'image' => 'required|image|max:5120', // Max 5MB
+        ]);
 
-        // try {
-        //     $uploadedFile = $request->file('image');
-        //     $originalPath = $uploadedFile->store('ktp_temp_original'); // Store original
-        //     $originalImagePath = storage_path('app/' . $originalPath);
+        try {
+            $uploadedFile = $request->file('image');
+            $originalPath = $uploadedFile->store('ktp_temp_original'); // Store original
+            $originalImagePath = storage_path('app/' . $originalPath);
 
-        //     // Extract text using Tesseract OCR directly from the original image.
-        //     $rawText = (new TesseractOCR($originalImagePath))
-        //         ->lang('ind') // Use 'ind' for Indonesian language
-        //         ->run();
+            // Extract text using Tesseract OCR directly from the original image.
+            $rawText = (new TesseractOCR($originalImagePath))
+                ->lang('ind') // Use 'ind' for Indonesian language
+                ->run();
 
-        //     Log::debug("Tesseract Raw Output: " . $rawText);
+            Log::debug("Tesseract Raw Output: " . $rawText);
 
-        //     // Parse the raw OCR text into structured data
-        //     $parsedData = $this->parseKtpData($rawText);
+            // Parse the raw OCR text into structured data
+            $parsedData = $this->parseKtpData($rawText);
 
-        //     // Store parsed_data in session
-        //     Session::put('worker_registration.ocr_data', $parsedData);
-        //     Log::debug('Parsed OCR Data stored in session: ' . json_encode($parsedData));
+            // Store parsed_data in session
+            Session::put('worker_registration.ocr_data', $parsedData);
+            Log::debug('Parsed OCR Data stored in session: ' . json_encode($parsedData));
 
-        //     // Delete temporary original image after processing
-        //     Storage::delete($originalPath);
+            // Delete temporary original image after processing
+            Storage::delete($originalPath);
 
-        //     return response()->json([
-        //         'success' => true,
-        //         'message' => 'OCR processing successful.',
-        //         'raw_text' => $rawText,
-        //         'parsed_data' => $parsedData,
-        //     ]);
-        // } catch (\Throwable $e) {
-        //     Log::error("KTP OCR Extraction Error: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-        //     return response()->json([
-        //         'success' => false,
-        //         'error' => 'Failed to process KTP image. Please try again or ensure the image is clear.',
-        //         'message' => 'Internal server error. Check server logs for details. ' . $e->getMessage()
-        //     ], 500);
-        // }
-        return response()->json([
+            return response()->json([
                 'success' => true,
+                'message' => 'OCR processing successful.',
+                'raw_text' => $rawText,
+                'parsed_data' => $parsedData,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("KTP OCR Extraction Error: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'success' => false,
                 'error' => 'Failed to process KTP image. Please try again or ensure the image is clear.',
+                'message' => 'Internal server error. Check server logs for details. ' . $e->getMessage()
             ], 500);
+        }
+        return response()->json([
+            'success' => true,
+            'error' => 'Failed to process KTP image. Please try again or ensure the image is clear.',
+        ], 500);
     }
 
     /**
@@ -162,7 +162,7 @@ class WorkerRegistrationController extends Controller
                         if ($parsedDate) {
                             $data['birthdate'] = $parsedDate->format('Y-m-d');
                             // You can also capture birthplace here if needed, e.g., $data['birthplace'] = ucwords($birthplaceCandidate);
-                            Log::debug("Parsed Birthdate: " . $data['birthdate'] . ( $birthplaceCandidate ? ", Birthplace: " . $birthplaceCandidate : "" ));
+                            Log::debug("Parsed Birthdate: " . $data['birthdate'] . ($birthplaceCandidate ? ", Birthplace: " . $birthplaceCandidate : ""));
                             continue;
                         }
                     } catch (\Exception $e) {
@@ -210,9 +210,9 @@ class WorkerRegistrationController extends Controller
                 Log::debug("Parsed Kel/Desa: " . $tempAddressParts['kel_desa']);
                 continue;
             } elseif (preg_match('/\b(kelurahan|desa)\s+([a-z\s\.]+)/i', $lowerLine, $matches)) { // Fallback
-                 $tempAddressParts['kel_desa'] = ucwords(trim($matches[2], '.:- '));
-                 Log::debug("Parsed Kel/Desa (fallback): " . $tempAddressParts['kel_desa']);
-                 continue;
+                $tempAddressParts['kel_desa'] = ucwords(trim($matches[2], '.:- '));
+                Log::debug("Parsed Kel/Desa (fallback): " . $tempAddressParts['kel_desa']);
+                continue;
             }
 
             // Kecamatan
@@ -275,8 +275,8 @@ class WorkerRegistrationController extends Controller
 
         // If 'address' is still empty, and 'KOTA ANDA' is in the raw text, assign it.
         if (empty($data['address']) && preg_match('/\b(kota\s+anda)\b/i', $lowerCleanedText)) {
-             $data['address'] = 'Kota Anda';
-             Log::debug("Fallback Address to 'Kota Anda': " . $data['address']);
+            $data['address'] = 'Kota Anda';
+            Log::debug("Fallback Address to 'Kota Anda': " . $data['address']);
         }
 
 
@@ -308,6 +308,9 @@ class WorkerRegistrationController extends Controller
 
     public function store1(Request $request)
     {
+        // Get the current time in UTC+7 for the validation rule
+        $currentTimeUtcPlus7 = Carbon::now('Asia/Jakarta'); // 'Asia/Jakarta' is UTC+7
+
         $this->validate($request, [
             'first_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/',
             'last_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/',
@@ -319,7 +322,8 @@ class WorkerRegistrationController extends Controller
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
-            'birthdate' => 'required|date|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
+            // Use the Carbon instance for the 'before_or_equal' rule
+            'birthdate' => 'required|date|before_or_equal:' . $currentTimeUtcPlus7->subYears(17)->format('Y-m-d'),
             'gender' => 'required|in:Male,Female',
             'address' => 'required|string|max:255',
             'phone_number' => [
@@ -466,16 +470,11 @@ class WorkerRegistrationController extends Controller
         // Define the storage path within the 'public' disk
         $storagePath = 'worker_verification_documents/' . $userId; // Organize by user ID for clarity
 
-        // Store each file and get its public URL
+        // Store each file and get its **relative path**
         // The store method automatically generates a unique filename
-        $selfiePhotoStoredPath = $request->file('photo_url')->store($storagePath, 'public');
-        $idCardPhotoStoredPath = $request->file('id_card_url')->store($storagePath, 'public');
-        $selfieWithIdCardPhotoStoredPath = $request->file('selfie_with_id_card_url')->store($storagePath, 'public');
-
-        // Get the public URLs for the stored files
-        $selfiePhotoPublicUrl = Storage::url($selfiePhotoStoredPath);
-        $idCardPhotoPublicUrl = Storage::url($idCardPhotoStoredPath);
-        $selfieWithIdCardPhotoPublicUrl = Storage::url($selfieWithIdCardPhotoStoredPath);
+        $selfiePhotoPath = $request->file('photo_url')->store($storagePath, 'public');
+        $idCardPhotoPath = $request->file('id_card_url')->store($storagePath, 'public');
+        $selfieWithIdCardPhotoPath = $request->file('selfie_with_id_card_url')->store($storagePath, 'public');
 
         try {
             // Use a database transaction to ensure atomicity of operations
@@ -483,15 +482,15 @@ class WorkerRegistrationController extends Controller
                 $userId,
                 $step1Data,
                 $ocrData,
-                $selfiePhotoPublicUrl, // Use the public URLs
-                $idCardPhotoPublicUrl,
-                $selfieWithIdCardPhotoPublicUrl,
+                $selfiePhotoPath, // Use the relative paths here
+                $idCardPhotoPath,
+                $selfieWithIdCardPhotoPath,
                 $request
             ) {
                 // Attempt to find an existing verification request for the user
                 $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
 
-                // Prepare verification data from user input and uploaded file URLs
+                // Prepare verification data from user input and uploaded file paths
                 $verificationData = [
                     'user_id' => $userId,
                     'status' => 'pending', // Set initial status to pending
@@ -502,9 +501,9 @@ class WorkerRegistrationController extends Controller
                     'gender' => $step1Data['gender'],
                     'address' => $step1Data['address'],
                     'phone_number' => $step1Data['phone_number'],
-                    'photo_url' => $selfiePhotoPublicUrl, // Assign the public URLs
-                    'id_card_url' => $idCardPhotoPublicUrl,
-                    'selfie_with_id_card_url' => $selfieWithIdCardPhotoPublicUrl,
+                    'photo_url' => $selfiePhotoPath, // Assign the relative paths
+                    'id_card_url' => $idCardPhotoPath,
+                    'selfie_with_id_card_url' => $selfieWithIdCardPhotoPath,
                     'account_name' => $request->input('account_name'),
                     'account_number' => $request->input('account_number'),
                 ];

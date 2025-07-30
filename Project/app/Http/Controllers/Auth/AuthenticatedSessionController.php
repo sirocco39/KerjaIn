@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon; // Import Carbon for timezone handling
 
 class AuthenticatedSessionController extends Controller
 {
@@ -45,7 +46,7 @@ class AuthenticatedSessionController extends Controller
                     'email_attempted' => $emailAttempted
                 ])
                 // Lengkapi deskripsi log agar lebih informatif
-                ->log("Percobaan login gagal untuk email '{$emailAttempted}' dari IP '{$ipAddress}'"); // Menggunakan IP & Email di deskripsi
+                ->log("Percobaan login gagal untuk email '{$emailAttempted}' dari IP '{$ipAddress}' pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s')); // Using Asia/Jakarta for logging timestamp
             if ($request->expectsJson()) {
                 return response()->json([
                     'errors' => [
@@ -71,7 +72,7 @@ class AuthenticatedSessionController extends Controller
             activity()
                 ->inLog('Authentication')
                 ->causedBy($user)
-                ->log('User mencoba login namun diblokir.');
+                ->log('User mencoba login namun diblokir pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s')); // Using Asia/Jakarta for logging timestamp
 
             $errorMessage = "Akun Anda telah diblokir. Silakan hubungi administrator.";
 
@@ -92,7 +93,7 @@ class AuthenticatedSessionController extends Controller
             activity()
                 ->inLog('Authentication')
                 ->causedBy($user)
-                ->log('Admin telah login dan diarahkan ke halaman pilihan.');
+                ->log('Admin telah login dan diarahkan ke halaman pilihan pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s')); // Using Asia/Jakarta for logging timestamp
 
             if ($request->expectsJson()) {
                 // Untuk respons JSON, mungkin Anda ingin mengarahkan ke halaman default admin atau memberikan URL pilihan
@@ -112,7 +113,7 @@ class AuthenticatedSessionController extends Controller
         activity()
             ->inLog('Authentication') // Mengelompokkan log ke kategori 'Authentication'
             ->causedBy(Auth::user())  // Pelakunya adalah user yang baru saja login
-            ->log('User telah login menggunakan email dan password');
+            ->log('User telah login menggunakan email dan password pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s')); // Using Asia/Jakarta for logging timestamp
 
         // Get the authenticated user's first name
         $firstName = Auth::user()->first_name ?? 'Pengguna';
@@ -139,7 +140,7 @@ class AuthenticatedSessionController extends Controller
         activity()
             ->inLog('Authentication')
             ->causedBy($user)
-            ->log('User telah logout');
+            ->log('User telah logout pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s')); // Using Asia/Jakarta for logging timestamp
 
         Auth::guard('web')->logout();
         $request->session()->invalidate();

@@ -21,13 +21,13 @@ class AdminUserController extends Controller
     {
         // --- Statistik Ringkasan Pengguna ---
         $totalUsers = User::count();
-        $activeToday = Activity::whereDate('created_at', Carbon::today())
+        $activeToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) // Filter by Asia/Jakarta time
             ->distinct('causer_id')
             ->count('causer_id');
-        $newUsersThisWeek = User::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+        $newUsersThisWeek = User::whereBetween('created_at', [Carbon::now('Asia/Jakarta')->startOfWeek(), Carbon::now('Asia/Jakarta')->endOfWeek()])->count(); // Calculate based on Asia/Jakarta week
 
         $totalWorkers = User::where('is_worker', true)->count();
-        $activeWorkersToday = Activity::whereDate('created_at', Carbon::today())
+        $activeWorkersToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) // Filter by Asia/Jakarta time
             ->whereHasMorph('causer', [User::class], function ($query) {
                 $query->where('is_worker', true);
             })
@@ -255,7 +255,7 @@ class AdminUserController extends Controller
         activity()
             ->performedOn($user)
             ->causedBy(Auth::id())
-            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah diblokir.');
+            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah diblokir pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
 
         return redirect()->back()->with('success', 'Pengguna berhasil diblokir.');
     }
@@ -272,7 +272,7 @@ class AdminUserController extends Controller
         activity()
             ->performedOn($user)
             ->causedBy(Auth::id())
-            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah dibuka blokirnya.');
+            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah dibuka blokirnya pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
 
         return redirect()->back()->with('success', 'Pengguna berhasil dibuka blokirnya.');
     }

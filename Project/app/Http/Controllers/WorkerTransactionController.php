@@ -73,13 +73,21 @@ class WorkerTransactionController extends Controller
             // Ensure workerReport object is available and its properties are decoded for Blade
             if ($transaction->workerReport) {
                 $transaction->workerReport->decoded_photo_urls = json_decode($transaction->workerReport->photo_url, true) ?? [];
+                // Add timezone conversion for display if created_at is used
+                $transaction->workerReport->created_at_formatted_for_blade = \Carbon\Carbon::parse($transaction->workerReport->created_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i');
             } else {
                 // Create a dummy object if no report exists, to prevent errors in Blade
                 $transaction->workerReport = (object)[
                     'decoded_photo_urls' => [],
                     'reasons' => null,
+                    'created_at_formatted_for_blade' => '-', // Default for no report
                 ];
             }
+
+            // Add formatted finish_work to the transaction for Blade display
+            $transaction->finish_work_formatted_for_blade = $transaction->finish_work
+                ? \Carbon\Carbon::parse($transaction->finish_work)->setTimezone('Asia/Jakarta')->format('d - m - Y')
+                : '-';
 
             return $transaction;
         });
@@ -109,7 +117,7 @@ class WorkerTransactionController extends Controller
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan akses tidak sah ke halaman pekerjaan yang diterima #{$transaction->order_number}.");
+                ->log("Percobaan akses tidak sah ke halaman pekerjaan yang diterima #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
             return redirect()->route('job-taker.home')->with('custom_error_alert', __('alerts.anda_tidak_berwenang_melihat'));
         }
 
@@ -159,6 +167,18 @@ class WorkerTransactionController extends Controller
             ];
         }
 
+        // Format times for display in UTC+7
+        $transactionStartWorkFormatted = $transaction->start_work
+            ? \Carbon\Carbon::parse($transaction->start_work)->setTimezone('Asia/Jakarta')->format('d M Y H:i')
+            : '-';
+        $transactionFinishWorkFormatted = $transaction->finish_work
+            ? \Carbon\Carbon::parse($transaction->finish_work)->setTimezone('Asia/Jakarta')->format('d M Y H:i')
+            : '-';
+        $transactionCreatedAtFormatted = \Carbon\Carbon::parse($transaction->created_at)->setTimezone('Asia/Jakarta')->format('d M Y');
+        $transactionUpdatedAtFormatted = \Carbon\Carbon::parse($transaction->updated_at)->setTimezone('Asia/Jakarta')->format('d M Y');
+
+        $workerCreatedAtYear = \Carbon\Carbon::parse($worker->created_at)->setTimezone('Asia/Jakarta')->format('F Y');
+
         // Kirim ke view
         return view('job-taker.accepted-work-request', compact(
             'transaction',
@@ -171,7 +191,12 @@ class WorkerTransactionController extends Controller
             'hasReviewRequester', // Pass this flag
             'receivedReviewRequester', // Pass the review about requester if it exists
             'hasWorkerReport', // Pass this flag for worker's own report
-            'workerReport' // Pass the worker's report object if it exists
+            'workerReport', // Pass the worker's report object if it exists
+            'transactionStartWorkFormatted', // Pass formatted times
+            'transactionFinishWorkFormatted',
+            'transactionCreatedAtFormatted',
+            'transactionUpdatedAtFormatted',
+            'workerCreatedAtYear'
         ));
     }
 
@@ -195,21 +220,21 @@ class WorkerTransactionController extends Controller
         }
 
         $transaction->status = 'in progress';
-        $transaction->start_work = Carbon::now();
+        $transaction->start_work = Carbon::now('UTC'); // Save in UTC
         $transaction->save();
 
         activity()
             ->inLog('Transaction')
             ->performedOn($transaction)
             ->causedBy(Auth::user())
-            ->log("Pekerja telah memulai pekerjaan untuk transaksi #{$transaction->order_number}.");
+            ->log("Pekerja telah memulai pekerjaan untuk transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
 
         // Return JSON response for AJAX requests
         return response()->json([
             'success' => true,
             'message' => __('alerts.job_started'),
             'new_status' => $transaction->status,
-            'start_work_time' => $transaction->start_work->format('d M Y H:i'),
+            'start_work_time' => $transaction->start_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), // Display UTC+7
         ]);
     }
 
@@ -258,13 +283,13 @@ class WorkerTransactionController extends Controller
                 [
                     'photo_url' => json_encode($uploadedPhotoUrls), // Store as JSON array
                     'note' => $request->note,
-                    'submitted_at' => now(),
+                    'submitted_at' => Carbon::now('UTC'), // Save in UTC
                 ]
             );
 
             // Update the transaction status to 'submitted' and set finish_work timestamp
             $transaction->status = 'submitted';
-            $transaction->finish_work = Carbon::now();
+            $transaction->finish_work = Carbon::now('UTC'); // Save in UTC
             $transaction->save();
 
             activity()
@@ -272,7 +297,7 @@ class WorkerTransactionController extends Controller
                 ->performedOn($transaction) // Targetnya adalah transaksi ini
                 ->causedBy(Auth::user())    // Pelakunya adalah pekerja yang login
                 ->withProperties(['uploaded_photos' => $uploadedPhotoUrls, 'note' => $request->note]) // Simpan URL foto & catatan
-                ->log("Pekerja telah mengunggah bukti penyelesaian pekerjaan.");
+                ->log("Pekerja telah mengunggah bukti penyelesaian pekerjaan pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
 
             // Return a JSON success response for AJAX requests
             return response()->json([
@@ -280,7 +305,7 @@ class WorkerTransactionController extends Controller
               'message' => __('alerts.proof_uploaded_success'),
                 'photo_urls' => $uploadedPhotoUrls, // Optionally return uploaded URLs
                 'new_status' => $transaction->status,
-                'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
+                'finish_work_time' => $transaction->finish_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), // Display UTC+7
                 'next_action' => 'show_review_modal' // Indicate next action for frontend
             ]);
         } catch (ValidationException $e) {
@@ -323,20 +348,20 @@ class WorkerTransactionController extends Controller
 
         if ($transaction->status === 'in progress') {
             $transaction->status = 'submitted';
-            $transaction->finish_work = Carbon::now(); // Ensure finish_work is set here
+            $transaction->finish_work = Carbon::now('UTC'); // Ensure finish_work is set here in UTC
             $transaction->save();
 
             activity()
                 ->inLog('Transaction')
                 ->performedOn($transaction)
                 ->causedBy(Auth::user())
-                ->log("Pekerja telah menandai pekerjaan #{$transaction->order_number} sebagai 'submitted'.");
+                ->log("Pekerja telah menandai pekerjaan #{$transaction->order_number} sebagai 'submitted' pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
 
             return response()->json([
                 'success' => true,
                 'message' => __('alerts.job_marked_submitted_success'),
                 'new_status' => $transaction->status,
-                'finish_work_time' => $transaction->finish_work->format('d M Y H:i'),
+                'finish_work_time' => $transaction->finish_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), // Display UTC+7
             ]);
         }
 
@@ -366,7 +391,7 @@ class WorkerTransactionController extends Controller
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number}.");
+                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
           return response()->json([
                 'success' => false,
                 'message' => __('alerts.not_authorized_to_report')
@@ -401,7 +426,7 @@ class WorkerTransactionController extends Controller
                     'reasons' => $request->reasons,
                     'photo_count' => count($photoUrls)
                 ])
-                ->log("Pekerja telah mengajukan laporan untuk transaksi #{$transaction->order_number} mengenai klien.");
+                ->log("Pekerja telah mengajukan laporan untuk transaksi #{$transaction->order_number} mengenai klien pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
 
             return response()->json([
                 'success' => true,
@@ -433,7 +458,7 @@ class WorkerTransactionController extends Controller
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan ulasan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja.");
+                ->log("Percobaan ulasan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
            return response()->json([
                 'success' => false,
                 'message' => __('alerts.not_authorized_to_review')
@@ -476,7 +501,7 @@ class WorkerTransactionController extends Controller
                     'rating' => $request->rating,
                     'comment' => $request->comment
                 ])
-                ->log("Pekerja telah memberikan ulasan ({$request->rating} bintang) untuk klien transaksi #{$transaction->order_number}.");
+                ->log("Pekerja telah memberikan ulasan ({$request->rating} bintang) untuk klien transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
 
            return response()->json([
                 'success' => true,

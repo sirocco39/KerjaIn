@@ -43,8 +43,6 @@ class InvoiceController extends Controller
             // Removed: \Log::error('Invoice logo not found at: ' . $logoPath);
         }
 
-        // --- End of changes for Base64 image embedding ---
-
         // Prepare data to pass to the invoice Blade view
         $data = [
             'transaction' => $transaction,
@@ -65,7 +63,7 @@ class InvoiceController extends Controller
             ->inLog('Document')
             ->on($transaction)
             ->causedBy($user)
-            ->log("{$user->first_name} telah mengunduh invoice untuk transaksi #{$transaction->order_number}.");
+            ->log("{$user->first_name} telah mengunduh invoice untuk transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . ".");
         // Return the PDF as a download.
         return $pdf->download($filename);
     }

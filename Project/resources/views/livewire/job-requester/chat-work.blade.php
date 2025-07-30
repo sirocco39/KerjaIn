@@ -70,7 +70,7 @@
                                 class="bubble-message {{ $msg->sender_id === Auth::id() ? 'bubble-sender' : 'bubble-receiver' }}">
                                 {{ $msg->message }}
                                 <div class="bubble-time">
-                                    {{ $msg->created_at->format('H:i') }}
+                                    {{ $msg->created_at->setTimezone('Asia/Jakarta')->format('H:i') }}
                                     @if ($msg->sender_id === Auth::id())
                                         @if ($msg->read_at)
                                             <i class="bi bi-check2-all check-icon"></i>
