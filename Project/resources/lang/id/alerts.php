@@ -11,6 +11,7 @@ return [
     'admin_selamat_datang' => 'Selamat datang, Admin :nama! Silakan pilih tujuan Anda.',
     'otp_kadaluwarsa' => 'OTP sudah kadaluwarsa atau belum diminta.',
     'otp_tidak_valid' => 'OTP tidak valid.',
+    'otp_sent_success' => 'OTP telah dikirim ke email Anda. Silakan periksa kotak masuk Anda.',
     'daftar_berhasil' => 'Daftar berhasil! Selamat datang, :nama!',
     'pendaftaran_berhasil_disubmit' => 'Pendaftaran Anda berhasil disubmit untuk verifikasi!',
     'lengkapi_langkah_sebelumnya' => 'Silakan lengkapi langkah sebelumnya terlebih dahulu.',

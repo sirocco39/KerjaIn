@@ -12,6 +12,7 @@ return [
     'admin_selamat_datang' => 'Welcome, Admin :nama! Please choose your destination.',
     'otp_kadaluwarsa' => 'OTP has expired or has not been requested.',
     'otp_tidak_valid' => 'Invalid OTP.',
+    'otp_sent_success' => 'OTP has been sent to your email. Please check your inbox.',
     'daftar_berhasil' => 'Registration successful! Welcome, :nama!',
     'pendaftaran_berhasil_disubmit' => 'Your registration has been submitted for verification!',
     'lengkapi_langkah_sebelumnya' => 'Please complete the previous steps first.',
