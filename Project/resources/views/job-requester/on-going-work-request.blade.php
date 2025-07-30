@@ -174,7 +174,8 @@
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
                             style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
                             <img src="{{ $transaction->worker->photo_url_worker ? asset($transaction->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
-                                alt="Profil" style="width:40%; max-height: 125px; object-fit: cover; border-radius: 16px;"
+                                alt="Profil"
+                                style="width:40%; max-height: 125px; object-fit: cover; border-radius: 16px;"
                                 class="me-3 py-2">
                             <div class="info d-flex flex-column">
                                 <div id="name" class="fw-bold">{{ $worker->first_name . ' ' . $worker->last_name }}
@@ -537,7 +538,7 @@
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
                                 <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_judul_pesanan') }}</p>
@@ -611,13 +612,14 @@
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
                                 placeholder="{{ __('ongoing.placeholder_keluh_kesah') }}" style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
+
+                        {{-- Report submission button --}}
+                        <div class="modal-footer border-0 d-flex justify-content-end">
+                            <button type="button" id="submitReportButton"
+                                class="btn btn-danger px-4 py-2">{{ __('ongoing.tombol_kirim_laporan') }}</button>
+                        </div>
                     </div>
 
-                    {{-- Report submission button --}}
-                    <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton"
-                            class="btn btn-danger px-4 py-2">{{ __('ongoing.tombol_kirim_laporan') }}</button>
-                    </div>
                 </form>
             </div>
         </div>

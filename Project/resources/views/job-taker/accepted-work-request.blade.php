@@ -485,7 +485,7 @@
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
 
-                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
                                 <p class="text-black-50 fw-semibold mb-0">
@@ -562,13 +562,14 @@
                                 placeholder="{{ __('accepted.modal_laporan.placeholder_keluh_kesah') }}"
                                 style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
+
+                        {{-- Report submission button --}}
+                        <div class="modal-footer border-0 d-flex justify-content-end">
+                            <button type="button" id="submitReportButton"
+                                class="btn btn-danger px-4 py-2">{{ __('accepted.modal_laporan.tombol_kirim') }}</button>
+                        </div>
                     </div>
 
-                    {{-- Report submission button --}}
-                    <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton"
-                            class="btn btn-danger px-4 py-2">{{ __('accepted.modal_laporan.tombol_kirim') }}</button>
-                    </div>
                 </div>
             </form>
         </div>

@@ -337,16 +337,12 @@
                                 placeholder="Ceritakan masalah yang Anda alami..." style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
 
-                        <div class="modal-footer border-0 d-flex justify-content-end m-0 p-0">
-                            <button type="button" id="submitReportButton" class="btn btn-danger px-4">Kirim
-                                Laporan</button>
+                        {{-- Report submission button --}}
+                        <div class="modal-footer border-0 d-flex justify-content-end">
+                            <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">{{ __('history-job-taker.tombol_kirim_laporan') }}</button>
                         </div>
                     </div>
 
-                    {{-- Report submission button --}}
-                    <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton" class="btn btn-danger px-4 py-2">{{ __('history-job-taker.tombol_kirim_laporan') }}</button>
-                    </div>
                 </form>
             </div>
         </div>
