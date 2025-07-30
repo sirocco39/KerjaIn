@@ -274,7 +274,7 @@
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
                                 <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_judul_pesanan') }}

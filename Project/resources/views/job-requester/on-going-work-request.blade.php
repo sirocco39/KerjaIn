@@ -531,66 +531,68 @@
 
                     <div class="modal-header border-0 justify-content-center">
                         <h3 class="modal-title fw-bold text-center w-100" id="reportWorkModalLabel">
-                            {{ __('ongoing.modal_laporan_judul') }}</h3>
+                            {{ __('history-job-req.modal_laporan_judul') }}</h3>
                         <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #294287; border: none;">
 
-                    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_judul_pesanan') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_judul_pesanan') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalRequestTitle"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_nomor_pesanan') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_nomor_pesanan') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalOrderNumber"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_nama_pekerja') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">
+                                    {{ __('history-job-req.modal_laporan_nama_klien') }}</p>
                                 <p class="fw-medium" id="reportModalRequesterName"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">Lokasi</p>
-                                <p class="fw-medium" id="reportModalRequestLocation">
-                                    <a href={{ $mapsLink }} target="_blank" class="text-end"
-                                        style="text-decoration: none; color: #007BFF;">
-                                        {{ $request->location }}
-                                    </a>
-                                </p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_lokasi') }}</p>
+                                <p class="fw-medium" id="reportModalRequestLocation"></p>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_tgl_pesan') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_tgl_pesan') }}</p>
                                 <p class="fw-medium" id="reportModalTransactionCreatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_tgl_selesai') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_tgl_selesai') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalTransactionUpdatedAt"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_mulai_kerja') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_mulai_kerja') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalStartWork"></p>
                             </div>
                             <div class="col-md-6 col-lg-3">
-                                <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_selesai_kerja') }}</p>
+                                <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_selesai_kerja') }}
+                                </p>
                                 <p class="fw-medium" id="reportModalFinishWork"></p>
                             </div>
                         </div>
 
                         {{-- Total price display in report modal --}}
                         <div class="d-flex justify-content-between mb-3">
-                            <p class="text-black-50 fw-semibold mb-0">{{ __('ongoing.modal_total') }}</p>
+                            <p class="text-black-50 fw-semibold mb-0">{{ __('history-job-req.modal_total') }}</p>
                             <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
                         </div>
 
                         {{-- Image upload section for report proof --}}
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">{{ __('ongoing.modal_laporan_upload_bukti') }}</label>
+                            <label
+                                class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
                                 <div class="add-image-button pb-2"
@@ -608,15 +610,16 @@
                         {{-- Textarea for reporting reasons --}}
                         <div class="mb-3">
                             <label for="reportNote"
-                                class="form-label fw-semibold">{{ __('ongoing.modal_laporan_keluh_kesah') }}</label>
+                                class="form-label fw-semibold">{{ __('history-job-req.modal_laporan_keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
-                                placeholder="{{ __('ongoing.placeholder_keluh_kesah') }}" style="background-color: #f7f7ff; resize: none;"></textarea>
+                                placeholder="{{ __('history-job-req.placeholder_keluh_kesah') }}"
+                                style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
 
                         {{-- Report submission button --}}
                         <div class="modal-footer border-0 d-flex justify-content-end p-0 m-0">
                             <button type="button" id="submitReportButton"
-                                class="btn btn-danger px-4 py-2">{{ __('ongoing.tombol_kirim_laporan') }}</button>
+                                class="btn btn-danger px-4 py-2">{{ __('history-job-req.tombol_kirim_laporan') }}</button>
                         </div>
                     </div>
 
