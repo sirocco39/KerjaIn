@@ -41,39 +41,37 @@
                     {{-- Alasan Laporan --}}
                     <h5 class="mt-4 mb-3">{{ __('admin/reports.report_reason') }}</h5>
                     <p class="alert alert-light">{{ $report->reasons }}</p>
-
                     {{-- Bukti Foto (jika ada) --}}
                     @if ($report->photo_url)
                     @php
-                    $photoPaths = json_decode($report->photo_url, true); // Decode to an associative array
+                    // Decode to an associative array, pastikan ini menghasilkan array
+                    $photoPaths = json_decode($report->photo_url, true);
                     @endphp
 
-                    @if (!empty($photoPaths) && is_array($photoPaths) && isset($photoPaths[0]))
+                    @if (!empty($photoPaths) && is_array($photoPaths)) {{-- Pastikan ini array dan tidak kosong --}}
                     <h5 class="mt-4 mb-3">{{ __('admin/reports.photo_evidence') }}</h5>
-                    <div class="text-center mb-4">
-                        {{-- Ambil elemen pertama dari array dan bersihkan '/storage/' prefix jika ada --}}
-                        @php
-                        $actualPathInStorage = str_replace('/storage/', '', $photoPaths[0]);
-                        @endphp
-                        <a href="{{ Storage::url($actualPathInStorage) }}" target="_blank">
-                            <img src="{{ Storage::url($actualPathInStorage) }}" class="img-fluid border-radius-lg mb-3" alt="Foto Bukti">
-                        </a>
+                    <div class="row"> {{-- Gunakan Bootstrap Grid untuk tata letak galeri --}}
+                        @foreach ($photoPaths as $path)
+                        <div class="col-md-4 col-sm-6 mb-4"> {{-- Setiap foto dalam kolom --}}
+                            <div class="card card-body border card-plain border-radius-lg d-flex flex-column justify-content-between h-100">
+                                @php
+                                // Bersihkan '/storage/' prefix jika ada dan pastikan path valid
+                                $actualPathInStorage = str_replace('/storage/', '', $path);
+                                @endphp
+                                <a href="{{ Storage::url($actualPathInStorage) }}" target="_blank">
+                                    <img src="{{ Storage::url($actualPathInStorage) }}" class="img-fluid border-radius-lg mb-3" alt="{{ __('admin/reports.photo_evidence') }}">
+                                </a>
+                                {{-- Opsional: Tambahkan deskripsi atau nomor foto di sini --}}
+                                {{-- <p class="text-center text-muted small">Foto #{{ $loop->iteration }}</p> --}}
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
                     @else
+                    {{-- Ini akan tampil jika $report->photo_url tidak valid JSON array atau array kosong --}}
                     <p class="text-muted">{{ __('admin/reports.no_photo_evidence_attached') }}</p>
                     @endif
                     @endif
-                    <!-- {{-- Bukti Foto (jika ada) --}}
-                    @if ($report->photo_url)
-                    <h5 class="mt-4 mb-3">Bukti Foto</h5>
-                    <div class="text-center mb-4">
-                        <a href="{{ Storage::url($report->photo_url) }}" target="_blank">
-                            <img src="{{ Storage::url($report->photo_url) }}" class="img-fluid border-radius-lg mb-3" alt="Foto KTP">
-                        </a>
-                    </div>
-
-                    @endif -->
-
                     <hr>
 
                     {{-- Aksi Cepat --}}

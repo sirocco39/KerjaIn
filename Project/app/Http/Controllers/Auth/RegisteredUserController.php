@@ -41,8 +41,8 @@ class RegisteredUserController extends Controller
 
             // If the unique email rule fails, send custom error message
             if ($errors->has('email') && str_contains($errors->first('email'), 'unique')) {
-                throw new HttpResponseException(response()->json([
-                    'message' => 'Email sudah terdaftar.'
+               throw new HttpResponseException(response()->json([
+                    'message' => __('alerts.email_already_registered')
                 ], 422));
             }
 
@@ -59,8 +59,8 @@ class RegisteredUserController extends Controller
         // Check cooldown
         if (Cache::has($cooldownKey)) {
             $secondsLeft = Cache::ttl($cooldownKey);
-            return response()->json([
-                'message' => "Tunggu $secondsLeft detik sebelum meminta OTP lagi."
+          return response()->json([
+                'message' => __('alerts.otp_cooldown', ['seconds' => $secondsLeft])
             ], 429);
         }
 
@@ -76,7 +76,7 @@ class RegisteredUserController extends Controller
         // Send OTP email
         Mail::to($email)->send(new SendOtpMail($otp));
 
-        return response()->json(['message' => 'OTP berhasil dikirim.']);
+       return response()->json(['message' => __('alerts.otp_sent_success')]);
     }
 
     public function store(Request $request): RedirectResponse

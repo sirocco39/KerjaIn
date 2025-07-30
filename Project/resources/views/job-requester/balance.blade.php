@@ -1,4 +1,4 @@
-@extends('master.master-job-taker')
+@extends('master.master-job-req')
 <!-- this file name balance.blade.php -->
 @section('content')
 <div class="wallet-page-wrapper">
@@ -75,8 +75,6 @@
                             </div>
                             @empty
                             <div class="text-center py-5">
-                                <img src="{{ asset('Image/Icon/no-transaction.svg') }}" alt="{{ __('balances.no_transactions_yet') }}"
-                                    style="width: 150px;" class="mb-4">
                                 <h5 class="fw-bold">{{ __('balances.no_transactions_yet') }}</h5>
                                 <p class="text-muted">{{ __('balances.top_up_payment_history_desc') }}
                                 </p>

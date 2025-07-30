@@ -96,11 +96,32 @@
             color: white;
         }
 
+        #confirmAcceptOfferModal .modal-content {
+            background-color: white;
+            /* Memberi warna putih solid sebagai dasar modal */
+            border: none;
+            /* Menghilangkan border default jika ada, karena shadow sudah cukup */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            /* Menambahkan bayangan yang lebih kuat agar modal menonjol */
+            /* border-radius: 1rem; Ini sudah diatur di HTML dengan rounded-4 */
+        }
+
+        /* 2. Jadikan latar belakang header, body, dan footer transparan */
+        /* Ini penting agar mereka mewarisi warna putih dari .modal-content */
         #confirmAcceptOfferModal .modal-header,
         #confirmAcceptOfferModal .modal-body,
         #confirmAcceptOfferModal .modal-footer {
-            background-color: #fefefe;
-            /* Berikan background putih solid untuk semua bagian */
+            background-color: transparent;
+            /* Pastikan elemen-elemen ini tidak memiliki latar belakang yang menimpa .modal-content */
+        }
+
+        /* 3. Pastikan div 'jumlah tawaran' memiliki latar belakang abu-abu terang yang diinginkan */
+        /* Ini menargetkan div dengan kelas bg-light di dalam modal body */
+        #confirmAcceptOfferModal .modal-body .bg-light.p-4.rounded-3 {
+            background-color: #f8f9fa !important;
+            /* Warna abu-abu terang dari Bootstrap */
+            border-color: #e9ecef !important;
+            /* Warna border yang cocok */
         }
 
         #confirmAcceptOfferModal {
@@ -115,6 +136,7 @@
             /* Biarkan modal-dialog-centered yang menangani pemusatan */
             /* Hapus `align-items: center;` yang mungkin berlebihan di sini */
             height: auto;
+             background-color: transparent;
             min-height: auto;
             /* Ini penting, biarkan seperti ini */
             /* background-color: white !important; */
@@ -265,9 +287,9 @@
                             <i class="bi bi-arrow-left-circle-fill fs-4"></i>
                         </button>
                         <div class="chat-avatar">
-                            <img src="{{ $chatRoom->worker->profile_picture_url ?? asset('Image/Icon/icon-done.svg') }}"
-                                alt="{{ $chatRoom->worker->first_name }}"
-                                class="w-100 h-100 rounded-circle object-cover">
+                            <img src="{{ $chatRoom->worker->photo_url_user ? asset($chatRoom->worker->photo_url_user) : asset('Image/Icon/user-circle.svg') }}" alt="Profil" id="profileIcon"
+                                onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
                         </div>
                         <div class="me-auto">
                             <h5 class="fw-bold mb-0">{{ $chatRoom->worker->first_name ?? '-' }}</h5>
@@ -312,7 +334,7 @@
                                 <div
                                     class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
                                     <div
-                                        class="chat-bubble {{ $msg->sender_id === auth()->id() ? 'chat-bubble-receiver' : 'chat-bubble-sender' }}">
+                                        class="chat-bubble {{ $msg->sender_id === auth()->id() ? 'bubble-sender' : 'bubble-receiver' }}">
                                         {{ $msg->message }}
                                     </div>
                                     <div class="small text-muted mt-1 px-2 d-flex align-items-center">
@@ -360,40 +382,54 @@
         @if ($activeOffer)
             <div class="modal fade" id="confirmAcceptOfferModal" tabindex="-1"
                 aria-labelledby="confirmAcceptOfferModalLabel" aria-hidden="true" wire:ignore.self>
-                <div class="modal-dialog">
-                    <div class="modal-content border-0 rounded-4">
-                        <div class="modal-header border-0 pb-0">
-                            <h5 class="modal-title fw-bold" id="confirmAcceptOfferModalLabel">
-                                {{ __('chat-job-req.modal_judul') }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                <div class="modal-dialog modal-dialog-centered modal-md"> {{-- modal-dialog-centered untuk vertikal tengah, modal-md untuk ukuran sedang --}}
+                    <div class="modal-content border-0 rounded-4 shadow-lg"> {{-- shadow-lg untuk efek bayangan yang lebih menonjol --}}
+                        <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                            <h5 class="modal-title fw-bold text-center w-100" id="confirmAcceptOfferModalLabel">
+                                {{ __('chat-job-req.modal_judul') }}
+                            </h5>
+                            <button type="button" class="btn-close position-absolute end-0 me-3"
+                                data-bs-dismiss="modal" aria-label="Close"></button> {{-- Tambah position-absolute agar tombol silang di pojok kanan atas --}}
                         </div>
-                        <div class="modal-body p-4">
-                            <p class="text-center text-muted mb-3">{{ __('chat-job-req.modal_deskripsi') }}</p>
-                            <div class="bg-light p-3 rounded-3 mb-4 text-center">
-                                <h6 class="text-muted small fw-normal">{{ __('chat-job-req.modal_jumlah_tawaran') }}
+                        <div class="modal-body p-4 text-center"> {{-- text-center untuk menengahkan konten modal body --}}
+                            <p class="text-muted mb-4">{{ __('chat-job-req.modal_deskripsi') }}</p>
+
+                            <div class="bg-light p-4 rounded-3 mb-4 border border-1"
+                                style="background-color: #f8f9fa !important; border-color: #e9ecef !important;">
+                                {{-- Tambah border untuk visual --}}
+                                <h6 class="text-muted small fw-normal mb-2">
+                                    {{ __('chat-job-req.modal_jumlah_tawaran') }}
                                 </h6>
-                                <h2 class="fw-bolder text-success mb-3">
-                                    Rp{{ number_format($activeOffer->amount, 0, ',', '.') }}
+                                <h2 class="fw-bolder text-success mb-3 display-4"> {{-- display-4 untuk ukuran teks lebih besar --}}
+                                    Rp{{ number_format($activeOffer->amount ?? 0, 0, ',', '.') }}
                                 </h2>
-                                <h6 class="text-muted small fw-normal">{{ __('chat-job-req.modal_dari_pekerja') }}</h6>
-                                <h5 class="fw-bold mb-0">{{ $activeOffer->worker->first_name }}</h5>
+                                <h6 class="text-muted small fw-normal mb-1">{{ __('chat-job-req.modal_dari_pekerja') }}
+                                </h6>
+                                <h5 class="fw-bold mb-0">{{ $activeOffer->worker->first_name ?? 'N/A' }}</h5>
+                                {{-- Tambah fallback 'N/A' --}}
                             </div>
-                            <div class="alert alert-warning d-flex align-items-center" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
-                                <div>
-                                    <strong>{{ __('chat-job-req.modal_penting_header') }}</strong>
-                                    {{ __('chat-job-req.modal_penting_body') }}
+
+                            <div class="alert alert-warning d-flex align-items-start p-3" role="alert">
+                                {{-- align-items-start agar ikon di atas teks --}}
+                                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3 fs-4"></i>
+                                {{-- fs-4 untuk ukuran ikon lebih besar --}}
+                                <div class="text-start"> {{-- text-start agar teks alert rata kiri --}}
+                                    <strong class="d-block mb-1">{{ __('chat-job-req.modal_penting_header') }}</strong>
+                                    <small>{{ __('chat-job-req.modal_penting_body') }}</small> {{-- Gunakan small tag untuk teks yang lebih kecil --}}
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer border-0 pt-0">
-                            <button type="button" class="btn btn-secondary"
+                        <div
+                            class="modal-footer border-0 pt-0 d-flex justify-content-center flex-column flex-sm-row gap-2">
+                            {{-- flex-column dan flex-sm-row untuk responsivitas tombol --}}
+                            <button type="button" class="btn btn-secondary flex-fill rounded-pill py-2"
                                 data-bs-dismiss="modal">{{ __('chat-job-req.modal_tombol_batal') }}</button>
-                            <button type="button" class="btn btn-success fw-bold"
-                                wire:click="respondToOffer({{ $activeOffer->id }}, 'accepted')"
-                                data-bs-dismiss="modal">
-                                <i class="bi bi-check-circle-fill me-1"></i>{{ __('chat-job-req.modal_penting_body') }}
+                            <button type="button" class="btn btn-success fw-bold flex-fill rounded-pill py-2"
+                                wire:click="respondToOffer({{ $activeOffer->id ?? 'null' }}, 'accepted')"
+                                {{-- Tambah fallback 'null' --}} data-bs-dismiss="modal">
+                                <i
+                                    class="bi bi-check-circle-fill me-1"></i>{{ __('chat-job-req.modal_tombol_konfirmasi') }}
+                                {{-- Ganti ke kunci lokalisasi yang lebih sesuai --}}
                             </button>
                         </div>
                     </div>

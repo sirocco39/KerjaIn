@@ -7,7 +7,7 @@ return [
     'pekerjaan_terbaru_anda' => 'Your Latest Jobs',
     'lihat_semua' => 'View All',
     'belum_ada_pekerjaan' => 'You haven\'t posted any jobs yet.',
-    'ayo_mulai' => 'Let\'s get started!',
+    'ayo_mulai' => 'Lets get started!',
     'status_menunggu_mitra' => 'Awaiting Partner',
     'status_diterima' => 'Accepted',
     'status_dikerjakan' => 'In Progress',

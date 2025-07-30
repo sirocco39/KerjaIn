@@ -339,15 +339,15 @@
             function getStatusText(status) {
                 switch (status?.toLowerCase()) {
                     case 'accepted':
-                        return 'Diterima';
+                        return '{{ __('home-job-taker.card.status_diterima') }}';
                     case 'in progress':
-                        return 'Dikerjain';
+                        return '{{ __('home-job-taker.card.status_dikerjakan') }}';
                     case 'submitted':
-                        return 'Ditinjau';
+                        return '{{ __('home-job-taker.card.status_ditinjau') }}';
                     case 'completed':
-                        return 'Selesai';
+                        return '{{ __('home-job-taker.card.status_selesai') }}';
                     case 'cancelled':
-                        return 'Dibatalin';
+                        return '{{ __('home-job-taker.card.status_dibatalkan') }}';
                     default:
                         return '-';
                 }

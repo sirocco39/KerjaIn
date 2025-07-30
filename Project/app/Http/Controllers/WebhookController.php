@@ -15,7 +15,7 @@ class WebhookController extends Controller
         // 1. Verifikasi Token Webhook
         $xenditWebhookToken = config('services.xendit.webhook_secret');
         if ($request->header('x-callback-token') !== $xenditWebhookToken) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => __('alerts.topup_unauthorized_webhook')], 401);
         }
 
         $payload = $request->all();
@@ -27,7 +27,7 @@ class WebhookController extends Controller
 
         // 3. Jika tidak ada order yang pending, hentikan proses. Ini mencegah error.
         if (!$order) {
-            return response()->json(['message' => 'No pending order found or already processed.']);
+            return response()->json(['message' => __('alerts.topup_no_pending_order_webhook')]);
         }
 
         $status = $payload['status'] ?? null;
@@ -73,6 +73,6 @@ class WebhookController extends Controller
         }
 
         // 5. Kirim respon OK ke Xendit
-        return response()->json(['message' => 'Webhook processed']);
+        return response()->json(['message' => __('alerts.topup_webhook_processed_success')]);
     }
 }

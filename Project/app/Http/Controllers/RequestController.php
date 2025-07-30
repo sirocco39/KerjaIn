@@ -404,7 +404,7 @@ class RequestController extends Controller
         // Kembalikan response dalam format JSON
         return response()->json([
             'success' => true,
-            'message' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
+            'message'      => __('alerts.job_accepted_success_chat_redirect'), // <-- PESAN DILOKALISASI DI SINI
             'redirect_url' => route('job-taker.home')
         ]);
     }
@@ -437,10 +437,9 @@ class RequestController extends Controller
 
                 // NEW: Check if start_time is in the past (UTC comparison)
                 if ($startDateTime->isPast('UTC')) {
-                    $validator->errors()->add(
-                        'workStartDateLabel',
-                        'Waktu mulai tidak boleh di masa lalu (UTC).'
-                    );
+                    return back()->withErrors([
+                        'workStartDateLabel' => __('validation.custom.workStartDateLabel.past_utc')
+                    ])->withInput();
                 }
 
                 // Ensure start time is strictly before end time (UTC comparison)

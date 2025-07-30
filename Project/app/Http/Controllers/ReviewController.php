@@ -27,20 +27,20 @@ class ReviewController extends Controller
             if (Auth::id() != $validated['reviewer_id']) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Anda tidak berwenang untuk memberikan ulasan ini.'
-                ], 403); // Forbidden
+                    'message' => __('alerts.not_authorized_to_review')
+                ], 403);
             }
 
             // Prevent duplicate reviews from the same reviewer for the same transaction
             $existingReview = Review::where('transaction_id', $validated['transaction_id'])
-                                    ->where('reviewer_id', $validated['reviewer_id'])
-                                    ->first();
+                ->where('reviewer_id', $validated['reviewer_id'])
+                ->first();
 
             if ($existingReview) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Anda sudah memberikan ulasan untuk transaksi ini.'
-                ], 409); // Conflict
+                    'message' => __('alerts.review_already_given')
+                ], 409);
             }
 
             // Create the review record
@@ -59,23 +59,19 @@ class ReviewController extends Controller
             // Return a JSON success response for AJAX requests
             return response()->json([
                 'success' => true,
-                'message' => 'Ulasan Anda berhasil disimpan!'
+                'message' => __('alerts.review_saved_success')
             ]);
-
         } catch (ValidationException $e) {
-            // Return JSON response for validation errors
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal: ' . $e->getMessage(),
+                'message' => __('alerts.validation_failed') . ': ' . $e->getMessage(), // Tambahkan pesan validasi di akhir
                 'errors' => $e->errors()
-            ], 422); // 422 Unprocessable Entity for validation errors
+            ], 422);
         } catch (\Exception $e) {
-            // Return JSON response for other general errors
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan ulasan: ' . $e->getMessage()
-            ], 500); // 500 Internal Server Error
+                'message' => __('alerts.terjadi_kesalahan') . ' saat menyimpan ulasan: ' . $e->getMessage() // Tambahkan pesan error di akhir
+            ], 500);
         }
     }
 }
-

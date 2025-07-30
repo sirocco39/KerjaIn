@@ -78,4 +78,24 @@ return [
         'belum_ada_pesan' => 'Belum ada pesan. Mulai percakapan!',
         'placeholder_pesan' => 'Tulis pesan...',
     ],
+
+    'modal_penilaian' => [
+        'judul' => 'Detail Penyelesaian',
+        'judul_pesanan' => 'Judul Pesanan',
+        'nomor_pesanan' => 'Nomor Pesanan',
+        'nama_klien' => 'Nama Pekerja',
+        'lokasi' => 'Lokasi',
+        'tgl_pesan' => 'Tanggal Pemesanan',
+        'tgl_selesai' => 'Tanggal Selesai',
+        'mulai_kerja' => 'Mulai Kerja',
+        'selesai_kerja' => 'Selesai Kerja',
+        'total' => 'Total',
+        'penilaian_heading_baru' => 'Ayo berikan penilaian untuk Klien!',
+        'penilaian_heading_sudah' => 'Ini penilaianmu untuk Klien',
+        'label_komentar' => 'Komentar',
+        'placeholder_komentar' => 'Tulis komentarmu di sini...',
+        'tombol_kirim' => 'Kirim',
+        'atau' => 'Atau',
+        'laporkan_masalah' => 'Laporkan masalah', // Dipindahkan dari js_messages agar lebih terstruktur
+    ],
 ];

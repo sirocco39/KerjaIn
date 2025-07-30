@@ -70,7 +70,7 @@ return [
         'mulai_kerja' => 'Work Started',
         'selesai_kerja' => 'Work Finished',
         'total' => 'Total',
-        'penilaian_heading_baru' => 'Let\'s give a rating for the Client!',
+        'penilaian_heading_baru' => 'Lets give a rating for the Client!',
         'penilaian_heading_sudah' => 'This is your review for the Client',
         'label_komentar' => 'Comment',
         'placeholder_komentar' => 'Write your comment here...',

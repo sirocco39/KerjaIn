@@ -6,8 +6,8 @@ return [
 
     // Banner Section
     'banner_title_part1' => 'Want everything done?',
-    'banner_title_part2' => 'Let\'s, ', // 'Let\'s,' to escape the apostrophe
-    'banner_title_part3' => 'Work In!',
+    'banner_title_part2' => 'Lets, ', // 'Let\'s,' to escape the apostrophe
+    'banner_title_part3' => 'Kerja In!',
     'banner_description' => 'KerjaIn is a digital solution for gig work needs. This platform connects employers with daily workers quickly, easily, and efficiently. Find the help you need, or start earning today.',
     'banner_button_register' => 'Register Now',
 

@@ -255,10 +255,10 @@
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil" id="profileIcon"
+                            <img src="{{ asset($user->photo_url_worker) }}" alt="Profil" id="profileIcon"
                                 onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
-                            <span class="d-lg-none">Profil</span>
+                            <span class="d-lg-none">{{ __('master-job-req.profil') }}-</span>
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end m-0" aria-labelledby="dropdownProfile">
@@ -266,7 +266,7 @@
 
                                 <li>
                                     <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
-                                        <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil"
+                                        <img src="{{ asset($user->photo_url_worker) }}" alt="Profil"
                                             id="profileIcon"
                                             onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />

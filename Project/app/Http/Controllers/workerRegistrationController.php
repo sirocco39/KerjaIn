@@ -132,19 +132,44 @@ class WorkerRegistrationController extends Controller
             }
 
             // Birthplace and Date of Birth
-            if (!$data['birthdate'] && preg_match('/(?:tempat\/tgl lahir|kota lahir|tgl lahir)\s*[:\-\s]*([a-z\s\.,]+?)\s*[,-\/]?\s*(\d{2}[-\/]\d{2}[-\/]\d{4})/i', $lowerLine, $matches)) {
-                // Birthplace raw part is $matches[1] but not stored as separate field
-                $dateString = preg_replace('/[-\/]/', '-', trim($matches[2])); // Normalize date separator
-                try {
-                    $parsedDate = Carbon::createFromFormat('d-m-Y', $dateString);
-                    if ($parsedDate) {
-                        $data['birthdate'] = $parsedDate->format('Y-m-d');
+            if (!$data['birthdate']) {
+                // Modified regex:
+                // - Allows for various "Tempat/Tgl Lahir" labels.
+                // - Captures an optional birthplace string (group 1).
+                // - Captures the date string (group 2).
+                // - Uses word boundaries and lookaheads/lookbehinds to prevent over-matching.
+                if (preg_match('/(?:tempat\/?tgl\s*lahir|kota\s*lahir|tgl\s*lahir|tempat\/tgi\s*lahir|tgl)\s*[:\-\s]*(?:([a-z\s\.]+),\s*)?(\d{1,2}[\s\-\/\.]\d{1,2}[\s\-\/\.]\d{4})\b/i', $lowerLine, $matches)) {
+                    $birthplaceCandidate = !empty($matches[1]) ? trim($matches[1]) : null; // Optional birthplace
+                    $dateString = trim($matches[2]); // The date string
+
+                    $dateString = preg_replace('/[\s\-\/\.]/', '-', $dateString); // Normalize date separator to '-'
+                    $dateString = preg_replace("/['`‘’]$/", '', $dateString); // Remove any trailing non-date characters
+
+                    try {
+                        $parsedDate = null;
+                        $formats = ['d-m-Y', 'd/m/Y', 'd.m.Y', 'd m Y'];
+                        foreach ($formats as $format) {
+                            try {
+                                $parsedDate = Carbon::createFromFormat($format, $dateString);
+                                if ($parsedDate && $parsedDate->year > 1900 && $parsedDate->year <= (int)date('Y') - 17) {
+                                    break;
+                                }
+                            } catch (\Exception $e) {
+                                // Continue to next format
+                            }
+                        }
+
+                        if ($parsedDate) {
+                            $data['birthdate'] = $parsedDate->format('Y-m-d');
+                            // You can also capture birthplace here if needed, e.g., $data['birthplace'] = ucwords($birthplaceCandidate);
+                            Log::debug("Parsed Birthdate: " . $data['birthdate'] . ( $birthplaceCandidate ? ", Birthplace: " . $birthplaceCandidate : "" ));
+                            continue;
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning("Could not parse birthdate '" . $dateString . "': " . $e->getMessage());
                     }
-                } catch (\Exception $e) {
-                    Log::warning("Could not parse birthdate '" . $dateString . "': " . $e->getMessage());
                 }
-                Log::debug("Parsed Birthdate: " . $data['birthdate']);
-                continue;
+                // ... (keep the fallback pattern, although the new primary one might cover more cases)
             }
 
             // Gender
@@ -492,6 +517,8 @@ class WorkerRegistrationController extends Controller
             Log::error("Error finalizing worker registration for user " . Auth::id() . ": " . $e->getMessage(), ['exception' => $e]);
             return back()->with('custom_error_alert', 'Terjadi kesalahan saat finalisasi pendaftaran: ' . $e->getMessage());
         }
+        Session::forget('worker_registration');
+        return redirect()->route('worker.register.success')->with('custom_blue_alert', __('alerts.pendaftaran_berhasil_disubmit'));
     }
 
     public function showSuccessPage()

@@ -231,7 +231,12 @@
                             <i class="bi bi-arrow-left-circle-fill fs-4"></i>
                         </button>
 
-                        <div class="chat-avatar"></div>
+                        <div class="chat-avatar">
+                            <img src="{{ $selectedRoom->requester->photo_url_user ? asset($selectedRoom->requester->photo_url_user) : asset('Image/Icon/user-circle.svg') }}"
+                                alt="Profil"
+                                onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
+                                style="width: 50px; height: 50px; border-radius: 50%; object-fit: contain; background-color: #e0e0e0;" />
+                        </div>
                         <div class="me-auto">
                             <h5 class="fw-bold mb-0">{{ $selectedRoom->requester->first_name ?? '-' }}</h5>
                         </div>
@@ -326,7 +331,7 @@
                                 <div
                                     class="d-flex flex-column {{ $msg->sender_id === auth()->id() ? 'align-items-end' : 'align-items-start' }} mb-3">
                                     <div
-                                        class="chat-bubble {{ $msg->sender_id === auth()->id() ? 'chat-bubble-receiver' : 'chat-bubble-sender' }}">
+                                        class="chat-bubble {{ $msg->sender_id === auth()->id() ? 'bubble-sender' : 'bubble-receiver' }}">
                                         {{ $msg->message }}
                                     </div>
                                     <div class="small text-muted mt-1 px-2 d-flex align-items-center">

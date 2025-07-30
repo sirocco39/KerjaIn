@@ -21,12 +21,14 @@ class AdminController extends Controller
         // --- Statistik Pengguna ---
         $totalUsers = User::count();
         $totalWorkers = User::where('is_worker', true)->count();
-
-        // MENGAMBIL DATA LOGIN HARI INI DARI activity_log MENGGUNAKAN LIKE
-        $activeUsersToday = Activity::where('description', 'like', 'User telah login%')
-            ->whereDate('created_at', Carbon::today())
+        $activeUsersToday = Activity::whereDate('created_at', Carbon::today())
             ->distinct('causer_id')
-            ->count();
+            ->count('causer_id');
+        // // MENGAMBIL DATA LOGIN HARI INI DARI activity_log MENGGUNAKAN LIKE
+        // $activeUsersToday = Activity::where('description', 'like', 'User telah login%')
+        //     ->whereDate('created_at', Carbon::today())
+        //     ->distinct('causer_id')
+        //     ->count();
 
         // --- Statistik Laporan ---
         $pendingReportsCount = Report::where('status', 'Not Reviewed')->count();
@@ -50,8 +52,8 @@ class AdminController extends Controller
             $chartLabels[] = $date->format('D, M d');
 
             // MENGAMBIL DATA LOGIN UNTUK GRAFIK DARI activity_log MENGGUNAKAN LIKE
-            $dailyLogins = Activity::where('description', 'like', 'User telah login%')
-                ->whereDate('created_at', $date)
+
+            $dailyLogins = Activity::whereDate('created_at', $date)
                 ->distinct('causer_id')
                 ->count();
             $chartData[] = $dailyLogins; // Data jumlah login/pengguna aktif untuk chart

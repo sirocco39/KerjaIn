@@ -27,7 +27,7 @@ return [
     'modal_total' => 'Total',
     'modal_invoice' => 'Invoice',
 
-    'penilaian_heading_baru' => 'Let\'s give a rating!',
+    'penilaian_heading_baru' => 'Lets give a rating!',
     'penilaian_heading_sudah' => 'This is your review',
     'label_komentar' => 'Comment',
     'placeholder_komentar' => 'Write your comment here...',

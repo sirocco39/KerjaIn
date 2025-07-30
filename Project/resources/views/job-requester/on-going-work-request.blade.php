@@ -25,8 +25,12 @@
 
         $workerCreatedAtYear = date('F Y', strtotime($worker->created_at));
 
-        $transactionStartWorkFormatted = $transaction->start_work ? \Carbon\Carbon::parse($transaction->start_work)->format('d M Y H:i') : '-';
-        $transactionFinishWorkFormatted = $transaction->finish_work ? \Carbon\Carbon::parse($transaction->finish_work)->format('d M Y H:i') : '-';
+        $transactionStartWorkFormatted = $transaction->start_work
+            ? \Carbon\Carbon::parse($transaction->start_work)->format('d M Y H:i')
+            : '-';
+        $transactionFinishWorkFormatted = $transaction->finish_work
+            ? \Carbon\Carbon::parse($transaction->finish_work)->format('d M Y H:i')
+            : '-';
 
         $transactionCreatedAtFormatted = \Carbon\Carbon::parse($transaction->created_at)->format('d M Y');
         $transactionUpdatedAtFormatted = \Carbon\Carbon::parse($transaction->updated_at)->format('d M Y');
@@ -169,8 +173,9 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
                             style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
-                            <img src="{{ asset('Image/orang/ilus-beranda-job-taker.svg') }}"
-                                style="width: 50%; max-height: 150px; object-fit: cover;" class="me-3 py-2">
+                            <img src="{{ $transaction->worker->photo_url_worker ? asset($transaction->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
+                                alt="Profil" style="width:40%; max-height: 125px; object-fit: cover; border-radius: 16px;"
+                                class="me-3 py-2">
                             <div class="info d-flex flex-column">
                                 <div id="name" class="fw-bold">{{ $worker->first_name . ' ' . $worker->last_name }}
                                 </div>
@@ -202,37 +207,38 @@
                                 <button type="button" class="btn px-4 py-2 rounded-pill text-light fs-4 fw-bold"
                                     data-bs-toggle="modal" data-bs-target="#completeJobModal" id="completeJobBtn"
                                     style="background-color:#294287; width:88%;">
-                                    Tandai Selesai
+                                    {{ __('ongoing.tombol_tandai_selesai') }}
                                 </button>
                                 <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                     data-bs-toggle="modal" data-bs-target="#completionProofModal"
                                     style="color: #0d6efd; text-decoration: none;">
-                                    Lihat Bukti Penyelesaian
+                                    {{ __('ongoing.tombol_lihat_bukti') }}
                                 </a>
                             @elseif($transaction->status == 'completed')
                                 <a class="btn btn-success px-4 py-2 rounded-pill fs-4 fw-bold"
                                     style="width:88%;cursor: not-allowed;pointer-events: none;">
-                                    Selesai
+                                    {{ __('ongoing.status_selesai') }}
                                 </a>
                                 <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                     data-bs-toggle="modal" data-bs-target="#completionProofModal"
                                     style="color: #0d6efd; text-decoration: none;">
-                                    Lihat Bukti Penyelesaian
+                                    {{ __('ongoing.tombol_lihat_bukti') }}
                                 </a>
                             @elseif($transaction->status == 'in progress')
                                 <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                    style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                    style="background-color:#9d9d9d; width:88%;">
+                                    {{ __('ongoing.tombol_tandai_selesai') }}</div>
                                 <a class="btn px-4 py-2 rounded-5 d-inline fw-semibold fs-5" href="#"
                                     style="color: #a7a7a7; text-decoration: none; cursor: not-allowed; pointer-events: none;">
-                                    Lihat Bukti Penyelesaian
+                                    {{ __('ongoing.tombol_lihat_bukti') }}
                                 </a>
-                                <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
                             @elseif($transaction->status == 'accepted')
                                 <div class="px-4 py-2 rounded-5 d-inline fw-semibold text-light fs-4 text-center"
-                                    style="background-color:#9d9d9d; width:88%;">Tandai Selesai</div>
+                                    style="background-color:#9d9d9d; width:88%;">
+                                    {{ __('ongoing.tombol_tandai_selesai') }}</div>
                                 <div class="btn px-4 py-2 rounded-5 d-inline fw-semibold text-danger fs-5"
-                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">Batalkan Kerja</div>
+                                    data-bs-toggle="modal" data-bs-target="#cancelWorkModal">
+                                    {{ __('ongoing.tombol_batalkan_kerja') }}</div>
                             @endif
                         </div>
                     </div>
@@ -246,7 +252,8 @@
     <div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form id="markCompleteForm" action="{{ route('transaction.markComplete', $transaction->id) }}" method="POST">
+            <form id="markCompleteForm" action="{{ route('transaction.markComplete', $transaction->id) }}"
+                method="POST">
                 @csrf
                 <div class="modal-content p-4">
                     <div class="d-flex flex-md-row align-items-center justify-content-center text-center text-md-start">
@@ -302,41 +309,49 @@
                             <div class="d-flex flex-column flex-grow-1">
                                 <div class="d-flex flex-fill">
                                     <div class="text flex-fill" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Judul Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.judul_pesanan') }}</p>
                                         <p class="fw-medium" id="modalRequestTitle"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nomor Pesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.nomor_pesanan') }}</p>
                                         <p class="fw-medium" id="modalOrderNumber"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Nama Pekerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('ongoing.modal_penilaian.nama_klien') }}</p>
                                         <p class="fw-medium" id="modalWorkerName"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Lokasi</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.lokasi') }}</p>
                                         <p class="fw-medium" id="modalRequestLocation"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-fill">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Pemesanan</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.tgl_pesan') }}</p>
                                         <p class="fw-medium" id="modalTransactionCreatedAt"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Tanggal Selesai</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.tgl_selesai') }}</p>
                                         <p class="fw-medium" id="modalTransactionUpdatedAt"></p>
                                     </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Mulai Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.mulai_kerja') }}</p>
                                         <p class="fw-medium" id="modalStartWork"></p>
                                     </div>
                                     <div class="text" style="width:50%;">
-                                        <p class="m-0 p-0 text-black-50 fw-semibold">Selesai Kerja</p>
+                                        <p class="m-0 p-0 text-black-50 fw-semibold">
+                                            {{ __('accepted.modal_penilaian.selesai_kerja') }}</p>
                                         <p class="fw-medium" id="modalFinishWork"></p>
                                     </div>
                                 </div>
@@ -379,10 +394,11 @@
                                 {{-- Action buttons for review submission and reporting --}}
                                 <div class="d-flex flex-column mt-3 justify-content-center">
                                     <button type="submit" class="btn btn-primary fw-medium rounded-3"
-                                        id="submitReviewButton">Kirim</button>
-                                    <div class="m-1 text-center">Atau</div>
+                                        id="submitReviewButton">{{ __('accepted.modal_penilaian.tombol_kirim') }}</button>
+                                    <div class="m-1 text-center">{{ __('accepted.modal_penilaian.atau') }}</div>
                                     <button type="button" class="m-0 p-0 fw-medium btn text-danger"
-                                        onclick="openReportModal()" id="reportProblemButton">Laporkan masalah</button>
+                                        onclick="openReportModal()"
+                                        id="reportProblemButton">{{ __('accepted.modal_penilaian.judul') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -468,14 +484,14 @@
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
-                                fill="#B02A37" />
+                            fill="#B02A37" />
                     </svg>
                     <h4 class="text-danger text-center fw-bold mb-0 mx-3 fs-4">{{ __('ongoing.modal_batal_judul') }}</h4>
                     <svg width="42" height="42" viewBox="0 0 42 42" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M0.6875 21C0.6875 9.78125 9.78125 0.6875 21 0.6875C32.2188 0.6875 41.3125 9.78125 41.3125 21C41.3125 32.2188 32.2188 41.3125 21 41.3125C9.78125 41.3125 0.6875 32.2188 0.6875 21ZM21 13.1875C21.4144 13.1875 21.8118 13.3521 22.1049 13.6451C22.3979 13.9382 22.5625 14.3356 22.5625 14.75V22.5625C22.5625 22.9769 22.3979 23.3743 22.1049 23.6674C21.8118 23.9604 21.4144 24.125 21 24.125C20.5856 24.125 20.1882 23.9604 19.8951 23.6674C19.6021 23.3743 19.4375 22.9769 19.4375 22.5625V14.75C19.4375 14.3356 19.6021 13.9382 19.8951 13.6451C20.1882 13.3521 20.5856 13.1875 21 13.1875ZM21 30.375C21.4144 30.375 21.8118 30.2104 22.1049 29.9174C22.3979 29.6243 22.5625 29.2269 22.5625 28.8125C22.5625 28.3981 22.3979 28.0007 22.1049 27.7076C21.8118 27.4146 21.4144 27.25 21 27.25C20.5856 27.25 20.1882 27.4146 19.8951 27.7076C19.6021 28.0007 19.4375 28.3981 19.4375 28.8125C19.4375 29.2269 19.6021 29.6243 19.8951 29.9174C20.1882 30.2104 20.5856 30.375 21 30.375Z"
-                                fill="#B02A37" />
+                            fill="#B02A37" />
                     </svg>
                 </div>
 
@@ -608,6 +624,9 @@
     </div>
 
     <script>
+        const lang = @json(__('accepted.js_messages'));
+        const reviewLang = @json(__('accepted.modal_penilaian'));
+        const proofLang = @json(__('accepted.modal_bukti'));
         // Global variables for managing transaction and worker IDs across modals
         let currentTransactionId = `{{ $transaction->id }}`;
         let reportedWorkerId = `{{ $worker->id }}`;
@@ -698,13 +717,15 @@
                 Array.from(event.target.files).forEach(file => {
                     // Client-side validation for file type
                     if (!file.type.startsWith('image/')) {
-                        window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                        window.showCustomAlert(lang.file_harus_gambar,
+                            'error');
                         return; // Skip this file and continue to next
                     }
                     // Client-side validation for file size
                     const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                     if (file.size > maxSizeBytes) {
-                        window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                        window.showCustomAlert(lang.ukuran_file_maksimal,
+                            'error');
                         return; // Skip this file and continue to next
                     }
 
@@ -712,8 +733,8 @@
                     if (reportFiles.length < MAX_REPORT_IMAGES) {
                         reportFiles.push(file);
                     } else {
-                        window.showCustomAlert(
-                            `Maksimal ${MAX_REPORT_IMAGES} foto bukti laporan dapat diunggah.`, 'error');
+                        window.showCustomAlert(lang.maksimal_upload_gambar.replace(':max',
+                            MAX_REPORT_IMAGES), 'error');
                         // Stop processing further files if limit is hit
                         return;
                     }
@@ -804,12 +825,12 @@
 
             // Client-side validation for rating and comment
             if (rating == 0) {
-                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
+                window.showCustomAlert(lang.pilih_rating_dulu, 'error');
                 return;
             }
 
             if (comment == '') {
-                window.showCustomAlert('Silakan isi komentar.', 'error');
+                window.showCustomAlert(lang.isi_komentar_dulu, 'error');
                 return;
             }
 
@@ -825,7 +846,7 @@
             const submitBtn = document.getElementById('submitReviewButton');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Mengirim...';
+                submitBtn.textContent = lang.mengirim_laporan;
             }
 
             fetch(`{{ route('reviews.store', $transaction->id) }}`, {
@@ -871,7 +892,7 @@
                 .finally(() => {
                     if (submitBtn) {
                         submitBtn.disabled = false;
-                        submitBtn.textContent = 'Kirim';
+                        submitBtn.textContent = lang.mengirim;
                     }
                 });
         }
@@ -884,11 +905,11 @@
             const reasons = document.getElementById('reportNote').value.trim();
 
             if (reportFiles.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                window.showCustomAlert(lang.upload_bukti_dulu, 'error');
                 return;
             }
             if (!reasons) {
-                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                window.showCustomAlert(lang.isi_keluhan_dulu, 'error');
                 return;
             }
 
@@ -899,13 +920,15 @@
 
             for (const file of filesToSend) { // Use for...of for easy breaking
                 if (!file.type.startsWith('image/')) {
-                    window.showCustomAlert('File yang diunggah harus berupa gambar.', 'error');
+                    window.showCustomAlert(lang.file_harus_gambar,
+                        'error');
                     hasInvalidFile = true;
                     break; // Exit loop
                 }
                 const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
                 if (file.size > maxSizeBytes) {
-                    window.showCustomAlert('Ukuran foto bukti laporan maksimal 5 MB.', 'error');
+                    window.showCustomAlert(lang.ukuran_file_maksimal,
+                        'error');
                     hasInvalidFile = true;
                     break; // Exit loop
                 }
@@ -931,7 +954,7 @@
 
             const submitBtn = document.getElementById('submitReportButton');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim Laporan...';
+            submitBtn.textContent = lang.mengirim_laporan;
 
             // Submit the form using fetch, expecting a redirect
             fetch(form.action, { // Use the form's action which includes transaction ID
@@ -982,7 +1005,7 @@
                 })
                 .finally(() => {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Kirim Laporan';
+                    submitBtn.textContent = reviewLang.tombol_kirim;
                 });
         }
 
@@ -1105,7 +1128,7 @@
         function renderReviewForm() {
             const reviewSectionHeading = document.getElementById('reviewSectionHeading'); // Get the heading element
             if (reviewSectionHeading) {
-                reviewSectionHeading.textContent = 'Kasih penilaian, yuk!';
+                reviewSectionHeading.textContent = reviewLang.penilaian_heading_baru;
             }
 
             const reviewSectionContainer = document.getElementById('review-section-container');
@@ -1119,9 +1142,9 @@
                         <input type="hidden" name="rating" id="rating-input" value="0">
                     </div>
                     <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <label for="comment" class="form-label text-start">${reviewLang.label_komentar}</label>
                         <textarea name="comment" id="comment" class="form-control" rows="3"
-                            placeholder="Tulis komentarmu di sini..." style="border-color:#8a8a8a; resize: none;"></textarea>
+                            placeholder="${reviewLang.placeholder_komentar}" style="border-color:#8a8a8a; resize: none;"></textarea>
                     </div>
                 `;
             const newStars = reviewSectionContainer.querySelectorAll('.star-rating');
@@ -1153,7 +1176,7 @@
         function renderExistingReview(rating, comment) {
             const reviewSectionHeading = document.getElementById('reviewSectionHeading'); // Get the heading element
             if (reviewSectionHeading) {
-                reviewSectionHeading.textContent = 'Ini Penilaian Klien Untukmu';
+                reviewSectionHeading.textContent = reviewLang.penilaian_heading_sudah;
             }
 
             const reviewSectionContainer = document.getElementById('review-section-container');
@@ -1170,7 +1193,7 @@
                         ${starHtml}
                     </div>
                     <div class="ps-3 flex-fill d-flex flex-column w-100">
-                        <label for="comment" class="form-label text-start">Komentar</label>
+                        <label for="comment" class="form-label text-start">${reviewLang.label_komentar}</label>
                         <textarea id="comment" class="form-control" rows="3" disabled
                             style="border-color:#8a8a8a; resize: none;">${comment}</textarea>
                     </div>
@@ -1192,7 +1215,7 @@
                     reportProblemButton.classList.add('text-secondary');
                     reportProblemButton.onclick = null;
                 } else {
-                    reportProblemButton.textContent = 'Laporkan masalah';
+                    reportProblemButton.textContent = reviewLang.laporkan_masalah;
                     reportProblemButton.disabled = false;
                     reportProblemButton.classList.remove('text-secondary');
                     reportProblemButton.classList.add('text-danger');
@@ -1247,7 +1270,7 @@
             if (!form) return;
 
             this.disabled = true;
-            this.innerHTML = 'Memproses...';
+            this.innerHTML = '{{ __('accepted.memproses') }}';
 
             fetch(form.action, {
                     method: 'POST',

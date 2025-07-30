@@ -306,9 +306,9 @@
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
 
-                            <img 
-                                src="{{ asset(Auth::user()->photo_url_user ?? asset('Image/Icon/user-circle.svg')) }}" 
-                                alt="Profil" 
+                            <img
+                                src="{{ asset(Auth::user()->photo_url_user ?? asset('Image/Icon/user-circle.svg')) }}"
+                                alt="Profil"
                                 id="profileIcon"
                                 onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
@@ -328,14 +328,14 @@
                                 </li>
                             @endguest
                             @auth
-                            
+
                             <li>
                                     {{-- Jika user biasa, bisa diklik dan diarahkan ke halaman profile --}}
-                                
+
                                     <a href="{{ route('profile') }}" class="dropdown-item d-flex align-items-center gap-2">
-                                        <img 
-                                            src="{{ asset(Auth::user()->photo_url_user) }}" 
-                                            alt="Profil" 
+                                        <img
+                                            src="{{ asset(Auth::user()->photo_url_user) }}"
+                                            alt="Profil"
                                             id="profileIcon"
                                             onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
@@ -345,7 +345,7 @@
                                             <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pelanggan')}}</div>
                                         </div>
                                     </a>
-                             
+
                                 {{-- Ganti href="#" dengan link ke halaman saldo jika ada --}}
                                  <a class="dropdown-item d-flex align-items-center"
                                         href="{{ route('balance.job-req') }}">
@@ -454,7 +454,7 @@
                         <a href="/job-req/tawarkan-kerja" class="foot-list">{{ __('master-job-req.tawarkan_kerja') }}</a>
                     @else
                         <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                            class="foot-list">{{ __('master-job-req.tawrakan_kerja') }}</a>
+                            class="foot-list">{{ __('master-job-req.tawarkan_kerja') }}</a>
                     @endauth
 
 
@@ -822,10 +822,9 @@
 
         function validateConfirmPassword(value) {
             const errors = [];
-                // Ganti 'passwordInputId' dengan ID aktual dari input password Anda di HTML.
-                // Jika input password tidak memiliki ID, Anda harus mendapatkannya dengan cara lain (mis. class atau name)
-                const passwordInput = document.getElementById('passwordInputId'); // PENTING: Ganti ini!
-                const originalPassword = passwordInput ? passwordInput.value : ''; // Pastikan elemen ditemukan
+            const passwordInput = document.getElementById('password');
+            const originalPassword = passwordInput ? passwordInput.value : '';
+
             if (value === '') {
                 errors.push(window.i18n.validation.confirm_password_required || 'Confirm password is required.');
             } else if (value !== originalPassword) {
@@ -875,7 +874,7 @@
         setupValidationListeners(loginEmailInput, loginEmailErrorDiv, (value) => {
             const errors = [];
             if (value.trim() === '') { // Use trim() for consistency
-                errors.push('Email harus diisi.');
+                errors.push('{{ __('master-job-req.validation_email_required') }}');
             } else if (!emailRegex.test(value.trim())) {
                 errors.push('Silakan masukkan alamat email yang valid.');
             }
@@ -894,7 +893,7 @@
             const isEmailValid = validateInput(loginEmailInput, loginEmailErrorDiv, (value) => {
                 const errors = [];
                 if (value.trim() === '') {
-                    errors.push('Email harus diisi.');
+                    errors.push('{{ __('master-job-req.validation_email_required') }}');
                 } else if (!emailRegex.test(value.trim())) {
                     errors.push('Silakan masukkan alamat email yang valid.');
                 }

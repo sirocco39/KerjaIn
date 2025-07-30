@@ -323,7 +323,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="rejection_reason" class="form-label">{{ __('admin/verifications.reason_for_rejection') }}</label>
-                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" placeholder="{{ __('admin/verifications.provide_rejection_reason_placeholder') }}" required></textarea>
+                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" placeholder="{{ __('admin/verifications.provide_rejection_reason_placeholder') }}" required style="resize: none; padding: 0.75em; border: 1px solid #ced4da;"></textarea>
                         @error('rejection_reason')
                         <div class="text-danger text-sm mt-1">{{ $message }}</div>
                         @enderror
