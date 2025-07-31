@@ -106,6 +106,8 @@ return [
         'confirm_password_match' => 'Kata sandi tidak cocok.',
         'otp_required' => 'OTP harus diisi.',
         'otp_format' => 'OTP harus berupa 6 digit angka.',
+        'datetime_start_in_past' => 'Start time cannot be in the past (UTC).',
+        'datetime_end_before_start' => 'End time must be after start time.',
     ],
 
 ];

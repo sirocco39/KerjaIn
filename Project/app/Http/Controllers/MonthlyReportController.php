@@ -32,9 +32,8 @@ class MonthlyReportController extends Controller
 
         // --- 2. Determine Report Period ---
         // Ensure 'created_at' is cast to 'datetime' in your User model for Carbon functionality
-        $joinedAt = $worker->created_at;
-        $now = Carbon::now(); // Current time: Tuesday, July 15, 2025 at 12:28:39 PM WIB.
-        // dd($now, $now->copy()->startOfMonth(), $now);
+        $joinedAt = $worker->created_at->setTimezone('Asia/Jakarta'); // Get joined date in UTC+7
+        $now = Carbon::now('Asia/Jakarta'); // Current time in UTC+7
 
         $availableMonths = [];
         $currentMonthForDropdown = $joinedAt->copy()->startOfMonth();
@@ -53,14 +52,14 @@ class MonthlyReportController extends Controller
 
         // Parse the selected month value into a Carbon object
         // This Carbon object will be used for filtering database queries for the current report view
-        $parsedSelectedMonth = Carbon::createFromFormat('Y-m', $selectedMonthValue)->startOfMonth(); // Pastikan mulai dari awal bulan
+        $parsedSelectedMonth = Carbon::createFromFormat('Y-m', $selectedMonthValue, 'Asia/Jakarta')->startOfMonth(); // Ensure start of month in Asia/Jakarta
 
         // Set report period display string (e.g., "Juli 2025")
         $reportPeriod = $parsedSelectedMonth->translatedFormat('F Y');
 
         // Define the start and end of the selected month for database queries
-        $startOfMonth = $parsedSelectedMonth->copy()->startOfMonth();
-        $endOfMonth = $parsedSelectedMonth->copy()->endOfMonth();
+        $startOfMonth = $parsedSelectedMonth->copy()->startOfMonth()->setTimezone('UTC'); // Convert to UTC for DB query
+        $endOfMonth = $parsedSelectedMonth->copy()->endOfMonth()->setTimezone('UTC');   // Convert to UTC for DB query
 
         // --- 3. Fetch Data for Monthly Report ---
         // Fetch completed transactions for the authenticated worker within the selected month.
@@ -71,14 +70,16 @@ class MonthlyReportController extends Controller
             ->with('request') // Eager load the related Request (Job) model
             ->get();
 
-        // dd($completedTransactions);
         // A. Summary Statistics
         $totalJobsCompleted = $completedTransactions->count();
         // Calculate total hours worked from start_work and finish_work
         // Ensure start_work and finish_work are cast to 'datetime' in the Transaction model
         $totalHoursWorked = $completedTransactions->sum(function ($transaction) {
             if ($transaction->start_work && $transaction->finish_work) {
-                $minutes = $transaction->start_work->diffInMinutes($transaction->finish_work);
+                // Parse timestamps to Asia/Jakarta for calculation consistency
+                $startWorkAsiaJakarta = $transaction->start_work->setTimezone('Asia/Jakarta');
+                $finishWorkAsiaJakarta = $transaction->finish_work->setTimezone('Asia/Jakarta');
+                $minutes = $startWorkAsiaJakarta->diffInMinutes($finishWorkAsiaJakarta);
                 return $minutes / 60; // Return hours as a float
             }
             return 0; // Return 0 if timestamps are missing
@@ -134,42 +135,39 @@ class MonthlyReportController extends Controller
         $chartJobsCompletedData = [];
 
         // Inisialisasi tanggal awal loop
-        $currentDateLoop = $parsedSelectedMonth->copy()->startOfMonth();
+        $currentDateLoop = $parsedSelectedMonth->copy()->startOfMonth(); // Already Asia/Jakarta
         // Inisialisasi tanggal akhir loop
-        $endDateLoop = $parsedSelectedMonth->copy()->endOfMonth();
+        $endDateLoop = $parsedSelectedMonth->copy()->endOfMonth(); // Already Asia/Jakarta
         // Jika bulan yang dipilih adalah bulan saat ini
         if ($parsedSelectedMonth->format('Y-m') === $now->format('Y-m')) {
-            // Maka tanggal akhir loop adalah tanggal hari ini
+            // Maka tanggal akhir loop adalah tanggal hari ini (in Asia/Jakarta)
             $endDateLoop = $now->copy();
         }
 
-        // Loop dari awal bulan yang dipilih hingga endDateLoop
-        // dd($currentDateLoop, $endDateLoop);
+        // Loop from the start of the selected month until endDateLoop
         while ($currentDateLoop->lte($endDateLoop)) {
 
-            $dayLabel = $currentDateLoop->format('d M'); // e.g., "01 Jul", "15 Jul"
+            $dayLabel = $currentDateLoop->format('d M'); // e.g., "01 Jul", "15 Jul" (already UTC+7)
             $chartLabels[] = $dayLabel;
 
-            // Filter transaksi untuk hari ini
+            // Filter transactions for today (compare finish_work in UTC+7)
             $transactionsForDay = $completedTransactions->filter(function ($transaction) use ($currentDateLoop) {
-                // Pastikan 'finish_work' adalah instance Carbon untuk menggunakan isSameDay
-                return $transaction->updated_at instanceof Carbon && $transaction->updated_at->isSameDay($currentDateLoop);
+                // Convert transaction's finish_work to Asia/Jakarta for comparison
+                return $transaction->finish_work instanceof Carbon && $transaction->finish_work->setTimezone('Asia/Jakarta')->isSameDay($currentDateLoop);
             });
 
-            // Hitung pendapatan untuk hari ini
+            // Calculate earnings for today
             $dailyEarnings = $transactionsForDay->sum(function ($transaction) {
                 return $transaction->request ? $transaction->request->price : 0;
             });
             $chartEarningsData[] = $dailyEarnings;
 
-            // Hitung pekerjaan yang selesai untuk hari ini
+            // Calculate completed jobs for today
             $dailyJobsCompleted = $transactionsForDay->count();
             $chartJobsCompletedData[] = $dailyJobsCompleted;
 
-            $currentDateLoop->addDay(); // Lanjut ke hari berikutnya
+            $currentDateLoop->addDay(); // Move to the next day
         }
-
-        // dd($chartLabels, $chartEarningsData, $chartJobsCompletedData); // Untuk debugging
 
         // --- Prepare data for the view ---
         $data = [
@@ -197,10 +195,10 @@ class MonthlyReportController extends Controller
 
     public function downloadReportPdf(Request $request)
     {
-        // Untuk konsistensi, kita perlu mengambil data yang sama seperti di metode index
-        // agar laporan PDF memiliki data yang akurat untuk periode yang dipilih.
+        // For consistency, we need to retrieve the same data as in the index method
+        // so that the PDF report has accurate data for the selected period.
 
-        // 1. Dapatkan informasi Worker (sama seperti di index)
+        // 1. Get Worker Information (same as in index)
         $workerId = Auth::id();
         // $workerId = 33; // For testing
         $worker = User::find($workerId);
@@ -209,16 +207,16 @@ class MonthlyReportController extends Controller
             return redirect()->back()->with('custom_error_alert', 'Worker profile not found. Please log in.');
         }
 
-        // 2. Tentukan Periode Laporan (sama seperti di index)
-        $now = Carbon::now();
+        // 2. Determine Report Period (same as in index)
+        $now = Carbon::now('Asia/Jakarta'); // Current time in UTC+7
         $selectedMonthValue = $request->input('report_month', $now->format('Y-m'));
-        $parsedSelectedMonth = Carbon::createFromFormat('Y-m', $selectedMonthValue)->startOfMonth();
+        $parsedSelectedMonth = Carbon::createFromFormat('Y-m', $selectedMonthValue, 'Asia/Jakarta')->startOfMonth(); // Ensure start of month in Asia/Jakarta
         $reportPeriod = $parsedSelectedMonth->translatedFormat('F Y');
 
-        $startOfMonth = $parsedSelectedMonth->copy()->startOfMonth();
-        $endOfMonth = $parsedSelectedMonth->copy()->endOfMonth();
+        $startOfMonth = $parsedSelectedMonth->copy()->startOfMonth()->setTimezone('UTC'); // Convert to UTC for DB query
+        $endOfMonth = $parsedSelectedMonth->copy()->endOfMonth()->setTimezone('UTC');   // Convert to UTC for DB query
 
-        // 3. Fetch Data Laporan (sama seperti di index)
+        // 3. Fetch Report Data (same as in index)
         $completedTransactions = Transaction::where('worker_id', $worker->id)
             ->whereBetween('finish_work', [$startOfMonth, $endOfMonth])
             ->where('status', 'completed')
@@ -246,7 +244,7 @@ class MonthlyReportController extends Controller
             ->with('reviewer')
             ->latest()
             ->get();
-        // Siapkan data untuk view PDF
+        // Prepare data for PDF view
         $data = [
             'worker' => $worker,
             'reportPeriod' => $reportPeriod,
@@ -257,15 +255,15 @@ class MonthlyReportController extends Controller
             'clientReviews' => $clientReviews,
         ];
 
-        // Muat view Blade ke Dompdf dan buat PDF
+        // Load Blade view into Dompdf and generate PDF
         $pdf = Pdf::loadView('job-taker.pdf.report-pdf', $data);
         activity()
             ->inLog('Document')
             ->on($worker)
             ->causedBy($worker)
-            ->log("Pekerja {$worker->first_name} telah mengunduh laporan bulanan untuk periode {$reportPeriod}.");
+            ->log("Pekerja {$worker->first_name} telah mengunduh laporan bulanan untuk periode {$reportPeriod} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
 
-        // Unduh PDF dengan nama file yang sesuai
+        // Download PDF with appropriate filename
         return $pdf->download('laporan-bulanan-' . $worker->name . '-' . $parsedSelectedMonth->format('Y-m') . '.pdf');
     }
 

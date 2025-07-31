@@ -68,9 +68,11 @@ class RegisteredUserController extends Controller
         $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         // Store OTP in cache with expiry
+        // OTP valid for 5 minutes, stored as UTC implicitly.
         Cache::put($otpKey, $otp, now()->addMinutes(self::OTP_LIFETIME_MINUTES));
 
         // Store cooldown key
+        // Cooldown for 60 seconds, stored as UTC implicitly.
         Cache::put($cooldownKey, true, now()->addSeconds(self::OTP_COOLDOWN_SECONDS));
 
         // Send OTP email

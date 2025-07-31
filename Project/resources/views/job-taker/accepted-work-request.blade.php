@@ -485,7 +485,7 @@
 
                     <hr class="mx-auto mb-3" style="width: 50px; height: 4px; background-color: #D3FA0D; border: none;">
 
-                    <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+                    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                         <div class="row mb-3">
                             <div class="col-md-6 col-lg-3">
                                 <p class="text-black-50 fw-semibold mb-0">
@@ -532,13 +532,13 @@
                         </div>
 
                         {{-- Total price display in report modal --}}
-                        <div class="d-flex justify-content-between mb-4">
+                        <div class="d-flex justify-content-between mb-3">
                             <p class="text-black-50 fw-semibold mb-0">Total</p>
                             <p class="fw-medium fs-5 mb-0">Rp <span id="reportModalRequestPrice"></span></p>
                         </div>
 
                         {{-- Image upload section for report proof --}}
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label fw-semibold">{{ __('accepted.modal_laporan.upload_bukti') }}</label>
                             <div class="d-flex flex-wrap gap-3 align-items-start" id="reportImagePreviewContainer">
                                 {{-- Images will be appended here dynamically by JS --}}
@@ -555,20 +555,21 @@
                         </div>
 
                         {{-- Textarea for reporting reasons --}}
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="reportNote"
                                 class="form-label fw-semibold">{{ __('accepted.modal_laporan.keluh_kesah') }}</label>
                             <textarea name="reasons" id="reportNote" class="form-control rounded-4" rows="4"
                                 placeholder="{{ __('accepted.modal_laporan.placeholder_keluh_kesah') }}"
                                 style="background-color: #f7f7ff; resize: none;"></textarea>
                         </div>
+
+                        {{-- Report submission button --}}
+                        <div class="modal-footer border-0 d-flex justify-content-end p-0 m-0">
+                            <button type="button" id="submitReportButton"
+                                class="btn btn-danger px-4 py-2">{{ __('accepted.modal_laporan.tombol_kirim') }}</button>
+                        </div>
                     </div>
 
-                    {{-- Report submission button --}}
-                    <div class="modal-footer border-0 d-flex justify-content-end">
-                        <button type="button" id="submitReportButton"
-                            class="btn btn-danger px-4 py-2">{{ __('accepted.modal_laporan.tombol_kirim') }}</button>
-                    </div>
                 </div>
             </form>
         </div>

@@ -70,6 +70,10 @@ class WorkerRegistrationController extends Controller
                 'message' => 'Internal server error. Check server logs for details. ' . $e->getMessage()
             ], 500);
         }
+        return response()->json([
+            'success' => true,
+            'error' => 'Failed to process KTP image. Please try again or ensure the image is clear.',
+        ], 500);
     }
 
     /**
@@ -158,7 +162,7 @@ class WorkerRegistrationController extends Controller
                         if ($parsedDate) {
                             $data['birthdate'] = $parsedDate->format('Y-m-d');
                             // You can also capture birthplace here if needed, e.g., $data['birthplace'] = ucwords($birthplaceCandidate);
-                            Log::debug("Parsed Birthdate: " . $data['birthdate'] . ( $birthplaceCandidate ? ", Birthplace: " . $birthplaceCandidate : "" ));
+                            Log::debug("Parsed Birthdate: " . $data['birthdate'] . ($birthplaceCandidate ? ", Birthplace: " . $birthplaceCandidate : ""));
                             continue;
                         }
                     } catch (\Exception $e) {
@@ -206,9 +210,9 @@ class WorkerRegistrationController extends Controller
                 Log::debug("Parsed Kel/Desa: " . $tempAddressParts['kel_desa']);
                 continue;
             } elseif (preg_match('/\b(kelurahan|desa)\s+([a-z\s\.]+)/i', $lowerLine, $matches)) { // Fallback
-                 $tempAddressParts['kel_desa'] = ucwords(trim($matches[2], '.:- '));
-                 Log::debug("Parsed Kel/Desa (fallback): " . $tempAddressParts['kel_desa']);
-                 continue;
+                $tempAddressParts['kel_desa'] = ucwords(trim($matches[2], '.:- '));
+                Log::debug("Parsed Kel/Desa (fallback): " . $tempAddressParts['kel_desa']);
+                continue;
             }
 
             // Kecamatan
@@ -271,8 +275,8 @@ class WorkerRegistrationController extends Controller
 
         // If 'address' is still empty, and 'KOTA ANDA' is in the raw text, assign it.
         if (empty($data['address']) && preg_match('/\b(kota\s+anda)\b/i', $lowerCleanedText)) {
-             $data['address'] = 'Kota Anda';
-             Log::debug("Fallback Address to 'Kota Anda': " . $data['address']);
+            $data['address'] = 'Kota Anda';
+            Log::debug("Fallback Address to 'Kota Anda': " . $data['address']);
         }
 
 
@@ -304,6 +308,9 @@ class WorkerRegistrationController extends Controller
 
     public function store1(Request $request)
     {
+        // Get the current time in UTC+7 for the validation rule
+        $currentTimeUtcPlus7 = Carbon::now('Asia/Jakarta'); // 'Asia/Jakarta' is UTC+7
+
         $this->validate($request, [
             'first_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/',
             'last_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/',
@@ -315,7 +322,8 @@ class WorkerRegistrationController extends Controller
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
-            'birthdate' => 'required|date|before_or_equal:' . now()->subYears(17)->format('Y-m-d'),
+            // Use the Carbon instance for the 'before_or_equal' rule
+            'birthdate' => 'required|date|before_or_equal:' . $currentTimeUtcPlus7->subYears(17)->format('Y-m-d'),
             'gender' => 'required|in:Male,Female',
             'address' => 'required|string|max:255',
             'phone_number' => [
@@ -416,20 +424,24 @@ class WorkerRegistrationController extends Controller
 
     public function finalizeRegistration(Request $request)
     {
+        // Check if previous registration steps are completed
         if (!Session::has('worker_registration.step1') || !Session::has('worker_registration.step2')) {
             return redirect()->route('worker.register.step1')->with('custom_error_alert', __('alerts.lengkapi_langkah_sebelumnya'));
         }
 
+        // Retrieve data from previous session steps
         $step1Data = Session::get('worker_registration.step1');
         $ocrData = Session::get('worker_registration.ocr_data', []);
 
+        // Validate the incoming request data, including image uploads and account details
         $this->validate($request, [
-            'photo_url' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'selfie_with_id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'account_name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:10',
+            'photo_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Personal photo
+            'id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', // ID card photo
+            'selfie_with_id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Selfie with ID card photo
+            'account_name' => 'required|string|max:255', // Bank account holder name
+            'account_number' => 'required|string|max:10', // Bank account number
         ], [
+            // Custom validation messages for better user experience
             'photo_url.required' => 'Foto Diri wajib diunggah.',
             'photo_url.image' => 'File harus berupa gambar.',
             'photo_url.mimes' => 'Format file Foto Diri harus JPEG, PNG, atau JPG.',
@@ -455,27 +467,33 @@ class WorkerRegistrationController extends Controller
         ]);
 
         $userId = Auth::id();
-        $storagePath = 'public/worker_verification_documents';
-        $selfiePhotoPath = $this->storeFile($request, 'photo_url', $storagePath, $userId);
-        $idCardPhotoPath = $this->storeFile($request, 'id_card_url', $storagePath, $userId);
-        $selfieWithIdCardPhotoPath = $this->storeFile($request, 'selfie_with_id_card_url', $storagePath, $userId);
+        // Define the storage path within the 'public' disk
+        $storagePath = 'worker_verification_documents/' . $userId; // Organize by user ID for clarity
+
+        // Store each file and get its **relative path**
+        // The store method automatically generates a unique filename
+        $selfiePhotoPath = $request->file('photo_url')->store($storagePath, 'public');
+        $idCardPhotoPath = $request->file('id_card_url')->store($storagePath, 'public');
+        $selfieWithIdCardPhotoPath = $request->file('selfie_with_id_card_url')->store($storagePath, 'public');
 
         try {
+            // Use a database transaction to ensure atomicity of operations
             DB::transaction(function () use (
                 $userId,
                 $step1Data,
                 $ocrData,
-                $selfiePhotoPath,
+                $selfiePhotoPath, // Use the relative paths here
                 $idCardPhotoPath,
                 $selfieWithIdCardPhotoPath,
                 $request
             ) {
+                // Attempt to find an existing verification request for the user
                 $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
 
-                // Prepare verification data from user input
+                // Prepare verification data from user input and uploaded file paths
                 $verificationData = [
                     'user_id' => $userId,
-                    'status' => 'pending',
+                    'status' => 'pending', // Set initial status to pending
                     'first_name' => $step1Data['first_name'],
                     'last_name' => $step1Data['last_name'],
                     'nik' => $step1Data['nik'],
@@ -483,14 +501,14 @@ class WorkerRegistrationController extends Controller
                     'gender' => $step1Data['gender'],
                     'address' => $step1Data['address'],
                     'phone_number' => $step1Data['phone_number'],
-                    'photo_url' => Storage::url($selfiePhotoPath),
-                    'id_card_url' => Storage::url($idCardPhotoPath),
-                    'selfie_with_id_card_url' => Storage::url($selfieWithIdCardPhotoPath),
+                    'photo_url' => $selfiePhotoPath, // Assign the relative paths
+                    'id_card_url' => $idCardPhotoPath,
+                    'selfie_with_id_card_url' => $selfieWithIdCardPhotoPath,
                     'account_name' => $request->input('account_name'),
                     'account_number' => $request->input('account_number'),
                 ];
 
-                // Add OCR data
+                // Add OCR data if available from the session
                 $verificationData['ocr_nik'] = $ocrData['nik'] ?? null;
                 $verificationData['ocr_full_name'] = $ocrData['full_name'] ?? null;
                 $verificationData['ocr_birthdate'] = $ocrData['birthdate'] ?? null;
@@ -498,7 +516,7 @@ class WorkerRegistrationController extends Controller
                 $verificationData['ocr_address'] = $ocrData['address'] ?? null;
                 $verificationData['ocr_raw_output'] = $ocrData['raw_ocr_output'] ?? null;
 
-
+                // Update existing request or create a new one
                 if ($verificationRequest) {
                     $verificationRequest->update($verificationData);
                 } else {
@@ -506,14 +524,16 @@ class WorkerRegistrationController extends Controller
                 }
             });
 
+            // Clear session data after successful registration finalization
             Session::forget('worker_registration');
+            // Redirect to success page with a custom alert message
             return redirect()->route('worker.register.success')->with('custom_blue_alert', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
         } catch (\Exception $e) {
+            // Log any errors that occur during the process
             Log::error("Error finalizing worker registration for user " . Auth::id() . ": " . $e->getMessage(), ['exception' => $e]);
+            // Redirect back with an error message
             return back()->with('custom_error_alert', 'Terjadi kesalahan saat finalisasi pendaftaran: ' . $e->getMessage());
         }
-        Session::forget('worker_registration');
-        return redirect()->route('worker.register.success')->with('custom_blue_alert', __('alerts.pendaftaran_berhasil_disubmit'));
     }
 
     public function showSuccessPage()
