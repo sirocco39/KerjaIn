@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/monthly.css') }}">
     <style>
         .dropdown-profile-custom {
             min-width: 250px;
@@ -255,7 +256,7 @@
 
                     <li class="nav-item dropdown" id="dropProfile">
                         <a class="nav-link" id="dropdownProfile" data-bs-toggle="dropdown" role="button">
-                            <img src="{{ asset($user->photo_url_worker) }}" alt="Profil" id="profileIcon"
+                            <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil" id="profileIcon"
                                 onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                             <span class="d-lg-none">{{ __('master-job-req.profil') }}-</span>
@@ -266,14 +267,15 @@
 
                                 <li>
                                     <div class="dropdown-item d-flex align-items-center gap-2 text-muted">
-                                        <img src="{{ asset($user->photo_url_worker) }}" alt="Profil"
+                                        <img src="{{ Storage::url($user->photo_url_worker) }}" alt="Profil"
                                             id="profileIcon"
                                             onerror="this.onerror=null;this.src='{{ asset('Image/Icon/user-circle.svg') }}';"
                                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
                                         <div>
                                             <div class="fw-bold" style="font-size: 16px;">
                                                 {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</div>
-                                            <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pekerja')}}</div>
+                                            <div style="font-size: 13px; color: gray;">
+                                                {{ __('master-job-taker.peran_pekerja') }}</div>
                                         </div>
                                     </div>
 
@@ -525,6 +527,10 @@
             window.showCustomAlert = showCustomAlert;
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

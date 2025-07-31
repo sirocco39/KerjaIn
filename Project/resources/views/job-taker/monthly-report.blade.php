@@ -29,7 +29,6 @@
             align-self: flex-start;
             margin-top: 20px;
             margin-left: 20px;
-            top: 20px;
             right: 20px;
             padding: 12px;
             z-index: 3;
@@ -332,52 +331,50 @@
         @endpush
 
         <div class="col-md-6 mt-3" style="padding-right: 5%">
-            <div class="col-md-6 mt-3" style="padding-right: 5%">
-                <div class="card-custom h-100" style="max-height: 400px; overflow-y: auto;">
-                    <h5 class="p-3">{{ __('monthly-report.reviews_card_title') }}</h5>
-                    <div class="reviews-container px-3 pb-3">
-                        @if ($clientReviews->isEmpty())
-                            <p class="text-gray-600">{{ __('monthly-report.no_reviews_this_month') }}</p>
-                        @else
-                            @foreach ($clientReviews as $review)
-                                <div class="review-item d-flex align-items-start mb-3">
-                                    <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="Profile"
-                                        class="rounded-circle" style="width: 60px; height: 60px; margin-right: 10px;">
-                                    <div>
-                                        <strong>{{ $review->reviewer->first_name . ' ' . $review->reviewer->last_name ?? __('monthly-report.anonymous_client') }}</strong><br>
-                                        <small>{{ __('monthly-report.client_role') }}</small><br>
-                                        {{ str_repeat('тнР', $review->rating) }}
-                                        <p class="review-text">"{{ $review->comment }}"</p>
-                                    </div>
+            <div class="card-custom h-100" style="max-height: 400px; overflow-y: auto;">
+                <h5 class="p-3">{{ __('monthly-report.reviews_card_title') }}</h5>
+                <div class="reviews-container px-3 pb-3">
+                    @if ($clientReviews->isEmpty())
+                        <p class="text-gray-600">{{ __('monthly-report.no_reviews_this_month') }}</p>
+                    @else
+                        @foreach ($clientReviews as $review)
+                            <div class="review-item d-flex align-items-start mb-3">
+                                <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="Profile"
+                                    class="rounded-circle" style="width: 60px; height: 60px; margin-right: 10px;">
+                                <div>
+                                    <strong>{{ $review->reviewer->first_name . ' ' . $review->reviewer->last_name ?? __('monthly-report.anonymous_client') }}</strong><br>
+                                    <small>{{ __('monthly-report.client_role') }}</small><br>
+                                    {{ str_repeat('тнР', $review->rating) }}
+                                    <p class="review-text">"{{ $review->comment }}"</p>
                                 </div>
-                            @endforeach
-                        @endif
-                    </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="card-custom" style="margin-left: 60px; margin-right: 60px">
-            <h5>{{ __('monthly-report.monthly_report_card_title') }}</h5>
+    <div class="card-custom" style="margin-left: 60px; margin-right: 60px">
+        <h5>{{ __('monthly-report.monthly_report_card_title') }}</h5>
 
-            <div class="content" style="text-align:center;">
-                <p>{{ __('monthly-report.download_report_text') }}</p>
-                <i class="fas fa-download download-icon"></i><br>
-                <a href="{{ route('monthly.report.download.pdf', ['report_month' => app('request')->input('report_month', \Carbon\Carbon::now()->format('Y-m'))]) }}"
-                    class="">
-                    <button type="button"
-                        class="btn btn-primary btn-sm">{{ __('monthly-report.download_button') }}</button>
-                </a>
-            </div>
+        <div class="content" style="text-align:center;">
+            <p>{{ __('monthly-report.download_report_text') }}</p>
+            <i class="fas fa-download download-icon"></i><br>
+            <a href="{{ route('monthly.report.download.pdf', ['report_month' => app('request')->input('report_month', \Carbon\Carbon::now()->format('Y-m'))]) }}"
+                class="">
+                <button type="button" class="btn btn-primary btn-sm">{{ __('monthly-report.download_button') }}</button>
+            </a>
         </div>
+    </div>
 
-        <script>
-            document.getElementById('reportMonth').addEventListener('change', function() {
-                document.getElementById('hiddenReportMonth').value = this.value;
-                document.getElementById('reportForm').submit();
-            });
-        </script>
+    <script>
+        document.getElementById('reportMonth').addEventListener('change', function() {
+            document.getElementById('hiddenReportMonth').value = this.value;
+            document.getElementById('reportForm').submit();
+        });
+    </script>
 
 
 
-    @endsection
+@endsection
