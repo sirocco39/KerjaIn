@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'judul_halaman_edit' => 'Edit Job Offer',
+    'deskripsi_halaman_edit' => 'Update the job details to ensure our partners can assist you effectively.',
+
     'judul_halaman' => 'Create a Job Offer',
     'deskripsi_halaman' => "Let's get started! Fill in the job details so our partners can help you right away.",
 

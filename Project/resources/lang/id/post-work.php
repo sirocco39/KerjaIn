@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'judul_halaman_edit' => 'Edit Tawaran Kerja',
+    'deskripsi_halaman_edit' => 'Perbarui detail pekerjaan agar mitra kami dapat membantumu dengan efektif.',
+
     'judul_halaman' => 'Buat tawaran kerja',
     'deskripsi_halaman' => 'Yuk, mulai! Isi detail pekerjaan agar mitra kami bisa segera membantumu.',
 

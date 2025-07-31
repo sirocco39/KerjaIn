@@ -1,7 +1,13 @@
 <?php
 
 return [
-     'job_accepted_success_chat_redirect' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
+    'upload_minimal_satu_foto' => 'Silakan upload minimal satu foto bukti laporan.',
+    'isi_keluh_kesah' => 'Silakan isi keluh kesah Anda terlebih dahulu.',
+
+    'pilih_rating' => 'Silakan pilih rating',
+    'tulis_komentar' => 'Silakan tulis komentar',
+
+    'job_accepted_success_chat_redirect' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
     'job_marked_completed_success' => 'Pekerjaan berhasil ditandai selesai!',
     // Auth & Pendaftaran
     'login_berhasil' => 'Login berhasil! Selamat datang, :nama!',
@@ -66,7 +72,7 @@ return [
     'admin_user_unblocked_success' => 'Pengguna berhasil dibuka blokirnya.',
     'error_loading_job_details' => 'Terjadi kesalahan saat memuat detail pekerjaan. Silakan coba lagi.',
 
-        'not_authorized_to_view' => 'Anda tidak berwenang melihat halaman ini.',
+    'not_authorized_to_view' => 'Anda tidak berwenang melihat halaman ini.',
     'not_authorized_to_start_job' => 'Anda tidak berwenang untuk memulai pekerjaan ini.',
     'job_not_in_accepted_status' => 'Pekerjaan tidak dalam status "Diterima" dan tidak dapat dimulai.',
     'job_started' => 'Pekerjaan dimulai.',

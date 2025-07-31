@@ -30,7 +30,7 @@
                                 <div onclick="document.getElementById('profileImageInput').click();"
                                     style="cursor: pointer; width: 300px; height: 300px; margin: 0 auto; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center;">
                                     <img id="profileImagePreview" class="img-fluid"
-                                        src="{{ auth()->user()->photo_url_user ? asset(auth()->user()->photo_url_user) : asset('dist/img/user4-128x128.jpg') }}"
+                                        src="{{ auth()->user()->photo_url_user ? asset(auth()->user()->photo_url_user) : asset('Image/Icon/placeholder_user.png') }}"
                                         alt="User profile picture"
                                         style="max-width: 100%; max-height: 100%; object-fit: cover;">
                                 </div>

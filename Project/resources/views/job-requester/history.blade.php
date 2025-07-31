@@ -353,8 +353,8 @@
                         </div>
 
                         <div class="modal-footer border-0 d-flex justify-content-end m-0 p-0">
-                            <button type="button" id="submitReportButton" class="btn btn-danger px-4">Kirim
-                                Laporan</button>
+                            <button type="button" id="submitReportButton"
+                                class="btn btn-danger px-4">{{ __('history-job-req.tombol_kirim_laporan') }}</button>
                         </div>
                     </div>
 
@@ -553,18 +553,19 @@
 
 
         // --- Function to Submit Review ---
-        function submitReview() {
+        function submitReview(event) { // <-- 1. Tambahkan 'event' sebagai parameter
+            event.preventDefault();
             const comment = document.getElementById('comment').value.trim();
             const rating = document.getElementById('rating-input').value;
 
             // Client-side validation for rating and comment
             if (rating == 0) {
-                window.showCustomAlert('Silakan pilih rating terlebih dahulu.', 'error');
+                window.showCustomAlert("{{ __('alerts.pilih_rating') }}", 'error');
                 return;
             }
 
             if (comment == '') {
-                window.showCustomAlert('Silakan isi komentar.', 'error');
+                window.showCustomAlert("{{ __('alerts.tulis_komentar') }}", 'error');
                 return;
             }
 
@@ -652,11 +653,11 @@
             const reasons = document.getElementById('reportNote').value.trim();
 
             if (reportFiles.length === 0) {
-                window.showCustomAlert("Silakan upload minimal satu foto bukti laporan.", 'error');
+                window.showCustomAlert("{{ __('alerts.upload_minimal_satu_foto') }}", 'error');
                 return;
             }
             if (!reasons) {
-                window.showCustomAlert('Harap isi keluh kesah Anda terlebih dahulu.', 'error');
+                window.showCustomAlert("{{ __('alerts.isi_keluh_kesah') }}", 'error');
                 return;
             }
 
@@ -950,7 +951,9 @@
 
             // Attach submitReview to its button
             if (submitReviewButton) {
-                submitReviewButton.addEventListener('click', submitReview);
+                submitReviewButton.addEventListener('click', function(event) { // Bungkus dalam fungsi anonim
+                    submitReview(event); // Kirim 'event' ke fungsi utama Anda
+                });
             }
 
 

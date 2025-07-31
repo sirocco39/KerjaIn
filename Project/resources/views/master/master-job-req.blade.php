@@ -23,20 +23,6 @@
     <link rel="stylesheet" href="{{ asset('css/landingInfo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <link rel="stylesheet" href="{{ asset('css/rating.css') }}">
-
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
-    <!-- Optional: Google Font -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
-    <!-- AdminLTE v3 Assets via CDN -->
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"> --}}
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
     <style>
         .dropdown-profile-custom {
             min-width: 250px;
@@ -199,7 +185,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 
-
+@php
+    $user = Auth::id(); // Ambil user yang sedang login
+    $user = \App\Models\User::find($user);
+@endphp
 <body>
     {{-- Elemen Audio untuk Soundtrack Logo --}}
     <audio id="logoSoundtrack" loop preload="auto" style="display: none;">
@@ -342,7 +331,7 @@
                                         />
                                         <div>
                                             <div class="fw-bold text-dark" style="font-size: 16px;">{{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}</div>
-                                            <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pelanggan')}}</div>
+                                            <div style="font-size: 13px; color: gray;">{{ __('master-job-taker.peran_pelanggan') }}</div>
                                         </div>
                                     </a>
                              
@@ -509,7 +498,7 @@
             </div>
 
             <div class="col-6 col-md-auto col-lg-auto foot-content-detail" id="foot-5">
-                <h4>{{ __('master-job-req.hubungi_kami')}}</h4>
+                <h4>{{ __('master-job-req.hubungi_kami') }}</h4>
                 <p class="m-0 p-0" id="foot-email">kerjain@gmail.com</p>
                 <div class="d-flex flex-row" id="list-foot-icon">
                     <img src="{{ asset('Image/Icon/icon-instagram.png') }}" alt="Logo Instagram" class="foot-icon">
@@ -609,7 +598,8 @@
                             </div>
 
                             <div class="mb-3 position-relative" style="max-height: 75px; height: 100%;">
-                                <label for="email-register" class="form-label">{{ __('master-job-req.email') }}</label>
+                                <label for="email-register"
+                                    class="form-label">{{ __('master-job-req.email') }}</label>
                                 <input id="email-register" class="form-control" type="email" name="email"
                                     autocomplete="new-email" required>
                                 <div id="email-error" class="popup-error-card d-none"></div>
@@ -788,15 +778,18 @@
             const passwordRules = {
                 minLength: {
                     test: (val) => val.length >= 8,
-                    message: window.i18n.validation.password_min_length || 'Password must be at least 8 characters long.'
+                    message: window.i18n.validation.password_min_length ||
+                        'Password must be at least 8 characters long.'
                 },
                 oneUppercase: {
                     test: (val) => /[A-Z]/.test(val),
-                    message: window.i18n.validation.password_one_uppercase || 'Password must contain at least one uppercase letter.'
+                    message: window.i18n.validation.password_one_uppercase ||
+                        'Password must contain at least one uppercase letter.'
                 },
                 oneLowercase: {
                     test: (val) => /[a-z]/.test(val),
-                    message: window.i18n.validation.password_one_lowercase || 'Password must contain at least one lowercase letter.'
+                    message: window.i18n.validation.password_one_lowercase ||
+                        'Password must contain at least one lowercase letter.'
                 },
                 oneNumber: {
                     test: (val) => /[0-9]/.test(val),
@@ -822,10 +815,10 @@
 
         function validateConfirmPassword(value) {
             const errors = [];
-                // Ganti 'passwordInputId' dengan ID aktual dari input password Anda di HTML.
-                // Jika input password tidak memiliki ID, Anda harus mendapatkannya dengan cara lain (mis. class atau name)
-                const passwordInput = document.getElementById('passwordInputId'); // PENTING: Ganti ini!
-                const originalPassword = passwordInput ? passwordInput.value : ''; // Pastikan elemen ditemukan
+            // Ganti 'passwordInputId' dengan ID aktual dari input password Anda di HTML.
+            // Jika input password tidak memiliki ID, Anda harus mendapatkannya dengan cara lain (mis. class atau name)
+            const passwordInput = document.getElementById('password'); // PENTING: Ganti ini!
+            const originalPassword = passwordInput ? passwordInput.value : ''; // Pastikan elemen ditemukan
             if (value === '') {
                 errors.push(window.i18n.validation.confirm_password_required || 'Confirm password is required.');
             } else if (value !== originalPassword) {
@@ -1254,19 +1247,7 @@
                 });
             }
         });
-        // --- AKHIR SCRIPT UNTUK MEMUTAR/MENGHENTIKAN LAGU LOGO ---
-
-        <
-        !--jQuery-- >
-        <
-        script src = "../../plugins/jquery/jquery.min.js" >
     </script>
-    <!-- Bootstrap 4 -->
-    <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
-    <!-- AdminLTE for demo purposes -->
-    <script src="../../dist/js/demo.js"></script>
-
     </body>
 
 </html>

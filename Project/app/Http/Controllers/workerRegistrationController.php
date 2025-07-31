@@ -283,7 +283,7 @@ class WorkerRegistrationController extends Controller
                 $value = preg_replace('/\s+\W*\s*$/u', '', $value); // Remove trailing non-alphanumeric junk
                 return trim($value, '.:- /\\'); // Trim common punctuation from ends
             }
-            return $value === null ? "" : $value; // Convert null to empty string
+            return $value;
         }, $data);
 
         return $data;

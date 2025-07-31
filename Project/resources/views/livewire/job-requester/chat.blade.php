@@ -7,8 +7,6 @@
         }
 
         .chat-avatar {
-            width: 45px;
-            height: 45px;
             border-radius: 50%;
             background-color: #e9ecef;
             /* Placeholder color */
@@ -400,7 +398,7 @@
                                 <h6 class="text-muted small fw-normal mb-2">
                                     {{ __('chat-job-req.modal_jumlah_tawaran') }}
                                 </h6>
-                                <h2 class="fw-bolder text-success mb-3 display-4"> {{-- display-4 untuk ukuran teks lebih besar --}}
+                                <h2 class="fw-bolder text-primary mb-3 display-4"> {{-- display-4 untuk ukuran teks lebih besar --}}
                                     Rp{{ number_format($activeOffer->amount ?? 0, 0, ',', '.') }}
                                 </h2>
                                 <h6 class="text-muted small fw-normal mb-1">{{ __('chat-job-req.modal_dari_pekerja') }}

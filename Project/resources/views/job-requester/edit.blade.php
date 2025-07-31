@@ -4,8 +4,8 @@
     <div class="container-fluid pembatas-x pembatas-y">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h2 class="fw-bold mb-2">{{ __('post-work.judul_halaman') }}</h2>
-                <p class="mb-4">{{ __('post-work.deskripsi_halaman') }}</p>
+                <h2 class="fw-bold mb-2">{{ __('post-work.judul_halaman_edit') }}</h2>
+                <p class="mb-4">{{ __('post-work.deskripsi_halaman_edit') }}</p>
 
                 <form action="{{ route('request.update', $workRequest->slug) }}" method="POST" id="edit-work-form">
                     @csrf
