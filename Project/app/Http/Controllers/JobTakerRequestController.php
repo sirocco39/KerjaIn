@@ -12,12 +12,12 @@ class JobTakerRequestController extends Controller
 {
     public function acceptRequest($id)
     {
-        // 1. Ambil data request
+        
         $jobRequest = JobRequest::findOrFail($id);
-        // 2. Panggil static function dari model Request
-        $transaction = JobRequest::hireAndFinalize($jobRequest, Auth::user()); // Assuming Auth::user() returns the logged-in job taker
+        
+        $transaction = JobRequest::hireAndFinalize($jobRequest, Auth::user()); 
 
-        // 3. Periksa apakah transaction berhasil dibuat dan lakukan redirect
+        
         if ($transaction instanceof Transaction) {
             return response()->json([
                 'success'      => true,
@@ -25,8 +25,8 @@ class JobTakerRequestController extends Controller
                 'redirect_url' => route('job-taker.accepted-work-request', $transaction->id)
             ]);
         } else {
-            // Handle jika terjadi kesalahan saat membuat transaction
-            // Changed to custom alert
+            
+            
             return back()->with('custom_error_alert', __('alerts.terjadi_kesalahan'));
         }
     }

@@ -11,7 +11,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Review extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReviewFactory> */
+    
     use HasFactory, LogsActivity;
     protected $fillable = [
         'transaction_id',
@@ -28,17 +28,17 @@ class Review extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            // Kita hanya perlu tahu saat log dibuat, jadi tidak perlu logOnly
-            ->logOnly([]) // Kosongkan ini agar hanya event yang kita proses di tapActivity
+            
+            ->logOnly([]) 
             ->useLogName('Review');
     }
 
-    // 4. METHOD UNTUK DESKRIPSI KUSTOM
+    
     public function tapActivity(Activity $activity, string $eventName)
     {
-        // Kita hanya peduli saat ulasan dibuat
+        
         if ($eventName === 'created') {
-            // Ambil data dari relasi untuk deskripsi yang kaya
+            
             $reviewerName = $this->reviewer ? $this->reviewer->first_name : 'Pengguna';
             $revieweeName = $this->reviewee ? $this->reviewee->first_name : 'Pengguna';
             $transactionId = $this->transaction ? $this->transaction->order_number : 'N/A';

@@ -2,7 +2,7 @@
 <!-- this file name balance.blade.php -->
 @section('content')
 <div class="wallet-page-wrapper">
-    {{-- Header dengan background gradasi --}}
+    
     <div class="wallet-header">
         <div class="container-fluid pembatas-x">
             <h2 class="text-white fw-bold">{{ __('balances.wallet_and_balance') }}</h2>
@@ -11,7 +11,7 @@
 
     <div class="container-fluid pembatas-x wallet-content">
         <div class="row">
-            {{-- Kolom Kiri: Info Saldo & Aksi --}}
+            
             <div class="col-lg-4 mb-4">
                 <div class="card balance-card">
                     <div class="card-body">
@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            {{-- Kolom Kanan: Riwayat Transaksi --}}
+            
             <div class="col-lg-8">
                 <div class="card transaction-card">
                     <div class="card-body">
@@ -59,7 +59,7 @@
                                         @elseif(App::getLocale() == 'id' && isset($transaction->description_id))
                                         {{ $transaction->description_id }}
                                         @else
-                                        {{ $transaction->description }} {{-- Fallback jika bahasa tidak ditemukan atau kolom tidak ada --}}
+                                        {{ $transaction->description }} 
                                         @endif
                                     </p>
                                     <p class="text-muted small mb-0">
@@ -82,12 +82,12 @@
                             @endforelse
                         </div>
 
-                        {{-- Link Paginasi --}}
+                        
                         @if ($walletTransactions->hasPages())
                         <div class="pagination-wrapper d-flex justify-content-center mt-4">
                             <nav>
                                 <ul class="pagination">
-                                    {{-- Tombol Halaman Sebelumnya --}}
+                                    
                                     @if ($walletTransactions->onFirstPage())
                                     <li class="page-item disabled" aria-disabled="true">
                                         <span class="page-link">&lsaquo;</span>
@@ -99,7 +99,7 @@
                                     </li>
                                     @endif
 
-                                    {{-- Link Nomor Halaman --}}
+                                    
                                     @foreach ($walletTransactions->links()->elements[0] as $page => $url)
                                     @if ($page == $walletTransactions->currentPage())
                                     <li class="page-item active" aria-current="page"><span
@@ -110,7 +110,7 @@
                                     @endif
                                     @endforeach
 
-                                    {{-- Tombol Halaman Selanjutnya --}}
+                                    
                                     @if ($walletTransactions->hasMorePages())
                                     <li class="page-item">
                                         <a class="page-link" href="{{ $walletTransactions->nextPageUrl() }}"
@@ -133,7 +133,7 @@
 </div>
 
 <style>
-    /* Layout Utama */
+    
     .wallet-page-wrapper {
         padding-bottom: 2rem;
     }
@@ -147,7 +147,7 @@
         margin-top: -40px;
     }
 
-    /* Cards */
+    
     .card {
         border: none;
         border-radius: 12px;
@@ -166,7 +166,7 @@
         min-height: 400px;
     }
 
-    /* Daftar Transaksi */
+    
     .transaction-item {
         display: flex;
         align-items: center;
@@ -199,7 +199,7 @@
         color: #dc3545;
     }
 
-    /* Pagination Baru */
+    
     .pagination-wrapper .pagination {
         gap: 0.5rem;
     }
@@ -243,11 +243,11 @@
         }
 
         const startPolling = () => {
-            if (pollingInterval) return; // Jangan mulai polling jika sudah berjalan
+            if (pollingInterval) return; 
 
             let attempts = 0;
             pollingInterval = setInterval(() => {
-                // Hentikan setelah 5 kali coba (15 detik) untuk mencegah loop tak terbatas
+                
                 if (attempts >= 5) {
                     clearInterval(pollingInterval);
                     return;
@@ -257,8 +257,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'paid') {
-                            fetchLatestBalance(); // Ambil saldo terbaru dan update tampilan
-                            clearInterval(pollingInterval); // Hentikan polling
+                            fetchLatestBalance(); 
+                            clearInterval(pollingInterval); 
                         }
                     });
 
@@ -266,16 +266,16 @@
             }, 3000);
         };
 
-        // Jika ada order_id di URL, cek statusnya sekarang juga!
+        
         if (orderId) {
             fetch(`/topup/status/${orderId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'paid') {
-                        // Jika sudah lunas, langsung update saldo
+                        
                         fetchLatestBalance();
                     } else {
-                        // Jika belum, mulai polling untuk menunggu webhook
+                        
                         startPolling();
                     }
                 })

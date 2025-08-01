@@ -36,7 +36,7 @@ class ChatWork extends Component
         $this->selectedRoom = ChatRoom::with(['request', 'requester', 'worker'])->find($roomId);
         $this->loadActiveOffer();
 
-        // Dispatch the event to scroll to bottom after selecting a room
+        
         $this->dispatch('messageSent');
     }
 
@@ -70,8 +70,8 @@ class ChatWork extends Component
             'message'      => $this->newMessage,
         ]);
 
-        $this->reset('newMessage'); // Clears the input field
-        $this->dispatch('messageSent'); // Dispatches the event to trigger JS scroll
+        $this->reset('newMessage'); 
+        $this->dispatch('messageSent'); 
     }
 
     public function render()

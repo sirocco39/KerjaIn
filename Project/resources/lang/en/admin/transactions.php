@@ -20,7 +20,7 @@ return [
     'created_at' => 'Created At',
     'deleted' => 'Deleted',
     'no_requests_found' => 'No requests found.',
-    'n_a' => 'N/A', // Not Applicable
+    'n_a' => 'N/A', 
     'open' => 'Open',
     'closed' => 'Closed',
 ];

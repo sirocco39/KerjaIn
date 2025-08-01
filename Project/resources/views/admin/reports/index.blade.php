@@ -5,7 +5,7 @@
 <div class="container-fluid py-4">
     <h1 class="mb-4">{{ __('admin/reports.management_user_reports') }}</h1>
 
-    {{-- Success Message --}}
+    
     @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert" style="color:white">
         {{ session('success') }}
@@ -13,7 +13,7 @@
     </div>
     @endif
 
-    {{-- Info Message (from AdminUserController) --}}
+    
     @if (session('info'))
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         {{ session('info') }}
@@ -21,7 +21,7 @@
     </div>
     @endif
 
-    {{-- Tab Navigation --}}
+    
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ $currentStatus == 'Not Reviewed' ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => 'Not Reviewed']) }}" id="notReviewedTab">
@@ -77,13 +77,13 @@
                                 @endif
                             </td>
                             <td class="text-end">
-                                {{-- Ubah ini untuk mengarah ke halaman detail --}}
+                                
                                 <a href="{{ route('admin.reports.show', $report) }}" class="btn btn-sm btn-info me-2" id="lihat-detail">
                                     {{ __('admin/reports.detail') }}
                                 </a>
 
-                                {{-- Action Form for Mark as Reviewed/Not Reviewed (bisa dipindahkan ke halaman detail) --}}
-                                {{-- Jika Anda ingin tetap ada di sini, biarkan seperti ini --}}
+                                
+                                
                                 <form action="{{ route('admin.reports.update', $report) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('PATCH')
@@ -103,7 +103,7 @@
                 @endif
             </div>
 
-            {{-- Pagination Links --}}
+            
             <div class="mt-3">
                 {{ $reports->appends(request()->query())->links() }}
             </div>

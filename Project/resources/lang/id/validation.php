@@ -15,7 +15,7 @@ return [
         'datetime' => [
             'after_start_time' => 'Waktu selesai harus setelah waktu mulai.',
         ],
-        // Validasi unggahan file dari WorkerRegistrationController
+        
         'photo_url' => [
             'required' => 'Foto Diri wajib diunggah.',
             'image' => 'File harus berupa gambar.',
@@ -70,7 +70,7 @@ return [
         'workTitleLabel' => [
             'required' => 'Judul pekerjaan tidak boleh kosong.',
         ],
-        // ... validasi kustom lainnya yang mungkin sudah ada ...
+        
     ],
     'attributes' => [
         'workTitleLabel' => 'Judul Pekerjaan',
@@ -83,7 +83,7 @@ return [
         'workEndTimeLabel' => 'Waktu Selesai',
     ],
 
-    // ... (pesan validasi bawaan Laravel lainnya, biarkan saja)
+    
 
     /*
     |--------------------------------------------------------------------------

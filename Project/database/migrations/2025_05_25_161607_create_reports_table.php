@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('reporter_id')->constrained('users');
             $table->foreignId('reported_id')->constrained('users');
             $table->text('reasons');
-            $table->json('photo_url')->nullable(); // Changed from string to json
-            $table->enum('status', ['Reviewed', 'Not Reviewed', 'pending'])->default('pending'); // Added 'pending' status
+            $table->json('photo_url')->nullable(); 
+            $table->enum('status', ['Reviewed', 'Not Reviewed', 'pending'])->default('pending'); 
             $table->timestamps();
         });
     }

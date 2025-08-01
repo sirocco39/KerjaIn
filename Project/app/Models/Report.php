@@ -11,7 +11,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Report extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReportFactory> */
+    
     use HasFactory, LogsActivity;
     protected $fillable = [
         'transaction_id',
@@ -28,17 +28,17 @@ class Report extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            // Kita hanya perlu memantau perubahan pada kolom 'status'.
+            
             ->logOnly(['status'])
             ->logOnlyDirty()
             ->useLogName('Report');
     }
 
-    // 4. METHOD UNTUK DESKRIPSI KUSTOM
+    
     public function tapActivity(Activity $activity, string $eventName)
     {
         $causerName = $activity->causer ? $activity->causer->first_name : 'Sistem';
-        // Ambil data dari relasi untuk deskripsi yang lebih kaya
+        
         $reporterName = $this->reporter ? $this->reporter->first_name : 'Pengguna';
         $reportedName = $this->reported ? $this->reported->first_name : 'Pengguna';
         $transactionId = $this->transaction ? $this->transaction->order_number : 'N/A';

@@ -11,7 +11,7 @@
                     <a href="{{ route('admin.reports.index', ['status' => $report->status]) }}" class="btn btn-sm btn-secondary mb-0" id="KembaliBtn">{{ __('admin/reports.back_to_report_list') }}</a>
                 </div>
                 <div class="card-body">
-                    {{-- Informasi Dasar Laporan --}}
+                    
                     <h5 class="mb-3">{{ __('admin/reports.report_information') }}</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -38,56 +38,56 @@
 
                     <hr>
 
-                    {{-- Alasan Laporan --}}
+                    
                     <h5 class="mt-4 mb-3">{{ __('admin/reports.report_reason') }}</h5>
                     <p class="alert alert-light">{{ $report->reasons }}</p>
-                    {{-- Bukti Foto (jika ada) --}}
+                    
                     @if ($report->photo_url)
                     @php
-                    // Decode to an associative array, pastikan ini menghasilkan array
+                    
                     $photoPaths = json_decode($report->photo_url, true);
                     @endphp
 
-                    @if (!empty($photoPaths) && is_array($photoPaths)) {{-- Pastikan ini array dan tidak kosong --}}
+                    @if (!empty($photoPaths) && is_array($photoPaths)) 
                     <h5 class="mt-4 mb-3">{{ __('admin/reports.photo_evidence') }}</h5>
-                    <div class="row"> {{-- Gunakan Bootstrap Grid untuk tata letak galeri --}}
+                    <div class="row"> 
                         @foreach ($photoPaths as $path)
-                        <div class="col-md-4 col-sm-6 mb-4"> {{-- Setiap foto dalam kolom --}}
+                        <div class="col-md-4 col-sm-6 mb-4"> 
                             <div class="card card-body border card-plain border-radius-lg d-flex flex-column justify-content-between h-100">
                                 @php
-                                // Bersihkan '/storage/' prefix jika ada dan pastikan path valid
+                                
                                 $actualPathInStorage = str_replace('/storage/', '', $path);
                                 @endphp
                                 <a href="{{ Storage::url($actualPathInStorage) }}" target="_blank">
                                     <img src="{{ Storage::url($actualPathInStorage) }}" class="img-fluid border-radius-lg mb-3" alt="{{ __('admin/reports.photo_evidence') }}">
                                 </a>
-                                {{-- Opsional: Tambahkan deskripsi atau nomor foto di sini --}}
-                                {{-- <p class="text-center text-muted small">Foto #{{ $loop->iteration }}</p> --}}
+                                
+                                
                             </div>
                         </div>
                         @endforeach
                     </div>
                     @else
-                    {{-- Ini akan tampil jika $report->photo_url tidak valid JSON array atau array kosong --}}
+                    
                     <p class="text-muted">{{ __('admin/reports.no_photo_evidence_attached') }}</p>
                     @endif
                     @endif
                     <hr>
 
-                    {{-- Aksi Cepat --}}
+                    
                     <h5 class="mt-4 mb-3">{{ __('admin/reports.user_related_actions') }}</h5>
                     <div class="d-flex flex-wrap gap-2">
-                        {{-- Lihat Aktivitas Reporter --}}
+                        
                         <a href="{{ route('admin.users.activityLog', ['user' => $report->reporter_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-2 me-2" id="lihat-aktivitas-pelapor">
                             <i class="material-symbols-rounded text-sm me-1">history</i> {{ __('admin/reports.view_reporter_activity') }}
                         </a>
 
-                        {{-- Lihat Aktivitas Reported User --}}
+                        
                         <a href="{{ route('admin.users.activityLog', ['user' => $report->reported_id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-info mb-2 me-2" id="lihat-aktivitas-pengguna-dilaporkan">
                             <i class="material-symbols-rounded text-sm me-1">manage_accounts</i> {{ __('admin/reports.view_reported_user_activity') }}
                         </a>
 
-                        {{-- Tombol Blokir / Batal Blokir untuk Reported User --}}
+                        
                         @if($report->reported && $report->reported->is_blocked)
                         <button type="button" class="btn btn-sm btn-success mb-2 me-2"
                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
@@ -109,7 +109,7 @@
 
                     <hr>
 
-                    {{-- Aksi Mark as Reviewed/Not Reviewed --}}
+                    
                     <h5 class="mt-4 mb-3">{{ __('admin/reports.report_status') }}</h5>
                     <form action="{{ route('admin.reports.update', $report) }}" method="POST">
                         @csrf
@@ -180,9 +180,9 @@
 
 @push('scripts')
 <script>
-    // Script untuk Modal Blokir
+    
     document.getElementById('confirmBlockModal').addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget; // Button that triggered the modal
+        var button = event.relatedTarget; 
         var userId = button.getAttribute('data-user-id');
         var userName = button.getAttribute('data-user-name');
 
@@ -192,12 +192,12 @@
 
         modalTitle.textContent = 'Konfirmasi Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('admin/users') }}/" + userId + "/block"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/block"; 
     });
 
-    // Script untuk Modal Batal Blokir
+    
     document.getElementById('confirmUnblockModal').addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget; // Button that triggered the modal
+        var button = event.relatedTarget; 
         var userId = button.getAttribute('data-user-id');
         var userName = button.getAttribute('data-user-name');
 
@@ -207,7 +207,7 @@
 
         modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; 
     });
 </script>
 @endpush

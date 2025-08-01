@@ -11,17 +11,17 @@
             <div class="col-12">
                 <label class="manrope fw-bold fs-6">{{ __('join-worker.upload_selfie_photo') }}</label>
                 <div class="upload-area" id="selfie-upload-area">
-                    {{-- Input file --}}
+                    
                     <input type="file" name="photo_url" id="selfie_photo" accept="image/png, image/jpeg, image/jpg">
 
-                    {{-- Ganti icon upload unicode jadi gambar --}}
+                    
                     <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon"
                         class="upload-icon">
 
                     <span class="upload-text">{{ __('join-worker.max_file_size_info') }}</span>
                     <span class="browse-button">{{ __('join-worker.browse_file') }}</span>
 
-                    {{-- Preview image (bisa tetap digunakan jika ada fitur preview) --}}
+                    
                     <img src="" alt="Selfie Preview" class="upload-preview" id="selfie-preview">
 
                 </div>
@@ -34,7 +34,7 @@
             <div class="col-md-6">
                 <label class="manrope fw-bold">{{ __('join-worker.upload_id_card_photo') }}</label>
                 <div class="upload-area" id="ktp-upload-area">
-                    {{-- Menggunakan name="id_card_url" dan ID "id_card_photo" sesuai panggilan JS --}}
+                    
                     <input type="file" name="id_card_url" id="id_card_photo"
                         accept="image/png, image/jpeg, image/jpg">
                     <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon"
@@ -44,7 +44,7 @@
                     <img src="" alt="KTP Preview" class="upload-preview" id="ktp-preview">
                 </div>
                 @error('id_card_url')
-                {{-- Error tag sesuai name --}}
+                
                 <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>
@@ -52,7 +52,7 @@
             <div class="col-md-6 mb-4">
                 <label class="manrope fw-bold">{{ __('join-worker.upload_selfie_with_id_card') }}</label>
                 <div class="upload-area" id="selfie-ktp-upload-area">
-                    {{-- Menggunakan name="selfie_with_id_card_url" dan ID "selfie_with_id_card_photo" --}}
+                    
                     <input type="file" name="selfie_with_id_card_url" id="selfie_with_id_card_photo"
                         accept="image/png, image/jpeg, image/jpg">
                     <img class="upload-icon" src="{{ asset('Image/Icon/icon-upload.png') }}" alt="Upload Icon"
@@ -62,16 +62,16 @@
                     <img src="" alt="Selfie with KTP Preview" class="upload-preview" id="selfie-ktp-preview">
                 </div>
                 @error('selfie_with_id_card_url')
-                {{-- Error tag sesuai name --}}
+                
                 <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>
 
             <p class="manrope fw-bold fs-6 my-0">{{ __('join-worker.payment_account') }}</p>
             <div class="col-12 py-3">
-                {{-- Anda bisa mengganti ini dengan path asset Anda --}}
+                
                 <img src="{{ asset('Image/Icon/icon-bca.png') }}" class="payment-logo" alt="BCA">
-                {{-- Tambahkan logo lain jika diperlukan --}}
+                
             </div>
             <div class="col-md-6">
                 <label class="fw-bold manrope fs-6" for="account_name">{{ __('join-worker.account_holder_name') }}</label>
@@ -99,67 +99,67 @@
 </x-join-worker.join-template>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Auto OCR when user uploads KTP
-        const ktpImageInput = document.getElementById('id_card_photo'); // Correct ID for KTP input
+        
+        const ktpImageInput = document.getElementById('id_card_photo'); 
 
         ktpImageInput.addEventListener('change', function(event) {
             const file = this.files[0];
 
             if (!file) {
-                // Also clear the preview if the file is removed
+                
                 document.getElementById('ktp-preview').src = "";
                 document.getElementById('ktp-upload-area').classList.remove('has-image');
                 return;
             }
 
             const formData = new FormData();
-            // FIX: Changed 'ktp_image' to 'image' to match the backend validation
+            
             formData.append('image', file);
-            formData.append('_token', '{{ csrf_token() }}'); // Laravel CSRF token
+            formData.append('_token', '{{ csrf_token() }}'); 
 
             fetch('{{ route('ktp.ocr.ajax') }}', {
                         method: 'POST',
                         body: formData,
                     })
                 .then(response => {
-                    // FIX: Check if the response is OK (2xx status) before trying to parse as JSON
+                    
                     if (!response.ok) {
-                        // If not OK, read the response as text to get the HTML error page content
+                        
                         return response.text().then(text => {
                             console.error('Server responded with non-OK status:', response.status, text);
-                            // You might want to display 'text' in a user-friendly way or log it.
-                            throw new Error(`Server Error (${response.status}): ${text.substring(0, 200)}...`); // Limit error message length
+                            
+                            throw new Error(`Server Error (${response.status}): ${text.substring(0, 200)}...`); 
                         });
                     }
-                    // If OK, parse as JSON
+                    
                     return response.json();
                 })
                 .then(data => {
                     if (data.success) {
-                        // NIK is now saved to session on backend, no need for frontend alert
+                        
                         console.log('OCR successful:', data);
-                        // You might want to update a field with parsed data here, e.g., NIK
-                        // if (data.parsed_data && data.parsed_data.nik) {
-                        //     document.getElementById('nik_input_id').value = data.parsed_data.nik;
-                        // }
+                        
+                        
+                        
+                        
                     } else {
                         console.error('OCR failed:', data.message);
-                        // Clear file input and preview on failure
-                        ktpImageInput.value = ''; // Reset file input
+                        
+                        ktpImageInput.value = ''; 
                         document.getElementById('ktp-preview').src = "";
                         document.getElementById('ktp-upload-area').classList.remove('has-image');
                     }
                 })
                 .catch(error => {
-                    console.error('Error during OCR fetch:', error); // Changed message for clarity
-                    // Clear file input and preview on error
+                    console.error('Error during OCR fetch:', error); 
+                    
                     ktpImageInput.value = '';
                     document.getElementById('ktp-preview').src = "";
                     document.getElementById('ktp-upload-area').classList.remove('has-image');
                 });
         });
 
-        // Function to handle file preview (remains the same)
+        
         function setupImagePreview(inputId, previewId, uploadAreaId) {
             const inputElement = document.getElementById(inputId);
             const previewElement = document.getElementById(previewId);
@@ -181,7 +181,7 @@
             });
         }
 
-        // Pastikan ID ini cocok dengan atribut 'id' pada elemen input file di HTML
+        
         setupImagePreview('selfie_photo', 'selfie-preview', 'selfie-upload-area');
         setupImagePreview('id_card_photo', 'ktp-preview', 'ktp-upload-area');
         setupImagePreview('selfie_with_id_card_photo', 'selfie-ktp-preview', 'selfie-ktp-upload-area');

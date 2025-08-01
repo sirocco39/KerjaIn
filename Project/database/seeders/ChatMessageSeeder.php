@@ -18,8 +18,8 @@ class ChatMessageSeeder extends Seeder
         foreach ($chatrooms as $chatroom) {
             ChatMessage::factory()->count(10)->create([
                 'chat_room_id' => $chatroom->id,
-                'sender_id' => $chatroom->worker_id, // Assuming user1 is the sender
-                'receiver_id' => $chatroom->requester_id, // Assuming user2 is the receiver
+                'sender_id' => $chatroom->worker_id, 
+                'receiver_id' => $chatroom->requester_id, 
             ]);
         }
     }

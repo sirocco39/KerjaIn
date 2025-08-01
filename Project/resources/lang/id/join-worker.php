@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // join.blade.php (Step 1)
+    
     'personal_data' => 'Data Pribadi',
     'full_name' => 'Nama Lengkap',
     'first_name_placeholder' => 'Nama depan',
@@ -19,7 +19,7 @@ return [
     'address_placeholder' => 'Alamat domisili',
     'next_button' => 'Lanjut',
 
-    // join2.blade.php (Step 2 - Contract Details)
+    
     'contract_details' => 'Detail Kontrak',
     'general_requirements_title' => 'Persyaratan Umum',
     'general_requirements_list' => [
@@ -76,7 +76,7 @@ return [
     'i_agree_to_data_usage' => 'Saya bersedia data saya digunakan untuk keperluan verifikasi dan keamanan',
     'continue_button' => 'Lanjut',
 
-    // join3.blade.php (Step 3 - Verification & Payment Account)
+    
     'verification_title' => 'Verifikasi',
     'upload_selfie_photo' => 'Upload Foto Diri',
     'max_file_size_info' => 'Max 5 MB, PNG, JPEG',
@@ -93,7 +93,7 @@ return [
     'upload_ktp_to_scan_nik' => 'Unggah foto KTP untuk memindai NIK.',
     'error_processing_image' => 'Terjadi kesalahan saat memproses gambar. Silakan coba lagi.',
 
-    // pending.blade.php (now success.blade.php)
+    
     'registration_successful' => 'Pendaftaran Berhasil!',
     'thanks_for_registering' => 'Terima kasih telah mendaftar. Permintaan Anda telah berhasil disubmit.',
     'team_will_process_data' => 'Tim kami akan segera memproses verifikasi data Anda. Proses ini mungkin memakan waktu <strong>1-3 hari kerja</strong>. Anda akan menerima notifikasi melalui WhatsApp atau email setelah proses verifikasi selesai.',
@@ -104,7 +104,7 @@ return [
     'back_to_homepage' => 'Kembali ke Beranda',
     'questions_contact_us_at' => 'Jika ada pertanyaan, silakan hubungi kami di',
 
-    // join-template.blade.php
+    
     'hero_banner_text' => 'Yuk, jadi bagian dari <span class="text-success"> KerjaIn </span>&nbsp;–&nbsp; tempat di mana kerja bareng, bantu bareng, cuan bareng.',
     'become_part_of_kerjain' => 'Jadi bagian dari ',
     'personal_data_step' => 'Data Pribadi',

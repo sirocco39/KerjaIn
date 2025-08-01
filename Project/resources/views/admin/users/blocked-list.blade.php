@@ -9,7 +9,7 @@
             <div class="card mb-4">
                 <div class="card-header pb-0">
                     <h6>{{ __('admin/users.blocked_users_list') }}</h6>
-                    {{-- Search Bar for Blocked Users List --}}
+                    
                     <div class="p-0 position-relative mt-3">
                         <form id="blockedUsersSearchForm" action="{{ route('admin.users.blockedList') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
@@ -18,10 +18,10 @@
                             </div>
                         </form>
                         <div id="blockedUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
-                            {{-- Search results will be displayed here --}}
+                            
                         </div>
                     </div>
-                    {{-- End Search Bar --}}
+                    
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     @if(request('search_query') && $blockedUsers->isEmpty())
@@ -60,7 +60,7 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0 me-2" id="SeeActivityBtn">{{ __('admin/users.view_activity') }}</a>
-                                        {{-- Tombol Batal Blokir yang memicu modal --}}
+                                        
                                         <button type="button" class="btn btn-sm btn-success mb-0"
                                             data-bs-toggle="modal" data-bs-target="#confirmUnblockModal"
                                             data-user-id="{{ $user->id }}"
@@ -113,23 +113,22 @@
 
 @push('scripts')
 <script>
-    // Script untuk Modal Batal Blokir
+    
     document.getElementById('confirmUnblockModal').addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget; // Button that triggered the modal
+        var button = event.relatedTarget; 
         var userId = button.getAttribute('data-user-id');
         var userName = button.getAttribute('data-user-name');
-
         var modalTitle = this.querySelector('.modal-title');
         var modalBodyUserName = this.querySelector('#unblockUserName');
         var form = this.querySelector('#unblockUserForm');
 
         modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; // Adjust your route
+        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; 
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-        // --- JavaScript for Search Recommendations on Blocked Users List Page ---
+        
         const blockedUsersSearchInput = document.getElementById('blockedUsersSearchInput');
         const blockedUsersSearchResults = document.getElementById('blockedUsersSearchResults');
         const blockedUsersSearchForm = document.getElementById('blockedUsersSearchForm');
@@ -140,18 +139,18 @@
                 clearTimeout(searchTimeoutBlockedUsers);
                 const query = this.value;
 
-                if (query.length > 2) { // Start searching after 2 characters
+                if (query.length > 2) { 
                     searchTimeoutBlockedUsers = setTimeout(() => {
-                        // This AJAX call should specifically search for blocked users
+                        
                         fetch(`{{ route('admin.users.search-ajax', ['blocked' => 1]) }}&query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                blockedUsersSearchResults.innerHTML = ''; // Clear previous results
+                                blockedUsersSearchResults.innerHTML = ''; 
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        // Link back to the blockedList page with the search_query parameter
-                                        a.href = `{{ route('admin.users.blockedList') }}?search_query=${item.id}`; // Filter by user ID
+                                        
+                                        a.href = `{{ route('admin.users.blockedList') }}?search_query=${item.id}`; 
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name}`;
                                         blockedUsersSearchResults.appendChild(a);
@@ -159,21 +158,21 @@
                                 } else {
                                     blockedUsersSearchResults.innerHTML = '<div class="list-group-item">Tidak ada pengguna diblokir ditemukan.</div>';
                                 }
-                                blockedUsersSearchResults.style.display = 'block'; // Show results
+                                blockedUsersSearchResults.style.display = 'block'; 
                             })
                             .catch(error => {
                                 console.error('Error fetching search results:', error);
                                 blockedUsersSearchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                                 blockedUsersSearchResults.style.display = 'block';
                             });
-                    }, 300); // Debounce 300ms
+                    }, 300); 
                 } else {
-                    blockedUsersSearchResults.innerHTML = ''; // Clear if query is too short
-                    blockedUsersSearchResults.style.display = 'none'; // Hide results
+                    blockedUsersSearchResults.innerHTML = ''; 
+                    blockedUsersSearchResults.style.display = 'none'; 
                 }
             });
 
-            // Hide search results when clicking outside the input or results
+            
             document.addEventListener('click', function(event) {
                 if (!blockedUsersSearchInput.contains(event.target) && !blockedUsersSearchResults.contains(event.target)) {
                     blockedUsersSearchResults.innerHTML = '';
@@ -181,11 +180,11 @@
                 }
             });
 
-            // Handle Enter key: submit form
+            
             blockedUsersSearchInput.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default form submission behavior
-                    blockedUsersSearchForm.submit(); // Manually submit the form
+                    event.preventDefault(); 
+                    blockedUsersSearchForm.submit(); 
                 }
             });
         }

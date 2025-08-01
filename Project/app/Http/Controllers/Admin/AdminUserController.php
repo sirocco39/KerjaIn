@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
-use Illuminate\Support\Facades\DB; // Tambahkan ini
+use Illuminate\Support\Facades\DB; 
 
 class AdminUserController extends Controller
 {
@@ -19,15 +19,15 @@ class AdminUserController extends Controller
      */
     public function index(Request $request)
     {
-        // --- Statistik Ringkasan Pengguna ---
+        
         $totalUsers = User::count();
-        $activeToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) // Filter by Asia/Jakarta time
+        $activeToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) 
             ->distinct('causer_id')
             ->count('causer_id');
-        $newUsersThisWeek = User::whereBetween('created_at', [Carbon::now('Asia/Jakarta')->startOfWeek(), Carbon::now('Asia/Jakarta')->endOfWeek()])->count(); // Calculate based on Asia/Jakarta week
+        $newUsersThisWeek = User::whereBetween('created_at', [Carbon::now('Asia/Jakarta')->startOfWeek(), Carbon::now('Asia/Jakarta')->endOfWeek()])->count(); 
 
         $totalWorkers = User::where('is_worker', true)->count();
-        $activeWorkersToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) // Filter by Asia/Jakarta time
+        $activeWorkersToday = Activity::whereDate('created_at', Carbon::today('Asia/Jakarta')) 
             ->whereHasMorph('causer', [User::class], function ($query) {
                 $query->where('is_worker', true);
             })
@@ -37,18 +37,18 @@ class AdminUserController extends Controller
         $blockedUsersCount = User::where('is_blocked', true)->count();
         $reportedUsersCount = Report::distinct('reported_id')->count('reported_id');
 
-        // --- Pencarian Pengguna dan Filtering Log ---
+        
         $searchedUser = null;
         $searchQuery = $request->input('search_query');
-        $selectedUserId = $request->input('user_id'); // ID pengguna yang dipilih dari autocomplete
+        $selectedUserId = $request->input('user_id'); 
 
-        // Base query for activity logs
+        
         $activityLogsQuery = Activity::with('causer')
             ->orderByDesc('created_at');
 
-        // Logika filtering activityLogs
+        
         if ($selectedUserId) {
-            // Jika ada user_id yang dipilih dari autocomplete, cari user berdasarkan ID tersebut.
+            
             $searchedUser = User::find($selectedUserId);
 
             if ($searchedUser) {
@@ -57,36 +57,36 @@ class AdminUserController extends Controller
                         ->where('causer_type', get_class($searchedUser));
                 });
             } else {
-                // Jika ID tidak valid, set query ke hasil kosong
+                
                 $activityLogsQuery->whereRaw('1 = 0');
             }
         } elseif ($searchQuery) {
-            // Jika hanya ada searchQuery (dari form submit biasa, bukan autocomplete)
-            // KITA MODIFIKASI LOGIKA PENCARIAN USER DI SINI
+            
+            
             $searchedUser = User::where(function ($query) use ($searchQuery) {
-                // Coba cari berdasarkan ID jika query adalah angka
+                
                 if (is_numeric($searchQuery)) {
                     $query->where('id', $searchQuery);
                 }
-                // Selalu coba cari berdasarkan nama lengkap
+                
                 $query->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $searchQuery . '%');
             })->first();
 
 
             if ($searchedUser) {
-                // Jika user ditemukan berdasarkan search_query, filter log aktivitasnya
+                
                 $activityLogsQuery->where('causer_type', User::class)
                     ->where('causer_id', $searchedUser->id);
             } else {
-                // Jika user tidak ditemukan, set query ke hasil kosong
+                
                 $activityLogsQuery->whereRaw('1 = 0');
             }
         }
 
-        // Apply pagination and appends to the activityLogs
+        
         $activityLogs = $activityLogsQuery->paginate(10)->appends($request->query());
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Pengguna',
@@ -100,8 +100,8 @@ class AdminUserController extends Controller
             'activeWorkersToday',
             'blockedUsersCount',
             'reportedUsersCount',
-            'searchedUser',    // User yang terpilih (dari ID atau yang pertama ditemukan)
-            'searchQuery',     // Kueri asli dari input
+            'searchedUser',    
+            'searchQuery',     
             'activityLogs',
             'breadcrumbs'
         ));
@@ -118,8 +118,8 @@ class AdminUserController extends Controller
     public function searchAjax(Request $request)
     {
         $query = $request->input('query');
-        $isBlocked = $request->boolean('blocked'); // Check if blocked users are requested
-        $isWorker = $request->boolean('is_worker'); // Check if workers are requested
+        $isBlocked = $request->boolean('blocked'); 
+        $isWorker = $request->boolean('is_worker'); 
 
         if (empty($query) || strlen($query) < 3) {
             return response()->json([]);
@@ -137,21 +137,21 @@ class AdminUserController extends Controller
                 return $q->where('is_worker', true);
             })
             ->select('id', 'first_name', 'last_name')
-            ->limit(5) // Limit the number of recommendations
+            ->limit(5) 
             ->get();
 
         return response()->json($users);
-        // $query = $request->input('query');
+        
 
 
 
-        // // Search users by ID, first name, or last name
-        // $users = User::where('id', $query)
-        //     ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . $query . '%')
-        //     ->limit(10) // Limit results for recommendations
-        //     ->get(['id', 'first_name', 'last_name']); // Only select necessary columns
+        
+        
+        
+        
+        
 
-        // return response()->json($users);
+        
     }
 
     /**
@@ -172,9 +172,9 @@ class AdminUserController extends Controller
         }
 
         $users = $query->paginate(10)
-            ->appends(request()->query()); // Adjust pagination as needed
+            ->appends(request()->query()); 
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Pengguna',
@@ -202,8 +202,8 @@ class AdminUserController extends Controller
         }
 
         $workers = $query->paginate(10)
-            ->appends(request()->query()); // Adjust pagination as needed
-        // Data Breadcrumbs
+            ->appends(request()->query()); 
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Pengguna',
@@ -231,9 +231,9 @@ class AdminUserController extends Controller
         }
 
         $blockedUsers = $query->paginate(10)
-            ->appends(request()->query()); // Adjust pagination as needed
+            ->appends(request()->query()); 
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Pengguna',
@@ -255,7 +255,7 @@ class AdminUserController extends Controller
         activity()
             ->performedOn($user)
             ->causedBy(Auth::id())
-            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah diblokir pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
+            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah diblokir pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); 
 
         return redirect()->back()->with('success', 'Pengguna berhasil diblokir.');
     }
@@ -272,7 +272,7 @@ class AdminUserController extends Controller
         activity()
             ->performedOn($user)
             ->causedBy(Auth::id())
-            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah dibuka blokirnya pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
+            ->log('Pengguna ' . $user->first_name . ' ' . $user->last_name . ' telah dibuka blokirnya pada ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); 
 
         return redirect()->back()->with('success', 'Pengguna berhasil dibuka blokirnya.');
     }
@@ -298,7 +298,7 @@ class AdminUserController extends Controller
 
         $previousUrl = $request->query('from', route('admin.users.index'));
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Log Aktivitas Pengguna',

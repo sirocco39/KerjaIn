@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // balance.blade.php
+    
     'wallet_and_balance' => 'Wallet & Balance',
     'active_balance' => 'Active Balance',
     'top_up' => 'Top-up',
@@ -10,7 +10,7 @@ return [
     'no_transactions_yet' => 'Oops, no transactions yet',
     'top_up_payment_history_desc' => 'Top-up and payment history will appear here.',
 
-    // top-up.blade.php
+    
     'fill_balance' => 'Fill Balance',
     'your_active_balance' => 'Your Active Balance',
     'top_up_amount' => 'Top Up Amount',

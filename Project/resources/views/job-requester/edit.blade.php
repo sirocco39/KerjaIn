@@ -11,7 +11,7 @@
                     @csrf
                     @method('PUT')
 
-                    {{-- Judul Pekerjaan --}}
+                    
                     <div class="mb-3">
                         <label for="work-title-text" class="form-label fw-semibold">{{ __('post-work.label_judul') }}</label>
                         <input placeholder="{{ __('post-work.placeholder_judul') }}" type="text"
@@ -19,7 +19,7 @@
                             value="{{ old('workTitleLabel', $workRequest->title) }}">
                         <div class="text-danger small mt-1" id="workTitleLabel-error"></div>
                     </div>
-                    {{-- Detail Pekerjaan --}}
+                    
                     <div class="mb-3">
                         <label for="work-detail-text"
                             class="form-label fw-semibold">{{ __('post-work.label_detail') }}</label>
@@ -27,7 +27,7 @@
                             rows="3" name="workDetailLabel" style="background-color: #f7f7ff; resize: none;">{{ old('workDetailLabel', $workRequest->description) }}</textarea>
                         <div class="text-danger small mt-1" id="workDetailLabel-error"></div>
                     </div>
-                    {{-- Alamat --}}
+                    
                     <div class="mb-3">
                         <label for="work-address-text"
                             class="form-label fw-semibold">{{ __('post-work.label_alamat') }}</label>
@@ -37,13 +37,13 @@
                         <div class="text-danger small mt-1" id="workAddressLabel-error"></div>
                     </div>
 
-                    {{-- ========================================================== --}}
-                    {{-- BAGIAN WAKTU YANG DIPERBAIKI --}}
-                    {{-- ========================================================== --}}
+                    
+                    
+                    
                     @php
-                        // Ensure these are formatted correctly for the HTML input type="date" and type="time"
-                        // These values are based on the workRequest's times, which are in UTC (from DB).
-// So, format them directly as YYYY-MM-DD and HH:i to pre-fill inputs with UTC values.
+                        
+                        
+
 $startDate = \Carbon\Carbon::parse($workRequest->start_time)->format('Y-m-d');
 $startTime = \Carbon\Carbon::parse($workRequest->start_time)->format('H:i');
 $endDate = \Carbon\Carbon::parse($workRequest->end_time)->format('Y-m-d');
@@ -83,13 +83,13 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                                 </div>
                             </div>
                         </div>
-                        {{-- Tempat khusus untuk error perbandingan waktu --}}
+                        
                         <div class="col-12">
                             <div class="text-danger small mt-1" id="datetime-error"></div>
                         </div>
                     </div>
 
-                    {{-- Harga --}}
+                    
                     <div class="mb-4">
                         <label for="work-price-text"
                             class="form-label fw-semibold">{{ __('post-work.label_upah') }}</label>
@@ -164,7 +164,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
             const modalConfirmBtn = document.getElementById('modal-confirm-edit-button');
             const modalTopupBtn = document.getElementById('modal-topup-button');
 
-            // Date and Time inputs
+            
             const workStartDateInput = document.querySelector('input[name="workStartDateLabel"]');
             const workEndDateInput = document.querySelector('input[name="workEndDateLabel"]');
             const workStartTimeInput = document.querySelector('input[name="workStartTimeLabel"]');
@@ -185,7 +185,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                 }).format(number);
             };
 
-            // NEW: Helper function to get current UTC time (HH:MM format)
+            
             function getFormattedCurrentTimeUTC() {
                 const now = new Date();
                 const hours = String(now.getUTCHours()).padStart(2, '0');
@@ -193,7 +193,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                 return `${hours}:${minutes}`;
             }
 
-            // NEW: Helper function to get current UTC date (YYYY-MM-DD format)
+            
             function getFormattedCurrentDateUTC() {
                 const now = new Date();
                 const year = now.getUTCFullYear();
@@ -203,7 +203,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
             }
 
             function validateTimestamps() {
-                // Clear all error messages before re-validation
+                
                 datetimeErrorDiv.textContent = '';
                 workStartTimeLabelPastErrorDiv.textContent = '';
                 workEndTimeLabelPastErrorDiv.textContent = '';
@@ -213,144 +213,144 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                 const endDate = workEndDateInput.value;
                 const endTime = workEndTimeInput.value;
 
-                // Only validate if all fields are filled to avoid premature errors
+                
                 if (!startDate || !startTime || !endDate || !endTime) {
-                    return true; // Assume valid if not yet complete
+                    return true; 
                 }
 
-                // NEW: Parse input as UTC for client-side comparison
+                
                 const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
                 const endDateTime = new Date(`${endDate}T${endTime}:00Z`);
-                // NEW: Get current UTC time for comparison
+                
                 const nowUTCComparison = new Date(
                     `${getFormattedCurrentDateUTC()}T${getFormattedCurrentTimeUTC()}:00Z`);
 
 
-                // 1. Check if start time is in the past (UTC comparison)
-                // (Allow a small buffer like 1 minute to account for input delay)
+                
+                
                 if (startDateTime < new Date(nowUTCComparison.getTime() - 60000)) {
                     datetimeErrorDiv.textContent = 'Waktu mulai pekerjaan tidak boleh di masa lalu (UTC).';
                     return false;
                 }
 
-                // 2. Check if end time is before or equal to start time (UTC comparison)
+                
                 if (endDateTime <= startDateTime) {
                     datetimeErrorDiv.textContent = 'Waktu selesai harus setelah waktu mulai.';
                     return false;
                 }
 
-                return true; // All validations passed
+                return true; 
             }
 
             function updateDateTimeConstraints() {
-                // NEW: Use current UTC date and time for constraints
+                
                 const todayUTC = getFormattedCurrentDateUTC();
                 const currentTimeUTC = getFormattedCurrentTimeUTC();
 
-                // Clear all client-side specific date/time errors before updating constraints and re-validating
+                
                 datetimeErrorDiv.textContent = '';
                 workStartTimeLabelPastErrorDiv.textContent = '';
                 workEndTimeLabelPastErrorDiv.textContent = '';
 
-                let minEndDate = workStartDateInput.value; // Default minimum end date is the start date
+                let minEndDate = workStartDateInput.value; 
 
-                // Scenario: Start date and End date are currently the same
-                // And both Start Time and End Time are provided.
-                // If the End Time is earlier than or equal to Start Time on the same day,
-                // then the End Date must be forced to at least the next day.
+                
+                
+                
+                
                 if (workStartDateInput.value && workEndDateInput.value === workStartDateInput.value &&
                     workStartTimeInput.value && workEndTimeInput.value) {
 
-                    // NEW: Parse as UTC for this specific proactive check
+                    
                     const tempStartDateTime = new Date(
                         `${workStartDateInput.value}T${workStartTimeInput.value}:00Z`);
                     const tempEndDateTime = new Date(`${workEndDateInput.value}T${workEndTimeInput.value}:00Z`);
 
                     if (tempEndDateTime <= tempStartDateTime) {
                         const nextDay = new Date(tempStartDateTime);
-                        nextDay.setUTCDate(tempStartDateTime.getUTCDate() + 1); // Use setUTCDate
-                        minEndDate = nextDay.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                        nextDay.setUTCDate(tempStartDateTime.getUTCDate() + 1); 
+                        minEndDate = nextDay.toISOString().split('T')[0]; 
                     }
                 }
 
-                // Apply the determined minimum end date
+                
                 workEndDateInput.min = minEndDate ||
-                    todayUTC; // Fallback to today UTC if minEndDate is somehow null/empty
+                    todayUTC; 
 
-                // If end date is set and is earlier than the newly calculated minEndDate, reset it to minEndDate
+                
                 if (workEndDateInput.value && workEndDateInput.value < workEndDateInput.min) {
                     workEndDateInput.value = workEndDateInput.min;
                 }
 
 
-                // Dynamic min for start time (relative to current UTC date/time)
+                
                 if (workStartDateInput.value === todayUTC) {
                     workStartTimeInput.min = currentTimeUTC;
                 } else {
-                    workStartTimeInput.min = ''; // No minimum time for future dates
+                    workStartTimeInput.min = ''; 
                 }
 
-                // Dynamic min for end time (relative to current UTC date/time)
+                
                 if (workEndDateInput.value === todayUTC) {
                     if (workStartDateInput.value === todayUTC && workStartTimeInput.value) {
-                        // If both start and end are today UTC, end time must be after start time UTC
+                        
                         workEndTimeInput.min = workStartTimeInput.value;
                     } else {
-                        // If only end date is today UTC (and start date is a past day), end time can be current UTC time
+                        
                         workEndTimeInput.min = currentTimeUTC;
                     }
                 } else {
-                    workEndTimeInput.min = ''; // No minimum time for future dates
+                    workEndTimeInput.min = ''; 
                 }
 
-                validateTimestamps(); // Re-validate on constraint changes
+                validateTimestamps(); 
             }
 
-            // Add event listeners for blur
+            
             workStartDateInput.addEventListener('blur', updateDateTimeConstraints);
             workEndDateInput.addEventListener('blur', updateDateTimeConstraints);
             workStartTimeInput.addEventListener('blur', updateDateTimeConstraints);
             workEndTimeInput.addEventListener('blur', updateDateTimeConstraints);
 
-            // Initial call to set up constraints on page load
+            
             updateDateTimeConstraints();
 
 
             showConfirmationBtn.addEventListener('click', function() {
-                // Perform client-side date/time validation first
+                
                 if (!validateTimestamps()) {
-                    return; // Stop if client-side validation fails
+                    return; 
                 }
 
                 let formData = new FormData(form);
-                // Remove the PUT method override for the validation endpoint, which expects POST
+                
                 formData.delete('_method');
 
-                // Clear all old error messages
+                
                 document.querySelectorAll('.text-danger.small').forEach(el => el.textContent = '');
 
-                // Send data to server for validation via AJAX
+                
                 fetch('{{ route('request.validate') }}', {
-                        method: 'POST', // Validation endpoint is typically POST
+                        method: 'POST', 
                         headers: {
-                            'X-CSRF-TOKEN': formData.get('_token'), // Get CSRF token from form data
+                            'X-CSRF-TOKEN': formData.get('_token'), 
                             'Accept': 'application/json',
                         },
                         body: formData
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // If validation FAILED
+                        
                         if (data.errors) {
                             Object.keys(data.errors).forEach(key => {
-                                // Display error messages under the corresponding input
+                                
                                 const errorElement = document.getElementById(`${key}-error`);
                                 if (errorElement) {
                                     errorElement.textContent = data.errors[key][0];
                                 }
                             });
                         }
-                        // If validation SUCCEEDED
+                        
                         else if (data.success) {
                             const newPrice = parseFloat(formData.get('workPriceLabel')) || 0;
                             const priceDifference = newPrice - originalPrice;
@@ -358,7 +358,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                             modalUserBalance.textContent = formatRupiah(userBalance);
 
                             if (priceDifference > 0) {
-                                // 2. Menggunakan teks dari objek 'lang'
+                                
                                 modalCostLabel.textContent = lang.biaya_tambahan;
                                 modalJobCostDiff.textContent = formatRupiah(priceDifference);
                                 if (userBalance < priceDifference) {
@@ -373,7 +373,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                                     modalTopupBtn.style.display = 'none';
                                 }
                             } else if (priceDifference < 0) {
-                                // 2. Menggunakan teks dari objek 'lang'
+                                
                                 modalCostLabel.textContent = lang.dana_dikembalikan;
                                 modalJobCostDiff.textContent = formatRupiah(Math.abs(priceDifference));
                                 modalUserBalance.classList.remove('text-danger');
@@ -381,7 +381,7 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                                 modalConfirmBtn.style.display = 'inline-block';
                                 modalTopupBtn.style.display = 'none';
                             } else {
-                                // 2. Menggunakan teks dari objek 'lang'
+                                
                                 modalCostLabel.textContent = lang.tidak_ada_perubahan;
                                 modalJobCostDiff.textContent = formatRupiah(0);
                                 modalUserBalance.classList.remove('text-danger');
@@ -391,14 +391,14 @@ $endTime = \Carbon\Carbon::parse($workRequest->end_time)->format('H:i');
                             }
 
 
-                            // Show the modal
+                            
                             confirmationModal.show();
                         }
                     })
                     .catch(error => console.error('Error:', error));
             });
 
-            // If the confirm button in the modal is pressed, submit the form
+            
             modalConfirmBtn.addEventListener('click', function() {
                 form.submit();
             });

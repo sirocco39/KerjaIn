@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="card-body p-3">
-                    {{-- Search Bar with Recommendations for Show Page --}}
+                    
                     <div class="mb-4">
                         <label for="userSearchShow" class="form-label">{{ __('admin/verifications.search_user') }}</label>
                         <div class="row g-0 border rounded overflow-hidden">
@@ -38,11 +38,11 @@
                             </div>
                         </div>
                         <div id="searchResults" class="list-group position-absolute w-75 mt-1" style="z-index: 1000;">
-                            {{-- Hasil pencarian --}}
+                            
                         </div>
                     </div>
 
-                    {{-- Navigasi Previous/Next dan Dropdown --}}
+                    
                     <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
                         <div style="padding-top: 1rem">
                             @if ($previousRequest)
@@ -152,7 +152,7 @@
                                     </span>
                                 </span>
                                 @endif
-                                {{-- Menampilkan alasan penolakan jika ada --}}
+                                
                                 @if ($verificationRequest->status == 'rejected' && $verificationRequest->rejection_reason)
                                 <span class="text-xs mt-2">{{ __('admin/verifications.rejection_reason') }}
                                     <span class="text-danger ms-sm-2 font-weight-bold">
@@ -215,7 +215,7 @@
                         </div>
                     </div>
 
-                    {{-- Action Buttons (only for pending requests) --}}
+                    
                     @if ($verificationRequest->status == 'pending')
                     <div class="row mt-4">
                         <div class="col-md-12">
@@ -226,7 +226,7 @@
                                     <i class="material-symbols-rounded text-sm">check_circle</i> {{ __('admin/verifications.approve') }}
                                 </button>
                             </form>
-                            {{-- Tombol Tolak memicu modal --}}
+                            
                             <button type="button" class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#rejectReasonModal" id="rejectButton">
                                 <i class="material-symbols-rounded text-sm">cancel</i> {{ __('admin/verifications.reject') }}
                             </button>
@@ -237,7 +237,7 @@
             </div>
         </div>
 
-        {{-- Optional: Add a section for user's past activities or summary if needed --}}
+        
         <div class="col-lg-4">
             <div class="card h-100">
                 <div class="card-header pb-0 p-3">
@@ -370,7 +370,7 @@
     </div>
 </div>
 
-@push('scripts') {{-- Pastikan master-admin.blade.php memiliki @stack('scripts') sebelum </body> --}}
+@push('scripts') 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const reasonChips = document.querySelectorAll('.reason-chip');
@@ -379,25 +379,25 @@
         reasonChips.forEach(chip => {
             chip.addEventListener('click', function() {
                 const reason = this.dataset.reason;
-                // Menambahkan alasan, bukan menimpa
+                
                 if (rejectionReasonTextarea.value.trim() === '') {
                     rejectionReasonTextarea.value = reason;
                 } else {
-                    // Cek apakah alasan sudah ada untuk menghindari duplikasi berlebihan
+                    
                     if (!rejectionReasonTextarea.value.includes(reason)) {
                         rejectionReasonTextarea.value += '\n' + reason;
                     }
                 }
-                rejectionReasonTextarea.focus(); // Fokuskan ke textarea
+                rejectionReasonTextarea.focus(); 
             });
         });
 
         const rejectReasonModal = document.getElementById('rejectReasonModal');
         rejectReasonModal.addEventListener('hidden.bs.modal', function() {
-            rejectionReasonTextarea.value = ''; // Kosongkan textarea saat modal ditutup
+            rejectionReasonTextarea.value = ''; 
         });
 
-        // JavaScript untuk navigasi dropdown di halaman show
+        
         const statusFilteredUserDropdown = document.getElementById('statusFilteredUserDropdown');
         if (statusFilteredUserDropdown) {
             statusFilteredUserDropdown.addEventListener('change', function() {
@@ -408,7 +408,7 @@
             });
         }
 
-        // JavaScript untuk pencarian rekomendasi di halaman show
+        
         const userSearchShow = document.getElementById('userSearchShow');
         const searchResults = document.getElementById('searchResults');
         const clearSearchShow = document.getElementById('clearSearchShow');
@@ -419,12 +419,12 @@
                 clearTimeout(searchTimeout);
                 const query = this.value;
 
-                if (query.length > 2) { // Mulai mencari setelah 2 karakter
+                if (query.length > 2) { 
                     searchTimeout = setTimeout(() => {
                         fetch(`{{ route('admin.verifications.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                searchResults.innerHTML = ''; // Bersihkan hasil sebelumnya
+                                searchResults.innerHTML = ''; 
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
@@ -441,19 +441,19 @@
                                 console.error('Error fetching search results:', error);
                                 searchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                             });
-                    }, 300); // Debounce 300ms
+                    }, 300); 
                 } else {
-                    searchResults.innerHTML = ''; // Bersihkan jika kueri terlalu pendek
+                    searchResults.innerHTML = ''; 
                 }
             });
 
-            // Clear button functionality
+            
             clearSearchShow.addEventListener('click', function() {
                 userSearchShow.value = '';
                 searchResults.innerHTML = '';
             });
 
-            // Hide search results when clicking outside
+            
             document.addEventListener('click', function(event) {
                 if (!userSearchShow.contains(event.target) && !searchResults.contains(event.target)) {
                     searchResults.innerHTML = '';

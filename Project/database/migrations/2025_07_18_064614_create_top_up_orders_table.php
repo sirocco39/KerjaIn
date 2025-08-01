@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('top_up_orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); // Pemilik akun yang melakukan top up
-            $table->decimal('amount', 12, 2); // Jumlah uang yang di-top up
-            $table->enum('status', ['pending', 'paid', 'expired']); // Status top up// Metode pembayaran (
-            $table->string('external_id')->nullable(); // ID eksternal dari sistem pembayaran (jika ada)
-            $table->string('xendit_invoice_id')->nullable(); // ID invoice dari Xendit (jika menggunakan Xendit
-            $table->text('invoice_url')->nullable(); // URL invoice untuk pembayaran\
+            $table->foreignId('user_id')->constrained('users'); 
+            $table->decimal('amount', 12, 2); 
+            $table->enum('status', ['pending', 'paid', 'expired']); 
+            $table->string('external_id')->nullable(); 
+            $table->string('xendit_invoice_id')->nullable(); 
+            $table->text('invoice_url')->nullable(); 
             $table->timestamps();
         });
     }

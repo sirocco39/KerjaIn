@@ -37,8 +37,8 @@ class UserFactory extends Factory
             'job_done' => 0,
             'is_blocked' => false,
             'bank_acc_num' => null,
-            'last_activity' => $this->faker->optional(0.8, null) // 80% chance to have a recent activity, 20% to be null
-                ->dateTimeBetween('-1 week', 'now'), // Activity within the last week
+            'last_activity' => $this->faker->optional(0.8, null) 
+                ->dateTimeBetween('-1 week', 'now'), 
 
         ];
     }
@@ -50,7 +50,7 @@ class UserFactory extends Factory
             'rating' => 0,
             'job_done' => 0,
             'is_worker' => false,
-            'last_activity' => Carbon::now(), // Admins are usually active recently
+            'last_activity' => Carbon::now(), 
 
         ]);
     }
@@ -62,7 +62,7 @@ class UserFactory extends Factory
             'is_worker' => true,
             'job_done' => $this->faker->numberBetween(1, 100),
             'bank_acc_num' => $this->faker->numerify('##########'),
-            'last_activity' => $this->faker->dateTimeBetween('-3 days', 'now'), // Workers are often active
+            'last_activity' => $this->faker->dateTimeBetween('-3 days', 'now'), 
 
         ]);
     }
@@ -73,7 +73,7 @@ class UserFactory extends Factory
             'role' => 'user',
             'is_worker' => false,
             'job_done' => 0,
-            'last_activity' => $this->faker->optional(0.5, null) // Non-workers might be less active or null
+            'last_activity' => $this->faker->optional(0.5, null) 
                 ->dateTimeBetween('-2 weeks', 'now'),
 
         ]);

@@ -8,7 +8,7 @@
             <div class="card mb-4">
                 <div class="card-header pb-0">
                     <h6>{{ __('admin/users.all_users_list') }}</h6>
-                    {{-- Search Bar for All Users List --}}
+                    
                     <div class="p-0 position-relative mt-3">
                         <form id="allUsersSearchForm" action="{{ route('admin.users.all') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
@@ -17,10 +17,10 @@
                             </div>
                         </form>
                         <div id="allUsersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
-                            {{-- Search results will be displayed here --}}
+                            
                         </div>
                     </div>
-                    {{-- End Search Bar --}}
+                    
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     @if(request('search_query') && $users->isEmpty())
@@ -67,7 +67,7 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         <a href="{{ route('admin.users.activityLog', ['user' => $user->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0" id="SeeActivityBtn">{{ __('admin/users.view_activity') }}</a>
-                                        {{-- Add other action buttons if needed, e.g., edit, block/unblock --}}
+                                        
                                     </td>
                                 </tr>
                                 @empty
@@ -101,16 +101,16 @@
                 clearTimeout(searchTimeoutAllUsers);
                 const query = this.value;
 
-                if (query.length > 2) { // Start searching after 2 characters
+                if (query.length > 2) { 
                     searchTimeoutAllUsers = setTimeout(() => {
                         fetch(`{{ route('admin.users.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                allUsersSearchResults.innerHTML = ''; // Clear previous results
+                                allUsersSearchResults.innerHTML = ''; 
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        a.href = `{{ route('admin.users.all') }}?search_query=${item.id}`; // Filter by user ID
+                                        a.href = `{{ route('admin.users.all') }}?search_query=${item.id}`; 
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name}`;
                                         allUsersSearchResults.appendChild(a);
@@ -118,21 +118,21 @@
                                 } else {
                                     allUsersSearchResults.innerHTML = '<div class="list-group-item">Tidak ada pengguna ditemukan.</div>';
                                 }
-                                allUsersSearchResults.style.display = 'block'; // Show results
+                                allUsersSearchResults.style.display = 'block'; 
                             })
                             .catch(error => {
                                 console.error('Error fetching search results:', error);
                                 allUsersSearchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                                 allUsersSearchResults.style.display = 'block';
                             });
-                    }, 300); // Debounce 300ms
+                    }, 300); 
                 } else {
-                    allUsersSearchResults.innerHTML = ''; // Clear if query is too short
-                    allUsersSearchResults.style.display = 'none'; // Hide results
+                    allUsersSearchResults.innerHTML = ''; 
+                    allUsersSearchResults.style.display = 'none'; 
                 }
             });
 
-            // Hide search results when clicking outside the input or results
+            
             document.addEventListener('click', function(event) {
                 if (!allUsersSearchInput.contains(event.target) && !allUsersSearchResults.contains(event.target)) {
                     allUsersSearchResults.innerHTML = '';
@@ -140,11 +140,11 @@
                 }
             });
 
-            // Handle Enter key: submit form
+            
             allUsersSearchInput.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default form submission behavior
-                    allUsersSearchForm.submit(); // Manually submit the form
+                    event.preventDefault(); 
+                    allUsersSearchForm.submit(); 
                 }
             });
         }

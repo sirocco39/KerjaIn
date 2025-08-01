@@ -24,7 +24,7 @@ return [
     'unauthorized_report_attempt' => 'Unauthorized report attempt for transaction',
     'unauthorized_review_attempt' => 'Unauthorized review attempt for transaction by non-worker user.',
 
-    // Status text for index method (should match your accepted-work-request.php or a dedicated status file)
+    
     'status_accepted' => 'Accepted',
     'status_in_progress' => 'In Progress',
     'status_submitted' => 'Submitted',

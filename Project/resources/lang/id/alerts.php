@@ -9,7 +9,7 @@ return [
 
     'job_accepted_success_chat_redirect' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
     'job_marked_completed_success' => 'Pekerjaan berhasil ditandai selesai!',
-    // Auth & Pendaftaran
+    
     'login_berhasil' => 'Login berhasil! Selamat datang, :nama!',
     'logout_berhasil' => 'Anda telah berhasil keluar.',
     'email_atau_kata_sandi_salah' => 'Email atau kata sandi salah.',
@@ -22,7 +22,7 @@ return [
     'pendaftaran_berhasil_disubmit' => 'Pendaftaran Anda berhasil disubmit untuk verifikasi!',
     'lengkapi_langkah_sebelumnya' => 'Silakan lengkapi langkah sebelumnya terlebih dahulu.',
 
-    // Pekerjaan & Transaksi
+    
     'pekerjaan_berhasil_dibuat' => 'Pekerjaan berhasil dibuat!',
     'pekerjaan_berhasil_diperbarui' => 'Pekerjaan berhasil diperbarui!',
     'pekerjaan_dibatalkan_refund' => 'Pekerjaan berhasil dibatalkan dan dana sebesar :amount telah dikembalikan.',
@@ -32,19 +32,19 @@ return [
     'laporan_berhasil_dikirim' => 'Laporan berhasil dikirim dan akan segera ditinjau.',
     'job_accepted_success_redirect' => 'Pekerjaan berhasil diterima! Anda akan diarahkan ke halaman chat.',
 
-    // Keuangan & Top Up
+    
     'gagal_membuat_invoice' => 'Gagal membuat invoice pembayaran: :error',
-    'topup_unauthorized_webhook' => 'Unauthorized.', // Untuk webhook Xendit
-    'topup_no_pending_order_webhook' => 'Tidak ada order pending atau sudah diproses.', // Untuk webhook Xendit
-    'topup_webhook_processed_success' => 'Webhook berhasil diproses.', // Untuk webhook Xendit
+    'topup_unauthorized_webhook' => 'Unauthorized.', 
+    'topup_no_pending_order_webhook' => 'Tidak ada order pending atau sudah diproses.', 
+    'topup_webhook_processed_success' => 'Webhook berhasil diproses.', 
 
 
-    // Navigasi & Peran
+    
     'beralih_ke_requester' => 'Anda berhasil beralih ke peran Job Requester, :nama!',
     'beralih_ke_taker' => 'Anda berhasil beralih ke peran Job Taker, :nama!',
     'bahasa_diubah' => 'Language successfully changed to :locale.',
 
-    // Error & Izin
+    
     'halaman_tidak_ditemukan' => 'Halaman tidak ditemukan.',
     'bahasa_tidak_didukung' => 'Bahasa tidak didukung.',
     'anda_tidak_berwenang' => 'Anda tidak berwenang melakukan tindakan ini.',
@@ -59,7 +59,7 @@ return [
     'worker_profile_not_found' => 'Profil pekerja tidak ditemukan. Silakan login.',
     'unauthorized_view_transaction_details' => 'Tidak berwenang melihat detail transaksi ini.',
 
-    // Pesan-pesan dari Admin Panel (Reports & Verifications)
+    
     'admin_reports_verification_request_not_found' => 'Permintaan verifikasi tidak ditemukan.',
     'admin_reports_verification_request_already_processed' => 'Permintaan verifikasi sudah diproses.',
     'admin_reports_verification_request_approved' => 'Permintaan verifikasi berhasil disetujui.',
@@ -95,7 +95,7 @@ return [
     'unauthorized_report_attempt' => 'Percobaan laporan tidak sah transaksi',
     'unauthorized_review_attempt' => 'Percobaan ulasan tidak sah transaksi oleh user bukan pekerja.',
 
-    // Status text for index method (should match your accepted-work-request.php or a dedicated status file)
+    
     'status_accepted' => 'Diterima',
     'status_in_progress' => 'Dikerjain',
     'status_submitted' => 'Ditinjau',

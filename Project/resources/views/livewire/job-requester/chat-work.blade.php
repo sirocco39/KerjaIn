@@ -58,7 +58,7 @@
 
         <div class="px-4 pb-0 chat-container container-fluid bg-light rounded-bottom-4 flex-fill flex-column justify-content-between"
             style="height:80%; border: 1px solid #cacadd;">
-            {{-- Removed wire:ignore.self --}}
+            
             <div id="chatMessages" class="chat-layout flex-fill overflow-auto" style="flex:6; height:85%;" wire:poll.5s>
                 @forelse ($this->messages as $date => $group)
                     <div class="text-center small text-muted my-2">
@@ -95,10 +95,12 @@
                     <button type="submit" class="btn rounded-5 d-flex align-items-center justify-content-center"
                         style="background-color:#309FFF; height:100%; aspect-ratio: 1/1;">
                         <svg width="29" height="30" viewBox="0 0 30 30" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
+                            xmlns="http:
                             <path
-                                d="M7.80209 15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644 12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674"
-                                stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                d="M7.80209
+                            15.0002L4.61035 4.62793C12.2454 6.84848 19.4452 10.3563 25.8995 15.0002C19.4456 19.644
+                            12.2461 23.1519 4.61152 25.3725L7.80209 15.0002ZM7.80209 15.0002H16.5674" stroke="white"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
                 </form>
@@ -115,32 +117,32 @@
     document.addEventListener('livewire:initialized', () => {
         const chatMessages = document.getElementById('chatMessages');
 
-        // Function to scroll the chat to the bottom
+
         const scrollToBottom = () => {
             if (chatMessages) {
-                // Add a small delay to ensure the DOM has finished rendering the new message
+
                 setTimeout(() => {
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 100); // 100ms is usually sufficient for rendering
+                }, 100);
             }
         };
 
-        // Scroll to bottom when the Livewire component is initially loaded
+
         scrollToBottom();
 
-        // Listen for the 'messageSent' event from Livewire to scroll to bottom
-        // This event is dispatched after sending a message and when selecting a room
+
+
         Livewire.on('messageSent', () => {
             scrollToBottom();
         });
 
-        // This hook is crucial for messages arriving via wire:poll
+
         Livewire.hook('morph.updated', ({
             el,
             component
         }) => {
-            // Only scroll if the updated element is our chat container
-            // and it belongs to the correct Livewire component
+
+
             if (el.id === 'chatMessages' && component.name === 'job-requester.chat-work') {
                 scrollToBottom();
             }

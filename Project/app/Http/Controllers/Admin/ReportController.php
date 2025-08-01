@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
-use Carbon\Carbon; // For logging timestamp
+use Carbon\Carbon; 
 
 class ReportController extends Controller
 {
@@ -28,17 +28,17 @@ class ReportController extends Controller
             ->latest()
             ->paginate(15);
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Laporan',
-            'filterStatus' => $statusFilter, // Tambahkan status filter ke breadcrumbs jika perlu
+            'filterStatus' => $statusFilter, 
         ];
 
         return view('admin.reports.index', [
             'reports' => $reports,
             'currentStatus' => $statusFilter,
-            'breadcrumbs' => $breadcrumbs, // Tambahkan breadcrumbs
+            'breadcrumbs' => $breadcrumbs, 
         ]);
     }
 
@@ -51,12 +51,12 @@ class ReportController extends Controller
     {
         $report->load(['reporter', 'reported.reportsReceived']);
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
             'currentPageTitle' => 'Laporan',
             'currentSectionTitle' => 'Detail',
-            'reportId' => $report->id, // Tambahkan ID laporan ke breadcrumbs
+            'reportId' => $report->id, 
         ];
 
         return view('admin.reports.show', compact('report', 'breadcrumbs'));

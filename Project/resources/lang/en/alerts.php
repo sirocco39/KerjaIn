@@ -10,7 +10,7 @@ return [
   'job_accepted_success_chat_redirect' => 'Job successfully accepted! You will be redirected to the chat page.',
   'job_marked_completed_success' => 'Job successfully marked as complete!',
 
-  // Auth & Registration
+  
   'login_berhasil' => 'Login successful! Welcome, :nama!',
   'logout_berhasil' => 'You have been successfully logged out.',
   'email_atau_kata_sandi_salah' => 'Incorrect email or password.',
@@ -23,7 +23,7 @@ return [
   'pendaftaran_berhasil_disubmit' => 'Your registration has been submitted for verification!',
   'lengkapi_langkah_sebelumnya' => 'Please complete the previous steps first.',
 
-  // Jobs & Transactions
+  
   'pekerjaan_berhasil_dibuat' => 'Job successfully created!',
   'pekerjaan_berhasil_diperbarui' => 'Job successfully updated!',
   'pekerjaan_dibatalkan_refund' => 'Job successfully cancelled and funds of :amount have been returned.',
@@ -33,18 +33,18 @@ return [
   'laporan_berhasil_dikirim' => 'Report sent successfully and will be reviewed shortly.',
   'job_accepted_success_redirect' => 'Job successfully accepted! You will be redirected to the chat page.',
 
-  // Finance & Top Up
+  
   'gagal_membuat_invoice' => 'Failed to create payment invoice: :error',
   'topup_unauthorized_webhook' => 'Unauthorized.',
   'topup_no_pending_order_webhook' => 'No pending order found or already processed.',
   'topup_webhook_processed_success' => 'Webhook processed.',
 
-  // Navigation & Roles
+  
   'beralih_ke_requester' => 'You have successfully switched to the Job Requester role, :nama!',
   'beralih_ke_taker' => 'You have successfully switched to the Job Taker role, :nama!',
   'bahasa_diubah' => 'Language successfully changed to :locale.',
 
-  // Errors & Permissions
+  
   'halaman_tidak_ditemukan' => 'Page not found.',
   'bahasa_tidak_didukung' => 'Language not supported.',
   'anda_tidak_berwenang' => 'You are not authorized to perform this action.',
@@ -59,7 +59,7 @@ return [
   'worker_profile_not_found' => 'Worker profile not found. Please login.',
   'unauthorized_view_transaction_details' => 'Unauthorized to view this transaction details.',
 
-  // Messages from Admin Panel (Reports & Verifications)
+  
   'admin_reports_verification_request_not_found' => 'Verification request not found.',
   'admin_reports_verification_request_already_processed' => 'Verification request has already been processed.',
   'admin_reports_verification_request_approved' => 'Verification request successfully approved.',
@@ -95,7 +95,7 @@ return [
   'unauthorized_report_attempt' => 'Unauthorized report attempt for transaction',
   'unauthorized_review_attempt' => 'Unauthorized review attempt for transaction by non-worker user.',
 
-  // Status text for index method (should match your accepted-work-request.php or a dedicated status file)
+  
   'status_accepted' => 'Accepted',
   'status_in_progress' => 'In Progress',
   'status_submitted' => 'Submitted',

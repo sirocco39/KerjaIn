@@ -8,7 +8,7 @@ use App\Models\VerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon; // For logging timestamp
+use Carbon\Carbon; 
 
 class VerificationController extends Controller
 {
@@ -56,10 +56,10 @@ class VerificationController extends Controller
 
         $pendingVerificationsCount = VerificationRequest::where('status', 'pending')->count();
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Verifikasi ' . ucfirst($status), // Cth: Verifikasi Pending, Verifikasi Disetujui
+            'currentPageTitle' => 'Verifikasi ' . ucfirst($status), 
             'filterStatus' => $status,
         ];
 
@@ -103,10 +103,10 @@ class VerificationController extends Controller
 
         $search = $request->query('search');
 
-        // Data Breadcrumbs
+        
         $breadcrumbs = [
             'mainPageTitle' => 'Admin',
-            'currentPageTitle' => 'Verifikasi ' . ucfirst($verificationRequest->status), // Cth: Verifikasi Pending, Verifikasi Disetujui
+            'currentPageTitle' => 'Verifikasi ' . ucfirst($verificationRequest->status), 
             'filterStatus' => $verificationRequest->status,
             'currentSectionTitle' => 'Detail Verifikasi',
             'requestId' => $verificationRequest->id,
@@ -159,7 +159,7 @@ class VerificationController extends Controller
             }
 
             $verificationRequest->status = 'approved';
-            $verificationRequest->verified_at = Carbon::now('UTC'); // Store verification time in UTC
+            $verificationRequest->verified_at = Carbon::now('UTC'); 
             $verificationRequest->save();
 
 

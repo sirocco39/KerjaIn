@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Request as WorkRequest; // Alias Request to WorkRequest to avoid conflict with Illuminate\Http\Request
+use App\Models\Request as WorkRequest; 
 use Illuminate\Http\Request;
-use Carbon\Carbon; // For date and time formatting
-use Illuminate\Database\Eloquent\Builder; // Import Builder for type hinting
+use Carbon\Carbon; 
+use Illuminate\Database\Eloquent\Builder; 
 use Illuminate\Support\Facades\Auth;
 
 class BrowseWorkRequestController extends Controller
@@ -18,20 +18,20 @@ class BrowseWorkRequestController extends Controller
      */
     public function index(Request $request)
     {
-        // Start with all open requests
+        
         $query = WorkRequest::where('status', 'open')
-                            ->where('requester_id', '!=', Auth::id()) // Exclude requests made by the current user
-                            ->where('start_time', '>', now()) // Only show requests that haven't passed their end time
+                            ->where('requester_id', '!=', Auth::id()) 
+                            ->where('start_time', '>', now()) 
                             ->with('requester')
-                            ->orderBy('created_at', 'desc'); // Order by newest first
+                            ->orderBy('created_at', 'desc'); 
 
-        // Apply search filters using the dedicated method
+        
         $query = $this->applySearchFilters($query, $request);
 
-        // Paginate the results (optional, but good for many requests)
-        $workRequests = $query->paginate(10); // Adjust items per page as needed
+        
+        $workRequests = $query->paginate(10); 
 
-        // Pass the work requests to the view
+        
         return view('job-taker.browse-work', compact('workRequests'));
     }
 
@@ -48,9 +48,9 @@ class BrowseWorkRequestController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', '%' . $searchTerm . '%');
-                // Uncomment these lines if you want to search in description and location as well
-                // ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                // ->orWhere('location', 'like', '%' . $searchTerm . '%');
+                
+                
+                
             });
         }
 
@@ -63,12 +63,12 @@ class BrowseWorkRequestController extends Controller
      * though your current design suggests showing details in the right panel.
      * For now, we'll keep it simple for the browse page.
      *
-     * @param  \App\Models\Request  $request // Menggunakan route model binding
+     * @param  \App\Models\Request  $request 
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(WorkRequest $request)
     {
-        // Pastikan relasi requester dimuat jika Anda ingin menampilkan info requester
+        
         $request->load('requester');
 
         return response()->json([
@@ -77,12 +77,12 @@ class BrowseWorkRequestController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'location' => $request->location,
-            'start_time' => $request->start_time->format('Y-m-d H:i'), // Format untuk JS
-            'end_time' => $request->end_time->format('Y-m-d H:i'),      // Format untuk JS
-            'display_date' => $request->start_time->format('d M Y, H:i'), // Untuk tampilan '19 Mei 2025'
+            'start_time' => $request->start_time->format('Y-m-d H:i'), 
+            'end_time' => $request->end_time->format('Y-m-d H:i'),      
+            'display_date' => $request->start_time->format('d M Y, H:i'), 
             'display_time_range' => $request->end_time->format('d M Y, H:i'),
             'requester_first_name' => $request->requester->first_name
-            // Tambahkan data lain yang mungkin Anda perlukan di detail panel
+            
         ]);
     }
 }

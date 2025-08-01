@@ -6,7 +6,7 @@
     <div class="container-fluid pembatas-x pembatas-y d-flex gap-4">
         <div class="job-listings col d-flex flex-column gap-4">
             @forelse ($workRequests as $request)
-                {{-- Removed onclick from job-card div --}}
+                
                 <div class="job-card p-4" data-request-id="{{ $request->id }}">
                     <h3 class="fw-bold">{{ $request->title }}</h3>
                     <ul class="job-card-details">
@@ -51,7 +51,7 @@
                 <p>{{ __('browse-work.pekerjaan_tidak_ditemukan') }}</p>
             @endforelse
 
-            {{-- Pagination Links --}}
+            
             <div class="pagination mt-auto">
                 @if ($workRequests->currentPage() > 1)
                     <a href="{{ $workRequests->previousPageUrl() }}" class="pagination-nav" id="prev-page">
@@ -79,8 +79,8 @@
         </div>
 
         <div class="job-details-placeholder col d-flex flex-column p-4" id="job-details-panel">
-            {{-- Initial content for the right panel --}}
-            {{-- <i class="fas fa-chevron-left back-arrow" id="back-arrow" onclick="hideRequestDetails()"></i> --}}
+            
+            
             <div class="title-job-detail-placeholder d-flex align-item-center mb-3">
                 <img src="{{ asset('Image/Icon/icon-left-arrow.svg') }}" alt="Left Arrow" class="left-arrow"
                     id="left-arrow-icon">
@@ -93,8 +93,8 @@
                     id="detail-image">
             </div>
 
-            {{-- These elements will be dynamically populated by JavaScript --}}
-            {{-- Hide them initially, show when details are loaded --}}
+            
+            
             <div class="mx-3 flex-fill flex-column" id="dynamic-details-content" style="display: none;">
                 <ul class="job-card-details">
                     <li class="gap-2">
@@ -206,11 +206,11 @@
 
                     <div class="detail-buttons-placeholder d-flex gap-2 justify-content-center mt-auto align-items-center">
                         <input type="number" id="modal-offer-amount-input" class="form-control"
-                            placeholder="Rp Tawarkan" style="max-width: 150px; height: 38px;">
+                            placeholder="{{ __('browse-work.placeholder_tawarkan') }}" style="max-width: 150px; height: 38px;">
                         <button class="details-button-item"
                             id="modal-submit-offer-button">{{ __('browse-work.tombol_kirim') }}</button>
                         <a href="#"
-                            class="details-button-item btn-hubungi-modal">{{ __('browse-work.tombol_hubungi') }}</a>
+                            class="details-button-item btn-hubungi-modal text-decoration-none">{{ __('browse-work.tombol_hubungi') }}</a>
                         <button
                             class="details-button-item btn-terima-modal">{{ __('browse-work.tombol_terima') }}</button>
                     </div>
@@ -224,7 +224,7 @@
         <div class="modal-dialog ">
             <div class="modal-content">
                 <div class="modal-body text-center p-4">
-                    {{-- Pastikan icon-warning.svg ada di public/Image/Icon/ atau sesuaikan path --}}
+                    
                     <img src="{{ asset('Image/Icon/icon-warning.svg') }}" alt="Warning Icon"
                         style="width: 60px; height: 60px; margin-bottom: 20px;">
                     <h2 class="fw-bold mb-3">{{ __('browse-work.modal_konfirmasi_judul') }}</h2>
@@ -243,7 +243,7 @@
     <script>
         const lang = @json(__('browse-work.js_messages'));
 
-        // Fungsi untuk format mata uang Rupiah
+        
         const formatRupiah = (amount) => {
             return new Intl.NumberFormat('id-ID', {
                 minimumFractionDigits: 2,
@@ -252,7 +252,7 @@
         };
         let currentRequestId = null;
 
-        // Fungsi untuk mengirim tawaran
+        
         function submitOffer(amount) {
             if (!currentRequestId) {
                 window.showCustomAlert(lang.gagal_dapatkan_id, 'error');
@@ -294,19 +294,19 @@
         }
 
 
-        // Fungsi untuk menampilkan detail permintaan kerja
+        
         function showRequestDetails(requestId) {
             currentRequestId = requestId;
-            // Hapus class 'active' dari semua job-card
+            
 
             const leftArrowIcon = document.getElementById('left-arrow-icon');
-            leftArrowIcon.style.display = 'none'; // tampilkan panah
+            leftArrowIcon.style.display = 'none'; 
 
             document.querySelectorAll('.job-card').forEach(card => {
                 card.classList.remove('choosed');
             });
 
-            // Tambahkan class 'active' ke kartu yang sesuai
+            
             const activeCard = document.querySelector(`.job-card[data-request-id="${requestId}"]`);
             if (activeCard) {
                 activeCard.classList.add('choosed');
@@ -318,15 +318,15 @@
             const detailImageWrapper = document.getElementById('detail-image-placeholder-wrapper');
             const dynamicContent = document.getElementById('dynamic-details-content');
 
-            // Show loading state or clear previous content
+            
             detailTitle.textContent = lang.memuat_detail;
             detailInstruction.textContent = lang.silakan_tunggu;
-            detailInstruction.style.display = 'block'; // Ensure instruction is visible during loading
-            detailImage.style.display = 'block'; // Show placeholder image
-            detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
-            dynamicContent.style.display = 'none'; // Hide dynamic content
+            detailInstruction.style.display = 'block'; 
+            detailImage.style.display = 'block'; 
+            detailImageWrapper.style.display = 'flex'; 
+            dynamicContent.style.display = 'none'; 
 
-            // Construct the URL using Laravel's route helper (via JS global var or direct string)
+            
             const url = `{{ route('work_requests.show', ['request' => ':requestId']) }}`.replace(':requestId', requestId);
 
             const isMobile = window.innerWidth <= 992;
@@ -354,11 +354,11 @@
                         `/hubungi/${requestId}`
                     );
 
-                    // Populate the detail panel with fetched data
+                    
                     detailTitle.textContent = data.title;
-                    detailInstruction.style.display = 'none'; // Hide "Tampilkan Detail Di sini" after loading
-                    detailImage.style.display = 'none'; // Hide the default image
-                    detailImageWrapper.style.display = 'none'; // Hide the image wrapper
+                    detailInstruction.style.display = 'none'; 
+                    detailImage.style.display = 'none'; 
+                    detailImageWrapper.style.display = 'none'; 
 
                     document.getElementById('detail-profile').textContent = data.requester_first_name;
                     document.getElementById('detail-location').textContent = data.location;
@@ -367,7 +367,7 @@
                     document.getElementById('detail-description-text').textContent = data.description;
                     document.getElementById('detail-price-value').textContent = formatRupiah(data.price);
 
-                    dynamicContent.style.display = 'flex'; // Show the populated dynamic content
+                    dynamicContent.style.display = 'flex'; 
 
                     if (isMobile) {
                         document.getElementById('modal-detail-title').textContent = data.title;
@@ -385,7 +385,7 @@
                     detailInstruction.textContent = lang.gagal_memuat_detail_pesan;
                     detailInstruction.style.display = 'block';
                     detailImage.style.display = 'block';
-                    detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
+                    detailImageWrapper.style.display = 'flex'; 
                     dynamicContent.style.display = 'none';
                 });
         }
@@ -403,7 +403,7 @@
             }
         });
 
-        // Fungsi untuk menyembunyikan detail permintaan kerja dan mengembalikan ke tampilan awal
+        
         function hideRequestDetails() {
             const detailTitle = document.getElementById('detail-title');
             const detailInstruction = document.getElementById('detail-instruction');
@@ -418,17 +418,17 @@
             detailTitle.textContent = "{{ __('browse-work.detail_pilih_lowongan') }}";
             detailInstruction.textContent = "{{ __('browse-work.detail_tampilkan_disini') }}";
             detailInstruction.style.display = 'block';
-            detailImage.style.display = 'block'; // Show placeholder image
-            detailImageWrapper.style.display = 'flex'; // Ensure the image wrapper is visible
-            dynamicContent.style.display = 'none'; // Hide dynamic content
+            detailImage.style.display = 'block'; 
+            detailImageWrapper.style.display = 'flex'; 
+            dynamicContent.style.display = 'none'; 
             document.getElementById('offer-amount-input').value = '';
             document.getElementById('modal-offer-amount-input').value = '';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            hideRequestDetails(); // Set state awal saat halaman dimuat
+            hideRequestDetails(); 
 
-            // Event listener untuk setiap kartu pekerjaan
+            
             document.querySelectorAll('.job-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     const targetButton = e.target.closest('.detail-button');
@@ -451,7 +451,7 @@
                 submitOffer(amount);
             });
 
-            // Event listener untuk paginasi
+            
             document.querySelectorAll('.page-number').forEach(item => {
                 item.addEventListener('click', function(e) {
                     if (item.classList.contains('item-active')) {
@@ -460,28 +460,28 @@
                 });
             });
 
-            // Event listener untuk tombol close pada modal mobile
+            
             document.getElementById('modal-close-button').addEventListener('click', function() {
                 document.getElementById('job-details-modal').classList.remove('show');
             });
 
-            // Event listener untuk menutup modal mobile saat mengklik di luar area konten
+            
             document.getElementById('job-details-modal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     this.classList.remove('show');
                 }
             });
 
-            // --- Bagian yang dimodifikasi untuk Pop-up Konfirmasi ---
-            // Get the confirmation modal elements
-            // PENTING: Pastikan #accept-job-confirmation-modal ada di HTML dan dimuat sebelum script ini.
+            
+            
+            
             const acceptJobConfirmationModalElement = document.getElementById('accept-job-confirmation-modal');
             if (acceptJobConfirmationModalElement) {
                 const acceptJobConfirmationModal = new bootstrap.Modal(acceptJobConfirmationModalElement);
                 const confirmAcceptJobButton = document.getElementById('confirm-accept-job');
                 const cancelAcceptJobButton = document.getElementById('cancel-accept-job');
 
-                // Event listener for "Terima" buttons (both desktop and mobile modal)
+                
                 const acceptButtons = document.querySelectorAll('#button-terima, .btn-terima-modal');
                 acceptButtons.forEach(button => {
                     button.addEventListener('click', function() {
@@ -489,21 +489,21 @@
                             window.showCustomAlert(lang.pilih_pekerjaan_dulu, 'error');
                             return;
                         }
-                        // Show the confirmation modal instead of direct confirm()
+                        
                         acceptJobConfirmationModal.show();
                     });
                 });
 
-                // Event listener for "Ya, Saya Yakin" button inside the confirmation modal
-                if (confirmAcceptJobButton) { // Tambahkan cek null
+                
+                if (confirmAcceptJobButton) { 
                     confirmAcceptJobButton.addEventListener('click', function() {
                         if (!currentRequestId) {
                             window.showCustomAlert(lang.gagal_dapatkan_id, 'error');
-                            acceptJobConfirmationModal.hide(); // Hide modal if no ID
+                            acceptJobConfirmationModal.hide(); 
                             return;
                         }
                         const pathTemplate = '/job-taker/cari-kerja/:id';
-                        // Ganti :id dengan nilai dari currentRequestId
+                        
                         const finalUrl = pathTemplate.replace(':id', currentRequestId);
                         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
                             'content');
@@ -524,7 +524,7 @@
                             })
                             .then(data => {
                                 if (data.success) {
-                                    // alert(data.message);
+                                    
                                     window.location.href = data.redirect_url;
                                 } else {
                                     window.showCustomAlert(data.message || lang.kesalahan_memproses,
@@ -537,13 +537,13 @@
                             })
                             .finally(() => {
                                 acceptJobConfirmationModal
-                                    .hide(); // Hide modal after fetch completes (success or failure)
+                                    .hide(); 
                             });
                     });
                 }
 
-                // Event listener for "Kembali" button inside the confirmation modal
-                if (cancelAcceptJobButton) { // Tambahkan cek null
+                
+                if (cancelAcceptJobButton) { 
                     cancelAcceptJobButton.addEventListener('click', function() {
                         acceptJobConfirmationModal.hide();
                     });
@@ -551,9 +551,9 @@
             } else {
                 console.error('Elemen modal konfirmasi dengan ID "accept-job-confirmation-modal" tidak ditemukan.');
             }
-            // --- Akhir Bagian yang dimodifikasi ---
+            
 
-            // Event listener untuk resize window (sudah benar)
+            
             window.addEventListener('resize', () => {
                 const isMobile = window.innerWidth <= 992;
                 const modal = document.getElementById('job-details-modal');

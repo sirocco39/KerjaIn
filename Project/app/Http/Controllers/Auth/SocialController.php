@@ -31,7 +31,7 @@ class SocialController extends Controller
                 $user->save();
             }
         } else {
-            // Generate random password (plain)
+            
             $randomPassword = uniqid('pass_', true);
 
             $user = User::create([
@@ -42,17 +42,17 @@ class SocialController extends Controller
                 'google_id'  => $googleUser->getId(),
             ]);
 
-            // // Send the random password email
-            // Mail::to($user->email)->send(new SendRandomPasswordMail($randomPassword));
+            
+            
 
-            // // Optionally: show password reset popup
-            // Session::flash('showPasswordResetPopup', true);
+            
+            
         }
 
         Auth::login($user);
         $firstName = Auth::user()->first_name ?? 'Pengguna';
 
-        // Changed to custom alert
+        
         return redirect('/job-req/beranda')->with('custom_blue_alert', __('alerts.login_berhasil', ['nama' => $firstName]));
     }
 }

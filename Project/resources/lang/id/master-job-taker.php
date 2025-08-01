@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Navbar
+    
     'peran_pekerja' => 'Peran: Pekerja',
     'peran_pelanggan' => 'Peran: Klien',
     'beranda' => 'Beranda',
@@ -10,13 +10,13 @@ return [
     'riwayat' => 'Riwayat',
     'bahasa' => 'Bahasa',
 
-    // User Dropdown
+    
     'profil' => 'Profil',
     'saldo' => 'Saldo',
     'ganti_peran' => 'Ganti Peran',
     'keluar' => 'Keluar',
     
-    // Footer
+    
     'footer_quote' => 'Kami selalu mengusahakan yang terbaik buat pelanggan dan memberikan pelayanan terbaik yang kami bisa.',
     'fitur' => 'Fitur',
     'penawaran' => 'Penawaran',

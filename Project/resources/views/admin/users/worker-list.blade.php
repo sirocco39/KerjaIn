@@ -8,7 +8,7 @@
             <div class="card mb-4">
                 <div class="card-header pb-0">
                     <h6>{{ __('admin/users.worker_list') }}</h6>
-                    {{-- Search Bar for Workers List --}}
+                    
                     <div class="p-0 position-relative mt-3">
                         <form id="workersSearchForm" action="{{ route('admin.users.workers') }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
@@ -17,10 +17,10 @@
                             </div>
                         </form>
                         <div id="workersSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto; display: none;">
-                            {{-- Search results will be displayed here --}}
+                            
                         </div>
                     </div>
-                    {{-- End Search Bar --}}
+                    
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     @if(request('search_query') && $workers->isEmpty())
@@ -69,7 +69,7 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         <a href="{{ route('admin.users.activityLog', ['user' => $worker->id, 'from' => url()->full()]) }}" class="btn btn-sm btn-outline-primary mb-0" id="lihat-aktivitas">{{ __('admin/users.view_activity') }}</a>
-                                        {{-- Add other action buttons if needed --}}
+                                        
                                     </td>
                                 </tr>
                                 @empty
@@ -93,7 +93,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- JavaScript for Search Recommendations on Workers List Page ---
+        
         const workersSearchInput = document.getElementById('workersSearchInput');
         const workersSearchResults = document.getElementById('workersSearchResults');
         const workersSearchForm = document.getElementById('workersSearchForm');
@@ -104,18 +104,18 @@
                 clearTimeout(searchTimeoutWorkers);
                 const query = this.value;
 
-                if (query.length > 2) { // Start searching after 2 characters
+                if (query.length > 2) { 
                     searchTimeoutWorkers = setTimeout(() => {
-                        // This AJAX call should specifically search for workers
+                        
                         fetch(`{{ route('admin.users.search-ajax', ['is_worker' => 1]) }}&query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                workersSearchResults.innerHTML = ''; // Clear previous results
+                                workersSearchResults.innerHTML = ''; 
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        // Link back to the workers page with the search_query parameter
-                                        a.href = `{{ route('admin.users.workers') }}?search_query=${item.id}`; // Filter by user ID
+                                        
+                                        a.href = `{{ route('admin.users.workers') }}?search_query=${item.id}`; 
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name}`;
                                         workersSearchResults.appendChild(a);
@@ -123,21 +123,21 @@
                                 } else {
                                     workersSearchResults.innerHTML = '<div class="list-group-item">Tidak ada pekerja ditemukan.</div>';
                                 }
-                                workersSearchResults.style.display = 'block'; // Show results
+                                workersSearchResults.style.display = 'block'; 
                             })
                             .catch(error => {
                                 console.error('Error fetching search results:', error);
                                 workersSearchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                                 workersSearchResults.style.display = 'block';
                             });
-                    }, 300); // Debounce 300ms
+                    }, 300); 
                 } else {
-                    workersSearchResults.innerHTML = ''; // Clear if query is too short
-                    workersSearchResults.style.display = 'none'; // Hide results
+                    workersSearchResults.innerHTML = ''; 
+                    workersSearchResults.style.display = 'none'; 
                 }
             });
 
-            // Hide search results when clicking outside the input or results
+            
             document.addEventListener('click', function(event) {
                 if (!workersSearchInput.contains(event.target) && !workersSearchResults.contains(event.target)) {
                     workersSearchResults.innerHTML = '';
@@ -145,11 +145,11 @@
                 }
             });
 
-            // Handle Enter key: submit form
+            
             workersSearchInput.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default form submission behavior
-                    workersSearchForm.submit(); // Manually submit the form
+                    event.preventDefault(); 
+                    workersSearchForm.submit(); 
                 }
             });
         }

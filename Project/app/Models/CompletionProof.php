@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CompletionProof extends Model
 {
-    /** @use HasFactory<\Database\Factories\CompletionProofFactory> */
+    
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'transaction_id',

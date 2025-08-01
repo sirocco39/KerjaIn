@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // balance.blade.php
+    
     'wallet_and_balance' => 'Dompet & Saldo',
     'active_balance' => 'Saldo Aktif',
     'top_up' => 'Top-up',
@@ -10,7 +10,7 @@ return [
     'no_transactions_yet' => 'Yah, belum ada transaksi',
     'top_up_payment_history_desc' => 'Riwayat pengisian saldo dan pembayaran akan muncul di sini.',
 
-    // top-up.blade.php
+    
     'fill_balance' => 'Isi Saldo',
     'your_active_balance' => 'Saldo Aktif Anda',
     'top_up_amount' => 'Nominal Top Up',

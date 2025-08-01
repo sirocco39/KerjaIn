@@ -8,8 +8,8 @@ use App\Models\CompletionProof;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use App\Models\Request as JobRequest; // Alias Request to JobRequest
-use App\Models\Report; // Add this import
+use App\Models\Request as JobRequest; 
+use App\Models\Report; 
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -20,18 +20,18 @@ class WorkerTransactionController extends Controller
 {
     public function index()
     {
-        // Get the authenticated user's ID (this is the worker)
+        
         $userId = Auth::id();
 
-        // Fetch all orders where the authenticated user is the WORKER
-        // Eager load request, its requester, and the reviewAboutWorker relationship
+        
+        
         $transactions = Transaction::withTrashed()
-            ->with(['request.requester', 'worker', 'reviewAboutWorker']) // Load the specific review for the worker
+            ->with(['request.requester', 'worker', 'reviewAboutWorker']) 
             ->where('worker_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Add a 'status_text' attribute and review-related flags/data to each transaction
+        
         $allOrders = $transactions->map(function ($transaction) use ($userId) {
             switch ($transaction->status) {
                 case 'accepted':
@@ -50,41 +50,41 @@ class WorkerTransactionController extends Controller
                     $transaction->status_text = 'Dibatalin';
                     break;
                 default:
-                    $transaction->status_text = ucfirst($transaction->status); // Fallback for other statuses
+                    $transaction->status_text = ucfirst($transaction->status); 
                     break;
             }
 
-            // Check if there's a review *about this worker* for this transaction
-            // Use the relation name 'reviewAboutWorker'
+            
+            
             $transaction->has_review = $transaction->reviewAboutWorker()->exists();
-            $transaction->received_review = $transaction->reviewAboutWorker; // Get the review object itself
+            $transaction->received_review = $transaction->reviewAboutWorker; 
 
-            // NEW: Load worker's report about the requester for this transaction
-            // The `userReport` relationship is a HasOne, so it will fetch the first report found.
-            // For allowing multiple reports, the frontend will simply present a fresh form.
+            
+            
+            
             $workerReportForTransaction = Report::where('transaction_id', $transaction->id)
-                ->where('reporter_id', $userId) // Reporter is the current worker
-                ->where('reported_id', $transaction->requester_id) // Reported is the requester of this transaction
+                ->where('reporter_id', $userId) 
+                ->where('reported_id', $transaction->requester_id) 
                 ->first();
 
             $transaction->workerReport = $workerReportForTransaction;
             $transaction->has_worker_report = ($workerReportForTransaction !== null);
 
-            // Ensure workerReport object is available and its properties are decoded for Blade
+            
             if ($transaction->workerReport) {
                 $transaction->workerReport->decoded_photo_urls = json_decode($transaction->workerReport->photo_url, true) ?? [];
-                // Add timezone conversion for display if created_at is used
+                
                 $transaction->workerReport->created_at_formatted_for_blade = \Carbon\Carbon::parse($transaction->workerReport->created_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i');
             } else {
-                // Create a dummy object if no report exists, to prevent errors in Blade
+                
                 $transaction->workerReport = (object)[
                     'decoded_photo_urls' => [],
                     'reasons' => null,
-                    'created_at_formatted_for_blade' => '-', // Default for no report
+                    'created_at_formatted_for_blade' => '-', 
                 ];
             }
 
-            // Add formatted finish_work to the transaction for Blade display
+            
             $transaction->finish_work_formatted_for_blade = $transaction->finish_work
                 ? \Carbon\Carbon::parse($transaction->finish_work)->setTimezone('Asia/Jakarta')->format('d - m - Y')
                 : '-';
@@ -92,7 +92,7 @@ class WorkerTransactionController extends Controller
             return $transaction;
         });
 
-        // Prepare data for different tabs based on your string statuses
+        
         $pendingOrders = $allOrders->filter(function ($transaction) {
             return in_array($transaction->status, ['accepted', 'in progress', 'submitted']);
         });
@@ -103,7 +103,7 @@ class WorkerTransactionController extends Controller
             return $transaction->status === 'cancelled';
         });
 
-        // Render the specified Blade view
+        
         return view('job-taker.history', compact('allOrders', 'pendingOrders', 'completedOrders', 'cancelledOrders'));
     }
 
@@ -111,13 +111,13 @@ class WorkerTransactionController extends Controller
     {
         $transaction = Transaction::findOrFail($id);
 
-        // Authorization check: only the worker of the transaction can view this page
+        
         if (Auth::id() !== $transaction->worker_id) {
             activity()
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan akses tidak sah ke halaman pekerjaan yang diterima #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->log("Percobaan akses tidak sah ke halaman pekerjaan yang diterima #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
             return redirect()->route('job-taker.home')->with('custom_error_alert', __('alerts.anda_tidak_berwenang_melihat'));
         }
 
@@ -138,17 +138,17 @@ class WorkerTransactionController extends Controller
             ]);
         }
 
-        // NEW: Check if a review already exists for this worker on this transaction (from requester)
-        $hasReview = $transaction->reviewAboutWorker()->exists(); // Review given by requester about worker
-        $receivedReview = $transaction->reviewAboutWorker; // Get the review object itself
+        
+        $hasReview = $transaction->reviewAboutWorker()->exists(); 
+        $receivedReview = $transaction->reviewAboutWorker; 
 
-        // NEW: Check if a review already exists FROM this worker ABOUT the requester for this transaction
-        $hasReviewRequester = $transaction->reviewAboutRequester()->exists(); // Review given by worker about requester
-        $receivedReviewRequester = $transaction->reviewAboutRequester; // This will be null if no review exists
+        
+        $hasReviewRequester = $transaction->reviewAboutRequester()->exists(); 
+        $receivedReviewRequester = $transaction->reviewAboutRequester; 
 
-        // NEW: Check if a report already exists FROM this worker ABOUT the requester for this transaction
-        // The `userReport` relationship is a HasOne, so it will fetch the first report found.
-        // For allowing multiple reports, the frontend will simply present a fresh form.
+        
+        
+        
         $hasWorkerReport = Report::where('transaction_id', $transaction->id)
             ->where('reporter_id', Auth::id())
             ->where('reported_id', $transaction->requester_id)
@@ -157,17 +157,17 @@ class WorkerTransactionController extends Controller
         $workerReport = null;
         if ($hasWorkerReport) {
             $workerReport = $hasWorkerReport;
-            // Decode photo_url if it's stored as JSON
+            
             $workerReport->decoded_photo_urls = json_decode($workerReport->photo_url, true) ?? [];
         } else {
-            // Create a dummy object if no report exists, to prevent errors in Blade
+            
             $workerReport = (object)[
                 'decoded_photo_urls' => [],
                 'reasons' => null,
             ];
         }
 
-        // Format times for display in UTC+7
+        
         $transactionStartWorkFormatted = $transaction->start_work
             ? \Carbon\Carbon::parse($transaction->start_work)->setTimezone('Asia/Jakarta')->format('d M Y H:i')
             : '-';
@@ -179,7 +179,7 @@ class WorkerTransactionController extends Controller
 
         $workerCreatedAtYear = \Carbon\Carbon::parse($worker->created_at)->setTimezone('Asia/Jakarta')->format('F Y');
 
-        // Kirim ke view
+        
         return view('job-taker.accepted-work-request', compact(
             'transaction',
             'request',
@@ -188,11 +188,11 @@ class WorkerTransactionController extends Controller
             'room',
             'hasReview',
             'receivedReview',
-            'hasReviewRequester', // Pass this flag
-            'receivedReviewRequester', // Pass the review about requester if it exists
-            'hasWorkerReport', // Pass this flag for worker's own report
-            'workerReport', // Pass the worker's report object if it exists
-            'transactionStartWorkFormatted', // Pass formatted times
+            'hasReviewRequester', 
+            'receivedReviewRequester', 
+            'hasWorkerReport', 
+            'workerReport', 
+            'transactionStartWorkFormatted', 
             'transactionFinishWorkFormatted',
             'transactionCreatedAtFormatted',
             'transactionUpdatedAtFormatted',
@@ -204,7 +204,7 @@ class WorkerTransactionController extends Controller
     {
         $transaction = Transaction::findOrFail($id);
 
-        // Ensure only the assigned worker can start the job
+        
         if (Auth::id() !== $transaction->worker_id) {
             return response()->json([
                 'success' => false,
@@ -220,21 +220,21 @@ class WorkerTransactionController extends Controller
         }
 
         $transaction->status = 'in progress';
-        $transaction->start_work = Carbon::now('UTC'); // Save in UTC
+        $transaction->start_work = Carbon::now('UTC'); 
         $transaction->save();
 
         activity()
             ->inLog('Transaction')
             ->performedOn($transaction)
             ->causedBy(Auth::user())
-            ->log("Pekerja telah memulai pekerjaan untuk transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+            ->log("Pekerja telah memulai pekerjaan untuk transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
 
-        // Return JSON response for AJAX requests
+        
         return response()->json([
             'success' => true,
             'message' => __('alerts.job_started'),
             'new_status' => $transaction->status,
-            'start_work_time' => $transaction->start_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), // Display UTC+7
+            'start_work_time' => $transaction->start_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), 
         ]);
     }
 
@@ -248,7 +248,7 @@ class WorkerTransactionController extends Controller
     public function uploadProof(Request $request, Transaction $transaction)
     {
         try {
-            // Ensure only the assigned worker can upload proof
+            
             if (Auth::id() !== $transaction->worker_id) {
                 return response()->json([
                     'success' => false,
@@ -264,80 +264,80 @@ class WorkerTransactionController extends Controller
             }
             $request->validate([
                 'photo' => 'required|array',
-                'photo.*' => 'image|max:5120', // Max 5MB per image, consistent with previous context
-                'note' => 'nullable|string|max:2000', // Added max length for note
+                'photo.*' => 'image|max:5120', 
+                'note' => 'nullable|string|max:2000', 
             ]);
 
             $uploadedPhotoUrls = [];
             foreach ($request->file('photo') as $file) {
-                // Store the file in 'completion_proofs' directory under 'public' disk
+                
                 $path = $file->store('completion_proofs', 'public');
-                // Get the public URL for the stored file
+                
                 $photoUrl = Storage::url($path);
                 $uploadedPhotoUrls[] = $photoUrl;
             }
 
-            // Create a single CompletionProof record with JSON-encoded photo_url
+            
             CompletionProof::updateOrCreate(
-                ['transaction_id' => $transaction->id], // Find by transaction_id
+                ['transaction_id' => $transaction->id], 
                 [
-                    'photo_url' => json_encode($uploadedPhotoUrls), // Store as JSON array
+                    'photo_url' => json_encode($uploadedPhotoUrls), 
                     'note' => $request->note,
-                    'submitted_at' => Carbon::now('UTC'), // Save in UTC
+                    'submitted_at' => Carbon::now('UTC'), 
                 ]
             );
 
-            // Update the transaction status to 'submitted' and set finish_work timestamp
+            
             $transaction->status = 'submitted';
-            $transaction->finish_work = Carbon::now('UTC'); // Save in UTC
+            $transaction->finish_work = Carbon::now('UTC'); 
             $transaction->save();
 
             activity()
-                ->inLog('Transaction') // Kelompokkan ke log 'Transaction'
-                ->performedOn($transaction) // Targetnya adalah transaksi ini
-                ->causedBy(Auth::user())    // Pelakunya adalah pekerja yang login
-                ->withProperties(['uploaded_photos' => $uploadedPhotoUrls, 'note' => $request->note]) // Simpan URL foto & catatan
-                ->log("Pekerja telah mengunggah bukti penyelesaian pekerjaan pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->inLog('Transaction') 
+                ->performedOn($transaction) 
+                ->causedBy(Auth::user())    
+                ->withProperties(['uploaded_photos' => $uploadedPhotoUrls, 'note' => $request->note]) 
+                ->log("Pekerja telah mengunggah bukti penyelesaian pekerjaan pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
 
-            // Return a JSON success response for AJAX requests
+            
             return response()->json([
                 'success' => true,
               'message' => __('alerts.proof_uploaded_success'),
-                'photo_urls' => $uploadedPhotoUrls, // Optionally return uploaded URLs
+                'photo_urls' => $uploadedPhotoUrls, 
                 'new_status' => $transaction->status,
-                'finish_work_time' => $transaction->finish_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), // Display UTC+7
-                'next_action' => 'show_review_modal' // Indicate next action for frontend
+                'finish_work_time' => $transaction->finish_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), 
+                'next_action' => 'show_review_modal' 
             ]);
         } catch (ValidationException $e) {
-            // Return JSON response for validation errors
+            
             return response()->json([
                 'success' => false,
                  'message' => __('alerts.validation_failed'),
                 'errors' => $e->errors()
-            ], 422); // 422 Unprocessable Entity for validation errors
+            ], 422); 
         } catch (\Exception $e) {
-            // Log the actual error for debugging
+            
             Log::error("Error uploading proof for transaction {$transaction->id}: " . $e->getMessage());
 
-            // Return JSON response for other general errors
+            
             return response()->json([
                 'success' => false,
                   'message' => __('alerts.error_uploading_proof') . ' ' . $e->getMessage()
-            ], 500); // 500 Internal Server Error
+            ], 500); 
         }
     }
 
-    // This `markComplete` method in WorkerTransactionController is likely for when a worker marks it complete.
-    // However, the payment release logic usually happens from the requester's side.
-    // If this method is indeed for worker to mark as "submitted", keep it simple.
-    // If it's intended to finalize, it needs more robust logic.
-    // Assuming it's for worker to set status to 'submitted'
+    
+    
+    
+    
+    
     public function markComplete(Transaction $transaction)
     {
-        // This method in WorkerTransactionController should perhaps not finalize the payment,
-        // but merely transition the status to 'submitted' from the worker's perspective.
-        // The actual 'completed' status and payment release should ideally be triggered by the requester.
-        // If this method is called, it means the worker is confirming completion, awaiting requester's finalization.
+        
+        
+        
+        
 
         if (Auth::id() !== $transaction->worker_id) {
             return response()->json([
@@ -348,20 +348,20 @@ class WorkerTransactionController extends Controller
 
         if ($transaction->status === 'in progress') {
             $transaction->status = 'submitted';
-            $transaction->finish_work = Carbon::now('UTC'); // Ensure finish_work is set here in UTC
+            $transaction->finish_work = Carbon::now('UTC'); 
             $transaction->save();
 
             activity()
                 ->inLog('Transaction')
                 ->performedOn($transaction)
                 ->causedBy(Auth::user())
-                ->log("Pekerja telah menandai pekerjaan #{$transaction->order_number} sebagai 'submitted' pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->log("Pekerja telah menandai pekerjaan #{$transaction->order_number} sebagai 'submitted' pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
 
             return response()->json([
                 'success' => true,
                 'message' => __('alerts.job_marked_submitted_success'),
                 'new_status' => $transaction->status,
-                'finish_work_time' => $transaction->finish_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), // Display UTC+7
+                'finish_work_time' => $transaction->finish_work->setTimezone('Asia/Jakarta')->format('d M Y H:i'), 
             ]);
         }
 
@@ -372,26 +372,26 @@ class WorkerTransactionController extends Controller
     }
 
 
-    public function storeReport(Request $request, $transactionId) // Changed method name to avoid conflict, used 'Request' alias
+    public function storeReport(Request $request, $transactionId) 
     {
-        // Validate the incoming request data
+        
         $request->validate([
             'reasons' => 'required|string|max:2000',
-            'photo' => 'required|array|min:1|max:7', // At least 1, max 7 photos
-            'photo.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120', // Each photo max 5MB
+            'photo' => 'required|array|min:1|max:7', 
+            'photo.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:5120', 
             'reporter_id' => 'required|exists:users,id',
             'reported_id' => 'required|exists:users,id',
         ]);
 
         $transaction = Transaction::findOrFail($transactionId);
 
-        // Authorization check: only the worker of the transaction can report about the requester
+        
         if (Auth::id() !== $transaction->worker_id || $request->reporter_id != Auth::id()) {
             activity()
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->log("Percobaan laporan tidak sah transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
           return response()->json([
                 'success' => false,
                 'message' => __('alerts.not_authorized_to_report')
@@ -399,21 +399,21 @@ class WorkerTransactionController extends Controller
         }
 
         try {
-            $photoUrls = []; // Array to store public URLs of uploaded photos
+            $photoUrls = []; 
 
             foreach ($request->file('photo') as $file) {
-                $path = $file->store('reports/photos', 'public'); // Store in storage/app/public/reports/photos
-                $photoUrls[] = Storage::url($path); // Get public URL for storage
+                $path = $file->store('reports/photos', 'public'); 
+                $photoUrls[] = Storage::url($path); 
             }
 
-            // Always create a new report entry
+            
             Report::create([
                 'transaction_id' => $transaction->id,
                 'reporter_id' => $request->reporter_id,
                 'reported_id' => $request->reported_id,
                 'reasons' => $request->reasons,
-                'photo_url' => json_encode($photoUrls), // Store JSON encoded array of URLs
-                'status' => 'Not Reviewed', // Default status for a new report
+                'photo_url' => json_encode($photoUrls), 
+                'status' => 'Not Reviewed', 
             ]);
 
             activity()
@@ -426,7 +426,7 @@ class WorkerTransactionController extends Controller
                     'reasons' => $request->reasons,
                     'photo_count' => count($photoUrls)
                 ])
-                ->log("Pekerja telah mengajukan laporan untuk transaksi #{$transaction->order_number} mengenai klien pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->log("Pekerja telah mengajukan laporan untuk transaksi #{$transaction->order_number} mengenai klien pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
 
             return response()->json([
                 'success' => true,
@@ -441,31 +441,31 @@ class WorkerTransactionController extends Controller
         }
     }
 
-    public function storeReview(Request $request, Transaction $transaction) // Changed method name to avoid conflict
+    public function storeReview(Request $request, Transaction $transaction) 
     {
-        // Validate the incoming request data
+        
         $request->validate([
             'transaction_id' => 'required|exists:transactions,id',
             'reviewer_id' => 'required|exists:users,id',
             'reviewee_id' => 'required|exists:users,id',
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|max:1000', // Added max length for comment
+            'comment' => 'required|string|max:1000', 
         ]);
 
-        // Authorization check: only the worker of the transaction can review the requester
+        
         if (Auth::id() !== $transaction->worker_id || $request->reviewer_id != Auth::id() || $request->reviewee_id != $transaction->requester_id) {
             activity()
                 ->inLog('Security')
                 ->on($transaction)
                 ->causedBy(Auth::user())
-                ->log("Percobaan ulasan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->log("Percobaan ulasan tidak sah transaksi #{$transaction->order_number} oleh user bukan pekerja pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
            return response()->json([
                 'success' => false,
                 'message' => __('alerts.not_authorized_to_review')
             ], 403);
         }
 
-        // Check if a review already exists from this worker about this requester for this transaction
+        
         $existingReview = Review::where('transaction_id', $transaction->id)
             ->where('reviewer_id', Auth::id())
             ->where('reviewee_id', $transaction->requester_id)
@@ -487,7 +487,7 @@ class WorkerTransactionController extends Controller
                 'comment' => $request->comment,
             ]);
 
-            // Update the average rating for the reviewee (requester in this case)
+            
             $averageRating = Review::where('reviewee_id', $request->reviewee_id)->avg('rating');
             User::where('id', $request->reviewee_id)->update(['rating' => $averageRating]);
 
@@ -501,7 +501,7 @@ class WorkerTransactionController extends Controller
                     'rating' => $request->rating,
                     'comment' => $request->comment
                 ])
-                ->log("Pekerja telah memberikan ulasan ({$request->rating} bintang) untuk klien transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); // Log in Asia/Jakarta timezone
+                ->log("Pekerja telah memberikan ulasan ({$request->rating} bintang) untuk klien transaksi #{$transaction->order_number} pada " . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . "."); 
 
            return response()->json([
                 'success' => true,

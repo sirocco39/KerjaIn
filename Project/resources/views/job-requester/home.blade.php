@@ -27,7 +27,7 @@
                         @php
                             $hasTransaction = $r->transaction ? 'true' : 'false';
 
-                            // NEW: Explicitly format dates/times in UTC for display consistency
+                            
                             $startDateTimeUTC = \Carbon\Carbon::parse($r->start_time)->setTimezone('UTC');
                             $endDateTimeUTC = \Carbon\Carbon::parse($r->end_time)->setTimezone('UTC');
 
@@ -36,10 +36,10 @@
                             $formattedEndTime = $endDateTimeUTC->format('H.i');
 
                             $displayDateRange = $formattedStartDate;
-                            // Check if the job spans multiple UTC days
+                            
                             if ($startDateTimeUTC->format('Y-m-d') !== $endDateTimeUTC->format('Y-m-d')) {
                                 $displayDateRange .= ' - ' . $endDateTimeUTC->format('d M Y');
-                            }
+                        }
                             
                         @endphp
                         <div class="work-request p-4 d-flex flex-column"
@@ -60,7 +60,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Date">
                                     </div>
-                                    {{-- Use the new variable for multi-day date display (UTC) --}}
+                                    
                                     <span>{{ $displayDateRange }}</span>
                                 </li>
 
@@ -68,7 +68,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Clock">
                                     </div>
-                                    {{-- Use the formatted UTC times directly --}}
+                                    
                                     <span>{{ $formattedStartTime }} - {{ $formattedEndTime }}</span>
                                 </li>
 
@@ -123,7 +123,7 @@
         </div>
     </div>
 
-    {{-- Pop Up Detail --}}
+    
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -206,13 +206,13 @@
         </div>
     </div>
 
-    {{-- End Pop Up Detail --}}
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('detailModal');
             const deleteModal = document.getElementById('deleteConfirmation');
 
-            // Elemen-elemen dalam modal detail
+            
             const modalTitle = document.getElementById('modal-detail-title');
             const modalLocation = document.getElementById('modal-detail-location');
             const modalDate = document.getElementById('modal-detail-date');
@@ -227,25 +227,25 @@
 
 
             modal.addEventListener('show.bs.modal', function(event) {
-                // Tombol yang memicu modal
+                
                 const button = event.relatedTarget;
                 const slug = button.getAttribute('data-slug');
-                const editUrl = button.getAttribute('data-edit-url'); // Ambil URL edit dari tombol
+                const editUrl = button.getAttribute('data-edit-url'); 
                 const deleteUrl = button.getAttribute('data-delete-url');
 
-                // Reset isi modal untuk menghindari tampilan data lama
+                
                 modalTitle.textContent = 'Loading...';
                 modalLocation.textContent = '-';
                 modalDate.textContent = '-';
                 modalTime.textContent = '-';
                 modalPrice.textContent = '-';
-                // buttonAction1.innerHTML = '';
-                // buttonAction2.innerHTML = '';
-                // buttonAction3.innerHTML = '';
+                
+                
+                
                 modalDescription.textContent = 'Memuat deskripsi...';
                 modalStatus.innerHTML = '<p class="mb-0">Memuat status...</p>';
 
-                // Fetch data pekerjaan berdasarkan slug
+                
                 fetch(`/request/${slug}`)
                     .then(response => {
                         if (!response.ok) {
@@ -260,15 +260,15 @@
                         modalTitle.textContent = data.title || '-';
                         modalLocation.textContent = data.location || '-';
 
-                        // NEW: Format date in UTC for consistency with card
-                        // Using 'en-GB' for 'd M Y' format, and timeZone: 'UTC'
+                        
+                        
                         modalDate.textContent = startDatetime.toLocaleDateString('en-GB', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
-                            timeZone: 'UTC' // Display UTC date
+                            timeZone: 'UTC' 
                         });
-                        // Add check for multi-day span in modal date (still in UTC)
+                        
                         if (startDatetime.getUTCFullYear() !== endDatetime.getUTCFullYear() ||
                             startDatetime.getUTCMonth() !== endDatetime.getUTCMonth() ||
                             startDatetime.getUTCDate() !== endDatetime.getUTCDate()) {
@@ -276,12 +276,12 @@
                                 day: '2-digit',
                                 month: 'short',
                                 year: 'numeric',
-                                timeZone: 'UTC' // Display UTC end date
+                                timeZone: 'UTC' 
                             })}`;
                         }
 
-                        // NEW: Format time in UTC for consistency with card
-                        // Function to format time in UTC (HH.ii format)
+                        
+                        
                         function formatTimeInUTC(date) {
                             const hours = date.getUTCHours().toString().padStart(2, '0');
                             const minutes = date.getUTCMinutes().toString().padStart(2, '0');
@@ -294,7 +294,7 @@
                         });
                         modalDescription.textContent = data.description || '-';
 
-                        // Tentukan status berdasarkan data
+                        
                         if (data.status === 'open') {
                             modalStatus.innerHTML = `<p class="mb-0">{{ __('home-job-req.status_menunggu_mitra') }}</p>`;
                             buttonAction1.innerHTML =
@@ -310,7 +310,7 @@
                             modalStatus.innerHTML = `<p class="mb-0">Status Tidak Diketahui</p>`;
                         }
 
-                        // Perbarui tombol kembali
+                        
                         const kembaliButton = document.getElementById('kembali-button-section');
                         kembaliButton.setAttribute('data-slug', slug);
                         kembaliButton.setAttribute('data-bs-target', '#detailModal');
@@ -327,9 +327,9 @@
                     });
             });
 
-            // Event listener untuk menutup modal
+            
             modal.addEventListener('hidden.bs.modal', function() {
-                // Hapus kelas 'choosed' dari semua elemen 'work-request'
+                
                 const workRequestCards = document.querySelectorAll('.work-request');
                 workRequestCards.forEach(card => {
                     card.classList.remove('choosed');
@@ -353,23 +353,23 @@
                 }
             }
 
-            // Mendapatkan semua elemen dengan kelas 'work-request'
+            
             document.querySelectorAll('.work-request').forEach(card => {
                 card.addEventListener('click', function(event) {
 
-                    // Baca penanda apakah request ini punya transaksi atau tidak.
+                    
                     const hasTransaction = this.dataset.hasTransaction === 'true';
 
                     if (hasTransaction) {
-                        // ---> KONDISI 1: Request PUNYA transaksi (mode navigasi aktif)
+                        
 
-                        // Cek apakah yang diklik adalah tombol DETAIL itu sendiri atau ikon di dalamnya.
+                        
                         if (event.target.closest('.detail-req-button')) {
-                            // If yes, do nothing.
-                            // Let Bootstrap handle opening the modal.
+                            
+                            
                             return;
                         } else {
-                            // If another area on the card is clicked, navigate to the page.
+                            
                             const url = this.dataset.url;
                             if (url) {
                                 window.location.href = url;
@@ -377,10 +377,10 @@
                         }
 
                     } else {
-                        // ---> KONDISI 2: Request DOES NOT have a transaction (pop-up mode)
+                        
 
-                        // Use old logic: entire card opens modal.
-                        // Find the detail button within this card and click it programmatically.
+                        
+                        
                         const detailButton = this.querySelector('.detail-req-button');
                         if (detailButton) {
                             detailButton.click();

@@ -14,7 +14,7 @@ return [
     'pekerjaan_diambil' => 'Pekerjaan yang Sedang Anda Ambil',
     'belum_ambil_pekerjaan' => 'Anda belum pernah mengambil pekerjaan!',
 
-    // Teks di dalam kartu pekerjaan
+    
     'card' => [
         'klien_prefix' => 'Kak',
         'status_diterima' => 'Diterima',
@@ -25,7 +25,7 @@ return [
         'tombol_detail' => 'DETAIL',
     ],
 
-    // Teks di dalam modal
+    
     'modal' => [
         'judul_placeholder' => 'Nama Lowongan Kerja',
         'klien_prefix' => 'Kak',

@@ -17,7 +17,7 @@ class Chat extends Component
     public ?ChatRoom $selectedRoom = null;
     public ?Offer $activeOffer = null;
     public $newMessage = '';
-    public $showChatPanel = false; // Default: false (tampilkan list chat di mobile)
+    public $showChatPanel = false; 
     public $showOfferForm = false;
     public $offerAmount = '';
     public bool $isChatVisibleOnMobile = false;
@@ -34,21 +34,21 @@ class Chat extends Component
     public function selectRoom($roomId)
     {
         ChatMessage::where('chat_room_id', $roomId)
-            ->where('receiver_id', Auth::id()) // Pastikan hanya update pesan UNTUK kita
-            ->whereNull('read_at')          // Hanya yang belum dibaca
-            ->update(['read_at' => now()]); // Isi dengan waktu sekarang
-        // --- AKHIR LOGIKA BARU ---
+            ->where('receiver_id', Auth::id()) 
+            ->whereNull('read_at')          
+            ->update(['read_at' => now()]); 
+        
 
-        // 2. Lanjutkan sisa logika seperti biasa.
+        
         $this->selectedRoomId = $roomId;
         $this->selectedRoom = ChatRoom::with(['request', 'requester'])->find($roomId);
         $this->loadActiveOffer();
 
-        // Atur agar chat terlihat di mobile saat room dipilih
+        
         $this->isChatVisibleOnMobile = true;
 
         $this->dispatch('scroll-to-bottom');
-        $this->showChatPanel = true; // Tampilkan panel chat di mobile
+        $this->showChatPanel = true; 
     }
 
     public function backToChatList()
@@ -75,7 +75,7 @@ class Chat extends Component
     {
         if ($this->activeOffer) {
             $this->activeOffer->delete();
-            $this->activeOffer = null; // Reset active offer after deletion
+            $this->activeOffer = null; 
         }
         $this->loadActiveOffer();
     }
@@ -132,11 +132,11 @@ class Chat extends Component
 
     public function render()
     {
-        // 1. Ambil daftar chat room yang sudah ada pesannya.
+        
         $userId = Auth::id();
 
         $chatRooms = ChatRoom::where('worker_id', $userId)->where('is_open', true)
-            // Grup Kondisi 1: HARUS punya pesan ATAU penawaran
+            
             ->where(function ($query) {
                 $query->whereHas('chatMessages')
                     ->orWhereHas('offers');
@@ -149,22 +149,22 @@ class Chat extends Component
                 return max($lastMessageTime, $lastOfferTime);
             });
 
-        // --- LOGIKA BARU DITAMBAHKAN DI SINI ---
-        // 2. Cek apakah room yang sedang dipilih ada di daftar.
-        //    Ini penting jika room baru dibuat dan belum punya pesan.
+        
+        
+        
         if ($this->selectedRoomId && !$chatRooms->contains('id', $this->selectedRoomId)) {
-            // Jika tidak ada, ambil datanya secara manual.
+            
             $selectedRoomObject = ChatRoom::with(['request', 'requester', 'lastMessage'])
                 ->find($this->selectedRoomId);
 
-            // Jika room ditemukan, tambahkan ke paling atas daftar.
+            
             if ($selectedRoomObject) {
                 $chatRooms->prepend($selectedRoomObject);
             }
         }
-        // --- AKHIR LOGIKA BARU ---
+        
 
-        // 3. Kirim data yang sudah lengkap ke view.
+        
         return view('livewire.job-taker.chat', [
             'chatRooms' => $chatRooms,
         ]);

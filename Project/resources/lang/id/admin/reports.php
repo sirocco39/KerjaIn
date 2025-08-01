@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // General
+    
     'management_user_reports' => 'Manajemen Laporan Pengguna',
     'success_message' => 'Berhasil',
     'info_message' => 'Info',
@@ -36,21 +36,21 @@ return [
     'mark_as_not_reviewed' => 'Tandai sebagai Belum Ditinjau',
     'detail' => 'Detail',
 
-    // Statuses
+    
     'not_reviewed' => 'Belum Ditinjau',
     'reviewed' => 'Sudah Ditinjau',
 
-    // Index page specific
+    
     'review' => 'Tinjau',
     'already_reviewed' => 'Sudah Ditinjau',
-    'no_reports_found_status' => 'No :status reports found.', // This was 'No {status} reports found' in your original, keeping as-is with parameter
+    'no_reports_found_status' => 'No :status reports found.', 
     'mark_as_reviewed_button' => 'Tandai Sudah Ditinjau',
     'mark_as_not_reviewed_button' => 'Tandai Belum Ditinjau',
 
-    // Show page specific
+    
     'report_detail_id' => 'Detail Laporan #:id',
 
-    // Modals (reused from admin/users.php but included here for completeness)
+    
     'confirm_block_user' => 'Konfirmasi Blokir Pengguna',
     'confirm_block_message' => 'Anda akan **memblokir** pengguna <strong id="blockUserName"></strong>. Pengguna ini tidak akan bisa login atau mengakses layanan.',
     'are_you_sure_continue' => 'Apakah Anda yakin ingin melanjutkan?',

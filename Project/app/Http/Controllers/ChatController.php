@@ -10,40 +10,40 @@ use Ramsey\Uuid\Type\Decimal;
 
 class ChatController extends Controller
 {
-    //use App\Models\ChatRoom;
+    
 
-    public function startChat(int $requestId) // nama beda dengan Illuminate\Http\Request
+    public function startChat(int $requestId) 
     {
         $workerId = Auth::id();
-        // Cek apakah chatroom sudah ada
+        
         $room = ChatRoom::firstOrCreate([
             'request_id' => $requestId,
             'worker_id' => $workerId,
         ], [
-            'requester_id' => Request::find($requestId)->requester_id, // Ambil requester_id dari model Request
+            'requester_id' => Request::find($requestId)->requester_id, 
         ]);
 
 
         return redirect()->route('chat.job-taker', ['selectedRoomId' => $room->id]);
     }
 
-    public function startOffer(int $requestId, HttpRequest $request) // nama beda dengan Illuminate\Http\Request
+    public function startOffer(int $requestId, HttpRequest $request) 
     {
         $workerId = Auth::id();
-        // Cek apakah chatroom sudah ada
+        
         $room = ChatRoom::firstOrCreate([
             'request_id' => $requestId,
             'worker_id' => $workerId,
         ], [
-            'requester_id' => Request::find($requestId)->requester_id, // Ambil requester_id dari model Request
+            'requester_id' => Request::find($requestId)->requester_id, 
         ]);
-        $amount = $request->input('amount'); // Ambil nilai tawaran dari input, default 0 jika tidak ada
+        $amount = $request->input('amount'); 
         $room->offers()->create([
             'request_id'   => $room->request_id,
             'requester_id' => $room->requester_id,
             'worker_id'    => Auth::id(),
-            'amount' => $amount, // Atau nilai default lainnya
-            'status' => 'open', // Status awal tawaran
+            'amount' => $amount, 
+            'status' => 'open', 
         ]);
 
         return response()->json([
@@ -52,30 +52,30 @@ class ChatController extends Controller
         ]);
     }
 
-    public function startChatWork(int $requestId) // nama beda dengan Illuminate\Http\Request
+    public function startChatWork(int $requestId) 
     {
         $workerId = Auth::id();
-        // Cek apakah chatroom sudah ada
+        
         $room = ChatRoom::firstOrCreate([
             'request_id' => $requestId,
             'worker_id' => $workerId,
         ], [
-            'requester_id' => Request::find($requestId)->requester_id, // Ambil requester_id dari model Request
+            'requester_id' => Request::find($requestId)->requester_id, 
         ]);
 
 
         return redirect()->route('chat-work.job-taker', ['selectedRoomId' => $room->id]);
     }
 
-    public function startChatWorkReq(int $requestId) // nama beda dengan Illuminate\Http\Request
+    public function startChatWorkReq(int $requestId) 
     {
         $workerId = Auth::id();
-        // Cek apakah chatroom sudah ada
+        
         $room = ChatRoom::firstOrCreate([
             'request_id' => $requestId,
             'worker_id' => $workerId,
         ], [
-            'requester_id' => Request::find($requestId)->requester_id, // Ambil requester_id dari model Request
+            'requester_id' => Request::find($requestId)->requester_id, 
         ]);
 
 

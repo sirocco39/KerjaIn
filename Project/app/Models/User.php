@@ -60,22 +60,22 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            // Tentukan kolom mana saja yang ingin kita pantau.
+            
             ->logOnly([
                 'is_worker',
                 'is_blocked',
             ])
-            // Hanya buat log jika ada perubahan pada kolom yang dipantau.
+            
             ->logOnlyDirty()
             ->dontLogIfAttributesChangedOnly(['updated_at'])
             ->dontSubmitEmptyLogs()
-            // Beri nama log spesifik agar mudah difilter.
+            
             ->useLogName('User');
     }
 
     public function tapActivity(Activity $activity, string $eventName)
     {
-        // Ambil nama pelaku (causer) untuk deskripsi yang lebih jelas.
+        
         $causerName = $activity->causer ? $activity->causer->first_name : 'Sistem';
 
         if ($eventName === 'created') {
@@ -88,7 +88,7 @@ class User extends Authenticatable
                 'OLD_VALUES' => $activity->properties['old'] ?? [],
                 'NEW_VALUES' => $activity->properties['attributes'] ?? [],
             ]);
-            // Untuk mendapatkan atribut yang berubah, kita gunakan relasi subject
+            
             $newAttributes = $activity->subject->getDirty();
 
             if (isset($newAttributes['is_worker'])) {

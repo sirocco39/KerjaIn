@@ -24,7 +24,7 @@ return [
     'unauthorized_report_attempt' => 'Percobaan laporan tidak sah transaksi',
     'unauthorized_review_attempt' => 'Percobaan ulasan tidak sah transaksi oleh user bukan pekerja.',
 
-    // Status text for index method (should match your accepted-work-request.php or a dedicated status file)
+    
     'status_accepted' => 'Diterima',
     'status_in_progress' => 'Dikerjain',
     'status_submitted' => 'Ditinjau',

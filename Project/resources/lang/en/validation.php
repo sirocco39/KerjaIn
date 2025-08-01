@@ -42,7 +42,7 @@ return [
         'datetime' => [
             'after_start_time' => 'The end time must be after the start time.',
         ],
-        // Validation messages for file uploads from WorkerRegistrationController
+        
         'photo_url' => [
             'required' => 'Selfie Photo is required.',
             'image' => 'The file must be an image.',
@@ -97,7 +97,7 @@ return [
         'workTitleLabel' => [
             'required' => 'The job title cannot be empty.',
         ],
-        // ... other custom validation rules ...
+        
     ],
 
 
@@ -123,7 +123,7 @@ return [
         'workEndTimeLabel' => 'End Time',
     ],
 
-    // ... (pesan validasi bawaan Laravel lainnya, biarkan saja)
+    
 
     /*
     |--------------------------------------------------------------------------

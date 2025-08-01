@@ -91,7 +91,7 @@
     </table>
     @endif
 
-    {{-- Anda bisa menambahkan bagian lain seperti Review atau Achievement jika ingin --}}
+    
     @if(!$clientReviews->isEmpty())
     <h3>Ulasan Klien</h3>
     <table>

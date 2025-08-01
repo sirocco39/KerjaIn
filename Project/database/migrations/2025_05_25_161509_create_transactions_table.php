@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('requester_id')->constrained('users');
             $table->enum('status', ['accepted', 'in progress', 'submitted', 'completed', 'cancelled']);
             $table->string('order_number')->unique();
-            $table->timestamp('accepted_at')->nullable(); // Added missing column
+            $table->timestamp('accepted_at')->nullable(); 
             $table->timestamp('start_work')->nullable();
             $table->timestamp('finish_work')->nullable();
             $table->timestamps();

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Teks di Halaman Chat Utama
+    
     'tidak_ada_percakapan_aktif' => 'Tidak ada pekerjaan dengan percakapan aktif.',
     'pilih_percakapan' => 'Pilih percakapan untuk ditampilkan.',
     'tawaran_diajukan' => 'Nominal Upah yang Diajukan:',
@@ -15,7 +15,7 @@ return [
     'belum_ada_pesan' => 'Belum ada pesan.',
     'placeholder_pesan' => 'Tulis pesan...',
 
-    // Teks di Modal Konfirmasi
+    
     'modal_judul' => 'Konfirmasi Penerimaan Tawaran',
     'modal_deskripsi' => 'Anda akan menerima tawaran upah dari pekerja. Mohon periksa kembali detail di bawah ini:',
     'modal_jumlah_tawaran' => 'JUMLAH TAWARAN',
@@ -25,7 +25,7 @@ return [
     'modal_tombol_batal' => 'Batal',
     'modal_tombol_konfirmasi' => 'Ya, Saya Terima Tawaran',
 
-    // Teks di Komponen Card (job-requester.card)
+    
     'card' => [
         'mulai_kerja' => 'Mulai Kerja',
         'selesai_kerja' => 'Selesai Kerja',

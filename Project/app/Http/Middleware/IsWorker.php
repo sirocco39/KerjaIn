@@ -11,19 +11,19 @@ class IsWorker
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Cek apakah pengguna sudah login DAN status 'is_worker'-nya true
+        
         if (Auth::check() && Auth::user()->is_worker) {
-            // Jika ya, izinkan akses ke halaman berikutnya
+            
             return $next($request);
         }
 
-        // Jika tidak, buat log keamanan
+        
         activity()
             ->inLog('Security')
-            ->causedBy(Auth::user()) // Pelakunya adalah user yang mencoba akses
+            ->causedBy(Auth::user()) 
             ->log("Percobaan akses tidak sah ke halaman khusus pekerja.");
 
-        // Alihkan pengguna dengan pesan error
+        
        return redirect('/')->with('custom_error_alert', __('alerts.harus_jadi_pekerja'));
     }
 }

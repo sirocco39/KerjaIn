@@ -1,14 +1,14 @@
 <?php
 
 return [
-    // Teks umum
+    
     'pekerjaan_tidak_ditemukan' => 'Tidak ada lowongan kerja yang ditemukan.',
     'klien_prefix' => 'Kak',
     'tombol_detail' => 'DETAIL',
     'paginasi_sebelumnya' => 'Sebelumnya',
     'paginasi_selanjutnya' => 'Selanjutnya',
 
-    // Panel Detail (sisi kanan)
+    
     'detail_pilih_lowongan' => 'Pilih Lowongan Kerja di Kiri',
     'detail_tampilkan_disini' => 'Tampilkan Detail Di sini',
     'detail_deskripsi' => 'Deskripsi:',
@@ -17,13 +17,13 @@ return [
     'tombol_hubungi' => 'Hubungi',
     'tombol_terima' => 'Terima',
 
-    // Modal Konfirmasi Terima Pekerjaan
+    
     'modal_konfirmasi_judul' => 'Menerima Pekerjaan',
     'modal_konfirmasi_pesan' => 'Apakah anda yakin ingin menerima pekerjaan ini?',
     'modal_tombol_kembali' => 'Kembali',
     'modal_tombol_yakin' => 'Ya, Saya Yakin',
 
-    // Pesan-pesan di JavaScript
+    
     'js_messages' => [
         'gagal_dapatkan_id' => 'Gagal mendapatkan ID pekerjaan. Silakan pilih pekerjaan lagi.',
         'tawaran_tidak_valid' => 'Harap masukkan jumlah tawaran yang valid.',

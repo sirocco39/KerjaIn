@@ -6,8 +6,8 @@
         <div class="col-12">
             <h1 class="h3 mb-4 text-dark">{{ __('admin/verifications.user_verification_management') }}</h1>
 
-            {{-- Mengubah nav-pills menjadi elemen yang lebih mirip tombol/page separator --}}
-            <div class="row gx-2 mb-4"> {{-- Gunakan row dan gx-2 untuk spacing antar kolom --}}
+            
+            <div class="row gx-2 mb-4"> 
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'pending' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
                         href="{{ route('admin.verifications.index', ['status' => 'pending']) }}" id="pendingVerificationsButton">
@@ -31,9 +31,9 @@
                         {{ __('admin/verifications.rejected_verifications') }}
                     </a>
                 </div>
-                {{-- Search Bar with Recommendations for Index Page --}}
+                
                 <div class="col-md-3 p-0">
-                    <div class="p-0 position-relative"> {{-- Tambahkan position-relative untuk penempatan hasil pencarian --}}
+                    <div class="p-0 position-relative"> 
                         <form id="indexSearchForm" action="{{ route('admin.verifications.index', ['status' => $status]) }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="{{ __('admin/verifications.search_users_placeholder') }}" autocomplete="off" value="{{ $search ?? '' }}">
@@ -41,7 +41,7 @@
                             </div>
                         </form>
                         <div id="searchResultsIndex" class="list-group position-absolute w-100 mt-1" style="z-index: 1000;">
-                            {{-- Hasil pencarian akan ditampilkan di sini --}}
+                            
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                                             <td>{{ $request->verified_at ? $request->verified_at->format('d M Y H:i') : '-' }}</td>
                                             @endif
                                             <td>
-                                                {{-- Pass the current search term when linking to show page --}}
+                                                
                                                 <a href="{{ route('admin.verifications.show', ['id' => $request->id]) }}" class="btn btn-primary btn-sm" id="lihat-detail">{{ __('admin/verifications.view_detail') }}</a>
                                             </td>
                                         </tr>
@@ -135,11 +135,11 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Logic for Rejection Reason Chips (from previous implementation) ---
+        
         const reasonChips = document.querySelectorAll('.reason-chip');
         const rejectionReasonTextarea = document.getElementById('rejection_reason');
 
-        if (rejectionReasonTextarea) { // Only run if the element exists (i.e., on show page)
+        if (rejectionReasonTextarea) { 
             reasonChips.forEach(chip => {
                 chip.addEventListener('click', function() {
                     const reason = this.dataset.reason;
@@ -162,7 +162,7 @@
             }
         }
 
-        // --- JavaScript for Search Recommendations on INDEX Page ---
+        
         const userSearchIndex = document.getElementById('userSearchIndex');
         const searchResultsIndex = document.getElementById('searchResultsIndex');
         const indexSearchForm = document.getElementById('indexSearchForm');
@@ -173,16 +173,16 @@
                 clearTimeout(searchTimeoutIndex);
                 const query = this.value;
 
-                if (query.length > 2) { // Mulai mencari setelah 2 karakter
+                if (query.length > 2) { 
                     searchTimeoutIndex = setTimeout(() => {
                         fetch(`{{ route('admin.verifications.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                searchResultsIndex.innerHTML = ''; // Bersihkan hasil sebelumnya
+                                searchResultsIndex.innerHTML = ''; 
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        // Link ke halaman show saat rekomendasi dipilih
+                                        
                                         a.href = `{{ route('admin.verifications.show', '') }}/${item.id}`;
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name} (NIK: ${item.nik}) <span class="badge bg-secondary ms-2">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>`;
@@ -191,21 +191,21 @@
                                 } else {
                                     searchResultsIndex.innerHTML = '<div class="list-group-item">Tidak ada hasil ditemukan.</div>';
                                 }
-                                searchResultsIndex.style.display = 'block'; // Tampilkan hasil
+                                searchResultsIndex.style.display = 'block'; 
                             })
                             .catch(error => {
                                 console.error('Error fetching search results:', error);
                                 searchResultsIndex.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                                 searchResultsIndex.style.display = 'block';
                             });
-                    }, 300); // Debounce 300ms
+                    }, 300); 
                 } else {
-                    searchResultsIndex.innerHTML = ''; // Bersihkan jika kueri terlalu pendek
-                    searchResultsIndex.style.display = 'none'; // Sembunyikan hasil
+                    searchResultsIndex.innerHTML = ''; 
+                    searchResultsIndex.style.display = 'none'; 
                 }
             });
 
-            // Sembunyikan hasil pencarian saat mengklik di luar input atau hasil
+            
             document.addEventListener('click', function(event) {
                 if (!userSearchIndex.contains(event.target) && !searchResultsIndex.contains(event.target)) {
                     searchResultsIndex.innerHTML = '';
@@ -213,16 +213,16 @@
                 }
             });
 
-            // Handle Enter key: submit form (stay on index)
+            
             userSearchIndex.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); // Mencegah submit default dari form
-                    indexSearchForm.submit(); // Submit form secara manual
+                    event.preventDefault(); 
+                    indexSearchForm.submit(); 
                 }
             });
         }
 
-        // --- JavaScript for Navigation Dropdown on SHOW Page (from show_view_with_navigation_and_search) ---
+        
         const statusFilteredUserDropdown = document.getElementById('statusFilteredUserDropdown');
         if (statusFilteredUserDropdown) {
             statusFilteredUserDropdown.addEventListener('change', function() {
@@ -233,13 +233,13 @@
             });
         }
 
-        // --- JavaScript for Search Recommendations on SHOW Page (from show_view_with_navigation_and_search) ---
-        // Note: This part is already in show.blade.php.
-        // If this script block is included in master-admin.blade.php and loaded on both index and show,
-        // you might need to ensure IDs are unique or wrap them in conditions to prevent conflicts.
-        // For simplicity, I'm keeping them separate here, assuming they are loaded only on their respective pages.
-        // If you load this script on master-admin, consider wrapping the show-specific logic:
-        // if (document.getElementById('userSearchShow')) { ... }
+        
+        
+        
+        
+        
+        
+        
     });
 </script>
 @endpush

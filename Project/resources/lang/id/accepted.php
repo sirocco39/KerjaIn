@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Main Page Text
+    
     'kerjaan_kamu' => 'Kerjaan Kamu',
     'deskripsi' => 'Deskripsi',
     'mulai' => 'Mulai',
@@ -13,7 +13,7 @@ return [
     'jam' => 'jam',
     'menit' => 'menit',
 
-    // Status
+    
     'status' => [
         'ditinjau' => 'Ditinjau',
         'dibatalkan' => 'Dibatalkan',
@@ -22,7 +22,7 @@ return [
         'selesai' => 'Selesai',
     ],
 
-    // Main Action Buttons
+    
     'tombol' => [
         'mulai_kerja' => 'Mulai Kerja',
         'batalkan_kerja' => 'Batalkan Pekerjaan',
@@ -31,7 +31,7 @@ return [
         'berikan_penilaian' => 'Berikan Penilaian',
     ],
 
-    // Status Timeline
+    
     'timeline' => [
         'diterima' => 'Diterima',
         'dikerjakan' => 'Dikerjakan',
@@ -39,7 +39,7 @@ return [
         'ditinjau' => 'Ditinjau',
     ],
 
-    // Cancel Confirmation Modal
+    
     'modal_batal' => [
         'judul' => 'Batalkan Pekerjaan?',
         'pesan1' => 'Apakah kamu yakin ingin membatalkan pekerjaan ini?',
@@ -48,7 +48,7 @@ return [
         'tombol_konfirmasi' => 'Ya, Tetap Batalkan',
     ],
 
-    // Completion Proof Modal
+    
     'modal_bukti' => [
         'judul' => 'Konfirmasi Penyelesaian Pekerjaan',
         'label_foto' => 'Unggah Foto Bukti Pekerjaan',
@@ -58,7 +58,7 @@ return [
         'error_foto_diperlukan' => 'Minimal satu foto diperlukan.',
     ],
 
-    // Review Modal
+    
     'modal_penilaian' => [
         'judul' => 'Detail Penyelesaian',
         'judul_pesanan' => 'Judul Pesanan',
@@ -76,10 +76,10 @@ return [
         'placeholder_komentar' => 'Tulis komentarmu di sini...',
         'tombol_kirim' => 'Kirim',
         'atau' => 'Atau',
-        'laporkan_masalah' => 'Laporkan masalah', // Dipindahkan dari js_messages agar lebih terstruktur
+        'laporkan_masalah' => 'Laporkan masalah', 
     ],
     
-    // Report Modal
+    
     'modal_laporan' => [
         'judul' => 'Laporan',
         'upload_bukti' => 'Unggah Bukti (Gambar, maks 5MB per gambar):',
@@ -88,7 +88,7 @@ return [
         'tombol_kirim' => 'Kirim Laporan',
     ],
 
-    // JavaScript Messages (Ini akan diakses langsung oleh JavaScript)
+    
     'js_messages' => [
         'laporkan_masalah' => 'Laporkan masalah',
         'laporan_sudah_terkirim' => 'Laporan telah terkirim',

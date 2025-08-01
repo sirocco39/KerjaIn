@@ -69,7 +69,7 @@
                 @else
                     @foreach ($fiveLatestTransaction as $r)
                         @php
-                            // NEW: Explicitly format dates/times in UTC for display consistency
+                            
                             $startDateTimeUTC = \Carbon\Carbon::parse($r->request->start_time)->setTimezone('UTC');
                             $endDateTimeUTC = \Carbon\Carbon::parse($r->request->end_time)->setTimezone('UTC');
 
@@ -78,12 +78,12 @@
                             $formattedEndTime = $endDateTimeUTC->format('H.i');
 
                             $displayDateRange = $formattedStartDate;
-                            // Check if the job spans multiple UTC days
+                            
                             if ($startDateTimeUTC->format('Y-m-d') !== $endDateTimeUTC->format('Y-m-d')) {
                                 $displayDateRange .= ' - ' . $endDateTimeUTC->format('d M Y');
                             }
                         @endphp
-                        {{-- Tambahkan atribut data-url dengan route tujuan --}}
+                        
                         <div class="work-request p-4 d-flex flex-column"
                             data-url="{{ $r->status !== 'cancelled' ? route('job-taker.accepted-work-request', ['id' => $r->id]) : '' }}">
 
@@ -109,7 +109,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-date.svg') }}" alt="Icon Date">
                                     </div>
-                                    {{-- Use the new variable for multi-day date display (UTC) --}}
+                                    
                                     <span>{{ $displayDateRange }}</span>
                                 </li>
 
@@ -117,7 +117,7 @@
                                     <div class="icon-wrapper-beranda align-items-center align-items-md-start">
                                         <img src="{{ asset('Image/Icon/icon-clock.svg') }}" alt="Icon Clock">
                                     </div>
-                                    {{-- Use the formatted UTC times directly --}}
+                                    
                                     <span>{{ $formattedStartTime }} - {{ $formattedEndTime }}</span>
                                 </li>
 
@@ -166,7 +166,7 @@
         </div>
     </div>
 
-    {{-- Pop Up Detail --}}
+    
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -257,13 +257,13 @@
             </div>
         </div>
     </div>
-    {{-- End Pop Up Detail --}}
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('detailModal');
             const deleteModal = document.getElementById('deleteConfirmation');
 
-            // Elemen-elemen dalam modal detail
+            
             const modalTitle = document.getElementById('modal-detail-title');
             const modalProfile = document.getElementById('modal-detail-profile');
             const modalLocation = document.getElementById('modal-detail-location');
@@ -272,31 +272,31 @@
             const modalPrice = document.getElementById('modal-detail-price-value');
             const modalDescription = document.getElementById('modal-detail-description-text');
             const modalStatus = document.getElementById('modal-detail-status');
-            // const buttonAction1 = document.getElementById('button-action-1');
-            // const buttonAction2 = document.getElementById('button-action-2');
-            // const buttonAction3 = document.getElementById('button-action-3');
+            
+            
+            
 
 
             modal.addEventListener('show.bs.modal', function(event) {
-                // Tombol yang memicu modal
+                
                 const button = event.relatedTarget;
                 const slug = button.getAttribute('data-slug');
                 console.log("Slug:", slug);
 
-                // Reset isi modal untuk menghindari tampilan data lama
+                
                 modalTitle.textContent = 'Loading...';
                 modalProfile.textContent = '-'
                 modalLocation.textContent = '-';
                 modalDate.textContent = '-';
                 modalTime.textContent = '-';
                 modalPrice.textContent = '-';
-                // buttonAction1.innerHTML = '';
-                // buttonAction2.innerHTML = '';
-                // buttonAction3.innerHTML = '';
+                
+                
+                
                 modalDescription.textContent = 'Memuat deskripsi...';
                 modalStatus.innerHTML = '<p class="mb-0">Memuat status...</p>';
 
-                // Fetch data pekerjaan berdasarkan slug
+                
                 fetch(`/job-taker/beranda/${slug}`)
                     .then(response => {
                         if (!response.ok) {
@@ -309,7 +309,7 @@
                         const requests = data.request;
                         const requester = data.requester;
 
-                        // NEW: Parse dates as UTC
+                        
                         const startDatetime = new Date(requests.start_time);
                         const endDatetime = new Date(requests.end_time);
 
@@ -317,15 +317,15 @@
                         modalLocation.textContent = requests.location || '-';
                         modalProfile.textContent = requester.first_name || '-'
 
-                        // NEW: Format date in UTC to match card's assumed behavior ---
-                        // Using 'en-GB' for 'd M Y' format, and timeZone: 'UTC'
+                        
+                        
                         modalDate.textContent = startDatetime.toLocaleDateString('en-GB', {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric',
-                            timeZone: 'UTC' // Display UTC date
+                            timeZone: 'UTC' 
                         });
-                        // Add check for multi-day span in modal date (still in UTC)
+                        
                         if (startDatetime.getUTCFullYear() !== endDatetime.getUTCFullYear() ||
                             startDatetime.getUTCMonth() !== endDatetime.getUTCMonth() ||
                             startDatetime.getUTCDate() !== endDatetime.getUTCDate()) {
@@ -333,12 +333,12 @@
                                 day: '2-digit',
                                 month: 'short',
                                 year: 'numeric',
-                                timeZone: 'UTC' // Display UTC end date
+                                timeZone: 'UTC' 
                             })}`;
                         }
 
-                        // NEW: Format time in UTC for consistency with card's assumed behavior ---
-                        // Function to format time in UTC (HH.ii format)
+                        
+                        
                         function formatTimeInUTC(date) {
                             const hours = date.getUTCHours().toString().padStart(2, '0');
                             const minutes = date.getUTCMinutes().toString().padStart(2, '0');
@@ -346,7 +346,7 @@
                         }
                         modalTime.textContent =
                             `${formatTimeInUTC(startDatetime)} - ${formatTimeInUTC(endDatetime)}`;
-                        // --- END MODIFIED ---
+                        
 
                         modalPrice.textContent = parseFloat(requests.final_price || 0).toLocaleString(
                             'id-ID', {
@@ -354,36 +354,36 @@
                             });
                         modalDescription.textContent = requests.description || '-';
 
-                        // Tentukan status berdasarkan data
+                        
                         const statusText = getStatusText(data.status);
 
-                        // if (statusText === 'Diterima') {
-                        //     buttonAction1.innerHTML =
-                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Kerjain</a>`
-                        //     buttonAction2.innerHTML =
-                        //         `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
-                        //     buttonAction3.innerHTML =
-                        //         `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Batalin</a>`
-                        // } else if (statusText === 'Dikerjain') {
-                        //     buttonAction1.innerHTML =
-                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Selesai</a>`
-                        //     buttonAction2.innerHTML =
-                        //         `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
-                        // } else if (statusText === 'Ditinjau') {
-                        //     buttonAction1.innerHTML =
-                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
-                        //     buttonAction2.innerHTML =
-                        //         `<a class="details-button-item btn-tawar-modal text-decoration-none" id="button-action-2" href="#">Pesan</a>`
-                        //     buttonAction3.innerHTML =
-                        //         `<a class="details-button-item btn-hapus-modal text-decoration-none" id="button-action-3" href="#">Laporin</a>`
-                        // } else if (statusText === 'Selesai') {
-                        //     buttonAction1.innerHTML =
-                        //         `<a class="details-button-item btn-terima-modal text-decoration-none" id="button-action-1" href="#">Ulas</a>`
-                        // }
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
 
                         modalStatus.innerHTML = `<p class="mb-0">${statusText}</p>`;
 
-                        // Perbarui tombol kembali
+                        
                         const kembaliButton = document.getElementById('kembali-button-section');
                         kembaliButton.setAttribute('data-slug', slug);
                         kembaliButton.setAttribute('data-bs-target', '#detailModal');
@@ -401,9 +401,9 @@
                     });
             });
 
-            // Event listener untuk menutup modal
+            
             modal.addEventListener('hidden.bs.modal', function() {
-                // Hapus kelas 'choosed' dari semua elemen 'work-request'
+                
                 const workRequestCards = document.querySelectorAll('.work-request');
                 workRequestCards.forEach(card => {
                     card.classList.remove('choosed');
@@ -428,31 +428,31 @@
             }
             document.querySelectorAll('.detail-req-button').forEach(button => {
                 button.addEventListener('click', function(event) {
-                    // MENCEGAH event 'click' menyebar ke parent (card).
-                    // Jadi, saat tombol ini diklik, navigasi halaman tidak akan terjadi.
+                    
+                    
                     event.stopPropagation();
                 });
             });
 
 
-            // 2. Logika untuk CARD (Pindah halaman)
+            
             document.querySelectorAll('.work-request').forEach(card => {
                 card.addEventListener('click', function() {
-                    // Hapus kelas 'choosed' dari semua card lain
+                    
                     document.querySelectorAll('.work-request').forEach(otherCard => {
                         otherCard.classList.remove('choosed');
                     });
-                    // Tambah kelas 'choosed' ke card yang diklik
+                    
                     this.classList.add('choosed');
 
-                    // Arahkan browser ke URL yang ada di atribut 'data-url'
+                    
                     const url = this.dataset.url;
                     if (url) {
                         window.location.href = url;
                     }
                 });
             });
-            // Mendapatkan semua elemen dengan kelas 'work-request'
+            
         });
     </script>
 @endsection

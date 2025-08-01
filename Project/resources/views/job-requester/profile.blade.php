@@ -1,4 +1,4 @@
-@extends('master.master-job-req') {{-- Atau layout utama kamu --}}
+@extends('master.master-job-req') 
 
 @section('content')
     <!-- Content Wrapper. Contains page content -->
@@ -170,7 +170,7 @@
         $(document).ready(function() {
             $('#btnEdit').on('click', function(e) {
                 e.preventDefault();
-                $('#formEdit').slideToggle(); // bisa juga pakai .show() kalau mau langsung
+                $('#formEdit').slideToggle(); 
             });
         });
     </script>

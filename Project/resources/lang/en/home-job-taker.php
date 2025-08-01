@@ -14,7 +14,7 @@ return [
     'pekerjaan_diambil' => 'Jobs You Are Currently Taking',
     'belum_ambil_pekerjaan' => 'You have not taken any jobs yet!',
     
-    // Text inside the job card
+    
     'card' => [
         'klien_prefix' => 'Mr/Ms',
         'status_diterima' => 'Accepted',
@@ -25,7 +25,7 @@ return [
         'tombol_detail' => 'DETAILS',
     ],
 
-    // Text inside the modal
+    
     'modal' => [
         'judul_placeholder' => 'Job Vacancy Name',
         'klien_prefix' => 'Mr/Ms',

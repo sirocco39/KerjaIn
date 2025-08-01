@@ -33,7 +33,7 @@
             padding: 12px;
             z-index: 3;
             ">
-                    <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="" class="rounded-circle"
+                    <img src="https:
                         style="width: 60px; height: 60px;">
                     <div class="d-flex flex-column ms-2">
                         <span
@@ -60,7 +60,7 @@
         <select id="reportMonth" name="reportMonth"
             class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
             onchange="this.form.submit()" style="margin-left: 10px">
-            {{-- Loop untuk generate opsi bulan --}}
+            
             @foreach ($availableMonths as $monthOption)
                 <option value="{{ $monthOption['value'] }}"
                     {{ $monthOption['value'] == request('report_month', \Carbon\Carbon::now()->format('Y-m')) ? 'selected' : '' }}>
@@ -155,13 +155,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">
                                     {{ $transaction->request->title ?? __('monthly-report.not_available_abbr') }}
-                                </td> {{-- Assuming 'job_title' on Request --}}
+                                </td> 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">
                                     {{ $transaction->request->location ?? __('monthly-report.not_available_abbr') }}
-                                </td> {{-- Assuming 'location' on Request --}}
+                                </td> 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">
                                     {{ $transaction->request->requester->first_name . ' ' . $transaction->request->requester->last_name ?? __('monthly-report.not_available_abbr') }}
-                                </td> {{-- Assuming 'name' on Requester (User) --}}
+                                </td> 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style="text-align: center">
                                     @php
                                         $durationMinutes = 0;
@@ -192,7 +192,7 @@
 
     <div class="row g-4 mb-5" style="padding-top: 3%">
 
-        {{-- 4. Grafik Aktivitas / Pendapatan --}}
+        
         <div class="col-md-6 mt-3" style="padding-left: 5%">
             <div class="card-custom h-100" style="max-height: 400px; overflow: hidden;">
                 <h5 class="p-3 mb-0">{{ __('monthly-report.earnings_chart_title') }}</h5>
@@ -204,30 +204,30 @@
             </div>
         </div>
 
-        {{-- Skrip untuk Chart.js --}}
+        
         @push('scripts')
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    // PERBAIKAN UTAMA DI SINI:
-                    // Dapatkan elemen canvas itu sendiri, BUKAN hanya konteksnya, untuk mengakses dataset.
+                    
+                    
                     const chartElement = document.getElementById('earningsChart');
 
-                    // Pastikan elemen chart ditemukan sebelum mencoba mengakses dataset
+                    
                     if (chartElement) {
                         const ctx = chartElement.getContext('2d');
 
-                        // Ambil data dari dataset elemen canvas
+                        
                         const labels = JSON.parse(chartElement.dataset.chartLabels);
-                        console.log(labels); // Ini akan menampilkan array labels di console browser Anda
+                        console.log(labels); 
                         const earningsData = JSON.parse(chartElement.dataset.chartEarnings);
                         const jobsCompletedData = JSON.parse(chartElement.dataset.chartJobs);
 
                         new Chart(ctx, {
-                            type: 'line', // Jenis grafik: 'line', 'bar', 'pie', dll.
+                            type: 'line', 
                             data: {
                                 labels: labels,
                                 datasets: [{
-                                        label: '{{ __('monthly-report.daily_earnings_chart_label') }}', // Ubah label sesuai dengan data harian
+                                        label: '{{ __('monthly-report.daily_earnings_chart_label') }}', 
                                         data: earningsData,
                                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                         borderColor: 'rgba(75, 192, 192, 1)',
@@ -235,16 +235,16 @@
                                         tension: 0.3,
                                         fill: true,
                                     },
-                                    { // Tambahkan dataset untuk Pekerjaan Selesai
+                                    { 
                                         label: '{{ __('monthly-report.jobs_completed_chart_label') }}',
                                         data: jobsCompletedData,
                                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                                         borderColor: 'rgba(255, 99, 132, 1)',
                                         borderWidth: 2,
                                         tension: 0.3,
-                                        fill: false, // Biasanya tidak diisi untuk jumlah
-                                        yAxisID: 'yJobs', // ID sumbu Y terpisah jika diperlukan
-                                        hidden: true // Sembunyikan secara default jika Anda ingin fokus pada pendapatan
+                                        fill: false, 
+                                        yAxisID: 'yJobs', 
+                                        hidden: true 
                                     }
                                 ]
                             },
@@ -252,7 +252,7 @@
                                 responsive: true,
                                 maintainAspectRatio: false,
                                 scales: {
-                                    y: { // Sumbu Y untuk Pendapatan
+                                    y: { 
                                         beginAtZero: true,
                                         title: {
                                             display: true,
@@ -264,27 +264,27 @@
                                             }
                                         }
                                     },
-                                    yJobs: { // Sumbu Y opsional untuk Pekerjaan Selesai (jika skalanya sangat berbeda)
+                                    yJobs: { 
                                         type: 'linear',
                                         display: true,
-                                        position: 'right', // Tampilkan di sisi kanan
+                                        position: 'right', 
                                         beginAtZero: true,
                                         title: {
                                             display: true,
                                             text: '{{ __('monthly-report.jobs_y_axis_label') }}'
                                         },
                                         grid: {
-                                            drawOnChartArea: false, // Jangan gambar grid untuk sumbu ini
+                                            drawOnChartArea: false, 
                                         },
-                                        // Hanya tampilkan sumbu ini jika dataset jobsCompletedData tidak kosong
-                                        min: 0, // Pastikan dimulai dari 0
+                                        
+                                        min: 0, 
                                         max: Math.max(...jobsCompletedData) +
-                                            1 // Sesuaikan maks sedikit di atas nilai tertinggi
+                                            1 
                                     },
                                     x: {
                                         title: {
                                             display: true,
-                                            text: '{{ __('monthly-report.x_axis_date_label') }}' // Ubah label sumbu X menjadi 'Tanggal'
+                                            text: '{{ __('monthly-report.x_axis_date_label') }}' 
                                         }
                                     }
                                 },
@@ -301,7 +301,7 @@
                                                     label += ': ';
                                                 }
                                                 if (context.parsed.y !== null) {
-                                                    // Format berdasarkan dataset mana yang sedang di-hover
+                                                    
                                                     if (context.dataset.label ===
                                                         '{{ __('monthly-report.daily_earnings_chart_label') }}'
                                                     ) {
@@ -339,7 +339,7 @@
                     @else
                         @foreach ($clientReviews as $review)
                             <div class="review-item d-flex align-items-start mb-3">
-                                <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="Profile"
+                                <img src="https:
                                     class="rounded-circle" style="width: 60px; height: 60px; margin-right: 10px;">
                                 <div>
                                     <strong>{{ $review->reviewer->first_name . ' ' . $review->reviewer->last_name ?? __('monthly-report.anonymous_client') }}</strong><br>

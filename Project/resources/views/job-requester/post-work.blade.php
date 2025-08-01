@@ -9,7 +9,7 @@
 
                 <form action="{{ route('request.store') }}" method="post" id="create-work-form">
                     @csrf
-                    {{-- Judul, Detail, Alamat (Tidak ada perubahan) --}}
+                    
                     <div class="mb-3">
                         <label for="work-title-text" class="form-label fw-semibold">{{ __('post-work.label_judul') }}</label>
                         <input type="text" class="form-control rounded-3" id="work-title-text" name="workTitleLabel"
@@ -29,9 +29,9 @@
                         <div class="text-danger small mt-1" id="workAddressLabel-error"></div>
                     </div>
 
-                    {{-- ========================================================== --}}
-                    {{-- BAGIAN WAKTU YANG DIPERBAIKI --}}
-                    {{-- ========================================================== --}}
+                    
+                    
+                    
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">{{ __('post-work.label_waktu_mulai') }}</label>
@@ -66,13 +66,13 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Tempat khusus untuk error perbandingan waktu --}}
+                        
                         <div class="col-12">
                             <div class="text-danger small mt-1" id="datetime-error"></div>
                         </div>
                     </div>
 
-                    {{-- Harga --}}
+                    
                     <div class="mb-4">
                         <label for="work-price-text" class="form-label fw-semibold">{{ __('post-work.label_upah') }}</label>
                         <div class="input-group">
@@ -135,14 +135,14 @@
         </div>
     </div>
 
-    {{-- Kode JavaScript untuk mengontrol modal --}}
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('create-work-form');
             const showConfirmationBtn = document.getElementById('show-confirmation-button');
             const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
 
-            // Elemen-elemen di dalam modal
+            
             const modalTotalCost = document.getElementById('modal-total-cost');
             const modalJobCost = document.getElementById('modal-job-cost');
             const modalUserBalance = document.getElementById('modal-user-balance');
@@ -150,7 +150,7 @@
             const modalConfirmBtn = document.getElementById('modal-confirm-button');
             const modalTopupBtn = document.getElementById('modal-topup-button');
 
-            // Date and Time inputs
+            
             const workStartDateInput = document.querySelector('input[name="workStartDateLabel"]');
             const workEndDateInput = document.querySelector('input[name="workEndDateLabel"]');
             const workStartTimeInput = document.querySelector('input[name="workStartTimeLabel"]');
@@ -170,7 +170,7 @@
                 }).format(number);
             };
 
-            // NEW: Helper function to get current UTC time (HH:MM format)
+            
             function getFormattedCurrentTimeUTC() {
                 const now = new Date();
                 const hours = String(now.getUTCHours()).padStart(2, '0');
@@ -178,7 +178,7 @@
                 return `${hours}:${minutes}`;
             }
 
-            // NEW: Helper function to get current UTC date (YYYY-MM-DD format)
+            
             function getFormattedCurrentDateUTC() {
                 const now = new Date();
                 const year = now.getUTCFullYear();
@@ -188,7 +188,7 @@
             }
 
             function validateTimestamps() {
-                // Clear all error messages before re-validation
+                
                 datetimeErrorDiv.textContent = '';
                 workStartTimeLabelPastErrorDiv.textContent = '';
                 workEndTimeLabelPastErrorDiv.textContent = '';
@@ -198,121 +198,121 @@
                 const endDate = workEndDateInput.value;
                 const endTime = workEndTimeInput.value;
 
-                // Only validate if all fields are filled to avoid premature errors
+                
                 if (!startDate || !startTime || !endDate || !endTime) {
-                    return true; // Assume valid if not yet complete
+                    return true; 
                 }
 
-                // NEW: Parse input as UTC for client-side comparison
+                
                 const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
                 const endDateTime = new Date(`${endDate}T${endTime}:00Z`);
-                // NEW: Get current UTC time for comparison
+                
                 const nowUTCComparison = new Date(`${getFormattedCurrentDateUTC()}T${getFormattedCurrentTimeUTC()}:00Z`);
 
 
-                // 1. Check if start time is in the past (UTC comparison)
-                // (Allow a small buffer like 1 minute to account for input delay)
+                
+                
                 if (startDateTime < new Date(nowUTCComparison.getTime() - 60000)) {
                     datetimeErrorDiv.textContent = 'Waktu mulai pekerjaan tidak boleh di masa lalu (UTC).';
                     return false;
                 }
 
-                // 2. Check if end time is before or equal to start time (UTC comparison)
+                
                 if (endDateTime <= startDateTime) {
                     datetimeErrorDiv.textContent = 'Waktu selesai harus setelah waktu mulai.';
                     return false;
                 }
 
-                return true; // All validations passed
+                return true; 
             }
 
             function updateDateTimeConstraints() {
-                // NEW: Use current UTC date and time for constraints
+                
                 const todayUTC = getFormattedCurrentDateUTC();
                 const currentTimeUTC = getFormattedCurrentTimeUTC();
 
-                // Clear all client-side specific date/time errors before updating constraints and re-validating
+                
                 datetimeErrorDiv.textContent = '';
                 workStartTimeLabelPastErrorDiv.textContent = '';
                 workEndTimeLabelPastErrorDiv.textContent = '';
 
-                let minEndDate = workStartDateInput.value; // Default minimum end date is the start date
+                let minEndDate = workStartDateInput.value; 
 
-                // Scenario: Start date and End date are currently the same
-                // And both Start Time and End Time are provided.
-                // If the End Time is earlier than or equal to Start Time on the same day,
-                // then the End Date must be forced to at least the next day.
+                
+                
+                
+                
                 if (workStartDateInput.value && workEndDateInput.value === workStartDateInput.value &&
                     workStartTimeInput.value && workEndTimeInput.value) {
 
-                    // NEW: Parse as UTC for this specific proactive check
+                    
                     const tempStartDateTime = new Date(`${workStartDateInput.value}T${workStartTimeInput.value}:00Z`);
                     const tempEndDateTime = new Date(`${workEndDateInput.value}T${workEndTimeInput.value}:00Z`);
 
                     if (tempEndDateTime <= tempStartDateTime) {
                         const nextDay = new Date(tempStartDateTime);
-                        nextDay.setUTCDate(tempStartDateTime.getUTCDate() + 1); // Use setUTCDate
-                        minEndDate = nextDay.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                        nextDay.setUTCDate(tempStartDateTime.getUTCDate() + 1); 
+                        minEndDate = nextDay.toISOString().split('T')[0]; 
                     }
                 }
 
-                // Apply the determined minimum end date
-                workEndDateInput.min = minEndDate || todayUTC; // Fallback to today UTC if minEndDate is somehow null/empty
+                
+                workEndDateInput.min = minEndDate || todayUTC; 
 
-                // If end date is set and is earlier than the newly calculated minEndDate, reset it to minEndDate
+                
                 if (workEndDateInput.value && workEndDateInput.value < workEndDateInput.min) {
                     workEndDateInput.value = workEndDateInput.min;
                 }
 
 
-                // Dynamic min for start time (relative to current UTC date/time)
+                
                 if (workStartDateInput.value === todayUTC) {
                     workStartTimeInput.min = currentTimeUTC;
                 } else {
-                    workStartTimeInput.min = ''; // No minimum time for future dates
+                    workStartTimeInput.min = ''; 
                 }
 
-                // Dynamic min for end time (relative to current UTC date/time)
+                
                 if (workEndDateInput.value === todayUTC) {
                     if (workStartDateInput.value === todayUTC && workStartTimeInput.value) {
-                        // If both start and end are today UTC, end time must be after start time UTC
+                        
                         workEndTimeInput.min = workStartTimeInput.value;
                     } else {
-                        // If only end date is today UTC (and start date is a past day), end time can be current UTC time
+                        
                         workEndTimeInput.min = currentTimeUTC;
                     }
                 } else {
-                    workEndTimeInput.min = ''; // No minimum time for future dates
+                    workEndTimeInput.min = ''; 
                 }
 
-                validateTimestamps(); // Re-validate on constraint changes
+                validateTimestamps(); 
             }
 
-            // Add event listeners
+            
             workStartDateInput.addEventListener('blur', updateDateTimeConstraints);
             workEndDateInput.addEventListener('blur', updateDateTimeConstraints);
             workStartTimeInput.addEventListener('blur', updateDateTimeConstraints);
             workEndTimeInput.addEventListener('blur', updateDateTimeConstraints);
 
-            // Initial call to set up constraints on page load
+            
             updateDateTimeConstraints();
 
 
             showConfirmationBtn.addEventListener('click', function(event) {
-                event.preventDefault(); // Mencegah form submit secara langsung
+                event.preventDefault(); 
 
-                // Perform client-side date/time validation first
+                
                 if (!validateTimestamps()) {
-                    return; // Stop if client-side validation fails
+                    return; 
                 }
 
-                // Ambil data form
+                
                 let formData = new FormData(form);
 
-                // Hapus semua pesan error lama, termasuk yang dari server-side
+                
                 document.querySelectorAll('.text-danger.small').forEach(el => el.textContent = '');
 
-                // Kirim data ke server untuk validasi via AJAX
+                
                 fetch('{{ route('request.validate') }}', {
                         method: 'POST',
                         headers: {
@@ -323,26 +323,26 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // Jika validasi GAGAL
+                        
                         if (data.errors) {
                             Object.keys(data.errors).forEach(key => {
-                                // Tampilkan pesan error di bawah input yang sesuai
+                                
                                 const errorElement = document.getElementById(`${key}-error`);
                                 if (errorElement) {
                                     errorElement.textContent = data.errors[key][0];
                                 }
                             });
                         }
-                        // Jika validasi SUKSES
+                        
                         else if (data.success) {
                             const jobCost = parseFloat(formData.get('workPriceLabel')) || 0;
-                            const totalCost = jobCost + 2500; // Biaya layanan aplikasi
-                            // Isi data modal
+                            const totalCost = jobCost + 2500; 
+                            
                             modalTotalCost.textContent = formatRupiah(totalCost);
                             modalJobCost.textContent = formatRupiah(jobCost);
                             modalUserBalance.textContent = formatRupiah(userBalance);
 
-                            // Cek kecukupan saldo
+                            
                             if (userBalance < totalCost) {
                                 modalUserBalance.classList.add('text-danger');
                                 modalWarning.style.display = 'block';
@@ -355,14 +355,14 @@
                                 modalTopupBtn.style.display = 'none';
                             }
 
-                            // Tampilkan modal
+                            
                             confirmationModal.show();
                         }
                     })
                     .catch(error => console.error('Error:', error));
             });
 
-            // Jika tombol konfirmasi di modal ditekan, submit form
+            
             modalConfirmBtn.addEventListener('click', function() {
                 form.submit();
             });

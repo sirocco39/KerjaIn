@@ -25,8 +25,8 @@ public function definition(): array
             'slug' => $this->faker->slug(),
             'description' => $this->faker->paragraph(),
             'price' => $price,
-            'final_price' => $price, // Assuming final price is the same as initial price
-            'service_fee' => 2500, // Fixed admin fee
+            'final_price' => $price, 
+            'service_fee' => 2500, 
             'location' => $this->faker->address(),
             'status' => fake()->randomElement(['open', 'closed']),
             'start_time' => $startTime,

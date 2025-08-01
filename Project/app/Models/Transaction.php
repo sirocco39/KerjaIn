@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth; // Don't forget to import Auth
+use Illuminate\Support\Facades\Auth; 
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Transaction extends Model
 {
-    /** @use HasFactory<\Database\Factories\TransactionFactory> */
+    
     use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
@@ -95,32 +95,32 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'worker_id');
     }
 
-    // This relationship retrieves ALL reviews for a transaction (many)
+    
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'transaction_id');
     }
 
-    // This relationship retrieves a single review made by the *current requester* for this transaction
-    // This is primarily for the Job Requester's side.
+    
+    
     public function userReview(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id')
-            ->where('reviewer_id', Auth::id()); // Filter by the authenticated user as the reviewer
+            ->where('reviewer_id', Auth::id()); 
     }
 
-    // NEWLY ADDED: Retrieves a single review given TO this worker for this transaction
-    // This is for the Job Taker's perspective to see reviews they received.
+    
+    
     public function reviewAboutWorker(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id', 'id')
-            ->where('reviewee_id', Auth::id()); // Reviewee is the worker (current authenticated user)
+            ->where('reviewee_id', Auth::id()); 
     }
 
     public function reviewAboutRequester(): HasOne
     {
         return $this->hasOne(Review::class, 'transaction_id', 'id')
-            ->where('reviewee_id', $this->requester_id); // Reviewee is the requester
+            ->where('reviewee_id', $this->requester_id); 
     }
 
     public function completionProof(): HasOne
@@ -128,19 +128,19 @@ class Transaction extends Model
         return $this->hasOne(CompletionProof::class, 'transaction_id');
     }
 
-    // This is the general report relationship (if a transaction has one main report)
+    
     public function report(): HasOne
     {
         return $this->hasOne(Report::class, 'transaction_id');
     }
 
-    // --- ADDED THIS RELATIONSHIP TO FIX THE ERROR ---
-    // This relationship retrieves a single report made by the *current authenticated user* for this transaction
+    
+    
     public function userReport(): HasOne
     {
         return $this->hasOne(Report::class, 'transaction_id', 'id')->where('reporter_id', Auth::id());
     }
-    // --- END ADDED RELATIONSHIP ---
+    
 
     protected static function boot()
     {
@@ -164,10 +164,10 @@ class Transaction extends Model
 
     public function getStatusTextAttribute()
     {
-        // Membuat key lokalisasi secara dinamis, contoh: 'history-job-req.status.completed'
+        
         $key = 'history-job-req.status.' . $this->status;
 
-        // Menggunakan helper __() dengan fallback ke status asli jika terjemahan tidak ditemukan
+        
         return __($key, [], app()->getLocale()) ?? ucfirst($this->status);
     }
 }

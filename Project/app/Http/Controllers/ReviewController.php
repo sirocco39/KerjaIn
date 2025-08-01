@@ -7,14 +7,14 @@ use App\Models\Review;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth; // Import Auth facade
+use Illuminate\Support\Facades\Auth; 
 
 class ReviewController extends Controller
 {
     public function store(Request $request)
     {
         try {
-            // Validate the incoming request data
+            
             $validated = $request->validate([
                 'transaction_id' => 'required|exists:transactions,id',
                 'reviewer_id' => 'required|exists:users,id',
@@ -23,7 +23,7 @@ class ReviewController extends Controller
                 'comment' => 'required|string',
             ]);
 
-            // Authorization check: Ensure the reviewer is the authenticated user
+            
             if (Auth::id() != $validated['reviewer_id']) {
                 return response()->json([
                     'success' => false,
@@ -31,7 +31,7 @@ class ReviewController extends Controller
                 ], 403);
             }
 
-            // Prevent duplicate reviews from the same reviewer for the same transaction
+            
             $existingReview = Review::where('transaction_id', $validated['transaction_id'])
                 ->where('reviewer_id', $validated['reviewer_id'])
                 ->first();
@@ -43,7 +43,7 @@ class ReviewController extends Controller
                 ], 409);
             }
 
-            // Create the review record
+            
             Review::create([
                 'transaction_id' => $validated['transaction_id'],
                 'reviewer_id' => $validated['reviewer_id'],
@@ -52,11 +52,11 @@ class ReviewController extends Controller
                 'comment' => $validated['comment'],
             ]);
 
-            // Calculate the average rating for the reviewee and update the User model
+            
             $averageRating = Review::where('reviewee_id', $validated['reviewee_id'])->avg('rating');
             User::where('id', $validated['reviewee_id'])->update(['rating' => $averageRating]);
 
-            // Return a JSON success response for AJAX requests
+            
             return response()->json([
                 'success' => true,
                 'message' => __('alerts.review_saved_success')
@@ -64,13 +64,13 @@ class ReviewController extends Controller
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => __('alerts.validation_failed') . ': ' . $e->getMessage(), // Tambahkan pesan validasi di akhir
+                'message' => __('alerts.validation_failed') . ': ' . $e->getMessage(), 
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => __('alerts.terjadi_kesalahan') . ' saat menyimpan ulasan: ' . $e->getMessage() // Tambahkan pesan error di akhir
+                'message' => __('alerts.terjadi_kesalahan') . ' saat menyimpan ulasan: ' . $e->getMessage() 
             ], 500);
         }
     }

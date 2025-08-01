@@ -20,9 +20,9 @@ class IsAdmin
             return $next($request);
         }
 
-        // Redirect atau abort jika bukan admin
-        // Anda bisa pilih antara 403 Forbidden, redirect ke home, atau redirect ke halaman login
+        
+        
         return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses sebagai administrator.');
-        // abort(403, 'Unauthorized access.'); // Atau ini
+        
     }
 }

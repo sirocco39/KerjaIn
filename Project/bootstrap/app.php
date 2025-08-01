@@ -12,8 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'webhooks/xendit', // <-- Masukkan path URL Anda di sini
-            // 'stripe/*',
+            'webhooks/xendit', 
+            
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
@@ -23,8 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => \App\Http\Middleware\Authenticate::class,
             'is_worker' => \App\Http\Middleware\IsWorker::class,
             'prevent_re_registration' => \App\Http\Middleware\PreventReRegistration::class,
-            'is_admin' => \App\Http\Middleware\IsAdmin::class, // <-- CORRECT PLACE FOR THIS ALIAS
-            // Add any other route middleware aliases here
+            'is_admin' => \App\Http\Middleware\IsAdmin::class, 
+            
         ]);
         //
     })

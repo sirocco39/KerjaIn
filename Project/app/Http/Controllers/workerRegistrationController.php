@@ -31,29 +31,29 @@ class WorkerRegistrationController extends Controller
         Log::debug('ocrKtpAjax method called.');
 
         $request->validate([
-            'image' => 'required|image|max:5120', // Max 5MB
+            'image' => 'required|image|max:5120', 
         ]);
 
         try {
             $uploadedFile = $request->file('image');
-            $originalPath = $uploadedFile->store('ktp_temp_original'); // Store original
+            $originalPath = $uploadedFile->store('ktp_temp_original'); 
             $originalImagePath = storage_path('app/' . $originalPath);
 
-            // Extract text using Tesseract OCR directly from the original image.
+            
             $rawText = (new TesseractOCR($originalImagePath))
-                ->lang('ind') // Use 'ind' for Indonesian language
+                ->lang('ind') 
                 ->run();
 
             Log::debug("Tesseract Raw Output: " . $rawText);
 
-            // Parse the raw OCR text into structured data
+            
             $parsedData = $this->parseKtpData($rawText);
 
-            // Store parsed_data in session
+            
             Session::put('worker_registration.ocr_data', $parsedData);
             Log::debug('Parsed OCR Data stored in session: ' . json_encode($parsedData));
 
-            // Delete temporary original image after processing
+            
             Storage::delete($originalPath);
 
             return response()->json([
@@ -90,20 +90,20 @@ class WorkerRegistrationController extends Controller
             'full_name' => null,
             'birthdate' => null,
             'gender' => null,
-            'address' => null, // This will be the combined address
+            'address' => null, 
             'raw_ocr_output' => $ocrText,
         ];
 
-        // Normalize line endings and clean up multiple spaces, and then split into lines
-        // IMPORTANT: Perform general cleaning on the *entire* raw text before line splitting
+        
+        
         $normalizedText = preg_replace('/\s+/', ' ', $ocrText);
-        $normalizedText = preg_replace('/(?<!\w)\s*\:\s*/', ': ', $normalizedText); // Normalize colon spacing
-        $lowerCleanedText = strtolower($normalizedText); // This should be used for all general regex checks
+        $normalizedText = preg_replace('/(?<!\w)\s*\:\s*/', ': ', $normalizedText); 
+        $lowerCleanedText = strtolower($normalizedText); 
 
-        // Split original OCR text into lines for line-specific processing
+        
         $lines = array_map('trim', explode("\n", $ocrText));
 
-        // A temporary array to store address parts as they are found
+        
         $tempAddressParts = [
             'street' => null,
             'rt_rw' => null,
@@ -114,36 +114,36 @@ class WorkerRegistrationController extends Controller
         ];
 
         foreach ($lines as $line) {
-            $lowerLine = strtolower($line); // Use lowerLine for line-specific checks
+            $lowerLine = strtolower($line); 
 
-            // NIK
-            // Prioritize specific pattern like 'q529k' if present, otherwise generic 'nik' or digits
+            
+            
             if (!$data['nik'] && preg_match('/(?:nik|q[0-9]{1}29k)\s*[:\-\s]*(\d{16})/i', $lowerLine, $matches)) {
                 $data['nik'] = $matches[1];
                 Log::debug("Parsed NIK: " . $data['nik']);
-                continue; // Move to next line once NIK is found
+                continue; 
             }
 
-            // Full Name
+            
             if (!$data['full_name'] && preg_match('/nama(?:\s*asli\s*anda)?\s*[:\-\s]*([a-z\s\.]+)/i', $lowerLine, $matches)) {
                 $data['full_name'] = ucwords(trim($matches[1], '.:- '));
                 Log::debug("Parsed Full Name: " . $data['full_name']);
                 continue;
             }
 
-            // Birthplace and Date of Birth
+            
             if (!$data['birthdate']) {
-                // Modified regex:
-                // - Allows for various "Tempat/Tgl Lahir" labels.
-                // - Captures an optional birthplace string (group 1).
-                // - Captures the date string (group 2).
-                // - Uses word boundaries and lookaheads/lookbehinds to prevent over-matching.
+                
+                
+                
+                
+                
                 if (preg_match('/(?:tempat\/?tgl\s*lahir|kota\s*lahir|tgl\s*lahir|tempat\/tgi\s*lahir|tgl)\s*[:\-\s]*(?:([a-z\s\.]+),\s*)?(\d{1,2}[\s\-\/\.]\d{1,2}[\s\-\/\.]\d{4})\b/i', $lowerLine, $matches)) {
-                    $birthplaceCandidate = !empty($matches[1]) ? trim($matches[1]) : null; // Optional birthplace
-                    $dateString = trim($matches[2]); // The date string
+                    $birthplaceCandidate = !empty($matches[1]) ? trim($matches[1]) : null; 
+                    $dateString = trim($matches[2]); 
 
-                    $dateString = preg_replace('/[\s\-\/\.]/', '-', $dateString); // Normalize date separator to '-'
-                    $dateString = preg_replace("/['`‘’]$/", '', $dateString); // Remove any trailing non-date characters
+                    $dateString = preg_replace('/[\s\-\/\.]/', '-', $dateString); 
+                    $dateString = preg_replace("/['`‘’]$/", '', $dateString); 
 
                     try {
                         $parsedDate = null;
@@ -155,13 +155,13 @@ class WorkerRegistrationController extends Controller
                                     break;
                                 }
                             } catch (\Exception $e) {
-                                // Continue to next format
+                                
                             }
                         }
 
                         if ($parsedDate) {
                             $data['birthdate'] = $parsedDate->format('Y-m-d');
-                            // You can also capture birthplace here if needed, e.g., $data['birthplace'] = ucwords($birthplaceCandidate);
+                            
                             Log::debug("Parsed Birthdate: " . $data['birthdate'] . ($birthplaceCandidate ? ", Birthplace: " . $birthplaceCandidate : ""));
                             continue;
                         }
@@ -169,16 +169,16 @@ class WorkerRegistrationController extends Controller
                         Log::warning("Could not parse birthdate '" . $dateString . "': " . $e->getMessage());
                     }
                 }
-                // ... (keep the fallback pattern, although the new primary one might cover more cases)
+                
             }
 
-            // Gender
+            
             if (!$data['gender'] && preg_match('/jenis\s*kelamin\s*[:\-\s]*(laki-laki|perempuan)/i', $lowerLine, $matches)) {
                 $data['gender'] = ucwords($matches[1]);
                 Log::debug("Parsed Gender: " . $data['gender']);
                 continue;
             }
-            // Fallback for gender if not explicitly labeled but keywords are present
+            
             if (!$data['gender'] && (str_contains($lowerLine, 'laki-laki') || str_contains($lowerLine, 'perempuan'))) {
                 if (str_contains($lowerLine, 'laki-laki')) {
                     $data['gender'] = 'Laki-Laki';
@@ -189,33 +189,33 @@ class WorkerRegistrationController extends Controller
                 continue;
             }
 
-            // Address components - capture them into tempAddressParts
-            // Prioritize 'Alamat' label for street
+            
+            
             if (preg_match('/alamat\s*[:\-\s]*(.*?)(?:\s+(?:rt\/rw|kel\/desa|kecamatan|kota|provinsi|agama|status|pekerjaan|$))/i', $lowerLine, $matches)) {
                 $tempAddressParts['street'] = ucwords(trim($matches[1], '.:- '));
                 Log::debug("Parsed Address Street (from label): " . $tempAddressParts['street']);
                 continue;
             }
 
-            // RT/RW
+            
             if (preg_match('/rt\s*\/?\s*rw\s*[:\-\s]*(\d{1,3}\s*\/?\s*\d{1,3})/i', $lowerLine, $matches)) {
                 $tempAddressParts['rt_rw'] = trim($matches[1]);
                 Log::debug("Parsed RT/RW: " . $tempAddressParts['rt_rw']);
                 continue;
             }
 
-            // Kelurahan/Desa
+            
             if (preg_match('/kel(?:\/|\\\)desa\s*[:\-\s]*([a-z\s\.]+)/i', $lowerLine, $matches)) {
                 $tempAddressParts['kel_desa'] = ucwords(trim($matches[1], '.:- '));
                 Log::debug("Parsed Kel/Desa: " . $tempAddressParts['kel_desa']);
                 continue;
-            } elseif (preg_match('/\b(kelurahan|desa)\s+([a-z\s\.]+)/i', $lowerLine, $matches)) { // Fallback
+            } elseif (preg_match('/\b(kelurahan|desa)\s+([a-z\s\.]+)/i', $lowerLine, $matches)) { 
                 $tempAddressParts['kel_desa'] = ucwords(trim($matches[2], '.:- '));
                 Log::debug("Parsed Kel/Desa (fallback): " . $tempAddressParts['kel_desa']);
                 continue;
             }
 
-            // Kecamatan
+            
             if (preg_match('/kecamatan\s*[:\-\s]*([a-z\s\.]+)/i', $lowerLine, $matches)) {
                 $tempAddressParts['kecamatan'] = ucwords(trim($matches[1], '.:- '));
                 Log::debug("Parsed Kecamatan: " . $tempAddressParts['kecamatan']);
@@ -223,35 +223,35 @@ class WorkerRegistrationController extends Controller
             }
         }
 
-        // --- Post-loop processing for address components ---
-        // Handle city/province from general text if not found explicitly labeled
+        
+        
         if (preg_match('/(?:ke|kota|kabupaten)\s+([a-z\s]+?)(?:\s+provinsi)?(?=\s*(?:nik|nama|tempat\/tgl lahir|alamat|$))/i', $lowerCleanedText, $matches)) {
             $potentialCityProvince = ucwords(trim($matches[1]));
-            // Check if it looks like "City Province" or just "City" / "Province"
+            
             if (strpos($potentialCityProvince, ' ') !== false) {
                 $words = explode(' ', $potentialCityProvince);
                 $lastWord = array_pop($words);
-                // Heuristic: if last word is a common city or 'jakarta', assume it's part of city name or city itself
+                
                 if (preg_match('/\b(jakarta|bandung|surabaya|yogyakarta|medan|malang|semarang|palembang|batam|batubara)\b/i', $lastWord)) {
                     $tempAddressParts['city'] = ucwords($lastWord);
                     $tempAddressParts['province'] = ucwords(implode(' ', $words));
                     Log::debug("Parsed City/Province (heuristic): City=" . $tempAddressParts['city'] . ", Province=" . $tempAddressParts['province']);
                 } else {
-                    $tempAddressParts['city'] = $potentialCityProvince; // Assume single-part name is city
+                    $tempAddressParts['city'] = $potentialCityProvince; 
                     Log::debug("Parsed City (single part heuristic): " . $tempAddressParts['city']);
                 }
             } else {
-                // If it's a single word, assign to city or province based on context if needed.
-                // For now, default to city.
+                
+                
                 $tempAddressParts['city'] = $potentialCityProvince;
                 Log::debug("Parsed City (single word): " . $tempAddressParts['city']);
             }
         }
 
-        // Combine all address parts into the final 'address' field
+        
         $combinedAddressParts = [];
 
-        // Order them logically from specific to general
+        
         if ($tempAddressParts['street']) {
             $combinedAddressParts[] = $tempAddressParts['street'];
         }
@@ -273,19 +273,19 @@ class WorkerRegistrationController extends Controller
 
         $data['address'] = implode(', ', array_filter($combinedAddressParts));
 
-        // If 'address' is still empty, and 'KOTA ANDA' is in the raw text, assign it.
+        
         if (empty($data['address']) && preg_match('/\b(kota\s+anda)\b/i', $lowerCleanedText)) {
             $data['address'] = 'Kota Anda';
             Log::debug("Fallback Address to 'Kota Anda': " . $data['address']);
         }
 
 
-        // FINAL STEP: Convert all remaining null values to empty strings and perform final cleanup.
+        
         $data = array_map(function ($value) {
             if (is_string($value)) {
-                $value = preg_replace('/\s*[-_—]+\s*$/u', '', $value); // Remove trailing dashes/underscores
-                $value = preg_replace('/\s+\W*\s*$/u', '', $value); // Remove trailing non-alphanumeric junk
-                return trim($value, '.:- /\\'); // Trim common punctuation from ends
+                $value = preg_replace('/\s*[-_—]+\s*$/u', '', $value); 
+                $value = preg_replace('/\s+\W*\s*$/u', '', $value); 
+                return trim($value, '.:- /\\'); 
             }
             return $value;
         }, $data);
@@ -298,7 +298,7 @@ class WorkerRegistrationController extends Controller
         $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
         if ($verificationRequest) {
             return redirect()->route('worker.register.pending')->with('custom_success_alert', 'Permintaan verifikasi Anda sedang diproses atau sudah disetujui.');
-            // If there's a pending or approved verification request, redirect to the pending page
+            
             return redirect()->route('worker.register.pending')->with('custom_success_alert', __('alerts.verifikasi_diproses'));
         }
         $data = Session::get('worker_registration.step1', []);
@@ -308,8 +308,8 @@ class WorkerRegistrationController extends Controller
 
     public function store1(Request $request)
     {
-        // Get the current time in UTC+7 for the validation rule
-        $currentTimeUtcPlus7 = Carbon::now('Asia/Jakarta'); // 'Asia/Jakarta' is UTC+7
+        
+        $currentTimeUtcPlus7 = Carbon::now('Asia/Jakarta'); 
 
         $this->validate($request, [
             'first_name' => 'required|string|max:255|regex:/^[a-zA-Z\s\-.\']+$/',
@@ -322,7 +322,7 @@ class WorkerRegistrationController extends Controller
                     return $query->whereIn('status', ['pending', 'approved']);
                 }),
             ],
-            // Use the Carbon instance for the 'before_or_equal' rule
+            
             'birthdate' => 'required|date|before_or_equal:' . $currentTimeUtcPlus7->subYears(17)->format('Y-m-d'),
             'gender' => 'required|in:Male,Female',
             'address' => 'required|string|max:255',
@@ -424,24 +424,24 @@ class WorkerRegistrationController extends Controller
 
     public function finalizeRegistration(Request $request)
     {
-        // Check if previous registration steps are completed
+        
         if (!Session::has('worker_registration.step1') || !Session::has('worker_registration.step2')) {
             return redirect()->route('worker.register.step1')->with('custom_error_alert', __('alerts.lengkapi_langkah_sebelumnya'));
         }
 
-        // Retrieve data from previous session steps
+        
         $step1Data = Session::get('worker_registration.step1');
         $ocrData = Session::get('worker_registration.ocr_data', []);
 
-        // Validate the incoming request data, including image uploads and account details
+        
         $this->validate($request, [
-            'photo_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Personal photo
-            'id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', // ID card photo
-            'selfie_with_id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Selfie with ID card photo
-            'account_name' => 'required|string|max:255', // Bank account holder name
-            'account_number' => 'required|string|max:10', // Bank account number
+            'photo_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', 
+            'id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', 
+            'selfie_with_id_card_url' => 'required|image|mimes:jpeg,png,jpg|max:5120', 
+            'account_name' => 'required|string|max:255', 
+            'account_number' => 'required|string|max:10', 
         ], [
-            // Custom validation messages for better user experience
+            
             'photo_url.required' => 'Foto Diri wajib diunggah.',
             'photo_url.image' => 'File harus berupa gambar.',
             'photo_url.mimes' => 'Format file Foto Diri harus JPEG, PNG, atau JPG.',
@@ -467,33 +467,33 @@ class WorkerRegistrationController extends Controller
         ]);
 
         $userId = Auth::id();
-        // Define the storage path within the 'public' disk
-        $storagePath = 'worker_verification_documents/' . $userId; // Organize by user ID for clarity
+        
+        $storagePath = 'worker_verification_documents/' . $userId; 
 
-        // Store each file and get its **relative path**
-        // The store method automatically generates a unique filename
+        
+        
         $selfiePhotoPath = $request->file('photo_url')->store($storagePath, 'public');
         $idCardPhotoPath = $request->file('id_card_url')->store($storagePath, 'public');
         $selfieWithIdCardPhotoPath = $request->file('selfie_with_id_card_url')->store($storagePath, 'public');
 
         try {
-            // Use a database transaction to ensure atomicity of operations
+            
             DB::transaction(function () use (
                 $userId,
                 $step1Data,
                 $ocrData,
-                $selfiePhotoPath, // Use the relative paths here
+                $selfiePhotoPath, 
                 $idCardPhotoPath,
                 $selfieWithIdCardPhotoPath,
                 $request
             ) {
-                // Attempt to find an existing verification request for the user
+                
                 $verificationRequest = VerificationRequest::where('user_id', Auth::id())->first();
 
-                // Prepare verification data from user input and uploaded file paths
+                
                 $verificationData = [
                     'user_id' => $userId,
-                    'status' => 'pending', // Set initial status to pending
+                    'status' => 'pending', 
                     'first_name' => $step1Data['first_name'],
                     'last_name' => $step1Data['last_name'],
                     'nik' => $step1Data['nik'],
@@ -501,14 +501,14 @@ class WorkerRegistrationController extends Controller
                     'gender' => $step1Data['gender'],
                     'address' => $step1Data['address'],
                     'phone_number' => $step1Data['phone_number'],
-                    'photo_url' => $selfiePhotoPath, // Assign the relative paths
+                    'photo_url' => $selfiePhotoPath, 
                     'id_card_url' => $idCardPhotoPath,
                     'selfie_with_id_card_url' => $selfieWithIdCardPhotoPath,
                     'account_name' => $request->input('account_name'),
                     'account_number' => $request->input('account_number'),
                 ];
 
-                // Add OCR data if available from the session
+                
                 $verificationData['ocr_nik'] = $ocrData['nik'] ?? null;
                 $verificationData['ocr_full_name'] = $ocrData['full_name'] ?? null;
                 $verificationData['ocr_birthdate'] = $ocrData['birthdate'] ?? null;
@@ -516,7 +516,7 @@ class WorkerRegistrationController extends Controller
                 $verificationData['ocr_address'] = $ocrData['address'] ?? null;
                 $verificationData['ocr_raw_output'] = $ocrData['raw_ocr_output'] ?? null;
 
-                // Update existing request or create a new one
+                
                 if ($verificationRequest) {
                     $verificationRequest->update($verificationData);
                 } else {
@@ -524,14 +524,14 @@ class WorkerRegistrationController extends Controller
                 }
             });
 
-            // Clear session data after successful registration finalization
+            
             Session::forget('worker_registration');
-            // Redirect to success page with a custom alert message
+            
             return redirect()->route('worker.register.success')->with('custom_blue_alert', 'Pendaftaran Anda berhasil disubmit untuk verifikasi!');
         } catch (\Exception $e) {
-            // Log any errors that occur during the process
+            
             Log::error("Error finalizing worker registration for user " . Auth::id() . ": " . $e->getMessage(), ['exception' => $e]);
-            // Redirect back with an error message
+            
             return back()->with('custom_error_alert', 'Terjadi kesalahan saat finalisasi pendaftaran: ' . $e->getMessage());
         }
     }

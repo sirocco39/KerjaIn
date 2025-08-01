@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // join.blade.php (Step 1)
+    
     'personal_data' => 'Personal Data',
     'full_name' => 'Full Name',
     'first_name_placeholder' => 'First name',
@@ -13,13 +13,13 @@ return [
     'female' => 'Female',
     'phone_number' => 'Phone Number',
     'phone_number_placeholder' => 'Phone number',
-    'nik_number' => 'KTP Number', // KTP is Indonesian ID Card
+    'nik_number' => 'KTP Number', 
     'nik_placeholder' => 'KTP/NIK Number',
     'domicile_address' => 'Domicile Address',
     'address_placeholder' => 'Domicile address',
     'next_button' => 'Next',
 
-    // join2.blade.php (Step 2 - Contract Details)
+    
     'contract_details' => 'Contract Details',
     'general_requirements_title' => 'General Requirements',
     'general_requirements_list' => [
@@ -77,7 +77,7 @@ return [
     'continue_button' => 'Continue',
 
 
-    // join3.blade.php (Step 3 - Verification & Payment Account)
+    
     'verification_title' => 'Verification',
     'upload_selfie_photo' => 'Upload Selfie Photo',
     'max_file_size_info' => 'Max 5 MB, PNG, JPEG',
@@ -94,7 +94,7 @@ return [
     'upload_ktp_to_scan_nik' => 'Upload KTP photo to scan NIK.',
     'error_processing_image' => 'An error occurred while processing the image. Please try again.',
 
-    // pending.blade.php (now success.blade.php)
+    
     'registration_successful' => 'Registration Successful!',
     'thanks_for_registering' => 'Thank you for registering. Your request has been successfully submitted.',
     'team_will_process_data' => 'Our team will soon process your data verification. This process may take <strong>1-3 business days</strong>. You will receive a notification via WhatsApp or email once the verification process is complete.',
@@ -105,7 +105,7 @@ return [
     'back_to_homepage' => 'Back to Homepage',
     'questions_contact_us_at' => 'If you have any questions, please contact us at',
 
-    // join-template.blade.php
+    
 
     'hero_banner_text' => 'Come on, be a part of <span class="text-success"> Kerjain </span> – where we work together, help together, and earn together.',
     'become_part_of_kerjain' => 'Become part of',

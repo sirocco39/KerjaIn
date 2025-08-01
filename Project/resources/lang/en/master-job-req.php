@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Navbar
+    
     'peran_pelanggan' => 'Role: Client',
     'beranda' => 'Home',
     'tawarkan_kerja' => 'Offer a Job',
@@ -18,7 +18,7 @@ return [
     'menjadi_mitra' => 'Become a Partner',
     'masuk' => 'Login',
 
-    // Footer
+    
     'footer_quote' => 'We always strive for the best for our customers and provide the best service we can.',
     'fitur' => 'Features',
     'penawaran' => 'Offers',
@@ -31,7 +31,7 @@ return [
     'hubungi_kami' => 'Contact Us',
     'copyright' => 'Copyright © 2025 Kerjain. All rights reserved',
 
-    // Login Modal
+    
     'email' => 'Email',
     'kata_sandi' => 'Password',
     'ingat_saya' => 'Remember Me',
@@ -40,7 +40,7 @@ return [
     'daftar' => 'Register',
     'atau_masuk_dengan' => 'Or log in with:',
 
-    // Register Modal
+    
     'nama_depan' => 'First Name',
     'nama_belakang' => 'Last Name',
     'konfirmasi_kata_sandi' => 'Confirm Password',
@@ -50,7 +50,7 @@ return [
     'sudah_punya_akun' => 'Already have an account?',
     'atau_daftar_dengan' => 'Or register with:',
 
-    // Validation Messages
+    
     "validation_firstname_required" => "First name is required.",
     "validation_lastname_required"=> "Last name is required.",
     "validation_email_required" => "Email is required.",

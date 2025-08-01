@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // General
+    
     'management_user_reports' => 'User Report Management',
     'success_message' => 'Success',
     'info_message' => 'Info',
@@ -36,21 +36,21 @@ return [
     'mark_as_not_reviewed' => 'Mark as Not Reviewed',
     'detail' => 'Detail',
 
-    // Statuses
+    
     'not_reviewed' => 'Not Reviewed',
     'reviewed' => 'Reviewed',
 
-    // Index page specific
+    
     'review' => 'Review',
     'already_reviewed' => 'Already Reviewed',
     'no_reports_found_status' => 'No :status reports found.',
     'mark_as_reviewed_button' => 'Mark as Reviewed',
     'mark_as_not_reviewed_button' => 'Mark as Not Reviewed',
 
-    // Show page specific
+    
     'report_detail_id' => 'Report Detail #:id',
 
-    // Modals (reused from admin/users.php but included here for completeness)
+    
     'confirm_block_user' => 'Confirm Block User',
     'confirm_block_message' => 'You are about to **block** user <strong id="blockUserName"></strong>. This user will not be able to log in or access services.',
     'are_you_sure_continue' => 'Are you sure you want to continue?',

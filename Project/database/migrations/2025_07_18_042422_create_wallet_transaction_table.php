@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('wallet_transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); // Pemilik wallet
-            $table->decimal('amount', 12, 2); // Jumlah uang (bisa positif/negatif)
-            $table->enum('type', ['credit', 'debit']); // credit = uang masuk, debit = uang keluar
-            $table->string('description_id'); // Deskripsi transaksi
+            $table->foreignId('user_id')->constrained('users'); 
+            $table->decimal('amount', 12, 2); 
+            $table->enum('type', ['credit', 'debit']); 
+            $table->string('description_id'); 
             $table->string('description_en');
             $table->timestamps();
         });

@@ -1,7 +1,7 @@
 @props(['request', 'expandedRequestId', 'selectedChatRoomId'])
 
 <style>
-    /* ... (CSS Anda yang sudah ada, tetap sama) ... */
+    
 
     .job-request-card {
         transition: all 0.2s ease-in-out;
@@ -41,13 +41,13 @@
         font-size: 14px;
     }
 
-    /* CSS BAGIAN EXPAND */
+    
     .expanded-chats-container {
         background-color: #103F91;
         padding: 1rem;
     }
 
-    /* Aturan untuk card-body saat diekspansi */
+    
     .job-request-card.is-expanded .card-body {
         border-bottom: none;
         border-bottom-left-radius: 0;
@@ -79,7 +79,7 @@
 
     .chat-item-card.active {
         box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
-        /* background-color: #0d6efd; */
+        
         color: white;
     }
 
@@ -110,10 +110,10 @@
 <div
     {{ $attributes->merge(['class' => 'card bg-white rounded-5 job-request-card ' . ($expandedRequestId === $request->id ? 'is-expanded' : '')]) }}>
     <div class="card-body p-3">
-        {{-- Judul Pekerjaan --}}
+        
         <h5 class="card-title-chat fw-bold mb-2" style="font-size: 20px;">{{ $request->title }}</h5>
 
-        {{-- Detail (Tanggal, Jam, Lokasi, Upah) dengan ikon --}}
+        
         <div class="row g-3 mb-3">
             <div class="col-md-6 mb-1 icon-text">
                 <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Clock">
@@ -139,7 +139,7 @@
             </div>
         </div>
 
-        {{-- Status & Tombol Expander --}}
+        
         <div class="d-flex justify-content-between align-items-center">
             <div class="label-tersedia d-flex align-items-center justify-content-center">
                 {{ __('chat-job-req.card.status_tersedia') }}</div>
@@ -149,11 +149,11 @@
         </div>
     </div>
 
-    {{-- BAGIAN EXPAND --}}
+    
     @if ($expandedRequestId === $request->id)
         <div class="expanded-chats-container rounded-bottom-5">
             @forelse ($request->chatRooms as $room)
-                {{-- MODIFIKASI INI: Gunakan $dispatch untuk mengirim event ke komponen parent --}}
+                
                 <div wire:click="$dispatch('chat-selected', { chatRoomId: {{ $room->id }} })"
                     class="chat-item-card rounded-5 {{ $selectedChatRoomId === $room->id ? 'active' : '' }}">
                     <div class="chat-item-avatar">

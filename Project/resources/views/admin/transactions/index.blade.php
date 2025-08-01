@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid py-4">
     <div class="row">
-        {{-- Card Keuntungan Perusahaan dari Service Fee --}}
+        
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-header p-3 pt-2">
@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        {{-- Card Total Saldo Pengguna --}}
+        
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-header p-3 pt-2">
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        {{-- Card Total Saldo Tertahan --}}
+        
         <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
             <div class="card">
                 <div class="card-header p-3 pt-2">
@@ -94,7 +94,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($Requests as $request) {{-- UBAH NAMA VARIABEL DI SINI --}}
+                                @forelse ($Requests as $request) 
                                 <tr>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">#{{ $request->id }}</p>
@@ -102,7 +102,7 @@
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0">
                                             {{ $request->title }}
-                                            {{-- Conditionally display transaction status --}}
+                                            
                                             @if($request->transaction)
                                             ({{ $request->transaction->status }})
                                             @else
@@ -124,15 +124,15 @@
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         @php
-                                        $statusDisplay = ''; // Variabel untuk menyimpan HTML status (badge)
-                                        $deletedBadge = ''; // Variabel untuk menyimpan HTML badge "Dihapus"
+                                        $statusDisplay = ''; 
+                                        $deletedBadge = ''; 
 
                                         if ($request->trashed()) {
-                                        // Jika request sudah dihapus, hanya tampilkan badge 'Dihapus'
+                                        
                                         $deletedBadge = '<span class="badge badge-sm bg-gradient-danger ms-1">' . __('admin/transactions.deleted') . '</span>';
-                                        // statusDisplay tetap kosong, sehingga badge 'open'/'closed' tidak muncul
+                                        
                                         } else {
-                                        // Jika request TIDAK dihapus, tampilkan status normalnya
+                                        
                                         $statusClass = '';
                                         switch ($request->status) {
                                         case 'closed': $statusClass = 'bg-gradient-success'; break;
@@ -158,9 +158,9 @@
                             </tbody>
                         </table>
                     </div>
-                    {{-- Tambahkan Tautan Paginasi di sini --}}
+                    
                     <div class="mt-4 px-4">
-                        {{ $Requests->links() }} {{-- UBAH NAMA VARIABEL DI SINI --}}
+                        {{ $Requests->links() }} 
                     </div>
                 </div>
             </div>

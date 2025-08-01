@@ -1862,7 +1862,7 @@
             }
         }
 
-        /* Desktop Specific Styles (min-width: 768px) */
+        
         @media (min-width: 768px) {
             .tabs-wrapper {
                 display: flex !important;

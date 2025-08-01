@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('admin/pilihan.title') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https:
     <style>
         main {
             display: flex;
             justify-content: center;
-            /* align-items: center; */
+            
             min-height: 100vh;
             background-color: #f8f9fa;
         }
@@ -80,7 +80,7 @@
 
     <div class="container-fluid p-0">
         @if(session('custom_info_alert'))
-        {{-- Menampilkan alert dari controller jika ada --}}
+        
         <div class="alert alert-info alert-dismissible fade show text-center w-100 rounded-0 mb-0" role="alert">
             {{ session('custom_info_alert') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -94,7 +94,7 @@
                 </div>
 
                 <div class="row justify-content-center gap-3">
-                    <a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-reset"> {{-- Ganti dengan rute dashboard admin Anda --}}
+                    <a href="{{ route('admin.dashboard') }}" class="text-decoration-none text-reset"> 
                         <div class="card-choice admin" style="color: white">
                             <h3><i class="bi bi-gear-fill"></i></h3>
                             <h5>{{ __('admin/pilihan.admin_page_title') }}</h5>
@@ -108,7 +108,7 @@
                             <p>{{ __('admin/pilihan.job_req_page_description') }}</p>
                         </div>
                     </a>
-                    <a href="{{ route('job-taker.home') }}" class="text-decoration-none text-reset"> {{-- Ganti dengan rute job taker Anda jika ada --}}
+                    <a href="{{ route('job-taker.home') }}" class="text-decoration-none text-reset"> 
                         <div class="card-choice taker" style="color: white">
                             <h3><i class="bi bi-person-workspace"></i></h3>
                             <h5>{{ __('admin/pilihan.job_taker_page_title') }}</h5>
@@ -121,8 +121,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https:
+    <link rel="stylesheet" href="https:
 </body>
 
 </html>

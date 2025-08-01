@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatRoom extends Model
 {
-    /** @use HasFactory<\Database\Factories\ChatRoomFactory> */
+    
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'request_id',
@@ -51,8 +51,8 @@ class ChatRoom extends Model
     }
     public function getHasUnreadMessagesAttribute()
     {
-        // Cek apakah ada chatMessages yang sender_id-nya bukan user saat ini
-        // DAN kolom read_at-nya masih NULL.
+        
+        
         return $this->chatMessages()
             ->where('sender_id', '!=', Auth::id())
             ->whereNull('read_at')

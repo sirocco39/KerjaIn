@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // General / Common
+    
     'total_users' => 'Total Pengguna',
     'active_today' => 'aktif hari ini',
     'new_this_week' => 'baru minggu ini',
@@ -40,32 +40,32 @@ return [
     'no_users_found' => 'Tidak ada pengguna ditemukan.',
     'n_a' => 'N/A',
 
-    // index.blade.php specific (User Activity Log)
-    'recent_activity_logs' => 'Log Aktivitas Terbaru :for_user', // Will be "untuk [User Name]" or empty
+    
+    'recent_activity_logs' => 'Log Aktivitas Terbaru :for_user', 
     'user_activity_list' => 'Daftar aktivitas pengguna',
     'in_the_system' => 'di sistem.',
     'search_for_user_activity' => 'Cari pengguna berdasarkan ID atau Nama...',
 
 
-    // all-list.blade.php specific (All Users List)
+    
     'all_users_list' => 'Daftar Semua Pengguna',
     'search_all_users_placeholder' => 'Cari pengguna berdasarkan ID atau Nama...',
 
 
-    // blocked-list.blade.php specific (Blocked Users List)
+    
     'blocked_users_list' => 'Daftar Pengguna Diblokir',
     'search_blocked_users_placeholder' => 'Cari pengguna diblokir berdasarkan ID atau Nama...',
     'no_blocked_users_found' => 'Tidak ada pengguna yang diblokir.',
     'unblock' => 'Unblock',
 
-    // user-activity-log.blade.php specific (Single User Activity Log)
+    
     'activity_log_for' => 'Log Aktivitas untuk :user_name',
     'unblock_user' => 'Batal Blokir',
     'block_user' => 'Blokir Pengguna',
     'back_button' => 'Kembali',
     'description' => 'Deskripsi',
 
-    // Modals
+    
     'confirm_unblock_user' => 'Konfirmasi Batal Blokir Pengguna',
     'confirm_unblock_message' => 'Anda akan **membatalkan blokir** pengguna <strong id="unblockUserName"></strong>. Pengguna ini akan bisa login dan mengakses layanan kembali.',
     'are_you_sure_continue' => 'Apakah Anda yakin ingin melanjutkan?',
@@ -76,7 +76,7 @@ return [
     'confirm_block_message' => 'Anda akan **memblokir** pengguna <strong id="blockUserName"></strong>. Pengguna ini tidak akan bisa login atau mengakses layanan.',
     'yes_block' => 'Ya, Blokir',
 
-    // Worker List Specific
+    
     'worker_list' => 'Daftar Pekerja',
     'search_workers_placeholder' => 'Cari pekerja berdasarkan ID atau Nama...',
     'rating' => 'Rating',

@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Carbon\Carbon; // Import Carbon for logging timestamp
+use Carbon\Carbon; 
 
 
 class ProfileController extends Controller
 {
     public function index()
     {
-        $user = Auth::user(); // Ambil user yang sedang login
+        $user = Auth::user(); 
         return view('profile', compact('user'));
     }
 
@@ -21,34 +21,34 @@ class ProfileController extends Controller
         $user = \App\Models\User::find($id);
 
         if (!$user) {
-            abort(404); // jika user tidak ditemukan
+            abort(404); 
         }
-        // dd($user); // Debugging: tampilkan data user
+        
 
         return view('job-requester.profile', compact('user'));
     }
 
     public function update(Request $request)
     {
-        $user = Auth::id(); // Ambil user yang sedang login
+        $user = Auth::id(); 
         $user = User::find($user);
 
 
-        // Validasi data
+        
         $request->validate([
             'first_name'     => 'required|string|max:255',
             'last_name'      => 'required|string|max:255',
             'phone_number'   => 'nullable|string|max:20',
             'birth_date'     => 'nullable|date',
-            'photo_url_user' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
+            'photo_url_user' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
 
-        // BENAR
+        
         $firstName = $request->first_name;
         $lastName = $request->last_name;
 
 
-        // Update ke database
+        
         $user->first_name = $firstName;
         $user->last_name = $lastName;
         $user->phone_number = $request->phone_number;
@@ -58,7 +58,7 @@ class ProfileController extends Controller
         activity()
             ->performedOn($user)
             ->causedBy(Auth::id())
-            ->log('User ' . $user->first_name . ' ' . $user->last_name . ' updated their profile on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
+            ->log('User ' . $user->first_name . ' ' . $user->last_name . ' updated their profile on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); 
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
@@ -70,7 +70,7 @@ class ProfileController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = Auth::id(); // Ambil user yang sedang login
+        $user = Auth::id(); 
         $user = User::find($user);
 
         if ($request->hasFile('photo')) {
@@ -83,7 +83,7 @@ class ProfileController extends Controller
             activity()
                 ->performedOn($user)
                 ->causedBy(Auth::id())
-                ->log('User ' . $user->first_name . ' ' . $user->last_name . ' updated their profile photo on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
+                ->log('User ' . $user->first_name . ' ' . $user->last_name . ' updated their profile photo on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); 
 
             return redirect()->back()->with('success', 'Foto profil berhasil diperbarui!');
         }
@@ -94,26 +94,26 @@ class ProfileController extends Controller
     public function uploadWorkerPhoto(Request $request)
     {
         $request->validate([
-            'photo_url' => 'required|image|mimes:jpg,jpeg,png|max:5120', // max 5MB
+            'photo_url' => 'required|image|mimes:jpg,jpeg,png|max:5120', 
         ]);
 
-        $user = Auth::id(); // Ambil user yang sedang login
+        $user = Auth::id(); 
         $user = User::find($user);
 
-        // Simpan file
+        
         if ($request->hasFile('photo_url')) {
             $file = $request->file('photo_url');
             $filename = 'worker_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/uploads/worker_photos', $filename); // simpan di storage/app/public/uploads/worker_photos
+            $path = $file->storeAs('public/uploads/worker_photos', $filename); 
 
-            // Simpan ke database
+            
             $user->photo_url_worker = 'storage/uploads/worker_photos/' . $filename;
             $user->save();
 
             activity()
                 ->performedOn($user)
                 ->causedBy(Auth::id())
-                ->log('Worker ' . $user->first_name . ' ' . $user->last_name . ' uploaded their worker photo on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); // Log in Asia/Jakarta timezone
+                ->log('Worker ' . $user->first_name . ' ' . $user->last_name . ' uploaded their worker photo on ' . Carbon::now('Asia/Jakarta')->format('d M Y, H:i:s') . '.'); 
         }
 
         return redirect()->back()->with('success', 'Foto berhasil diunggah!');

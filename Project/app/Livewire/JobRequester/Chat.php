@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-use Livewire\Attributes\On; // Penting: import atribut On
+use Livewire\Attributes\On; 
 
 class Chat extends Component
 {
@@ -22,7 +22,7 @@ class Chat extends Component
     public ?ChatRoom $chatRoom = null;
     public ?Offer $activeOffer = null;
     public $newMessage = '';
-    public $showChatPanel = false; // Default: false (tampilkan list chat di mobile)
+    public $showChatPanel = false; 
 
     public function mount()
     {
@@ -56,7 +56,7 @@ class Chat extends Component
         $this->expandedRequestId = $this->expandedRequestId === $requestId ? null : $requestId;
     }
 
-    // --- MODIFIKASI INI: Tambahkan atribut #[On] ---
+    
     #[On('chat-selected')]
     public function selectChat($chatRoomId)
     {
@@ -70,9 +70,9 @@ class Chat extends Component
         $this->loadActiveOffer();
         $this->dispatch('scroll-to-bottom');
         $this->dispatch('chatSelected');
-        $this->showChatPanel = true; // Tampilkan panel chat di mobile
+        $this->showChatPanel = true; 
     }
-    // ------------------------------------------------
+    
 
     public function backToChatList()
     {
@@ -116,26 +116,26 @@ class Chat extends Component
             DB::transaction(function () use ($offer) {
                 $workRequest = $offer->request;
                 $requester = $workRequest->requester;
-                $originalPrice = $workRequest->price; // Harga awal yang di-lock
-                $newPrice = $offer->amount;         // Harga baru dari offer
+                $originalPrice = $workRequest->price; 
+                $newPrice = $offer->amount;         
 
-                // Hitung selisih harga
+                
                 $priceDifference = $newPrice - $originalPrice;
 
-                // --- Skenario 1: Harga Penawaran LEBIH TINGGI ---
+                
                 if ($priceDifference > 0) {
-                    // Cek apakah saldo requester cukup untuk menutupi selisih
+                    
                     if ($requester->balance < $priceDifference) {
-                        // Jika tidak cukup, batalkan transaksi dan lempar error
+                        
                         throw new \Exception('Saldo Anda tidak cukup untuk menerima penawaran ini. Silakan isi saldo terlebih dahulu.');
                     }
 
-                    // Kurangi saldo aktif, tambahkan ke saldo tertahan
+                    
                     $requester->balance -= $priceDifference;
                     $requester->locked_balance += $priceDifference;
                     $requester->save();
 
-                    // Catat transaksi penyesuaian di riwayat wallet
+                    
                     WalletTransaction::create([
                         'user_id' => $requester->id,
                         'amount' => $priceDifference,
@@ -149,16 +149,16 @@ class Chat extends Component
                         ->log("Dana tambahan sebesar Rp" . number_format($priceDifference) . " ditahan dari {$user->first_name} karena perubahan harga melalui tawaran.");
                 }
 
-                // --- Skenario 2: Harga Penawaran LEBIH RENDAH ---
+                
                 else if ($priceDifference < 0) {
-                    $refundAmount = abs($priceDifference); // Ambil nilai absolut untuk refund
+                    $refundAmount = abs($priceDifference); 
 
-                    // Kembalikan selisih dana ke saldo aktif
+                    
                     $requester->balance += $refundAmount;
                     $requester->locked_balance -= $refundAmount;
                     $requester->save();
 
-                    // Catat transaksi refund parsial di riwayat wallet
+                    
                     WalletTransaction::create([
                         'user_id' => $requester->id,
                         'amount' => $refundAmount,

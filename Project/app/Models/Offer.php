@@ -13,7 +13,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Offer extends Model
 {
-    /** @use HasFactory<\Database\Factories\OfferFactory> */
+    
     use HasFactory;
     use SoftDeletes, LogsActivity;
 
@@ -33,17 +33,17 @@ class Offer extends Model
        public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            // Kita pantau perubahan pada jumlah penawaran dan statusnya.
+            
             ->logOnly(['amount', 'status'])
             ->logOnlyDirty()
             ->useLogName('Offer');
     }
 
-    // 4. METHOD UNTUK DESKRIPSI KUSTOM
+    
     public function tapActivity(Activity $activity, string $eventName)
     {
         $causerName = $activity->causer ? $activity->causer->first_name : 'Sistem';
-        // Kita ambil judul pekerjaan dari relasi untuk konteks.
+        
         $jobTitle = $this->request ? $this->request->title : 'pekerjaan yang telah dihapus';
         $amountFormatted = 'Rp' . number_format($this->amount, 0, ',', '.');
 

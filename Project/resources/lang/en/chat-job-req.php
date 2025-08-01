@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Text on Main Chat Page
+    
     'tidak_ada_percakapan_aktif' => 'No jobs with active conversations.',
     'pilih_percakapan' => 'Select a conversation to display.',
     'tawaran_diajukan' => 'Offered Wage Amount:',
@@ -15,7 +15,7 @@ return [
     'belum_ada_pesan' => 'No messages yet.',
     'placeholder_pesan' => 'Write a message...',
 
-    // Confirmation Modal Text
+    
     'modal_judul' => 'Confirm Offer Acceptance',
     'modal_deskripsi' => 'You are about to accept a wage offer from the worker. Please review the details below:',
     'modal_jumlah_tawaran' => 'OFFER AMOUNT',
@@ -25,7 +25,7 @@ return [
     'modal_tombol_batal' => 'Cancel',
     'modal_tombol_konfirmasi' => 'Yes, I Accept the Offer',
 
-    // Text in Card Component (job-requester.card)
+    
     'card' => [
         'mulai_kerja' => 'Start Work',
         'selesai_kerja' => 'End Work',

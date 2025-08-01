@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('verification_requests', function (Blueprint $table) {
-            // Add new columns for OCR-extracted data, prefixed with 'ocr_'
-            // Keeping only the requested fields: nik, full_name, birthdate, gender, address, raw_output
+            
+            
             $table->string('ocr_nik', 16)->nullable()->after('nik');
             $table->string('ocr_full_name')->nullable()->after('ocr_nik');
             $table->date('ocr_birthdate')->nullable()->after('ocr_full_name');
             $table->string('ocr_gender')->nullable()->after('ocr_birthdate');
-            $table->string('ocr_address')->nullable()->after('ocr_gender'); // Unified address field
-            $table->longText('ocr_raw_output')->nullable()->after('ocr_address'); // To store the entire raw OCR text
+            $table->string('ocr_address')->nullable()->after('ocr_gender'); 
+            $table->longText('ocr_raw_output')->nullable()->after('ocr_address'); 
         });
     }
 

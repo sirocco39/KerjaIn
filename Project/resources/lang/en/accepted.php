@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Main Page Text
+    
     'kerjaan_kamu' => 'Your Job',
     'deskripsi' => 'Description',
     'mulai' => 'Start',
@@ -13,7 +13,7 @@ return [
     'jam' => 'hours',
     'menit' => 'minutes',
 
-    // Status
+    
     'status' => [
         'ditinjau' => 'Submitted',
         'dibatalkan' => 'Cancelled',
@@ -22,7 +22,7 @@ return [
         'selesai' => 'Completed',
     ],
 
-    // Main Action Buttons
+    
     'tombol' => [
         'mulai_kerja' => 'Start Work',
         'batalkan_kerja' => 'Cancel Job',
@@ -31,7 +31,7 @@ return [
         'berikan_penilaian' => 'Give Rating',
     ],
 
-    // Status Timeline
+    
     'timeline' => [
         'diterima' => 'Accepted',
         'dikerjakan' => 'In Progress',
@@ -39,7 +39,7 @@ return [
         'ditinjau' => 'Submitted',
     ],
 
-    // Cancel Confirmation Modal
+    
     'modal_batal' => [
         'judul' => 'Cancel Job?',
         'pesan1' => 'Are you sure you want to cancel this job?',
@@ -48,7 +48,7 @@ return [
         'tombol_konfirmasi' => 'Yes, Still Cancel',
     ],
 
-    // Completion Proof Modal
+    
     'modal_bukti' => [
         'judul' => 'Confirm Job Completion',
         'label_foto' => 'Upload Job Proof Photo',
@@ -58,7 +58,7 @@ return [
         'error_foto_diperlukan' => 'At least one photo is required.',
     ],
 
-    // Review Modal
+    
     'modal_penilaian' => [
         'judul' => 'Completion Details',
         'judul_pesanan' => 'Order Title',
@@ -79,7 +79,7 @@ return [
         'laporkan_masalah' => 'Report a problem',
     ],
     
-    // Report Modal
+    
     'modal_laporan' => [
         'judul' => 'Report',
         'upload_bukti' => 'Upload Proof (Image, max 5MB per image):',
@@ -88,7 +88,7 @@ return [
         'tombol_kirim' => 'Send Report',
     ],
 
-    // JavaScript Messages (These keys are accessed directly by JavaScript)
+    
     'js_messages' => [
         'laporkan_masalah' => 'Report a problem',
         'laporan_sudah_terkirim' => 'Report has been sent',

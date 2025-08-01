@@ -128,9 +128,9 @@
 
 @push('scripts')
 <script>
-    // Script untuk Modal Blokir
+    
     document.getElementById('confirmBlockModal').addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget; // Button that triggered the modal
+        var button = event.relatedTarget; 
         var userId = button.getAttribute('data-user-id');
         var userName = button.getAttribute('data-user-name');
 
@@ -140,12 +140,12 @@
 
         modalTitle.textContent = 'Konfirmasi Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('admin/users') }}/" + userId + "/block"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/block"; 
     });
 
-    // Script untuk Modal Batal Blokir
+    
     document.getElementById('confirmUnblockModal').addEventListener('show.bs.modal', function(event) {
-        var button = event.relatedTarget; // Button that triggered the modal
+        var button = event.relatedTarget; 
         var userId = button.getAttribute('data-user-id');
         var userName = button.getAttribute('data-user-name');
 
@@ -155,7 +155,7 @@
 
         modalTitle.textContent = 'Konfirmasi Batal Blokir Pengguna';
         modalBodyUserName.textContent = userName;
-        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; // Sesuaikan rute Anda
+        form.action = "{{ url('admin/users') }}/" + userId + "/unblock"; 
     });
 </script>
 @endpush

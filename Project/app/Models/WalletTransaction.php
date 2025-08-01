@@ -9,9 +9,9 @@ class WalletTransaction extends Model
     protected $fillable = [
         'user_id',
         'amount',
-        'type', // 'top_up', 'withdrawal', etc.
-        'description_id', // Optional description of the transaction
-        'description_en', // Optional description of the transaction
+        'type', 
+        'description_id', 
+        'description_en', 
     ];
     public function user()
     {

@@ -1,7 +1,7 @@
-{{-- Props yang tidak lagi dibutuhkan telah dihapus --}}
+
 @props(['request'])
 
-{{-- Style yang berhubungan dengan bagian expand telah dihapus --}}
+
 <style>
     .job-taker-card {
         transition: all 0.2s ease-in-out;
@@ -41,13 +41,13 @@
     }
 </style>
 
-{{-- Logika class 'is-expanded' telah dihapus dari div utama --}}
+
 <div class="card bg-white rounded-5 job-taker-card">
     <div class="card-body p-3">
-        {{-- Judul Pekerjaan --}}
+        
         <h5 class="card-title-chat fw-bold mb-2" style="font-size: 20px;">{{ $request->title }}</h5>
 
-        {{-- Detail (Tanggal, Jam, Lokasi, Upah) dengan ikon --}}
+        
         <div class="row g-3 mb-3">
             <div class="col-md-6 mb-1 icon-text">
                 <img class="ms-2" src="{{ asset('Image/Icon/icon-clock-fill.svg') }}" alt="Icon Clock">
@@ -73,12 +73,12 @@
             </div>
         </div>
 
-        {{-- Status (Tombol Expander telah dihapus) --}}
+        
         <div class="d-flex justify-content-between align-items-center">
             <div class="label-tersedia d-flex align-items-center justify-content-center">{{ __('chat-job-taker.card.status_tersedia') }}</div>
-            {{-- Tombol expander (panah atas/bawah) telah dihapus dari sini --}}
+            
         </div>
     </div>
 
-    {{-- Seluruh blok @if untuk bagian expand telah dihapus --}}
+    
 </div>

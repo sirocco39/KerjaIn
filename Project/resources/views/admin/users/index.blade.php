@@ -4,12 +4,12 @@
 @section('content')
 <div class="container-fluid py-4">
     <div class="row">
-        {{-- Card Statistik Atas --}}
+        
         <div class="col-lg-12">
             <div class="row">
-                {{-- Total Pengguna --}}
+                
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.all') }}" class="card-link" id="totalPengguna"> {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.all') }}" class="card-link" id="totalPengguna"> 
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
@@ -31,9 +31,9 @@
                     </a>
                 </div>
 
-                {{-- Total Pekerja --}}
+                
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.workers') }}" class="card-link" id="totalPekerja"> {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.workers') }}" class="card-link" id="totalPekerja"> 
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
@@ -54,9 +54,9 @@
                     </a>
                 </div>
 
-                {{-- Pengguna Diblokir --}}
+                
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.users.blockedList') }}" class="card-link" id="PenggunaDiBlok"> {{-- Tambah link ini --}}
+                    <a href="{{ route('admin.users.blockedList') }}" class="card-link" id="PenggunaDiBlok"> 
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
@@ -75,9 +75,9 @@
                     </a>
                 </div>
 
-                {{-- Pengguna Dilaporkan --}}
+                
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <a href="{{ route('admin.reports.index') }}" class="card-link" id="LihatDaftarReport"> {{-- Link ini sesuai permintaan --}}
+                    <a href="{{ route('admin.reports.index') }}" class="card-link" id="LihatDaftarReport"> 
                         <div class="card">
                             <div class="card-header p-3 pt-2">
                                 <div class="icon icon-lg icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
@@ -98,8 +98,8 @@
             </div>
         </div>
 
-        {{-- Tabel Log Aktivitas --}}
-        <div class="col-lg-12 mt-4 mb-4"> {{-- Ubah ukuran kolom menjadi 12 untuk search bar di atas tabel --}}
+        
+        <div class="col-lg-12 mt-4 mb-4"> 
             <div class="card z-index-2">
                 <div class="card-header pb-0 bg-transparent">
                     <h6 class="mb-0">{{ __('admin/users.recent_activity_logs', ['for_user' => $searchedUser ? 'untuk ' . $searchedUser->first_name . ' ' . $searchedUser->last_name : '']) }}</h6>
@@ -108,7 +108,7 @@
                         <span class="font-weight-bold">{{ __('admin/users.user_activity_list') }}</span> {{ __('admin/users.in_the_system') }}
                     </p>
 
-                    {{-- Search Bar for Users Log Activity --}}
+                    
                     <div class="p-0 position-relative mt-3">
                         <form id="usersLogSearchForm" action="{{ route('admin.users.index') }}" method="GET" class="mb-0">
                             <div class="input-group m-0">
@@ -117,10 +117,10 @@
                             </div>
                         </form>
                         <div id="usersLogSearchResults" class="list-group position-absolute w-100 mt-1" style="z-index: 1000; max-height: 200px; overflow-y: auto;">
-                            {{-- Hasil pencarian akan ditampilkan di sini --}}
+                            
                         </div>
                     </div>
-                    {{-- End Search Bar --}}
+                    
 
                 </div>
                 <div class="card-body p-3">
@@ -223,7 +223,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- JavaScript for Search Recommendations on Users Log Activity Page ---
+        
         const usersLogSearchInput = document.getElementById('usersLogSearchInput');
         const usersLogSearchResults = document.getElementById('usersLogSearchResults');
         const usersLogSearchForm = document.getElementById('usersLogSearchForm');
@@ -234,17 +234,17 @@
                 clearTimeout(searchTimeoutUsersLog);
                 const query = this.value;
 
-                if (query.length > 2) { // Start searching after 2 characters
+                if (query.length > 2) { 
                     searchTimeoutUsersLog = setTimeout(() => {
                         fetch(`{{ route('admin.users.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                usersLogSearchResults.innerHTML = ''; // Clear previous results
+                                usersLogSearchResults.innerHTML = ''; 
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        // Link back to the users.index page with the search_query parameter
-                                        a.href = `{{ route('admin.users.index') }}?search_query=${item.id}`; // Filter by user ID
+                                        
+                                        a.href = `{{ route('admin.users.index') }}?search_query=${item.id}`; 
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name}`;
                                         usersLogSearchResults.appendChild(a);
@@ -252,21 +252,21 @@
                                 } else {
                                     usersLogSearchResults.innerHTML = '<div class="list-group-item">Tidak ada pengguna ditemukan.</div>';
                                 }
-                                usersLogSearchResults.style.display = 'block'; // Show results
+                                usersLogSearchResults.style.display = 'block'; 
                             })
                             .catch(error => {
                                 console.error('Error fetching search results:', error);
                                 usersLogSearchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                                 usersLogSearchResults.style.display = 'block';
                             });
-                    }, 300); // Debounce 300ms
+                    }, 300); 
                 } else {
-                    usersLogSearchResults.innerHTML = ''; // Clear if query is too short
-                    usersLogSearchResults.style.display = 'none'; // Hide results
+                    usersLogSearchResults.innerHTML = ''; 
+                    usersLogSearchResults.style.display = 'none'; 
                 }
             });
 
-            // Hide search results when clicking outside the input or results
+            
             document.addEventListener('click', function(event) {
                 if (!usersLogSearchInput.contains(event.target) && !usersLogSearchResults.contains(event.target)) {
                     usersLogSearchResults.innerHTML = '';
@@ -274,11 +274,11 @@
                 }
             });
 
-            // Handle Enter key: submit form
+            
             usersLogSearchInput.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default form submission behavior
-                    usersLogSearchForm.submit(); // Manually submit the form
+                    event.preventDefault(); 
+                    usersLogSearchForm.submit(); 
                 }
             });
         }

@@ -7,7 +7,7 @@ use App\Models\ChatRoom;
 use App\Models\Payment;
 use App\Models\Report;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

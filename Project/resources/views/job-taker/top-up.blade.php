@@ -7,13 +7,13 @@
         <div class="row justify-content-center">
             <div class="col-md-7 col-lg-5">
 
-                {{-- Card Top Up di tengah halaman --}}
+                
                 <div class="card topup-card">
                     <div class="card-body p-4 p-md-5">
 
                         <h3 class="text-center fw-bold mb-4">{{ __('balances.fill_balance') }}</h3>
 
-                        {{-- Bagian Menampilkan Saldo Saat Ini --}}
+                        
                         <div class="text-center border rounded p-3 mb-4">
                             <h6 class="text-muted mb-1">{{ __('balances.your_active_balance') }}</h6>
                             <h2 id="user-balance" class="fw-bold m-0" style="color: #00A99D;">
@@ -21,12 +21,12 @@
                             </h2>
                         </div>
 
-                        {{-- Tampilkan pesan error jika ada --}}
+                        
                         @if (session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
-                        {{-- Form untuk Input Nominal Top Up --}}
+                        
                         <form action="{{ route('topup.create') }}" method="POST">
                             @csrf
                             <div class="mb-3">
@@ -56,14 +56,14 @@
     </div>
 </div>
 
-{{-- Style untuk tema --}}
+
 <style>
     .topup-page-container {
         display: flex;
         align-items: center;
         justify-content: center;
         min-height: calc(100vh - 200px);
-        /* Adjust 200px based on your header/footer height */
+        
         background-color: #f0f3f7;
         padding: 2rem 0;
     }
@@ -72,7 +72,7 @@
         border: none;
         border-radius: 12px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        /* Shadow lebih tebal agar "nonjol" */
+        
     }
 </style>
 
@@ -93,11 +93,11 @@
         }
 
         const startPolling = () => {
-            if (pollingInterval) return; // Jangan mulai polling jika sudah berjalan
+            if (pollingInterval) return; 
 
             let attempts = 0;
             pollingInterval = setInterval(() => {
-                // Hentikan setelah 5 kali coba (15 detik) untuk mencegah loop tak terbatas
+                
                 if (attempts >= 5) {
                     clearInterval(pollingInterval);
                     return;
@@ -107,8 +107,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'paid') {
-                            fetchLatestBalance(); // Ambil saldo terbaru dan update tampilan
-                            clearInterval(pollingInterval); // Hentikan polling
+                            fetchLatestBalance(); 
+                            clearInterval(pollingInterval); 
                         }
                     });
 
@@ -116,16 +116,16 @@
             }, 3000);
         };
 
-        // Jika ada order_id di URL, cek statusnya sekarang juga!
+        
         if (orderId) {
             fetch(`/topup/status/${orderId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'paid') {
-                        // Jika sudah lunas, langsung update saldo
+                        
                         fetchLatestBalance();
                     } else {
-                        // Jika belum, mulai polling untuk menunggu webhook
+                        
                         startPolling();
                     }
                 })
