@@ -33,7 +33,7 @@
             padding: 12px;
             z-index: 3;
             ">
-                    <img src="https:
+                   <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="" class="rounded-circle"
                         style="width: 60px; height: 60px;">
                     <div class="d-flex flex-column ms-2">
                         <span
@@ -339,7 +339,7 @@
                     @else
                         @foreach ($clientReviews as $review)
                             <div class="review-item d-flex align-items-start mb-3">
-                                <img src="https:
+                               <img src="https://cdn-icons-png.freepik.com/512/9203/9203764.png" alt="" class="rounded-circle"
                                     class="rounded-circle" style="width: 60px; height: 60px; margin-right: 10px;">
                                 <div>
                                     <strong>{{ $review->reviewer->first_name . ' ' . $review->reviewer->last_name ?? __('monthly-report.anonymous_client') }}</strong><br>

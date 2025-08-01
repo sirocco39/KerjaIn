@@ -4,12 +4,11 @@
 <head>
     <title>Invoice #{{ $transaction->order_number ?? 'N/A' }}</title>
 
-    <link rel="preconnect" href="https:
-    <link rel="preconnect" href="https:
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https:
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap"
         rel="stylesheet">
-
     <style>
         @page {
             margin: 10mm;
@@ -94,7 +93,7 @@
         .invoice-title {
             font-size: 20pt;
             font-weight: bold;
-            color: #294287; 
+            color: #294287;
             margin-bottom: 20pt;
             text-align: center;
         }
@@ -225,7 +224,7 @@
             <h2 class="invoice-title">Invoice #{{ $transaction->order_number ?? 'N/A' }}</h2>
 
             <div class="details-section">
-                
+
                 <div class="row-flex">
                     <div class="col-flex align-left">
                         <div class="row-flex">
@@ -236,7 +235,7 @@
                         </div>
                     </div>
                     <div class="col-flex midcol">
-                        
+
                     </div>
                     <div class="col-flex align-left endcol">
                         <div class="row-flex">
@@ -248,7 +247,7 @@
                     </div>
                 </div>
 
-                
+
                 <div class="row-flex">
                     <div class="col-flex align-left">
                         <div class="row-flex">
@@ -280,7 +279,7 @@
                     </div>
                 </div>
 
-                
+
                 <div class="row-flex">
                     <div class="col-flex align-left">
                         <div class="row-flex">
@@ -313,7 +312,7 @@
                 </div>
             </div>
 
-            
+
             <div class="content-with-col-padding">
                 <div class="section-title">Judul Pesanan</div>
                 <p class="description-content">{{ $transaction->request->title ?? 'N/A' }}</p>
