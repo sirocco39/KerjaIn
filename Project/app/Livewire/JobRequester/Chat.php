@@ -144,6 +144,10 @@ class Chat extends Component
                         'description_en' => 'Added balance on hold for the job: ' . $workRequest->title,
                     ]);
 
+                    $payment = $workRequest->payment;
+                    $payment->amount += $priceDifference;
+                    $payment->save();
+
                     $user = Auth::user();
                     activity()->inLog('Finance')->causedBy($user)->on($workRequest)
                         ->log("Dana tambahan sebesar Rp" . number_format($priceDifference) . " ditahan dari {$user->first_name} karena perubahan harga melalui tawaran.");
