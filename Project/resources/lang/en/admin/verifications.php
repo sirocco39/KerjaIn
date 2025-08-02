@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     'user_verification_management' => 'User Verification Management',
     'back' => 'Back',
     'search_user' => 'Search User:',
@@ -18,12 +18,12 @@ return [
     'submitted_on' => 'Submitted On',
     'action' => 'Action',
     'no' => 'No',
-    'n_a' => 'N/A', 
-    'system' => 'System', 
+    'n_a' => 'N/A',
+    'system' => 'System',
     'alert_success_title' => 'Success',
     'alert_error_title' => 'Error',
 
-    
+
     'pending_verifications' => 'Pending Verifications',
     'approved_verifications' => 'Approved Verifications',
     'rejected_verifications' => 'Rejected Verifications',
@@ -36,7 +36,7 @@ return [
     'verified_on' => 'Verified On',
 
 
-    
+
     'verification_request_detail' => 'Verification Request Detail',
     'previous' => 'Previous',
     'next' => 'Next',
@@ -74,7 +74,7 @@ return [
     'account_created' => 'Account Created:',
     'last_updated' => 'Last Updated:',
 
-    
+
     'reject_user_verification' => 'Reject User Verification',
     'reason_for_rejection' => 'Reason for Rejection:',
     'provide_rejection_reason_placeholder' => 'Provide a reason why this verification request is being rejected.',
@@ -88,9 +88,13 @@ return [
     'cancel' => 'Cancel',
     'reject_verification' => 'Reject Verification',
 
-    
+
     'approve_confirmation' => 'Approval Confirmation',
     'confirm_approve_message' => 'Are you sure you want to <b>approve</b> this verification request?',
     'action_cannot_be_undone' => 'This action cannot be undone.',
     'yes_approve' => 'Yes, Approve',
+
+    'ocr_data' => 'OCR Data',
+    'ocr_raw_output' => 'Raw OCR Output',
+    'mismatch' => 'Mismatch',
 ];

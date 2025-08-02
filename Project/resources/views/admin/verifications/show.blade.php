@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div class="card-body p-3">
-                    
+
                     <div class="mb-4">
                         <label for="userSearchShow" class="form-label">{{ __('admin/verifications.search_user') }}</label>
                         <div class="row g-0 border rounded overflow-hidden">
@@ -38,11 +38,11 @@
                             </div>
                         </div>
                         <div id="searchResults" class="list-group position-absolute w-75 mt-1" style="z-index: 1000;">
-                            
+
                         </div>
                     </div>
 
-                    
+
                     <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
                         <div style="padding-top: 1rem">
                             @if ($previousRequest)
@@ -87,93 +87,138 @@
                     <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3">{{ __('admin/verifications.user_information') }}</h6>
                     <ul class="list-group">
                         <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
-                            <div class="d-flex flex-column">
-                                <h6 class="mb-3 text-sm">{{ __('admin/verifications.full_name') }}:
-                                    <span class="text-dark font-weight-bold ms-sm-2">
-                                        {{ $verificationRequest->first_name }} {{ $verificationRequest->last_name }}
+                            <div class="row w-100"> {{-- Gunakan row untuk menampung dua kolom info --}}
+                                <div class="col-md-6 d-flex flex-column"> {{-- Kolom untuk Data Input User --}}
+                                    <h6 class="mb-3 text-sm">{{ __('admin/verifications.full_name') }}:
+                                        <span class="text-dark font-weight-bold ms-sm-2">
+                                            {{ $verificationRequest->first_name }} {{ $verificationRequest->last_name }}
+                                        </span>
+                                    </h6>
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
+                                        <span class="text-dark font-weight-bold ms-sm-2">
+                                            {{ $verificationRequest->user->email ?? __('admin/verifications.n_a') }}
+                                        </span>
                                     </span>
-                                </h6>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
-                                    <span class="text-dark font-weight-bold ms-sm-2">
-                                        {{ $verificationRequest->user->email ?? 'N/A' }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.phone_number') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->phone_number ?? __('admin/verifications.n_a') }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->phone_number ?? 'N/A' }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.birthdate') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ \Carbon\Carbon::parse($verificationRequest->birthdate)->format('d M Y') }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.email') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ \Carbon\Carbon::parse($verificationRequest->birthdate)->format('d M Y') }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.gender') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->gender ?? __('admin/verifications.n_a') }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.gender') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->gender ?? 'N/A' }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.nik') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->nik }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.nik') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->nik }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.address') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->address ?? __('admin/verifications.n_a') }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.address') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->address ?? 'N/A' }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.bank_account_name') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->account_name ?? __('admin/verifications.n_a') }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.bank_account_name') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->account_name ?? 'N/A' }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.bank_account_number') }}:
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->account_number ?? __('admin/verifications.n_a') }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="mb-2 text-xs">{{ __('admin/verifications.bank_account_number') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->account_number ?? 'N/A' }}
+                                </div>
+
+                                <div class="col-md-6 d-flex flex-column border-start ps-4"> {{-- Kolom untuk Data Hasil OCR --}}
+                                    <h6 class="mb-3 text-sm">{{ __('admin/verifications.ocr_data') }}:</h6> {{-- Judul baru untuk data OCR --}}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.full_name') }} (OCR):
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->ocr_full_name ?? __('admin/verifications.n_a') }}
+                                        </span>
+                                        @if ($verificationRequest->ocr_full_name && $verificationRequest->ocr_full_name !== $verificationRequest->first_name . ' ' . $verificationRequest->last_name)
+                                        <i class="material-symbols-rounded text-danger text-sm ms-1" title="{{ __('admin/verifications.mismatch') }}">warning</i>
+                                        @endif
                                     </span>
-                                </span>
-                                <span class="text-xs">{{ __('admin/verifications.submitted_on') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->created_at->format('d M Y H:i') }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.birthdate') }} (OCR):
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->ocr_birthdate ? \Carbon\Carbon::parse($verificationRequest->ocr_birthdate)->format('d M Y') : __('admin/verifications.n_a') }}
+                                        </span>
+                                        @if ($verificationRequest->ocr_birthdate && \Carbon\Carbon::parse($verificationRequest->ocr_birthdate)->format('d M Y') !== \Carbon\Carbon::parse($verificationRequest->birthdate)->format('d M Y'))
+                                        <i class="material-symbols-rounded text-danger text-sm ms-1" title="{{ __('admin/verifications.mismatch') }}">warning</i>
+                                        @endif
                                     </span>
-                                </span>
-                                @if ($verificationRequest->status == 'approved' || $verificationRequest->status == 'rejected')
-                                <span class="text-xs mt-2">{{ __('admin/verifications.updated_on') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->updated_at->format('d M Y H:i') }}
+                                    @php
+                                    // Define a simple mapping for comparison
+                                    $normalizeGender = function($genderString) {
+                                    $genderString = Str::lower(trim($genderString)); // Normalize to lowercase and remove whitespace
+                                    if (in_array($genderString, ['male', 'laki-laki', 'l'])) {
+                                    return 'male';
+                                    } elseif (in_array($genderString, ['female', 'perempuan', 'p'])) {
+                                    return 'female';
+                                    }
+                                    return null; // Return null or a default if unidentifiable
+                                    };
+
+                                    $normalizedUserGender = $normalizeGender($verificationRequest->gender);
+                                    $normalizedOcrGender = $normalizeGender($verificationRequest->ocr_gender);
+                                    @endphp
+
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.gender') }} (OCR):
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->ocr_gender ?? __('admin/verifications.n_a') }}
+                                        </span>
+                                        @if ($verificationRequest->ocr_gender && $normalizedOcrGender !== $normalizedUserGender)
+                                        <i class="material-symbols-rounded text-danger text-sm ms-1" title="{{ __('admin/verifications.mismatch') }}">warning</i>
+                                        @endif
                                     </span>
-                                </span>
-                                @endif
-                                @if ($verificationRequest->status == 'approved')
-                                <span class="text-xs mt-2">{{ __('admin/verifications.verified_on') }}:
-                                    <span class="text-dark ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->verified_at ? $verificationRequest->verified_at->format('d M Y H:i') : 'N/A' }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.nik') }} (OCR):
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->ocr_nik ?? __('admin/verifications.n_a') }}
+                                        </span>
+                                        @if ($verificationRequest->ocr_nik && $verificationRequest->ocr_nik !== $verificationRequest->nik)
+                                        <i class="material-symbols-rounded text-danger text-sm ms-1" title="{{ __('admin/verifications.mismatch') }}">warning</i>
+                                        @endif
                                     </span>
-                                </span>
-                                @endif
-                                
-                                @if ($verificationRequest->status == 'rejected' && $verificationRequest->rejection_reason)
-                                <span class="text-xs mt-2">{{ __('admin/verifications.rejection_reason') }}
-                                    <span class="text-danger ms-sm-2 font-weight-bold">
-                                        {{ $verificationRequest->rejection_reason }}
+                                    <span class="mb-2 text-xs">{{ __('admin/verifications.address') }} (OCR):
+                                        <span class="text-dark ms-sm-2 font-weight-bold">
+                                            {{ $verificationRequest->ocr_address ?? __('admin/verifications.n_a') }}
+                                        </span>
+                                        @if ($verificationRequest->ocr_address && $verificationRequest->ocr_address !== $verificationRequest->address)
+                                        <i class="material-symbols-rounded text-danger text-sm ms-1" title="{{ __('admin/verifications.mismatch') }}">warning</i>
+                                        @endif
                                     </span>
-                                </span>
-                                @endif
-                            </div>
-                            <div class="ms-auto text-end">
-                                <h6 class="text-sm">{{ __('admin/verifications.status') }}:
-                                    <span class="badge badge-sm
-                                                @if($verificationRequest->status == 'pending') bg-gradient-warning
-                                                @elseif($verificationRequest->status == 'approved') bg-gradient-success
-                                                @else bg-gradient-danger @endif
-                                                ms-sm-2">
-                                        {{ ucfirst($verificationRequest->status) }}
+                                </div>
+
+                                <div class="col-12 mt-3"> {{-- Untuk Raw OCR Output di bawah kedua kolom --}}
+                                    <span class="text-xs">{{ __('admin/verifications.ocr_raw_output') }}:
+                                        <pre class="text-secondary text-xs mb-0" style="white-space: pre-wrap; word-break: break-all;">
+                                        {{ json_encode($verificationRequest->ocr_raw_output, JSON_PRETTY_PRINT) }}
+                                        </pre>
                                     </span>
-                                </h6>
+                                </div>
+
+                                <div class="ms-auto text-end"> {{-- Status tetap di kanan --}}
+                                    <h6 class="text-sm">{{ __('admin/verifications.status') }}:
+                                        <span class="badge badge-sm
+                            @if($verificationRequest->status == 'pending') bg-gradient-warning
+                            @elseif($verificationRequest->status == 'approved') bg-gradient-success
+                            @else bg-gradient-danger @endif
+                            ms-sm-2">
+                                            {{ ucfirst($verificationRequest->status) }}
+                                        </span>
+                                    </h6>
+                                </div>
                             </div>
                         </li>
                     </ul>
+
 
                     <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-3 mt-4">{{ __('admin/verifications.supporting_documents') }}</h6>
                     <div class="row">
@@ -215,7 +260,7 @@
                         </div>
                     </div>
 
-                    
+
                     @if ($verificationRequest->status == 'pending')
                     <div class="row mt-4">
                         <div class="col-md-12">
@@ -226,7 +271,7 @@
                                     <i class="material-symbols-rounded text-sm">check_circle</i> {{ __('admin/verifications.approve') }}
                                 </button>
                             </form>
-                            
+
                             <button type="button" class="btn bg-gradient-danger mb-0" data-bs-toggle="modal" data-bs-target="#rejectReasonModal" id="rejectButton">
                                 <i class="material-symbols-rounded text-sm">cancel</i> {{ __('admin/verifications.reject') }}
                             </button>
@@ -237,7 +282,7 @@
             </div>
         </div>
 
-        
+
         <div class="col-lg-4">
             <div class="card h-100">
                 <div class="card-header pb-0 p-3">
@@ -370,7 +415,7 @@
     </div>
 </div>
 
-@push('scripts') 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const reasonChips = document.querySelectorAll('.reason-chip');
@@ -379,25 +424,25 @@
         reasonChips.forEach(chip => {
             chip.addEventListener('click', function() {
                 const reason = this.dataset.reason;
-                
+
                 if (rejectionReasonTextarea.value.trim() === '') {
                     rejectionReasonTextarea.value = reason;
                 } else {
-                    
+
                     if (!rejectionReasonTextarea.value.includes(reason)) {
                         rejectionReasonTextarea.value += '\n' + reason;
                     }
                 }
-                rejectionReasonTextarea.focus(); 
+                rejectionReasonTextarea.focus();
             });
         });
 
         const rejectReasonModal = document.getElementById('rejectReasonModal');
         rejectReasonModal.addEventListener('hidden.bs.modal', function() {
-            rejectionReasonTextarea.value = ''; 
+            rejectionReasonTextarea.value = '';
         });
 
-        
+
         const statusFilteredUserDropdown = document.getElementById('statusFilteredUserDropdown');
         if (statusFilteredUserDropdown) {
             statusFilteredUserDropdown.addEventListener('change', function() {
@@ -408,7 +453,7 @@
             });
         }
 
-        
+
         const userSearchShow = document.getElementById('userSearchShow');
         const searchResults = document.getElementById('searchResults');
         const clearSearchShow = document.getElementById('clearSearchShow');
@@ -419,12 +464,12 @@
                 clearTimeout(searchTimeout);
                 const query = this.value;
 
-                if (query.length > 2) { 
+                if (query.length > 2) {
                     searchTimeout = setTimeout(() => {
                         fetch(`{{ route('admin.verifications.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                searchResults.innerHTML = ''; 
+                                searchResults.innerHTML = '';
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
@@ -441,19 +486,19 @@
                                 console.error('Error fetching search results:', error);
                                 searchResults.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                             });
-                    }, 300); 
+                    }, 300);
                 } else {
-                    searchResults.innerHTML = ''; 
+                    searchResults.innerHTML = '';
                 }
             });
 
-            
+
             clearSearchShow.addEventListener('click', function() {
                 userSearchShow.value = '';
                 searchResults.innerHTML = '';
             });
 
-            
+
             document.addEventListener('click', function(event) {
                 if (!userSearchShow.contains(event.target) && !searchResults.contains(event.target)) {
                     searchResults.innerHTML = '';
