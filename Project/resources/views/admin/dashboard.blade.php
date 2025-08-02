@@ -194,3 +194,140 @@
 @endsection
 
 @push('scripts')
+{{-- Hapus <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> dari sini --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hapus baris ini karena breadcrumbs sudah diatur oleh controller
+        // document.getElementById('currentPageTitle').innerText = 'Dashboard';
+        // document.getElementById('currentSectionTitle').innerText = 'Gambaran Umum';
+
+        // --- Weekly Active Users Line Chart (dengan pengambilan data dari data-attributes) ---
+        const chartElement = document.getElementById("weekly-active-users-chart");
+        if (chartElement) { // Pastikan elemen chart ada
+            const labels = JSON.parse(chartElement.dataset.chartLabels);
+            console.log("Labels:", labels); // Untuk debugging
+
+            const earningsData = JSON.parse(chartElement.dataset.chartEarnings); // Ini adalah data login (chartData)
+            console.log("Earnings Data (Active Users):", earningsData); // Untuk debugging
+
+            const jobsCompletedData = JSON.parse(chartElement.dataset.chartJobs); // Ini adalah data dummy (jobsCompletedData)
+            console.log("Jobs Completed Data (Dummy):", jobsCompletedData); // Untuk debugging
+
+            var weeklyActiveUsersCtx = chartElement.getContext("2d");
+            new Chart(weeklyActiveUsersCtx, {
+                type: "line",
+                data: {
+                    labels: labels, // Menggunakan variabel `labels`
+                    datasets: [{
+                        label: "Pengguna Aktif",
+                        tension: 0.4,
+                        borderWidth: 0,
+                        pointRadius: 5,
+                        pointBackgroundColor: "#4CAF50", // Green color
+                        pointBorderColor: "transparent",
+                        borderColor: "#4CAF50", // Green color
+                        borderWidth: 4,
+                        backgroundColor: "transparent",
+                        fill: true,
+                        data: earningsData, // Menggunakan `earningsData` untuk data chart
+                        maxBarThickness: 6
+                    }],
+                    // Jika Anda ingin menambahkan jobsCompletedData sebagai garis kedua:
+                    // datasets: [
+                    //     {
+                    //         label: "Pengguna Aktif",
+                    //         tension: 0.4,
+                    //         borderWidth: 0,
+                    //         pointRadius: 5,
+                    //         pointBackgroundColor: "#4CAF50",
+                    //         pointBorderColor: "transparent",
+                    //         borderColor: "#4CAF50",
+                    //         borderWidth: 4,
+                    //         backgroundColor: "transparent",
+                    //         fill: true,
+                    //         data: earningsData,
+                    //         maxBarThickness: 6
+                    //     },
+                    //     {
+                    //         label: "Pekerjaan Selesai", // Label untuk garis kedua
+                    //         tension: 0.4,
+                    //         borderWidth: 0,
+                    //         pointRadius: 5,
+                    //         pointBackgroundColor: "#FFC107", // Contoh warna kuning
+                    //         pointBorderColor: "transparent",
+                    //         borderColor: "#FFC107",
+                    //         borderWidth: 4,
+                    //         backgroundColor: "transparent",
+                    //         fill: false, // Tidak diisi
+                    //         data: jobsCompletedData, // Data dari jobsCompletedData
+                    //         maxBarThickness: 6
+                    //     }
+                    // ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false, // Set to true if you add a second dataset and want a legend
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                display: true,
+                                drawOnChartArea: true,
+                                drawTicks: false,
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                display: true,
+                                padding: 10,
+                                color: '#b2b9bf',
+                                font: {
+                                    size: 11,
+                                    family: "Open Sans",
+                                    style: 'normal',
+                                    lineHeight: 2
+                                },
+                            }
+                        },
+                        x: {
+                            grid: {
+                                drawBorder: false,
+                                display: false,
+                                drawOnChartArea: false,
+                                drawTicks: false,
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                display: true,
+                                color: '#b2b9bf',
+                                padding: 20,
+                                font: {
+                                    size: 11,
+                                    family: "Open Sans",
+                                    style: 'normal',
+                                    lineHeight: 2
+                                },
+                            }
+                        },
+                    },
+                },
+            });
+        } // end if chartElement
+    });
+</script>
+@endpush
+
+<style>
+    .card-link {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
