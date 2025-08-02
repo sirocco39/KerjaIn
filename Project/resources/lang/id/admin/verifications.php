@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     'user_verification_management' => 'Manajemen Verifikasi Pengguna',
     'back' => 'Kembali',
     'search_user' => 'Cari Pengguna:',
@@ -22,7 +22,7 @@ return [
     'alert_success_title' => 'Berhasil',
     'alert_error_title' => 'Error',
 
-    
+
     'pending_verifications' => 'Belum Diverifikasi',
     'approved_verifications' => 'Terverifikasi',
     'rejected_verifications' => 'Verifikasi Ditolak',
@@ -35,7 +35,7 @@ return [
     'verified_on' => 'Diverifikasi Pada',
 
 
-    
+
     'verification_request_detail' => 'Detail Permintaan Verifikasi',
     'previous' => 'Sebelumnya',
     'next' => 'Selanjutnya',
@@ -74,7 +74,7 @@ return [
     'account_created' => 'Akun Dibuat:',
     'last_updated' => 'Terakhir Diperbarui:',
 
-    
+
     'reject_user_verification' => 'Tolak Verifikasi Pengguna',
     'reason_for_rejection' => 'Alasan Penolakan:',
     'provide_rejection_reason_placeholder' => 'Berikan alasan mengapa permintaan verifikasi ini ditolak.',
@@ -88,9 +88,13 @@ return [
     'cancel' => 'Batal',
     'reject_verification' => 'Tolak Verifikasi',
 
-    
+
     'approve_confirmation' => 'Konfirmasi Persetujuan',
     'confirm_approve_message' => 'Apakah Anda yakin ingin <b>menyetujui</b> permintaan verifikasi ini?',
     'action_cannot_be_undone' => 'Tindakan ini tidak dapat dibatalkan.',
     'yes_approve' => 'Ya, Setujui',
+
+    'ocr_data' => 'Data OCR',
+    'ocr_raw_output' => 'Output Mentah OCR',
+    'mismatch' => 'Tidak Cocok',
 ];
