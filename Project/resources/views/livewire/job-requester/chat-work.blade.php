@@ -45,7 +45,7 @@
             style="border: 1px solid #cacadd; max-height:56vh;">
             <div class="atas d-flex justify-content-between align-items-center flex-fill">
                 <div class="profile d-flex">
-                    <img src="{{ $selectedRoom->worker->photo_url_worker ? asset($selectedRoom->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
+                    <img src="{{ $selectedRoom->worker->photo_url_worker ? Storage::url($selectedRoom->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
                         alt="Profil" alt="" style="width: 48px; height: 48px;" class="rounded-5">
                     <div class="container-name-status ms-2 d-flex align-items-center">
 

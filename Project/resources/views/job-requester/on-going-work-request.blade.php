@@ -173,7 +173,7 @@
                     <div class="col-12 col-md-6 col-lg-12 px-0 pe-md-2">
                         <div class="contain bg-light px-4 py-3 rounded-4 d-flex flex-fill align-items-center justify-content-between"
                             style="border: 1px solid #cacadd; max-height: 150px; height:100%;">
-                            <img src="{{ $transaction->worker->photo_url_worker ? asset($transaction->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
+                            <img src="{{ $transaction->worker->photo_url_worker ? Storage::url($transaction->worker->photo_url_worker) : asset('Image/Icon/user-circle.svg') }}"
                                 alt="Profil"
                                 style="width:40%; max-height: 125px; object-fit: cover; border-radius: 16px;"
                                 class="me-3 py-2">
