@@ -22,6 +22,7 @@ return [
     'system' => 'System',
     'alert_success_title' => 'Success',
     'alert_error_title' => 'Error',
+    'number' => 'No.',
 
 
     'pending_verifications' => 'Pending Verifications',

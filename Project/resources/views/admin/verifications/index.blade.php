@@ -6,8 +6,8 @@
         <div class="col-12">
             <h1 class="h3 mb-4 text-dark">{{ __('admin/verifications.user_verification_management') }}</h1>
 
-            
-            <div class="row gx-2 mb-4"> 
+
+            <div class="row gx-2 mb-4">
                 <div class="col-md-3">
                     <a class="btn btn-block {{ ($status == 'pending' && $search == null) ? 'bg-gradient-primary text-white' : 'btn-outline-primary' }} d-flex align-items-center justify-content-center py-3"
                         href="{{ route('admin.verifications.index', ['status' => 'pending']) }}" id="pendingVerificationsButton">
@@ -31,9 +31,9 @@
                         {{ __('admin/verifications.rejected_verifications') }}
                     </a>
                 </div>
-                
+
                 <div class="col-md-3 p-0">
-                    <div class="p-0 position-relative"> 
+                    <div class="p-0 position-relative">
                         <form id="indexSearchForm" action="{{ route('admin.verifications.index', ['status' => $status]) }}" method="GET" class="mb-0">
                             <div class="input-group rounded-start m-0">
                                 <input type="text" id="userSearchIndex" name="search" class="rounded-start bg-white border border-primary p-2" placeholder="{{ __('admin/verifications.search_users_placeholder') }}" autocomplete="off" value="{{ $search ?? '' }}">
@@ -41,7 +41,7 @@
                             </div>
                         </form>
                         <div id="searchResultsIndex" class="list-group position-absolute w-100 mt-1" style="z-index: 1000;">
-                            
+
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>{{ __('admin/verifications.no') }}</th>
+                                            <th>{{ __('admin/verifications.number') }}</th>
                                             <th>{{ __('admin/verifications.id') }}</th>
                                             <th>{{ __('admin/verifications.user_id') }}</th>
                                             <th>{{ __('admin/verifications.full_name') }}</th>
@@ -114,7 +114,7 @@
                                             <td>{{ $request->verified_at ? $request->verified_at->format('d M Y H:i') : '-' }}</td>
                                             @endif
                                             <td>
-                                                
+
                                                 <a href="{{ route('admin.verifications.show', ['id' => $request->id]) }}" class="btn btn-primary btn-sm" id="lihat-detail">{{ __('admin/verifications.view_detail') }}</a>
                                             </td>
                                         </tr>
@@ -135,11 +135,11 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
+
         const reasonChips = document.querySelectorAll('.reason-chip');
         const rejectionReasonTextarea = document.getElementById('rejection_reason');
 
-        if (rejectionReasonTextarea) { 
+        if (rejectionReasonTextarea) {
             reasonChips.forEach(chip => {
                 chip.addEventListener('click', function() {
                     const reason = this.dataset.reason;
@@ -162,7 +162,7 @@
             }
         }
 
-        
+
         const userSearchIndex = document.getElementById('userSearchIndex');
         const searchResultsIndex = document.getElementById('searchResultsIndex');
         const indexSearchForm = document.getElementById('indexSearchForm');
@@ -173,16 +173,16 @@
                 clearTimeout(searchTimeoutIndex);
                 const query = this.value;
 
-                if (query.length > 2) { 
+                if (query.length > 2) {
                     searchTimeoutIndex = setTimeout(() => {
                         fetch(`{{ route('admin.verifications.search-ajax') }}?query=${query}`)
                             .then(response => response.json())
                             .then(data => {
-                                searchResultsIndex.innerHTML = ''; 
+                                searchResultsIndex.innerHTML = '';
                                 if (data.length > 0) {
                                     data.forEach(item => {
                                         const a = document.createElement('a');
-                                        
+
                                         a.href = `{{ route('admin.verifications.show', '') }}/${item.id}`;
                                         a.classList.add('list-group-item', 'list-group-item-action');
                                         a.innerHTML = `<strong>ID: ${item.id}</strong> - ${item.first_name} ${item.last_name} (NIK: ${item.nik}) <span class="badge bg-secondary ms-2">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>`;
@@ -191,21 +191,21 @@
                                 } else {
                                     searchResultsIndex.innerHTML = '<div class="list-group-item">Tidak ada hasil ditemukan.</div>';
                                 }
-                                searchResultsIndex.style.display = 'block'; 
+                                searchResultsIndex.style.display = 'block';
                             })
                             .catch(error => {
                                 console.error('Error fetching search results:', error);
                                 searchResultsIndex.innerHTML = '<div class="list-group-item text-danger">Terjadi kesalahan saat mencari.</div>';
                                 searchResultsIndex.style.display = 'block';
                             });
-                    }, 300); 
+                    }, 300);
                 } else {
-                    searchResultsIndex.innerHTML = ''; 
-                    searchResultsIndex.style.display = 'none'; 
+                    searchResultsIndex.innerHTML = '';
+                    searchResultsIndex.style.display = 'none';
                 }
             });
 
-            
+
             document.addEventListener('click', function(event) {
                 if (!userSearchIndex.contains(event.target) && !searchResultsIndex.contains(event.target)) {
                     searchResultsIndex.innerHTML = '';
@@ -213,16 +213,16 @@
                 }
             });
 
-            
+
             userSearchIndex.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); 
-                    indexSearchForm.submit(); 
+                    event.preventDefault();
+                    indexSearchForm.submit();
                 }
             });
         }
 
-        
+
         const statusFilteredUserDropdown = document.getElementById('statusFilteredUserDropdown');
         if (statusFilteredUserDropdown) {
             statusFilteredUserDropdown.addEventListener('change', function() {
@@ -233,13 +233,13 @@
             });
         }
 
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
     });
 </script>
 @endpush
