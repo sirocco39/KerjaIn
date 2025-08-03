@@ -27,8 +27,8 @@ return [
     'modal_total' => 'Total',
     'modal_invoice' => 'Invoice',
 
-    'penilaian_heading_baru' => 'Kasih penilaian, yuk!',
-    'penilaian_heading_sudah' => 'Ini penilaianmu',
+    'penilaian_heading_baru' => 'Kasih penilaian untuk Pekerja, yuk!',
+    'penilaian_heading_sudah' => 'Ini penilaianmu untuk Pekerja',
     'label_komentar' => 'Komentar',
     'placeholder_komentar' => 'Tulis komentarmu di sini...',
     'tombol_kirim' => 'Kirim',
