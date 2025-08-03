@@ -162,7 +162,7 @@ class TransactionController extends Controller
             'user_id' => $requester->id,
             'amount' => $refundAmount,
             'type' => 'debit',
-            'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $$transaction->request->title,
+            'description_id' => 'Pengembalian saldo dari pembatalan pekerjaan: ' . $transaction->request->title,
             'description_en' => 'Balance refund from job cancellation: ' . $transaction->request->title,
         ]);
 

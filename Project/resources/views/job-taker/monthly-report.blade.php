@@ -344,7 +344,7 @@
                                 <div>
                                     <strong>{{ $review->reviewer->first_name . ' ' . $review->reviewer->last_name ?? __('monthly-report.anonymous_client') }}</strong><br>
                                     <small>{{ __('monthly-report.client_role') }}</small><br>
-                                    {{ str_repeat('тнР', $review->rating) }}
+                                    ⭐ {{ $review->rating }}
                                     <p class="review-text">"{{ $review->comment }}"</p>
                                 </div>
                             </div>
