@@ -21,6 +21,7 @@ return [
     'system' => 'Sistem',
     'alert_success_title' => 'Berhasil',
     'alert_error_title' => 'Error',
+    'number' => 'No.',
 
 
     'pending_verifications' => 'Belum Diverifikasi',

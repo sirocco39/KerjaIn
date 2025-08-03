@@ -35,13 +35,13 @@ return [
     'placeholder_komentar' => 'Tulis komentarmu di sini...',
     'tombol_kirim' => 'Kirim',
     'atau' => 'Atau',
-    
+
     'modal_laporan_judul' => 'Laporan',
     'modal_laporan_upload_bukti' => 'Upload Bukti (Gambar, maks 5MB per gambar):',
     'modal_laporan_keluh_kesah' => 'Keluh Kesah Anda',
     'placeholder_keluh_kesah' => 'Ceritakan masalah yang Anda alami...',
     'tombol_kirim_laporan' => 'Kirim Laporan',
-    
+
     'js_messages' => [
         'laporkan_masalah' => 'Laporkan masalah',
         'laporan_sudah_terkirim' => 'Laporan sudah terkirim',
