@@ -263,7 +263,7 @@
                         </div>
                         <div class="row-flex">
                             <p><span
-                                    class="value">{{ \Carbon\Carbon::parse($transaction->created_at)->format('d - m - Y') }}</span>
+                                    class="value">{{ \Carbon\Carbon::parse($transaction->start_work)->format('d - m - Y') }}</span>
                             </p>
                         </div>
                     </div>
@@ -273,7 +273,7 @@
                         </div>
                         <div class="row-flex">
                             <p><span
-                                    class="value">{{ \Carbon\Carbon::parse($transaction->updated_at)->format('d - m - Y') }}</span>
+                                    class="value">{{ \Carbon\Carbon::parse($transaction->finish_work)->format('d - m - Y') }}</span>
                             </p>
                         </div>
                     </div>
